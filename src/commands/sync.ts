@@ -90,6 +90,9 @@ export const syncCommand = new Command('sync')
       console.log(chalk.gray(`  Total tests: ${totalTests}`))
 
       console.log(chalk.blue('📚 Building git history...'))
+      
+      // For now, always sync full history to ensure accuracy
+      // In the future, could add incremental syncing with a .chronicle-sync marker file
       const history = await buildHistory(projectPath, detection.testDir, detection.framework)
       console.log(chalk.green(`✓ Built history for ${history.length} commits`))
 
@@ -138,8 +141,18 @@ export const syncCommand = new Command('sync')
         changes: entry.specs.flatMap((spec) => {
           // Deduplicate changes for this spec
           const deduplicatedChanges = deduplicateChanges(spec.changes)
+          
+          // Further deduplicate across entire commit to catch any duplicates
+          // that may have slipped through
+          const commitLevelSeen = new Set<string>()
+          const uniqueChanges = deduplicatedChanges.filter((change) => {
+            const key = `${spec.specPath}:${change.type}:${change.name}`
+            if (commitLevelSeen.has(key)) return false
+            commitLevelSeen.add(key)
+            return true
+          })
 
-          return deduplicatedChanges.map((change) => ({
+          return uniqueChanges.map((change) => ({
             specFile: spec.specPath,
             testName: change.name,
             type: change.type === 'removed' ? 'deleted' : change.type,
