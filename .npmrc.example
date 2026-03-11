@@ -1,0 +1,6 @@
+# GitHub Packages npm registry configuration
+# Copy this to .npmrc and replace YOUR_GH_TOKEN with your actual GitHub PAT
+# DO NOT commit .npmrc to git - it's in .gitignore
+
+@dwilliams264:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GH_TOKEN
