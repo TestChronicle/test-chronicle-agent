@@ -5,10 +5,34 @@ import { detectFramework } from '../core'
 import { parseAllSpecs } from '../core'
 import { buildHistory } from '../git'
 import { syncToDashboard } from '../sync-client'
+import { TestChange } from '../types'
 import path from 'path'
 import fs from 'fs'
 
 dotenv.config({ debug: false })
+
+// ─── Deduplication ────────────────────────────────────────────────────────────
+
+/**
+ * Deduplicates test changes using a composite key.
+ * Removes duplicate entries that have the same (type, name, oldName) combination.
+ */
+function deduplicateChanges(changes: TestChange[]): TestChange[] {
+  const seen = new Set<string>()
+  const deduplicated: TestChange[] = []
+
+  for (const change of changes) {
+    // Create composite key: type:name:oldName (oldName is empty string if undefined)
+    const key = `${change.type}:${change.name}:${change.oldName ?? ''}`
+
+    if (!seen.has(key)) {
+      seen.add(key)
+      deduplicated.push(change)
+    }
+  }
+
+  return deduplicated
+}
 
 export const syncCommand = new Command('sync')
   .description('Sync test data to dashboard')
@@ -105,19 +129,23 @@ export const syncCommand = new Command('sync')
       }))
 
       // Transform history to match dashboard schema
+      // Apply deduplication to each spec's changes before transforming
       const transformedHistory = history.map((entry) => ({
         commitHash: entry.commit.hash,
         commitMessage: entry.commit.message,
         author: entry.commit.author,
         commitDate: entry.commit.date,
-        changes: entry.specs.flatMap((spec) =>
-          spec.changes.map((change) => ({
+        changes: entry.specs.flatMap((spec) => {
+          // Deduplicate changes for this spec
+          const deduplicatedChanges = deduplicateChanges(spec.changes)
+
+          return deduplicatedChanges.map((change) => ({
             specFile: spec.specPath,
             testName: change.name,
             type: change.type === 'removed' ? 'deleted' : change.type,
             details: change.oldName ? { old_name: change.oldName } : undefined,
           }))
-        ),
+        }),
       }))
 
       const payload = {
