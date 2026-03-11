@@ -111,7 +111,7 @@ describe('sync command', () => {
       process.env.CHRONICLE_API_KEY = 'test-api-key'
     })
 
-    it('should detect framework', async () => {
+    it('should detect framework with high confidence', async () => {
       vi.mocked(coreModule.detectFramework).mockReturnValue({
         framework: 'playwright' as const,
         testDir: './tests',
