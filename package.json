@@ -1,12 +1,12 @@
 {
-  "name": "test-chronicle-agent",
+  "name": "@dwilliams264/test-chronicle-agent",
   "version": "0.1.0",
   "description": "CLI agent for syncing test data to test-chronicle dashboard",
-  "author": "Your Name",
+  "author": "Daniel Williams",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/test-chronicle-agent.git"
+    "url": "https://github.com/dwilliams264/test-chronicle-agent.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
