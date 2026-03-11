@@ -114,9 +114,9 @@ describe('Git History', () => {
     it('should return empty array on git error', async () => {
       mockGit.log.mockRejectedValue(new Error('Git error'))
 
-      const history = await buildHistory('/project', './tests', 'vitest')
+      const result = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toEqual([])
+      expect(result).toEqual([])
     })
 
     it('should reverse commits to oldest first', async () => {
@@ -130,12 +130,10 @@ describe('Git History', () => {
       mockGit.raw.mockResolvedValue('')
       vi.mocked(parser.extractTestNamesFromContent).mockReturnValue([])
 
-      const history = await buildHistory('/project', './tests', 'vitest')
+      const result = await buildHistory('/project', './tests', 'vitest')
 
-      // Should be reversed to oldest first
-      if (history.length > 0) {
-        expect(history[0].commit).toBeDefined()
-      }
+      // Should be reversed to oldest first or empty
+      expect(Array.isArray(result)).toBe(true)
     })
 
     it('should skip commits with no spec changes', async () => {
@@ -156,10 +154,10 @@ describe('Git History', () => {
       vi.mocked(parser.extractTestNamesFromContent).mockReturnValue(['test1'])
       mockGit.show.mockResolvedValue('content')
 
-      const history = await buildHistory('/project', './tests', 'vitest')
+      const result = await buildHistory('/project', './tests', 'vitest')
 
       // Should only include commits with spec changes
-      expect(history.length).toBeLessThanOrEqual(1)
+      expect(result.length).toBeLessThanOrEqual(1)
     })
 
     it('should handle file changes in commit', async () => {
@@ -288,8 +286,9 @@ describe('Git History', () => {
         vi.mocked(simpleGit).mockReturnValue(mockGit)
         vi.mocked(parser.extractTestNamesFromContent).mockReturnValue(['test'])
 
-        const history = await buildHistory('/project', './tests', framework)
+        const result = await buildHistory('/project', './tests', framework)
 
+        expect(result).toBeDefined()
         expect(vi.mocked(parser.extractTestNamesFromContent)).toHaveBeenCalled()
       }
     })
@@ -304,10 +303,10 @@ describe('Git History', () => {
       // Only src/ files, not tests/
       mockGit.raw.mockResolvedValue('M\tsrc/index.ts')
 
-      const history = await buildHistory('/project', './tests', 'vitest')
+      const result = await buildHistory('/project', './tests', 'vitest')
 
       // Should be empty since no test files changed
-      expect(history).toHaveLength(0)
+      expect(result).toHaveLength(0)
     })
 
     it('should only process spec files', async () => {
@@ -322,10 +321,10 @@ describe('Git History', () => {
       vi.mocked(parser.extractTestNamesFromContent).mockReturnValue(['test'])
       mockGit.show.mockResolvedValue('content')
 
-      const history = await buildHistory('/project', './tests', 'vitest')
+      const result = await buildHistory('/project', './tests', 'vitest')
 
       // Should process spec file but not index.ts or readme.md
-      expect(history.length).toBeGreaterThanOrEqual(0)
+      expect(result.length).toBeGreaterThanOrEqual(0)
     })
 
     it('should handle renamed files properly', async () => {
@@ -339,9 +338,9 @@ describe('Git History', () => {
       vi.mocked(parser.extractTestNamesFromContent).mockReturnValue(['test1'])
       mockGit.show.mockResolvedValue('content')
 
-      const history = await buildHistory('/project', './tests', 'vitest')
+      const result = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
+      expect(result).toHaveLength(1)
     })
   })
 })

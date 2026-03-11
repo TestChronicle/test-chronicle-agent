@@ -5,12 +5,15 @@ import {
   findSpecFiles,
 } from './parser'
 import * as frameworksParsers from './frameworks/playwright'
-import { readFileSync, statSync } from 'fs'
+import * as cypressParsers from './frameworks/cypress'
+import * as vitestParsers from './frameworks/vitest'
+import * as testngParsers from './frameworks/testng'
+import * as junitParsers from './frameworks/junit'
+import { statSync } from 'fs'
 import { globSync } from 'glob'
 
 // Mock file system
 vi.mock('fs', () => ({
-  readFileSync: vi.fn(),
   statSync: vi.fn(),
 }))
 
@@ -87,8 +90,8 @@ describe('Parser', () => {
     })
 
     it('should parse Cypress spec files', () => {
-      const mockSpec = {
-        id: 'spec-1',
+      const mockCypressSpec = {
+        id: 'spec-2',
         path: 'cypress/e2e/login.cy.ts',
         name: 'login.cy.ts',
         framework: 'cypress' as const,
@@ -97,21 +100,24 @@ describe('Parser', () => {
         lastModified: new Date().toISOString(),
       }
 
-      const mockParseCypress = vi.fn().mockReturnValue(mockSpec)
-      vi.doMock('./frameworks/cypress', () => ({
-        parseCypressSpec: mockParseCypress,
-      }))
-
+      vi.mocked(cypressParsers.parseCypressSpec).mockReturnValue(mockCypressSpec)
       vi.mocked(statSync).mockReturnValue({
         mtime: new Date(),
       } as any)
 
-      // Note: This test would need actual cypress parser mock
+      const result = parseSpecFile(
+        '/project/cypress/e2e/login.cy.ts',
+        'test content',
+        '/project',
+        'cypress'
+      )
+
+      expect(result).toEqual(expect.objectContaining({ framework: 'cypress' }))
     })
 
     it('should parse Vitest spec files', () => {
-      const mockSpec = {
-        id: 'spec-1',
+      const mockVitestSpec = {
+        id: 'spec-3',
         path: 'tests/utils.spec.ts',
         name: 'utils.spec.ts',
         framework: 'vitest' as const,
@@ -120,11 +126,19 @@ describe('Parser', () => {
         lastModified: new Date().toISOString(),
       }
 
-      const mockParseVitest = vi.fn().mockReturnValue(mockSpec)
-
+      vi.mocked(vitestParsers.parseVitestSpec).mockReturnValue(mockVitestSpec)
       vi.mocked(statSync).mockReturnValue({
         mtime: new Date(),
       } as any)
+
+      const result = parseSpecFile(
+        '/project/tests/utils.spec.ts',
+        'test content',
+        '/project',
+        'vitest'
+      )
+
+      expect(result).toEqual(expect.objectContaining({ framework: 'vitest' }))
     })
 
     it('should throw on unsupported framework', () => {
@@ -200,23 +214,16 @@ describe('Parser', () => {
         mtime: new Date(),
       } as any)
 
-      const mockSpec = {
-        id: 'spec-1',
-        path: 'test.spec.ts',
-        name: 'test.spec.ts',
-        framework: 'vitest' as const,
-        tests: [],
-        testCount: 0,
-        lastModified: new Date().toISOString(),
-      }
-
       // For this test, we're mostly checking the dispatch logic
       // Each framework should be passed through correctly
-      for (const framework of frameworks) {
-        // Verify the function doesn't throw for supported frameworks
+      for (const fw of frameworks) {
         expect(() => {
-          // Just check that it would call the appropriate parser
-          // Actual parser is mocked
+          parseSpecFile(
+            '/project/tests/test.spec.ts',
+            'content',
+            '/project',
+            fw as any
+          )
         }).not.toThrow()
       }
     })
@@ -236,35 +243,35 @@ describe('Parser', () => {
     })
 
     it('should extract Cypress test names', () => {
-      const mockExtractCypress = vi.fn().mockReturnValue(['should load page'])
+      vi.mocked(cypressParsers.extractTestNames).mockReturnValue(['should load page'])
 
-      vi.doMock('./frameworks/cypress', () => ({
-        extractTestNames: mockExtractCypress,
-      }))
+      const result = extractTestNamesFromContent('test content', 'cypress')
+
+      expect(result).toEqual(['should load page'])
     })
 
     it('should extract Vitest test names', () => {
-      const mockExtractVitest = vi.fn().mockReturnValue(['test 1', 'test 2'])
+      vi.mocked(vitestParsers.extractTestNames).mockReturnValue(['test 1', 'test 2'])
 
-      vi.doMock('./frameworks/vitest', () => ({
-        extractTestNames: mockExtractVitest,
-      }))
+      const result = extractTestNamesFromContent('test content', 'vitest')
+
+      expect(result).toEqual(['test 1', 'test 2'])
     })
 
     it('should extract TestNG test names', () => {
-      const mockExtractTestNG = vi.fn().mockReturnValue(['testMethod'])
+      vi.mocked(testngParsers.extractTestNames).mockReturnValue(['testMethod'])
 
-      vi.doMock('./frameworks/testng', () => ({
-        extractTestNames: mockExtractTestNG,
-      }))
+      const result = extractTestNamesFromContent('test content', 'testng')
+
+      expect(result).toEqual(['testMethod'])
     })
 
     it('should extract JUnit test names', () => {
-      const mockExtractJUnit = vi.fn().mockReturnValue(['testLogin'])
+      vi.mocked(junitParsers.extractTestNames).mockReturnValue(['testLogin'])
 
-      vi.doMock('./frameworks/junit', () => ({
-        extractTestNames: mockExtractJUnit,
-      }))
+      const result = extractTestNamesFromContent('test content', 'junit')
+
+      expect(result).toEqual(['testLogin'])
     })
 
     it('should return empty array for unknown framework', () => {
@@ -379,56 +386,6 @@ describe('Parser', () => {
   })
 
   describe('parseAllSpecs()', () => {
-    it('should parse all spec files in directory', () => {
-      const mockFiles = ['/project/tests/auth.spec.ts', '/project/tests/dashboard.spec.ts']
-
-      vi.mocked(globSync).mockReturnValue(mockFiles)
-      vi.mocked(readFileSync).mockReturnValue('test content')
-
-      const mockSpec = {
-        id: 'spec-1',
-        path: 'tests/auth.spec.ts',
-        name: 'auth.spec.ts',
-        framework: 'playwright' as const,
-        tests: [],
-        testCount: 0,
-        lastModified: new Date().toISOString(),
-      }
-
-      vi.mocked(frameworksParsers.parsePlaywrightSpec).mockReturnValue(mockSpec)
-      vi.mocked(statSync).mockReturnValue({
-        mtime: new Date(),
-      } as any)
-
-      // parseAllSpecs implementation tested indirectly via other tests
-    })
-
-    it('should read files with utf-8 encoding', () => {
-      // This behavior is internal to parseAllSpecs and is tested
-      // when parseAllSpecs is called with actual globSync results
-      // Mock setup demonstrates the expectation
-      vi.mocked(globSync).mockReturnValue(['/project/tests/test.spec.ts'])
-      vi.mocked(readFileSync).mockReturnValue('content')
-
-      vi.mocked(frameworksParsers.parsePlaywrightSpec).mockReturnValue({
-        id: 'spec-1',
-        path: 'tests/test.spec.ts',
-        name: 'test.spec.ts',
-        framework: 'playwright' as const,
-        tests: [],
-        testCount: 0,
-        lastModified: new Date().toISOString(),
-      })
-
-      vi.mocked(statSync).mockReturnValue({
-        mtime: new Date(),
-      } as any)
-
-      // Verify that mocks are ready for integration testing
-      expect(globSync).toBeDefined()
-      expect(readFileSync).toBeDefined()
-    })
-
     it('should return empty array if no spec files found', () => {
       vi.mocked(globSync).mockReturnValue([])
 
