@@ -16,9 +16,6 @@ export async function syncToDashboard(
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${apiToken}`,
   }
-  
-  console.log('Sending sync request to:', url)
-  console.log('Headers:', headers)
 
   const response = await fetch(url, {
     method: 'POST',

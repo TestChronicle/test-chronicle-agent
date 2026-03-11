@@ -5,21 +5,21 @@ import { detectFramework } from '../core'
 import path from 'path'
 import fs from 'fs'
 
-dotenv.config()
+dotenv.config({ debug: false })
 
 export const initCommand = new Command('init')
   .description('Initialize a new test project')
-  .requiredOption('--path <path>', 'Project path')
+  .option('--path <path>', 'Project path (defaults to current directory)')
   .option('--name <name>', 'Project display name (defaults to directory name)')
   .option('--dashboard-url <url>', 'Dashboard URL')
   .action(async (options) => {
     try {
-      const projectPath = path.resolve(options.path)
+      const projectPath = path.resolve(options.path || process.cwd())
       
       // Load .env.local from project directory
       const envLocalPath = path.join(projectPath, '.env.local')
       if (fs.existsSync(envLocalPath)) {
-        dotenv.config({ path: envLocalPath })
+        dotenv.config({ path: envLocalPath, debug: false })
       }
       
       const dashboardUrl = options.dashboardUrl || process.env.CHRONICLE_DASHBOARD_URL || 'http://localhost:3000'
@@ -50,17 +50,14 @@ export const initCommand = new Command('init')
         process.exit(1)
       }
 
-      console.log(chalk.blue('🔍 Detecting framework...'))
       const detection = detectFramework(projectPath)
-      console.log(chalk.green(`✓ Detected framework: ${detection.framework}`))
-      console.log(chalk.gray(`  Test directory: ${detection.testDir}`))
-
-      // Use provided name or derive from directory
       const projectName = options.name || path.basename(projectPath)
 
-      console.log(chalk.blue('📝 Creating project on dashboard...'))
-      console.log(chalk.gray(`  Endpoint: ${dashboardUrl}/api/projects`))
-      console.log(chalk.gray(`  Project name: ${projectName}`))
+      console.log()
+      console.log(chalk.blue('📝 Initializing project'))
+      console.log(chalk.gray(`  Framework: ${detection.framework}`))
+      console.log(chalk.gray(`  Name: ${projectName}`))
+      console.log(chalk.gray(`  Test directory: ${detection.testDir}`))
 
       const projectData = {
         name: projectName,
@@ -68,7 +65,7 @@ export const initCommand = new Command('init')
         framework: detection.framework,
       }
 
-      console.log(chalk.gray(`  Sending request...`))
+      process.stdout.write(chalk.gray('  Creating project... '))
 
       let response
       try {
@@ -91,8 +88,6 @@ export const initCommand = new Command('init')
         process.exit(1)
       }
 
-      console.log(chalk.gray(`  Response status: ${response.status}`))
-
       if (!response.ok) {
         let errorMessage = `Failed to create project (${response.status} ${response.statusText})`
         let responseBody = ''
@@ -111,17 +106,15 @@ export const initCommand = new Command('init')
       }
 
       const result = (await response.json()) as { id: string; name: string }
-      console.log(chalk.green(`✓ Project created successfully!`))
-      console.log(chalk.gray(`  Project ID: ${result.id}`))
-      console.log(chalk.gray(`  Project name: ${result.name}`))
-
-      // Provide next steps
+      console.log(chalk.green('done'))
       console.log()
-      console.log(chalk.cyan('✨ Next steps:'))
-      console.log(chalk.gray('  1. Add to .env.local:'))
-      console.log(chalk.white(`     CHRONICLE_PROJECT_ID=${result.id}`))
-      console.log(chalk.gray('  2. Run sync command:'))
-      console.log(chalk.white(`     test-chronicle-agent sync`))
+      console.log(chalk.green('✓ Project created successfully!'))
+      console.log()
+      console.log(chalk.white(`Project ID: ${chalk.bold(result.id)}`))
+      console.log()
+      console.log(chalk.gray('Next: Add to .env.local and run sync'))
+      console.log(`  ${chalk.white(`CHRONICLE_PROJECT_ID=${result.id}`)}`)
+      console.log(`  ${chalk.white('test-chronicle-agent sync')}`)
     } catch (error) {
       console.error(chalk.red('Error during init:'))
       if (error instanceof Error) {

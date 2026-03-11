@@ -42,10 +42,17 @@ export function detectFramework(projectPath: string): DetectionResult {
     for (const configFile of sig.configFiles) {
       const fullPath = path.join(projectPath, configFile);
       if (existsSync(fullPath)) {
-        const testDir =
-          framework === 'playwright'
-            ? extractPlaywrightTestDir(fullPath, projectPath)
-            : guessTestDir(projectPath);
+        let testDir: string;
+        
+        // Extract testDir from framework-specific config files
+        if (framework === 'playwright') {
+          testDir = extractPlaywrightTestDir(fullPath, projectPath);
+        } else if (framework === 'vitest') {
+          testDir = extractVitestTestDir(fullPath, projectPath);
+        } else {
+          testDir = guessTestDir(projectPath);
+        }
+        
         return { framework, testDir, confidence: 'high' };
       }
     }
@@ -92,11 +99,18 @@ function extractPlaywrightTestDir(configPath: string, projectPath: string): stri
   return guessTestDir(projectPath);
 }
 
+function extractVitestTestDir(_configPath: string, projectPath: string): string {
+  // Vitest tests can be scattered throughout the project matching *.spec.ts or *.test.ts
+  // For now, just use guessTestDir since we don't parse the vitest config
+  return guessTestDir(projectPath);
+}
+
 function guessTestDir(projectPath: string): string {
   const candidates = [
     './tests',
     './test',
     './e2e',
+    './src',
     './playwright/e2e/tests',
     './playwright/tests',
     './src/tests',

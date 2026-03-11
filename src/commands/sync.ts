@@ -8,7 +8,7 @@ import { syncToDashboard } from '../sync-client'
 import path from 'path'
 import fs from 'fs'
 
-dotenv.config()
+dotenv.config({ debug: false })
 
 export const syncCommand = new Command('sync')
   .description('Sync test data to dashboard')
@@ -22,7 +22,7 @@ export const syncCommand = new Command('sync')
       // Load .env.local from project directory
       const envLocalPath = path.join(projectPath, '.env.local')
       if (fs.existsSync(envLocalPath)) {
-        dotenv.config({ path: envLocalPath })
+        dotenv.config({ path: envLocalPath, debug: false })
       }
       
       // Get configuration from options or environment
@@ -85,6 +85,12 @@ export const syncCommand = new Command('sync')
         tags,
       }
 
+      console.log()
+      console.log(chalk.blue('📊 Summary'))
+      console.log(chalk.gray(`  Specs: ${specs.length}`))
+      console.log(chalk.gray(`  Tests: ${totalTests}`))
+      console.log()
+
       console.log(chalk.blue('🚀 Syncing to dashboard...'))
       
       // Transform specs to match dashboard schema
@@ -118,6 +124,7 @@ export const syncCommand = new Command('sync')
         projectId,
         specs: transformedSpecs,
         history: transformedHistory,
+        stats,
         timestamp: new Date().toISOString(),
       }
 

@@ -1,6 +1,6 @@
 # test-chronicle-agent
 
-CLI agent for syncing test data to the test-chronicle dashboard.
+Keep your test suite visible. Sync test specs and history to your dashboard automatically.
 
 ## Installation
 
@@ -8,62 +8,75 @@ CLI agent for syncing test data to the test-chronicle dashboard.
 npm install test-chronicle-agent
 ```
 
-Or with yarn:
-
-```bash
-yarn add test-chronicle-agent
-```
-
 ## Quick Start
 
-### 1. Register Your Project
+### 1. Initialize
 
 ```bash
-test-chronicle-agent init --path /path/to/your/project
+test-chronicle-agent init
 ```
 
-This will:
-- Auto-detect your test framework (Playwright, Cypress, Vitest, Jest, TestNG, JUnit)
-- Create a project in the dashboard
-- Output your project ID
+Your test framework will be detected automatically. You'll get a **Project ID** to use next.
 
-### 2. Configure Your Project
+### 2. Configure
 
-Add the generated project ID to your `.env.local`:
+Add to `.env.local` in your project:
 
 ```bash
 CHRONICLE_API_KEY=<your-api-key>
-CHRONICLE_PROJECT_ID=<project-id>
-CHRONICLE_DASHBOARD_URL=http://localhost:3000  # optional
+CHRONICLE_PROJECT_ID=<id-from-init>
 ```
 
-### 3. Sync Test Data
+Get your API key from your dashboard account settings.
+
+### 3. Sync
 
 ```bash
 test-chronicle-agent sync
 ```
 
-This will:
-- Parse your test files
-- Build git history for test changes
-- Upload specs and history to the dashboard
+Done! Your tests are now on your dashboard. Run sync again anytime you update your tests.
+
+## Full Guide
+
+For detailed setup, configuration, and CI/CD integration, see [SYNC_WORKFLOW.md](./docs/SYNC_WORKFLOW.md).
 
 ## Supported Frameworks
 
-- **JavaScript/TypeScript**
-  - Playwright
-  - Cypress
-  - Vitest
-- **Java**
-  - TestNG
-  - JUnit 4/5
+- **Vitest** - Modern JavaScript unit testing
+- **Playwright** - End-to-end testing
+- **Cypress** - End-to-end testing
+- **Jest** - JavaScript unit testing
+- **TestNG** - Java testing
+- **JUnit** - Java testing
 
-## Environment Variables
+Framework detection is automatic. No configuration needed.
 
-- `CHRONICLE_API_KEY` (required) - Your API key from the dashboard
-- `CHRONICLE_PROJECT_ID` (required) - Project ID from init command
-- `CHRONICLE_DASHBOARD_URL` (optional) - Dashboard URL, defaults to http://localhost:3000
+## Configuration
+
+Create `.env.local` with:
+
+```bash
+CHRONICLE_API_KEY=<your-api-key>              # Required - get from dashboard
+CHRONICLE_PROJECT_ID=<project-id>             # Required - from init command
+CHRONICLE_DASHBOARD_URL=http://localhost:3000 # Optional
+```
+
+## What Gets Synced
+
+- Test specifications (names, paths, structure)
+- Test file changes from git history
+- Author information
+- Timestamps
+
+This gives you a complete view of your test suite on the dashboard.
+
+## Keep Tests Updated
+
+**Local**: Run `test-chronicle-agent sync` after writing tests
+
+**Automated**: Add to your CI/CD to sync automatically after every commit
 
 ## License
 
-MIT
+MIT - See [LICENSE](./LICENSE) file for details.
