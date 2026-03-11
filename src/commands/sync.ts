@@ -91,9 +91,24 @@ export const syncCommand = new Command('sync')
 
       console.log(chalk.blue('📚 Building git history...'))
       
-      // For now, always sync full history to ensure accuracy
-      // In the future, could add incremental syncing with a .chronicle-sync marker file
-      const history = await buildHistory(projectPath, detection.testDir, detection.framework)
+      // Only sync new commits since last sync
+      // Check if we have a .chronicle-sync marker file with the last synced commit
+      const syncMarkerPath = path.join(projectPath, '.chronicle-sync')
+      let sinceCommit: string | undefined
+      
+      if (fs.existsSync(syncMarkerPath)) {
+        try {
+          const marker = fs.readFileSync(syncMarkerPath, 'utf-8').trim()
+          if (marker) {
+            sinceCommit = marker
+            console.log(chalk.gray(`  Last synced: ${marker.substring(0, 7)}`))
+          }
+        } catch {
+          // Ignore read errors, just sync full history
+        }
+      }
+      
+      const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit)
       console.log(chalk.green(`✓ Built history for ${history.length} commits`))
 
       // Compute stats
@@ -132,34 +147,52 @@ export const syncCommand = new Command('sync')
       }))
 
       // Transform history to match dashboard schema
-      // Apply deduplication to each spec's changes before transforming
-      const transformedHistory = history.map((entry) => ({
-        commitHash: entry.commit.hash,
-        commitMessage: entry.commit.message,
-        author: entry.commit.author,
-        commitDate: entry.commit.date,
-        changes: entry.specs.flatMap((spec) => {
-          // Deduplicate changes for this spec
+      // Apply strong deduplication at commit level
+      const transformedHistory = history.map((entry) => {
+        // Collect all changes from all specs, then deduplicate across the entire commit
+        const allChanges: Array<{
+          specPath: string
+          testName: string
+          type: string
+          oldName?: string
+        }> = []
+        
+        for (const spec of entry.specs) {
+          // Deduplicate changes for this spec first
           const deduplicatedChanges = deduplicateChanges(spec.changes)
           
-          // Further deduplicate across entire commit to catch any duplicates
-          // that may have slipped through
-          const commitLevelSeen = new Set<string>()
-          const uniqueChanges = deduplicatedChanges.filter((change) => {
-            const key = `${spec.specPath}:${change.type}:${change.name}`
-            if (commitLevelSeen.has(key)) return false
-            commitLevelSeen.add(key)
-            return true
-          })
-
-          return uniqueChanges.map((change) => ({
-            specFile: spec.specPath,
-            testName: change.name,
-            type: change.type === 'removed' ? 'deleted' : change.type,
+          for (const change of deduplicatedChanges) {
+            allChanges.push({
+              specPath: spec.specPath,
+              testName: change.name,
+              type: change.type === 'removed' ? 'deleted' : change.type,
+              oldName: change.oldName,
+            })
+          }
+        }
+        
+        // Deduplicate across entire commit using composite key
+        const seenKeys = new Set<string>()
+        const uniqueChanges = allChanges.filter((change) => {
+          const key = `${change.specPath}:${change.type}:${change.testName}`
+          if (seenKeys.has(key)) return false
+          seenKeys.add(key)
+          return true
+        })
+        
+        return {
+          commitHash: entry.commit.hash,
+          commitMessage: entry.commit.message,
+          author: entry.commit.author,
+          commitDate: entry.commit.date,
+          changes: uniqueChanges.map((change) => ({
+            specFile: change.specPath,
+            testName: change.testName,
+            type: change.type,
             details: change.oldName ? { old_name: change.oldName } : undefined,
-          }))
-        }),
-      }))
+          })),
+        }
+      })
 
       const payload = {
         projectId,
@@ -172,6 +205,13 @@ export const syncCommand = new Command('sync')
       await syncToDashboard(dashboardUrl, apiKey, payload)
       console.log(chalk.green('✓ Sync successful!'))
       console.log(chalk.gray(`  Synced ${specs.length} specs with ${totalTests} tests`))
+
+      // Save sync marker for incremental syncing
+      if (history.length > 0) {
+        const lastHash = history[history.length - 1].commit.hash
+        fs.writeFileSync(syncMarkerPath, lastHash)
+        console.log(chalk.gray(`  Saved sync marker: ${lastHash.substring(0, 7)}`))
+      }
     } catch (error) {
       console.error(chalk.red('Error during sync:'))
       if (error instanceof Error) {

@@ -27,6 +27,8 @@ vi.mock('dotenv', () => ({
 vi.mock('fs', () => ({
   default: {
     existsSync: vi.fn(() => false),
+    readFileSync: vi.fn(),
+    writeFileSync: vi.fn(),
   },
 }))
 
