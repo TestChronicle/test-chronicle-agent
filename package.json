@@ -1,6 +1,6 @@
 {
   "name": "@dwilliams264/test-chronicle-agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI agent for syncing test data to test-chronicle dashboard",
   "author": "Daniel Williams",
   "license": "MIT",
