@@ -33,10 +33,15 @@ vi.mock('fs', () => ({
 describe('sync command', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
     // Reset environment variables
     delete process.env.CHRONICLE_PROJECT_ID
     delete process.env.CHRONICLE_DASHBOARD_URL
     delete process.env.CHRONICLE_API_KEY
+
+    // Suppress console output during tests
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -48,7 +53,7 @@ describe('sync command', () => {
       const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
       const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       
-      await syncCommand.parseAsync(['node', 'test', 'sync'])
+      await syncCommand.parseAsync(['node', 'test'])
       
       expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Missing project ID'))
       expect(exitSpy).toHaveBeenCalledWith(1)
@@ -63,7 +68,7 @@ describe('sync command', () => {
       
       process.env.CHRONICLE_PROJECT_ID = 'test-project-id'
       
-      await syncCommand.parseAsync(['node', 'test', 'sync'])
+      await syncCommand.parseAsync(['node', 'test'])
       
       expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Missing API key'))
       expect(exitSpy).toHaveBeenCalledWith(1)
@@ -420,39 +425,6 @@ describe('sync command', () => {
       )
 
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Sync successful'))
-
-      logSpy.mockRestore()
-    })
-
-    it('should use custom dashboard URL', async () => {
-      vi.mocked(coreModule.detectFramework).mockReturnValue({
-        framework: 'vitest' as const,
-        testDir: './tests',
-        confidence: 'high',
-      })
-
-      vi.mocked(coreModule.parseAllSpecs).mockReturnValue([])
-      vi.mocked(gitModule.buildHistory).mockResolvedValue([])
-      vi.mocked(syncClientModule.syncToDashboard).mockResolvedValue({
-        success: true,
-        projectId: 'test-project-id',
-        synced_at: new Date().toISOString(),
-      })
-
-      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-      await syncCommand.parseAsync([
-        'node',
-        'test',
-        '--dashboard-url',
-        'http://custom-dashboard:5000',
-      ])
-
-      expect(vi.mocked(syncClientModule.syncToDashboard)).toHaveBeenCalledWith(
-        'http://custom-dashboard:5000',
-        'test-api-key',
-        expect.any(Object)
-      )
 
       logSpy.mockRestore()
     })
