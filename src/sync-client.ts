@@ -14,7 +14,7 @@ export async function syncToDashboard(
 
   const headers = {
     'Content-Type': 'application/json',
-    'x-api-key': apiToken,
+    'Authorization': `Bearer ${apiToken}`,
   }
   
   console.log('Sending sync request to:', url)
