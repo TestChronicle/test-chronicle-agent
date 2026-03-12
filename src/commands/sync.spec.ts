@@ -16,6 +16,8 @@ vi.mock('../git', () => ({
 
 vi.mock('../sync-client', () => ({
   syncToDashboard: vi.fn(),
+  getSyncMarker: vi.fn(),
+  saveSyncMarker: vi.fn(),
 }))
 
 vi.mock('dotenv', () => ({
@@ -27,8 +29,6 @@ vi.mock('dotenv', () => ({
 vi.mock('fs', () => ({
   default: {
     existsSync: vi.fn(() => false),
-    readFileSync: vi.fn(),
-    writeFileSync: vi.fn(),
   },
 }))
 
@@ -93,6 +93,8 @@ describe('sync command', () => {
         projectId: 'test-project-id',
         synced_at: new Date().toISOString(),
       })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       process.env.CHRONICLE_API_KEY = 'test-api-key'
 
@@ -127,6 +129,8 @@ describe('sync command', () => {
         projectId: 'test-project-id',
         synced_at: new Date().toISOString(),
       })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
@@ -196,6 +200,8 @@ describe('sync command', () => {
         projectId: 'test-project-id',
         synced_at: new Date().toISOString(),
       })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
@@ -221,6 +227,8 @@ describe('sync command', () => {
         projectId: 'test-project-id',
         synced_at: new Date().toISOString(),
       })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
@@ -277,6 +285,8 @@ describe('sync command', () => {
         projectId: 'test-project-id',
         synced_at: new Date().toISOString(),
       })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
@@ -330,6 +340,8 @@ describe('sync command', () => {
 
       vi.mocked(coreModule.parseAllSpecs).mockReturnValue(mockSpecs)
       vi.mocked(gitModule.buildHistory).mockResolvedValue([])
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       let capturedPayload: any
 
@@ -395,6 +407,8 @@ describe('sync command', () => {
         projectId: 'test-project-id',
         synced_at: new Date().toISOString(),
       })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
@@ -447,6 +461,8 @@ describe('sync command', () => {
 
       vi.mocked(coreModule.parseAllSpecs).mockReturnValue([])
       vi.mocked(gitModule.buildHistory).mockResolvedValue([])
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
 
       const error = new Error('Network error: Connection refused')
       vi.mocked(syncClientModule.syncToDashboard).mockRejectedValue(error)
@@ -473,6 +489,8 @@ describe('sync command', () => {
 
       vi.mocked(coreModule.parseAllSpecs).mockReturnValue([])
       vi.mocked(gitModule.buildHistory).mockResolvedValue([])
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
       vi.mocked(syncClientModule.syncToDashboard).mockRejectedValue('Unknown error')
 
       const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})

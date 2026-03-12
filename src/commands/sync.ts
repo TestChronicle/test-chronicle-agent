@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import { detectFramework } from '../core'
 import { parseAllSpecs } from '../core'
 import { buildHistory } from '../git'
-import { syncToDashboard } from '../sync-client'
+import { syncToDashboard, getSyncMarker, saveSyncMarker } from '../sync-client'
 import { TestChange } from '../types'
 import path from 'path'
 import fs from 'fs'
@@ -91,20 +91,18 @@ export const syncCommand = new Command('sync')
 
       console.log(chalk.blue('📚 Building git history...'))
       
-      // Only sync new commits since last sync
-      // Check if we have a .chronicle-sync marker file with the last synced commit
-      const syncMarkerPath = path.join(projectPath, '.chronicle-sync')
+      // Get last synced commit from dashboard for incremental syncing
       let sinceCommit: string | undefined
-      
-      if (fs.existsSync(syncMarkerPath)) {
-        try {
-          const marker = fs.readFileSync(syncMarkerPath, 'utf-8').trim()
-          if (marker) {
-            sinceCommit = marker
-            console.log(chalk.gray(`  Last synced: ${marker.substring(0, 7)}`))
-          }
-        } catch {
-          // Ignore read errors, just sync full history
+      try {
+        const marker = await getSyncMarker(dashboardUrl, apiKey, projectId)
+        if (marker) {
+          sinceCommit = marker
+          console.log(chalk.gray(`  Last synced: ${marker.substring(0, 7)}`))
+        }
+      } catch (error) {
+        // Ignore marker fetch errors, just sync full history
+        if (error instanceof Error) {
+          console.log(chalk.gray(`  Warning: ${error.message}`))
         }
       }
       
@@ -208,9 +206,15 @@ export const syncCommand = new Command('sync')
 
       // Save sync marker for incremental syncing
       if (history.length > 0) {
-        const lastHash = history[history.length - 1].commit.hash
-        fs.writeFileSync(syncMarkerPath, lastHash)
-        console.log(chalk.gray(`  Saved sync marker: ${lastHash.substring(0, 7)}`))
+        try {
+          const lastHash = history[history.length - 1].commit.hash
+          await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash)
+          console.log(chalk.gray(`  Saved sync marker: ${lastHash.substring(0, 7)}`))
+        } catch (error) {
+          if (error instanceof Error) {
+            console.log(chalk.yellow(`  Warning: Could not save sync marker: ${error.message}`))
+          }
+        }
       }
     } catch (error) {
       console.error(chalk.red('Error during sync:'))
