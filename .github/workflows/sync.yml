@@ -1,0 +1,46 @@
+name: Daily Sync Health Check
+
+on:
+  # Run daily at 9am UTC
+  schedule:
+    - cron: '0 9 * * *'
+  
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    name: Sync Tests to Dashboard
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build project
+        run: npm run build
+      
+      - name: Sync tests to dashboard
+        run: npx test-chronicle-agent sync
+        env:
+          CHRONICLE_API_KEY: ${{ secrets.CHRONICLE_API_KEY }}
+          CHRONICLE_PROJECT_ID: ${{ secrets.CHRONICLE_PROJECT_ID }}
+          CHRONICLE_DASHBOARD_URL: ${{ secrets.CHRONICLE_DASHBOARD_URL }}
+      
+      - name: Report results
+        if: success()
+        run: echo "✅ Sync health check passed - dashboard is accepting syncs"
+      
+      - name: Report failure
+        if: failure()
+        run: echo "❌ Sync health check failed - please check dashboard connectivity"
+        
