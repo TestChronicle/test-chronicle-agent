@@ -12,6 +12,8 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     name: Sync Tests to Dashboard
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
       - name: Checkout code
