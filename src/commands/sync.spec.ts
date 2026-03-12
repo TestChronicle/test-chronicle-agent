@@ -505,4 +505,99 @@ describe('sync command', () => {
       exitSpy.mockRestore()
     })
   })
+
+  describe('sync markers', () => {
+    beforeEach(() => {
+      process.env.CHRONICLE_PROJECT_ID = 'test-project-id'
+      process.env.CHRONICLE_API_KEY = 'test-api-key'
+    })
+
+    it('should retrieve sync marker for incremental syncing', async () => {
+      vi.mocked(coreModule.detectFramework).mockReturnValue({
+        framework: 'vitest' as const,
+        testDir: './tests',
+        confidence: 'high',
+      })
+
+      vi.mocked(coreModule.parseAllSpecs).mockReturnValue([])
+      vi.mocked(gitModule.buildHistory).mockResolvedValue([])
+      vi.mocked(syncClientModule.syncToDashboard).mockResolvedValue({
+        success: true,
+        projectId: 'test-project-id',
+        synced_at: new Date().toISOString(),
+      })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue('abc123')
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
+
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+      await syncCommand.parseAsync(['node', 'test'])
+
+      expect(vi.mocked(syncClientModule.getSyncMarker)).toHaveBeenCalledWith(
+        'http://localhost:3000',
+        'test-api-key',
+        'test-project-id'
+      )
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Last synced: abc123'))
+
+      logSpy.mockRestore()
+    })
+
+    it('should save sync marker after successful sync', async () => {
+      const mockHistory = [
+        {
+          commit: {
+            hash: 'def456',
+            shortHash: 'def45',
+            message: 'Add new tests',
+            author: 'Jane Doe',
+            date: new Date().toISOString(),
+            changes: [],
+          },
+          specs: [
+            {
+              specPath: 'tests/new.spec.ts',
+              fileStatus: 'added' as const,
+              changes: [
+                {
+                  name: 'should pass',
+                  type: 'added' as const,
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      vi.mocked(coreModule.detectFramework).mockReturnValue({
+        framework: 'vitest' as const,
+        testDir: './tests',
+        confidence: 'high',
+      })
+
+      vi.mocked(coreModule.parseAllSpecs).mockReturnValue([])
+      vi.mocked(gitModule.buildHistory).mockResolvedValue(mockHistory)
+      vi.mocked(syncClientModule.syncToDashboard).mockResolvedValue({
+        success: true,
+        projectId: 'test-project-id',
+        synced_at: new Date().toISOString(),
+      })
+      vi.mocked(syncClientModule.getSyncMarker).mockResolvedValue(null)
+      vi.mocked(syncClientModule.saveSyncMarker).mockResolvedValue(undefined)
+
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+      await syncCommand.parseAsync(['node', 'test'])
+
+      expect(vi.mocked(syncClientModule.saveSyncMarker)).toHaveBeenCalledWith(
+        'http://localhost:3000',
+        'test-api-key',
+        'test-project-id',
+        'def456'
+      )
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Saved sync marker: def45'))
+
+      logSpy.mockRestore()
+    })
+  })
 })
