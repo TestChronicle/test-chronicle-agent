@@ -4,10 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-    groups:
-      all-updates:
-        patterns:
-          - "*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
