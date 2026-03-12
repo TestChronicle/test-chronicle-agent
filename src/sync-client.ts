@@ -25,12 +25,13 @@ export async function getSyncMarker(
     if (!response.ok) {
       // 404 is expected on first sync
       if (response.status === 404) return null
-      throw new Error(`Failed with status ${response.status}`)
+      const errorBody = await response.text().catch(() => '')
+      throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ''}`)
     }
 
-    const data = (await response.json()) as { lastSyncedCommit: string | null }
-    return data.lastSyncedCommit
-  } catch {
+    const data = (await response.json()) as any
+    return data?.lastSyncedCommit || data?.commitHash || null
+  } catch (error) {
     // On error, return null and let sync proceed with full history
     return null
   }

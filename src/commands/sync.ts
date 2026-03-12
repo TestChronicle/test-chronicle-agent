@@ -98,6 +98,8 @@ export const syncCommand = new Command('sync')
         if (marker) {
           sinceCommit = marker
           console.log(chalk.gray(`  Last synced: ${marker.substring(0, 7)}`))
+        } else {
+          console.log(chalk.gray('  No prior sync marker found, syncing full history'))
         }
       } catch (error) {
         // Ignore marker fetch errors, just sync full history
