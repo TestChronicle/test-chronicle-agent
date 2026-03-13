@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { buildHistory, getLatestCommitHash } from './history'
-import * as parser from '../core/parser'
+import { buildHistory, getLatestCommitHash } from '../../../src/git/history'
+import * as parser from '../../../src/core/parser'
 import simpleGit from 'simple-git'
 
 // Mock simple-git
@@ -9,7 +9,7 @@ vi.mock('simple-git', () => ({
 }))
 
 // Mock parser
-vi.mock('../core/parser', () => ({
+vi.mock('../../../src/core/parser', () => ({
   extractTestNamesFromContent: vi.fn(),
 }))
 

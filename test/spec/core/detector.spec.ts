@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { detectFramework } from './index'
+import { detectFramework } from '../../../src/core'
 import path from 'path'
 
 describe('Framework Detection', () => {
@@ -14,7 +14,8 @@ describe('Framework Detection', () => {
   it('should identify a test directory', () => {
     const result = detectFramework(path.resolve(__dirname, '..', '..'))
     expect(result.testDir).toBeTruthy()
-    expect(['./src', './tests', 'src', 'tests']).toContain(result.testDir)
+    const validTestDirs = ['./src', './tests', './test', 'src', 'tests', 'test']
+    expect(validTestDirs).toContain(result.testDir)
   })
 
   it('should return a valid framework type', () => {
@@ -41,8 +42,8 @@ describe('Framework Detection', () => {
   })
 
   it('should handle vitest framework detection', () => {
-    const result = detectFramework(path.resolve(__dirname, '..', '..'))
-    // This project uses vitest based on the vitest.config.ts
+    const result = detectFramework(path.resolve(__dirname, '..', '..', '..'))
+    // This project uses vitest based on the vitest.config.ts at project root
     expect(result.framework).toBe('vitest')
   })
 })

@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { syncCommand } from './sync'
-import * as coreModule from '../core'
-import * as gitModule from '../git'
-import * as syncClientModule from '../sync-client'
+import { syncCommand } from '../../../src/commands/sync'
+import * as coreModule from '../../../src/core'
+import * as gitModule from '../../../src/git'
+import * as syncClientModule from '../../../src/sync-client'
 
 // Mock dependencies
-vi.mock('../core', () => ({
+vi.mock('../../../src/core', () => ({
   detectFramework: vi.fn(),
   parseAllSpecs: vi.fn(),
 }))
 
-vi.mock('../git', () => ({
+vi.mock('../../../src/git', () => ({
   buildHistory: vi.fn(),
 }))
 
-vi.mock('../sync-client', () => ({
+vi.mock('../../../src/sync-client', () => ({
   syncToDashboard: vi.fn(),
   getSyncMarker: vi.fn(),
   saveSyncMarker: vi.fn(),

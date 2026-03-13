@@ -2,67 +2,74 @@
 
 Keep your test suite visible. Sync test specs and history to your dashboard automatically.
 
-## Installation
+## 🚀 GitHub Action
 
-```bash
-npm install test-chronicle-agent
+Use test-chronicle-agent as a GitHub Action to automatically sync your tests on every push:
+
+```yaml
+name: Sync Tests to Chronicle
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: TestChronicle/test-chronicle-agent@v1
+        with:
+          api-key: ${{ secrets.CHRONICLE_API_KEY }}
+          project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
 ```
 
-## Quick Start
+### Setup Instructions
 
-### 1. Initialize
+1. **Create a project on the dashboard**
+   - Go to your Test Chronicle dashboard
+   - Create a new project and copy the Project ID
 
-```bash
-test-chronicle-agent init
-```
+2. **Get your API key**
+   - From your Test Chronicle dashboard settings
+   - Copy your personal API key
 
-Your test framework will be detected automatically. You'll get a **Project ID** to use next.
+3. **Add secrets to GitHub**
+   - Go to Settings → Secrets and variables → Actions
+   - Add `CHRONICLE_API_KEY` with your API key
+   - Add `CHRONICLE_PROJECT_ID` with your project ID
 
-### 2. Configure
+4. **Add the workflow** to your repository
 
-Add to `.env.local` in your project:
+That's it! Your tests will sync automatically on every push.
 
-```bash
-CHRONICLE_API_KEY=<your-api-key>
-CHRONICLE_PROJECT_ID=<id-from-init>
-```
+## 🎯 Supported Frameworks
 
-Get your API key from your dashboard account settings.
+| Framework | Test Names | Specs | Tags | Parameterized |
+|-----------|:----------:|:-----:|:----:|:-------------:|
+| Playwright | ✅ | ✅ | ✅ | ✅ |
+| Cypress | ✅ | ✅ | ❌ | ❌ |
+| Vitest | ✅ | ✅ | ❌ | ❌ |
+| TestNG | ✅ | 🟡 | ✅ | ❌ |
+| JUnit | ✅ | 🟡 | 🟡 | ❌ |
 
-### 3. Sync
-
-```bash
-test-chronicle-agent sync
-```
-
-Done! Your tests are now on your dashboard. Run sync again anytime you update your tests.
-
-## Full Guide
-
-For detailed setup, configuration, and CI/CD integration, see [SYNC_WORKFLOW.md](./docs/SYNC_WORKFLOW.md).
-
-## Supported Frameworks
-
-- **Vitest** - Modern JavaScript unit testing
-- **Playwright** - End-to-end testing
-- **Cypress** - End-to-end testing
-- **Jest** - JavaScript unit testing
-- **TestNG** - Java testing
-- **JUnit** - Java testing
+**Note:** 🟡 = Partial support (class names instead of describe blocks for Java frameworks)
 
 Framework detection is automatic. No configuration needed.
 
-## Configuration
+## ⚙️ Configuration
 
-Create `.env.local` with:
+The GitHub Action requires two secrets configured in your repository:
 
 ```bash
-CHRONICLE_API_KEY=<your-api-key>              # Required - get from dashboard
-CHRONICLE_PROJECT_ID=<project-id>             # Required - from init command
-CHRONICLE_DASHBOARD_URL=http://localhost:3000 # Optional
+CHRONICLE_API_KEY          # Required - get from dashboard
+CHRONICLE_PROJECT_ID       # Required - from dashboard
 ```
 
-## What Gets Synced
+## 📊 What Gets Synced
 
 - Test specifications (names, paths, structure)
 - Test file changes from git history
@@ -71,12 +78,10 @@ CHRONICLE_DASHBOARD_URL=http://localhost:3000 # Optional
 
 This gives you a complete view of your test suite on the dashboard.
 
-## Keep Tests Updated
+## 🔄 How It Works
 
-**Local**: Run `test-chronicle-agent sync` after writing tests
+Once installed as a GitHub Action, test-chronicle-agent automatically syncs your test suite on every push. Your tests are parsed, changes are tracked from git history, and everything is sent to your dashboard for visualization and analysis.
 
-**Automated**: Add to your CI/CD to sync automatically after every commit
-
-## License
+## 📄 License
 
 MIT - See [LICENSE](./LICENSE) file for details.

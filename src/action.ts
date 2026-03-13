@@ -3,16 +3,15 @@
  * Runs the sync command with inputs provided by GitHub Actions
  */
 
-import { exec } from 'child_process'
-import { promisify } from 'util'
-
-const execAsync = promisify(exec)
+import { execSync } from 'child_process'
+import * as path from 'path'
 
 async function run() {
   try {
     // Get inputs from GitHub Actions
     const apiKey = process.env.INPUT_API_KEY
     const projectId = process.env.INPUT_PROJECT_ID
+    const dashboardUrl = process.env.INPUT_DASHBOARD_URL
 
     if (!apiKey) {
       throw new Error('api-key input is required')
@@ -22,30 +21,36 @@ async function run() {
       throw new Error('project-id input is required')
     }
 
-    console.log('🚀 Starting Test Chronicle sync...')
+    console.log('🚀 Starting Test Chronicle Agent...')
     console.log(`📦 Project ID: ${projectId}`)
 
-    // Run sync command with environment variables
-    const { stdout, stderr } = await execAsync('node ./dist/cli.js sync', {
-      env: {
-        ...process.env,
-        CHRONICLE_API_KEY: apiKey,
-        CHRONICLE_PROJECT_ID: projectId,
-      },
-    })
-
-    if (stdout) {
-      console.log(stdout)
+    // Build environment variables for the CLI
+    const env: Record<string, string> = {
+      ...process.env as Record<string, string>,
+      CHRONICLE_API_KEY: apiKey,
+      CHRONICLE_PROJECT_ID: projectId,
     }
 
-    if (stderr) {
-      console.warn(stderr)
+    if (dashboardUrl) {
+      env.CHRONICLE_DASHBOARD_URL = dashboardUrl
     }
 
-    console.log('✅ Sync completed successfully')
+    // Run sync command using the bundled CLI
+    try {
+      const cliPath = path.join(__dirname, 'cli.js')
+      execSync(`node ${cliPath} sync`, {
+        env,
+        stdio: 'inherit',
+      })
+    } catch (syncError) {
+      // execSync throws on non-zero exit codes
+      throw new Error(`Sync command failed: ${syncError instanceof Error ? syncError.message : String(syncError)}`)
+    }
+
+    console.log('✅ Test Chronicle Agent sync completed successfully')
     process.exit(0)
   } catch (error) {
-    console.error('❌ Sync failed:', error instanceof Error ? error.message : String(error))
+    console.error('❌ Test Chronicle Agent failed:', error instanceof Error ? error.message : String(error))
     process.exit(1)
   }
 }

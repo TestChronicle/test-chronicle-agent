@@ -1,12 +1,22 @@
 {
-  "name": "@dwilliams264/test-chronicle-agent",
-  "version": "0.3.0",
+  "name": "test-chronicle-agent",
+  "version": "0.1.0",
   "description": "CLI agent for syncing test data to test-chronicle dashboard",
   "author": "Daniel Williams",
   "license": "MIT",
+  "keywords": [
+    "testing",
+    "test-management",
+    "ci-cd",
+    "github-action",
+    "test-sync",
+    "test-automation",
+    "testing-framework",
+    "quality-assurance"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/dwilliams264/test-chronicle-agent.git"
+    "url": "https://github.com/TestChronicle/test-chronicle-agent.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

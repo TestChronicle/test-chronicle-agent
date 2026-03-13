@@ -3,12 +3,12 @@ import {
   parseSpecFile,
   extractTestNamesFromContent,
   findSpecFiles,
-} from './parser'
-import * as frameworksParsers from './frameworks/playwright'
-import * as cypressParsers from './frameworks/cypress'
-import * as vitestParsers from './frameworks/vitest'
-import * as testngParsers from './frameworks/testng'
-import * as junitParsers from './frameworks/junit'
+} from '../../../src/core/parser'
+import * as frameworksParsers from '../../../src/core/frameworks/playwright'
+import * as cypressParsers from '../../../src/core/frameworks/cypress'
+import * as vitestParsers from '../../../src/core/frameworks/vitest'
+import * as testngParsers from '../../../src/core/frameworks/testng'
+import * as junitParsers from '../../../src/core/frameworks/junit'
 import { statSync } from 'fs'
 import { globSync } from 'glob'
 
@@ -23,27 +23,27 @@ vi.mock('glob', () => ({
 }))
 
 // Mock frameworks
-vi.mock('./frameworks/playwright', () => ({
+vi.mock('../../../src/core/frameworks/playwright', () => ({
   parsePlaywrightSpec: vi.fn(),
   extractTestNames: vi.fn(),
 }))
 
-vi.mock('./frameworks/cypress', () => ({
+vi.mock('../../../src/core/frameworks/cypress', () => ({
   parseCypressSpec: vi.fn(),
   extractTestNames: vi.fn(),
 }))
 
-vi.mock('./frameworks/vitest', () => ({
+vi.mock('../../../src/core/frameworks/vitest', () => ({
   parseVitestSpec: vi.fn(),
   extractTestNames: vi.fn(),
 }))
 
-vi.mock('./frameworks/testng', () => ({
+vi.mock('../../../src/core/frameworks/testng', () => ({
   parseTestNGSpec: vi.fn(),
   extractTestNames: vi.fn(),
 }))
 
-vi.mock('./frameworks/junit', () => ({
+vi.mock('../../../src/core/frameworks/junit', () => ({
   parseJUnitSpec: vi.fn(),
   extractTestNames: vi.fn(),
 }))

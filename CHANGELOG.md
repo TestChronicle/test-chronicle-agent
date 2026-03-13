@@ -5,40 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0] - 2026-03-12
+## [0.1.0] - 2026-03-13
 
 ### Added
-- **Incremental syncing**: Sync only new test commits since the last sync, dramatically reducing duplicate data
-- Dashboard-backed sync markers: Last synced commit hash is now persisted on the dashboard
-- New API endpoints for sync marker management:
-  - `GET /api/projects/{projectId}/sync-marker` - Retrieve last synced commit
-  - `POST /api/projects/{projectId}/sync-marker` - Save last synced commit
-- 2 new tests for sync marker functionality (86 total tests)
-- Enhanced logging for sync marker operations
-
-### Changed
-- Sync workflow now uses `sinceCommit` parameter to fetch only new commits from git
-- Improved error handling for sync marker operations with graceful fallback to full history
-
-### Fixed
-- Removed unused fs imports in sync command
-
-## [0.2.0] - 2026-03-11
-
-### Added
-- Phase 1 test implementation complete: 69 new tests across 3 test files
-- Comprehensive test coverage for sync functionality
-- Framework detection tests
-- Git history tracking tests
-
-### Changed
-- Test coverage increased from 17% to 65%
-
-## [0.1.0] - Initial Release
-
-### Added
-- Initial sync CLI implementation
-- Framework detection (Vitest, Playwright, Cypress, TestNG, JUnit)
-- Test spec file parsing
-- Git history tracking
-- Dashboard sync API integration
+- **GitHub Action** - Drop-in action for any workflow to sync tests automatically
+- **CLI agent** - Run locally with `test-chronicle-agent sync`
+- **Multi-framework support**:
+  - Vitest - Modern JavaScript unit testing
+  - Playwright - End-to-end testing
+  - Cypress - End-to-end testing
+  - Jest - JavaScript unit testing
+  - TestNG - Java testing
+  - JUnit - Java testing
+- **Automatic framework detection** - No configuration needed
+- **Test specification parsing** - Extracts test names, paths, and structure
+- **Git history tracking** - Tracks test changes across commits
+- **Incremental syncing** - Only syncs new commits since last sync
+- **Dashboard integration** - Fully synced with Test Chronicle dashboard
+- **Type definitions** - Full TypeScript support included
+- **Comprehensive testing** - 86 tests with 65% coverage

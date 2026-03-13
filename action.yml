@@ -1,6 +1,10 @@
 name: 'Test Chronicle Agent'
-description: 'Sync test results to Test Chronicle dashboard'
+description: 'Sync test results and specifications to Test Chronicle dashboard'
 author: 'Daniel Williams'
+
+branding:
+  icon: 'activity'
+  color: 'blue'
 
 inputs:
   api-key:
@@ -9,6 +13,14 @@ inputs:
   project-id:
     description: 'Project ID in Chronicle dashboard'
     required: true
+  dashboard-url:
+    description: 'Chronicle dashboard URL (for local testing only; defaults to production)'
+    required: false
+    default: 'https://test-chronicle.vercel.app'
+
+outputs:
+  sync-status:
+    description: 'Status of the sync operation'
 
 runs:
   using: 'node20'

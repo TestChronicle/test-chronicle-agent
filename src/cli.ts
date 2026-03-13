@@ -1,13 +1,11 @@
 import { Command } from 'commander'
 import { syncCommand } from './commands/sync'
-import { initCommand } from './commands/init'
 
 export const cli = new Command()
   .name('test-chronicle-agent')
   .description('CLI agent for syncing test data to test-chronicle dashboard')
   .version('0.1.0')
 
-cli.addCommand(initCommand)
 cli.addCommand(syncCommand)
 
 // Main execution
