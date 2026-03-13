@@ -1,9 +1,8 @@
-name: Sync Tests to Chronicle
+name: 🔄 Sync Tests to Chronicle
 
 on:
-  # Run daily at 9am UTC
-  schedule:
-    - cron: '0 9 * * *'
+  push:
+    branches: [main]
   
   # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:

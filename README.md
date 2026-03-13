@@ -7,7 +7,7 @@ Keep your test suite visible. Sync test specs and history to your dashboard auto
 Use test-chronicle-agent as a GitHub Action to automatically sync your tests on every push:
 
 ```yaml
-name: Sync Tests to Chronicle
+name: 🔄 Sync Tests to Chronicle
 
 on:
   push:
