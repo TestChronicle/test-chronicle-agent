@@ -26,11 +26,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 // src/action.ts
 var import_child_process = require("child_process");
 var path = __toESM(require("path"));
+var core = __toESM(require("@actions/core"));
 async function run() {
   try {
-    const apiKey = process.env.INPUT_API_KEY;
-    const projectId = process.env.INPUT_PROJECT_ID;
-    const dashboardUrl = process.env.INPUT_DASHBOARD_URL;
+    const apiKey = core.getInput("api-key");
+    const projectId = core.getInput("project-id");
+    const dashboardUrl = core.getInput("dashboard-url");
     if (!apiKey) {
       throw new Error("api-key input is required");
     }

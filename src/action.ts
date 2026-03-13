@@ -5,13 +5,14 @@
 
 import { execSync } from 'child_process'
 import * as path from 'path'
+import * as core from '@actions/core'
 
 async function run() {
   try {
-    // Get inputs from GitHub Actions
-    const apiKey = process.env.INPUT_API_KEY
-    const projectId = process.env.INPUT_PROJECT_ID
-    const dashboardUrl = process.env.INPUT_DASHBOARD_URL
+    // Get inputs from GitHub Actions using @actions/core
+    const apiKey = core.getInput('api-key')
+    const projectId = core.getInput('project-id')
+    const dashboardUrl = core.getInput('dashboard-url')
 
     if (!apiKey) {
       throw new Error('api-key input is required')
