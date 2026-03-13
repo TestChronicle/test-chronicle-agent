@@ -28,12 +28,6 @@ var import_child_process = require("child_process");
 var path = __toESM(require("path"));
 async function run() {
   try {
-    console.log("\u{1F4CB} Available INPUT variables:");
-    Object.keys(process.env).forEach((key) => {
-      if (key.startsWith("INPUT_")) {
-        console.log(`  ${key}=${process.env[key] ? "***" : "(empty)"}`);
-      }
-    });
     const apiKey = process.env["INPUT_API-KEY"];
     const projectId = process.env["INPUT_PROJECT-ID"];
     const dashboardUrl = process.env["INPUT_DASHBOARD-URL"];
@@ -54,7 +48,7 @@ async function run() {
       env.CHRONICLE_DASHBOARD_URL = dashboardUrl;
     }
     try {
-      const cliPath = path.join(__dirname, "cli.js");
+      const cliPath = path.join(__dirname, "cli-bundle", "index.js");
       (0, import_child_process.execSync)(`node ${cliPath} sync`, {
         env,
         stdio: "inherit"

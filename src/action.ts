@@ -8,14 +8,6 @@ import * as path from 'path'
 
 async function run() {
   try {
-    // Debug: Log all INPUT_* environment variables
-    console.log('📋 Available INPUT variables:')
-    Object.keys(process.env).forEach(key => {
-      if (key.startsWith('INPUT_')) {
-        console.log(`  ${key}=${process.env[key] ? '***' : '(empty)'}`)
-      }
-    })
-
     // Get inputs from GitHub Actions
     // GitHub automatically sets INPUT_<INPUT_NAME> for each input (with hyphens preserved)
     const apiKey = process.env['INPUT_API-KEY']
@@ -46,7 +38,7 @@ async function run() {
 
     // Run sync command using the bundled CLI
     try {
-      const cliPath = path.join(__dirname, 'cli.js')
+      const cliPath = path.join(__dirname, 'cli-bundle', 'index.js')
       execSync(`node ${cliPath} sync`, {
         env,
         stdio: 'inherit',

@@ -32,7 +32,8 @@
   ],
   "scripts": {
     "dev": "tsx src/cli.ts",
-    "build": "tsup",
+    "build": "tsup && npm run bundle:cli",
+    "bundle:cli": "ncc build dist/cli.js -o dist/cli-bundle --target es2020",
     "test": "vitest run",
     "test:watch": "vitest watch"
   },
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
+    "@vercel/ncc": "^0.38.4",
     "tsup": "^8.1.0",
     "tsx": "^4.16.2",
     "typescript": "^5.4.5",
