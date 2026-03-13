@@ -28,6 +28,12 @@ var import_child_process = require("child_process");
 var path = __toESM(require("path"));
 async function run() {
   try {
+    console.log("\u{1F4CB} Available INPUT variables:");
+    Object.keys(process.env).forEach((key) => {
+      if (key.startsWith("INPUT_")) {
+        console.log(`  ${key}=${process.env[key] ? "***" : "(empty)"}`);
+      }
+    });
     const apiKey = process.env.INPUT_API_KEY;
     const projectId = process.env.INPUT_PROJECT_ID;
     const dashboardUrl = process.env.INPUT_DASHBOARD_URL;

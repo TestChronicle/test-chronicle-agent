@@ -8,6 +8,14 @@ import * as path from 'path'
 
 async function run() {
   try {
+    // Debug: Log all INPUT_* environment variables
+    console.log('📋 Available INPUT variables:')
+    Object.keys(process.env).forEach(key => {
+      if (key.startsWith('INPUT_')) {
+        console.log(`  ${key}=${process.env[key] ? '***' : '(empty)'}`)
+      }
+    })
+
     // Get inputs from GitHub Actions
     // GitHub automatically sets INPUT_<UPPERCASE_INPUT_NAME> for each input
     const apiKey = process.env.INPUT_API_KEY
