@@ -34,9 +34,9 @@ async function run() {
         console.log(`  ${key}=${process.env[key] ? "***" : "(empty)"}`);
       }
     });
-    const apiKey = process.env.INPUT_API_KEY;
-    const projectId = process.env.INPUT_PROJECT_ID;
-    const dashboardUrl = process.env.INPUT_DASHBOARD_URL;
+    const apiKey = process.env["INPUT_API-KEY"];
+    const projectId = process.env["INPUT_PROJECT-ID"];
+    const dashboardUrl = process.env["INPUT_DASHBOARD-URL"];
     if (!apiKey) {
       throw new Error("api-key input is required");
     }
