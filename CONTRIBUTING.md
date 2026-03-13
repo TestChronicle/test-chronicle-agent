@@ -62,25 +62,9 @@ npm test
 
 ## Code Style
 
-- **TypeScript**: Always use TypeScript, enable `strict: true`
-- **Formatting**: The project uses tsup for bundling (no Prettier configured)
+- **TypeScript**: Always use TypeScript with `strict: true`
 - **Testing**: Co-locate tests with source files using `.spec.ts` suffix
 - **Comments**: Add JSDoc comments for public APIs
-- **No console logs**: Use proper logging or let stderr/stdout speak
-
-### Example TypeScript Structure
-
-```typescript
-/**
- * Parse a test file for the given framework
- * @param filePath - Absolute path to test file
- * @param content - File content
- * @returns Parsed test specifications
- */
-export function parseTestFile(filePath: string, content: string): SpecFile {
-  // Implementation
-}
-```
 
 ## Testing
 
@@ -122,13 +106,10 @@ describe('Feature Name', () => {
 })
 ```
 
-### Test Coverage Goals
+### Test Coverage
 
-- **Phase 1** (DONE): 65% - Core functionality tested
-- **Phase 2** (TBD): 75% - Framework-specific parsers tested
-- **Phase 3** (TBD): 85%+ - All commands fully tested
-
-See [docs/TEST_COVERAGE_PLAN.md](./docs/TEST_COVERAGE_PLAN.md) for details.
+- Aim for good coverage of core functionality and framework parsers
+- Ensure all commands are tested before release
 
 ## Repository Structure
 
@@ -146,7 +127,7 @@ test-chronicle-agent/
 │   │   └── frameworks/     # Framework-specific parsers
 │   ├── git/                # Git history tracking
 │   └── sync-client.ts      # Dashboard API client
-├── docs/                   # Documentation
+├── test/                   # Tests
 ├── .github/workflows/      # CI/CD workflows
 ├── action.yml              # GitHub Action manifest
 ├── package.json
@@ -216,19 +197,12 @@ Closes #42
 
 1. Update version in `package.json`
 2. Update `CHANGELOG.md`
-3. Create a commit: `git commit -m "chore: release v0.x.0"`
-4. Tag the release: `git tag v0.x.0`
-5. Push: `git push origin main --tags`
-6. GitHub Actions automatically builds and creates a release
-
-See [PRE_RELEASE.md](./PRE_RELEASE.md) for detailed release checklist.
+3. Create and push a tag: `git tag v0.x.0 && git push origin v0.x.0`
+4. GitHub Actions automatically builds and publishes the release
 
 ## Documentation
 
-- **README.md** - User-facing documentation
-- **docs/SYNC_WORKFLOW.md** - Setup and usage guide
-- **docs/TESTING.md** - Testing guide and coverage plan
-- **docs/GITHUB_ACTION_SETUP.md** - Action-specific setup
+- **README.md** - Project overview and usage
 - **CHANGELOG.md** - Version history
 
 ## Issues & Questions
