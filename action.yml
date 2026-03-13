@@ -1,0 +1,15 @@
+name: 'Test Chronicle Agent'
+description: 'Sync test results to Test Chronicle dashboard'
+author: 'Daniel Williams'
+
+inputs:
+  api-key:
+    description: 'Chronicle API key for authentication'
+    required: true
+  project-id:
+    description: 'Project ID in Chronicle dashboard'
+    required: true
+
+runs:
+  using: 'node20'
+  main: 'dist/action.js'

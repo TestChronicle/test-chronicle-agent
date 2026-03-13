@@ -4,6 +4,7 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     cli: 'src/cli.ts',
+    action: 'src/action.ts',
   },
   format: ['cjs'],
   target: 'es2020',
