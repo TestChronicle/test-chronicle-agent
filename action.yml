@@ -16,7 +16,7 @@ inputs:
   dashboard-url:
     description: 'Chronicle dashboard URL (for local testing only; defaults to production)'
     required: false
-    default: 'https://test-chronicle.vercel.app'
+    default: 'https://www.testchronicle.com'
 
 outputs:
   sync-status:
