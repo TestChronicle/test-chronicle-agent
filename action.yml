@@ -17,6 +17,10 @@ inputs:
     description: 'Chronicle dashboard URL (for local testing only; defaults to production)'
     required: false
     default: 'https://www.testchronicle.com'
+  full-history:
+    description: 'Scan all commits in repo (use if tests were moved or restructured before sync)'
+    required: false
+    default: 'false'
 
 outputs:
   sync-status:

@@ -39,6 +39,7 @@ export const syncCommand = new Command('sync')
   .option('--project-id <id>', 'Project ID from init')
   .option('--dashboard-url <url>', 'Dashboard URL')
   .option('--path <path>', 'Project path (defaults to current directory)')
+  .option('--full-history', 'Scan all commits in repo (use for projects that moved tests)')
   .action(async (options) => {
     try {
       const projectPath = options.path || process.cwd()
@@ -92,24 +93,28 @@ export const syncCommand = new Command('sync')
       console.log(chalk.blue('📚 Building git history...'))
       
       // Get last synced commit from dashboard for incremental syncing
+      // Skip marker check if --full-history is set
       let sinceCommit: string | undefined
-      try {
-        const marker = await getSyncMarker(dashboardUrl, apiKey, projectId)
-        if (marker) {
-          sinceCommit = marker
-          console.log(chalk.gray(`  Last synced: ${marker.substring(0, 7)}`))
-        } else {
-          console.log(chalk.gray('  No prior sync marker found, syncing full history'))
+      if (!options.fullHistory) {
+        try {
+          const marker = await getSyncMarker(dashboardUrl, apiKey, projectId)
+          if (marker) {
+            sinceCommit = marker
+            console.log(chalk.gray(`  Last synced: ${marker.substring(0, 7)}`))
+          } else {
+            console.log(chalk.gray('  No prior sync marker found, syncing full history'))
+          }
+        } catch (error) {
+          // Ignore marker fetch errors, just sync full history
+          if (error instanceof Error) {
+            console.log(chalk.gray(`  Warning: ${error.message}`))
+          }
         }
-      } catch (error) {
-        // Ignore marker fetch errors, just sync full history
-        if (error instanceof Error) {
-          console.log(chalk.gray(`  Warning: ${error.message}`))
-        }
+      } else {
+        console.log(chalk.gray('  Full history mode: scanning all commits'))
       }
       
-      const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit)
-      console.log(chalk.green(`✓ Built history for ${history.length} commits`))
+      const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit, options.fullHistory)
 
       // Compute stats
       const tags: Record<string, number> = {}

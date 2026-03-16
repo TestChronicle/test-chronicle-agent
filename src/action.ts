@@ -13,6 +13,7 @@ async function run() {
     const apiKey = process.env['INPUT_API-KEY']
     const projectId = process.env['INPUT_PROJECT-ID']
     const dashboardUrl = process.env['INPUT_DASHBOARD-URL']
+    const fullHistory = process.env['INPUT_FULL-HISTORY'] === 'true'
 
     if (!apiKey) {
       throw new Error('api-key input is required')
@@ -36,10 +37,16 @@ async function run() {
       env.CHRONICLE_DASHBOARD_URL = dashboardUrl
     }
 
+    // Build sync command with optional flags
+    let syncCommand = 'sync'
+    if (fullHistory) {
+      syncCommand += ' --full-history'
+    }
+
     // Run sync command using the bundled CLI
     try {
       const cliPath = path.join(__dirname, 'cli-bundle', 'index.js')
-      execSync(`node ${cliPath} sync`, {
+      execSync(`node ${cliPath} ${syncCommand}`, {
         env,
         stdio: 'inherit',
       })
