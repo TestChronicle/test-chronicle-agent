@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
       
-      - uses: TestChronicle/test-chronicle-agent@v1
+      - uses: TestChronicle/test-chronicle-agent@v0.1.0
         with:
           api-key: ${{ secrets.CHRONICLE_API_KEY }}
           project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
@@ -46,6 +46,20 @@ jobs:
 
 That's it! Your tests will sync automatically on every push.
 
+### Using Full History on First Sync
+
+If you've reorganized your test structure during development (e.g., moved tests between directories), use the `full-history` flag on your first sync to capture the complete history:
+
+```yaml
+- uses: TestChronicle/test-chronicle-agent@v0.1.0
+  with:
+    api-key: ${{ secrets.CHRONICLE_API_KEY }}
+    project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
+    full-history: true  # Scan all repo commits for test changes
+```
+
+This will scan all commits in your repository to find test changes, even if they occurred before tests were in their current location. Subsequent syncs will only process new commits (faster and more efficient).
+
 ### GitHub Action Inputs
 
 | Input | Required | Default | Description |
@@ -65,55 +79,6 @@ If you've reorganized your test structure during development (e.g., moved tests 
     api-key: ${{ secrets.CHRONICLE_API_KEY }}
     project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
     full-history: true  # Scan all repo commits for test changes
-```
-
-This will scan all commits in your repository to find test changes, even if they occurred before tests were in their current location. Subsequent syncs will only process new commits (faster and more efficient).
-
-## 🛠️ CLI Usage
-
-You can also use test-chronicle-agent as a CLI tool for local development or CI/CD:
-
-```bash
-# Install globally
-npm install -g test-chronicle-agent
-
-# Or use directly with npx
-npx test-chronicle-agent@latest sync
-```
-
-### CLI Configuration
-
-Set up your environment variables in `.env.local` (in your project root):
-
-```bash
-CHRONICLE_API_KEY=<your-api-key>
-CHRONICLE_PROJECT_ID=<project-id>
-CHRONICLE_DASHBOARD_URL=http://localhost:3000  # Optional, defaults to production
-```
-
-Or pass them as command-line flags:
-
-```bash
-npx test-chronicle-agent sync \
-  --project-id <id> \
-  --dashboard-url http://localhost:3000
-```
-
-### CLI Flags
-
-| Flag | Description |
-|------|-------------|
-| `--project-id <id>` | Project ID (or use `CHRONICLE_PROJECT_ID` env var) |
-| `--dashboard-url <url>` | Dashboard URL (defaults to production) |
-| `--path <path>` | Project path (defaults to current directory) |
-| `--full-history` | Scan all commits in repo (for test reorganizations) |
-
-### Full History Mode
-
-Similar to the GitHub Action, use `--full-history` on your first local sync if tests were reorganized:
-
-```bash
-npx test-chronicle-agent sync --full-history
 ```
 
 ## 🎯 Supported Frameworks
