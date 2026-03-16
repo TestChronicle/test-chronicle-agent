@@ -38,11 +38,10 @@ export const syncCommand = new Command('sync')
   .description('Sync test data to dashboard')
   .option('--project-id <id>', 'Project ID from init')
   .option('--dashboard-url <url>', 'Dashboard URL')
-  .option('--path <path>', 'Project path (defaults to current directory)')
   .option('--full-history', 'Scan all commits in repo (use for projects that moved tests)')
   .action(async (options) => {
     try {
-      const projectPath = options.path || process.cwd()
+      const projectPath = process.cwd()
       
       // Load .env.local from project directory
       const envLocalPath = path.join(projectPath, '.env.local')

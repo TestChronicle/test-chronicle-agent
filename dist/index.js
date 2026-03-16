@@ -995,9 +995,9 @@ function deduplicateChanges(changes) {
   }
   return deduplicated;
 }
-var syncCommand = new import_commander.Command("sync").description("Sync test data to dashboard").option("--project-id <id>", "Project ID from init").option("--dashboard-url <url>", "Dashboard URL").option("--path <path>", "Project path (defaults to current directory)").option("--full-history", "Scan all commits in repo (use for projects that moved tests)").action(async (options) => {
+var syncCommand = new import_commander.Command("sync").description("Sync test data to dashboard").option("--project-id <id>", "Project ID from init").option("--dashboard-url <url>", "Dashboard URL").option("--full-history", "Scan all commits in repo (use for projects that moved tests)").action(async (options) => {
   try {
-    const projectPath = options.path || process.cwd();
+    const projectPath = process.cwd();
     const envLocalPath = import_path9.default.join(projectPath, ".env.local");
     if (import_fs3.default.existsSync(envLocalPath)) {
       import_dotenv.default.config({ path: envLocalPath, debug: false });

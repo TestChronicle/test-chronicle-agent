@@ -72,30 +72,6 @@ If you've reorganized your test structure during development (e.g., moved tests 
 
 Framework detection is automatic. No configuration needed.
 
-## ⚙️ Configuration
-
-**For GitHub Actions:**
-Use the action inputs as documented above.
-
-**For CLI:**
-Set environment variables in `.env.local`:
-
-```bash
-CHRONICLE_API_KEY          # Required - get from dashboard
-CHRONICLE_PROJECT_ID       # Required - from dashboard
-CHRONICLE_DASHBOARD_URL    # Optional - defaults to production
-```
-
-Or use command-line flags:
-
-```bash
-npx test-chronicle-agent sync \
-  --project-id <project-id> \
-  --dashboard-url <url> \
-  --path <project-path> \
-  --full-history  # Optional - for test reorganizations
-```
-
 ## 📊 What Gets Synced
 
 - Test specifications (names, paths, structure)
