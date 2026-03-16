@@ -1,6 +1,3 @@
-import path from 'path'
-import fs from 'fs'
-import dotenv from 'dotenv'
 import { detectFramework } from './core'
 import { parseAllSpecs } from './core'
 import { buildHistory, getLatestCommitHash } from './git'
@@ -57,12 +54,6 @@ function deduplicateChanges(changes: TestChange[], specPath?: string): TestChang
  */
 export async function syncProject(options: SyncOptions): Promise<void> {
   const { projectId, apiKey, dashboardUrl } = options
-
-  // Load .env.local from project directory if it exists
-  const envLocalPath = path.join(process.cwd(), '.env.local')
-  if (fs.existsSync(envLocalPath)) {
-    dotenv.config({ path: envLocalPath, debug: false })
-  }
 
   console.log('[sync] Detecting framework...')
   const detection = detectFramework(process.cwd())

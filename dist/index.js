@@ -45,12 +45,7 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 
 // src/cli.ts
-var import_dotenv2 = require("dotenv");
-
-// src/sync.ts
-var import_path9 = __toESM(require("path"));
-var import_fs3 = __toESM(require("fs"));
-var import_dotenv = __toESM(require("dotenv"));
+var import_dotenv = require("dotenv");
 
 // src/core/index.ts
 var core_exports = {};
@@ -1124,9 +1119,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 
 // src/sync.ts
 function getChangeKey(change, specPath) {
-  const path10 = specPath ?? "";
+  const path9 = specPath ?? "";
   const oldName = change.oldName ?? "";
-  return `${path10}:${change.type}:${change.name}:${oldName}`;
+  return `${path9}:${change.type}:${change.name}:${oldName}`;
 }
 function deduplicateChanges(changes, specPath) {
   const seen = /* @__PURE__ */ new Set();
@@ -1142,10 +1137,6 @@ function deduplicateChanges(changes, specPath) {
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
-  const envLocalPath = import_path9.default.join(process.cwd(), ".env.local");
-  if (import_fs3.default.existsSync(envLocalPath)) {
-    import_dotenv.default.config({ path: envLocalPath, debug: false });
-  }
   console.log("[sync] Detecting framework...");
   const detection = detectFramework(process.cwd());
   console.log(`[sync] Detected framework: ${detection.framework}`);
@@ -1316,7 +1307,7 @@ async function syncProject(options) {
 }
 
 // src/cli.ts
-(0, import_dotenv2.config)({ path: ".env.local" });
+(0, import_dotenv.config)({ path: ".env.local" });
 async function main() {
   try {
     const projectId = process.env.CHRONICLE_PROJECT_ID;

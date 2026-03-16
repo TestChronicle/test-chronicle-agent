@@ -23,11 +23,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// src/sync.ts
-var import_path9 = __toESM(require("path"));
-var import_fs3 = __toESM(require("fs"));
-var import_dotenv = __toESM(require("dotenv"));
-
 // src/core/detector.ts
 var import_fs = require("fs");
 var import_path = __toESM(require("path"));
@@ -1083,9 +1078,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 
 // src/sync.ts
 function getChangeKey(change, specPath) {
-  const path10 = specPath ?? "";
+  const path9 = specPath ?? "";
   const oldName = change.oldName ?? "";
-  return `${path10}:${change.type}:${change.name}:${oldName}`;
+  return `${path9}:${change.type}:${change.name}:${oldName}`;
 }
 function deduplicateChanges(changes, specPath) {
   const seen = /* @__PURE__ */ new Set();
@@ -1101,10 +1096,6 @@ function deduplicateChanges(changes, specPath) {
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
-  const envLocalPath = import_path9.default.join(process.cwd(), ".env.local");
-  if (import_fs3.default.existsSync(envLocalPath)) {
-    import_dotenv.default.config({ path: envLocalPath, debug: false });
-  }
   console.log("[sync] Detecting framework...");
   const detection = detectFramework(process.cwd());
   console.log(`[sync] Detected framework: ${detection.framework}`);
