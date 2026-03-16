@@ -84,9 +84,9 @@ describe('Git History', () => {
 
       const history = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
-      expect(history[0].commit.hash).toBe('abc123')
-      expect(history[0].specs).toBeDefined()
+      expect(history.entries).toHaveLength(1)
+      expect(history.entries[0].commit.hash).toBe('abc123')
+      expect(history.entries[0].specs).toBeDefined()
     })
 
     it('should filter commits by test directory', async () => {
@@ -116,7 +116,7 @@ describe('Git History', () => {
 
       const result = await buildHistory('/project', './tests', 'vitest')
 
-      expect(result).toEqual([])
+      expect(result.entries).toEqual([])
     })
 
     it('should reverse commits to oldest first', async () => {
@@ -133,7 +133,7 @@ describe('Git History', () => {
       const result = await buildHistory('/project', './tests', 'vitest')
 
       // Should be reversed to oldest first or empty
-      expect(Array.isArray(result)).toBe(true)
+      expect(Array.isArray(result.entries)).toBe(true)
     })
 
     it('should skip commits with no spec changes', async () => {
@@ -157,7 +157,7 @@ describe('Git History', () => {
       const result = await buildHistory('/project', './tests', 'vitest')
 
       // Should only include commits with spec changes
-      expect(result.length).toBeLessThanOrEqual(1)
+      expect(result.entries.length).toBeLessThanOrEqual(1)
     })
 
     it('should handle file changes in commit', async () => {
@@ -176,8 +176,8 @@ describe('Git History', () => {
 
       const history = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
-      expect(history[0].specs).toBeDefined()
+      expect(history.entries).toHaveLength(1)
+      expect(history.entries[0].specs).toBeDefined()
     })
 
     it('should detect file status (added, modified, deleted)', async () => {
@@ -192,8 +192,8 @@ describe('Git History', () => {
 
       const history = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
-      expect(history[0].commit.changes.length).toBeGreaterThan(0)
+      expect(history.entries).toHaveLength(1)
+      expect(history.entries[0].commit.changes.length).toBeGreaterThan(0)
     })
 
     it('should handle renamed files', async () => {
@@ -209,7 +209,7 @@ describe('Git History', () => {
 
       const history = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
+      expect(history.entries).toHaveLength(1)
     })
 
     it('should handle test additions', async () => {
@@ -223,8 +223,8 @@ describe('Git History', () => {
 
       const history = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
-      const changes = history[0].specs[0].changes
+      expect(history.entries).toHaveLength(1)
+      const changes = history.entries[0].specs[0].changes
       expect(changes.some((c) => c.type === 'added')).toBe(true)
     })
 
@@ -239,8 +239,8 @@ describe('Git History', () => {
 
       const history = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
-      const fileStatus = history[0].specs[0].fileStatus
+      expect(history.entries).toHaveLength(1)
+      const fileStatus = history.entries[0].specs[0].fileStatus
       expect(fileStatus).toBe('deleted')
     })
 
@@ -264,8 +264,8 @@ describe('Git History', () => {
 
       const history = await buildHistory('/project', './tests', 'vitest')
 
-      expect(history).toHaveLength(1)
-      const changes = history[0].specs[0].changes
+      expect(history.entries).toHaveLength(1)
+      const changes = history.entries[0].specs[0].changes
       expect(changes.some((c) => c.type === 'removed')).toBe(true)
       expect(changes.some((c) => c.type === 'added')).toBe(true)
     })
@@ -306,7 +306,7 @@ describe('Git History', () => {
       const result = await buildHistory('/project', './tests', 'vitest')
 
       // Should be empty since no test files changed
-      expect(result).toHaveLength(0)
+      expect(result.entries).toHaveLength(0)
     })
 
     it('should only process spec files', async () => {
@@ -324,7 +324,7 @@ describe('Git History', () => {
       const result = await buildHistory('/project', './tests', 'vitest')
 
       // Should process spec file but not index.ts or readme.md
-      expect(result.length).toBeGreaterThanOrEqual(0)
+      expect(result.entries.length).toBeGreaterThanOrEqual(0)
     })
 
     it('should handle renamed files properly', async () => {
@@ -340,7 +340,7 @@ describe('Git History', () => {
 
       const result = await buildHistory('/project', './tests', 'vitest')
 
-      expect(result).toHaveLength(1)
+      expect(result.entries).toHaveLength(1)
     })
   })
 })

@@ -1,5 +1,4 @@
 export { cli } from './cli.js';
-import 'commander';
 
 type Framework = 'playwright' | 'cypress' | 'testng' | 'junit' | 'vitest' | 'unknown';
 type ChangeStatus = 'added' | 'removed' | 'modified' | 'unchanged';
@@ -97,6 +96,38 @@ interface CommitHistory {
     commit: GitCommit;
     specs: SpecHistoryEntry[];
 }
+interface HistoryError {
+    commit: string;
+    file: string;
+    reason: string;
+    partial?: boolean;
+}
+interface HistoryBuildResult {
+    entries: CommitHistory[];
+    errors: HistoryError[];
+    warnings: string[];
+}
+/**
+ * Project sync baseline record - saved on first sync.
+ * Tracks the baseline for all future incremental syncs.
+ */
+interface ProjectSyncRecord {
+    projectId: string;
+    /** ISO date string when first sync occurred */
+    firstSyncDate: string;
+    /** Git commit hash at time of first sync */
+    firstSyncCommit: string;
+    /** Baseline test statistics (current state at first sync) */
+    baselineStats: {
+        totalTests: number;
+        totalFiles: number;
+        tags: Record<string, number>;
+    };
+    /** Last synced commit hash (for next incremental sync) */
+    lastSyncCommit: string;
+    /** Framework detected at first sync (for consistency checks) */
+    detectedFramework: Framework;
+}
 interface DetectionResult {
     framework: Framework;
     testDir: string;
@@ -134,8 +165,10 @@ declare function getLatestCommitHash(projectPath: string): Promise<string | null
  * Builds the full commit history for the given test directory.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
+ *
+ * Returns both the history entries and any errors encountered during processing.
  */
-declare function buildHistory(projectPath: string, testDir: string, framework: Framework, sinceCommit?: string, fullHistory?: boolean): Promise<CommitHistory[]>;
+declare function buildHistory(projectPath: string, testDir: string, framework: Framework, sinceCommit?: string, fullHistory?: boolean): Promise<HistoryBuildResult>;
 
 declare const index_buildHistory: typeof buildHistory;
 declare const index_getLatestCommitHash: typeof getLatestCommitHash;
@@ -143,4 +176,4 @@ declare namespace index {
   export { index_buildHistory as buildHistory, index_getLatestCommitHash as getLatestCommitHash };
 }
 
-export { type ChangeStatus, type CommitHistory, index$1 as Core, type DetectionResult, type Framework, index as Git, type GitCommit, type GitFileChange, type GlobalConfig, type Project, type ProjectConfig, type ProjectStats, type RegisteredProject, type SpecFile, type SpecHistoryEntry, type TestCase, type TestChange, type TestTag, buildHistory, detectFramework, extractTestNamesFromContent, findSpecFiles, getLatestCommitHash, parseAllSpecs, parseSpecFile };
+export { type ChangeStatus, type CommitHistory, index$1 as Core, type DetectionResult, type Framework, index as Git, type GitCommit, type GitFileChange, type GlobalConfig, type HistoryBuildResult, type HistoryError, type Project, type ProjectConfig, type ProjectStats, type ProjectSyncRecord, type RegisteredProject, type SpecFile, type SpecHistoryEntry, type TestCase, type TestChange, type TestTag, buildHistory, detectFramework, extractTestNamesFromContent, findSpecFiles, getLatestCommitHash, parseAllSpecs, parseSpecFile };

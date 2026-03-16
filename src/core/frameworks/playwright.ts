@@ -1,6 +1,7 @@
 import path from 'path';
 import { TestCase, TestTag, SpecFile } from '../../types';
-import { hashId, lineNumberAt, findMatchingBrace } from './common';
+import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
+import { extractParameterizedDataFromEach, generateParameterizedTestName } from './parameterized';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 //
@@ -23,7 +24,7 @@ export function parsePlaywrightSpec(
   projectRoot: string
 ): SpecFile {
   const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, '/');
-  const describeBlocks = findDescribeBlocks(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
   const tests: TestCase[] = [];
 
   let match: RegExpExecArray | null;
@@ -38,9 +39,27 @@ export function parsePlaywrightSpec(
     const tags = extractInlineTags(content, matchIndex);
     
     // Check if this is a parameterized test (test.each())
-    const isParameterized = isParameterizedTest(content, matchIndex);
-    if (isParameterized) {
+    const paramData = extractParameterizedDataFromEach(content);
+    if (paramData?.hasParameters) {
       tags.push({ name: '@parameterized' });
+      
+      // If we have a parameter count, expand to individual test cases
+      if (paramData.count > 0) {
+        for (let i = 0; i < paramData.count; i++) {
+          const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
+          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+          
+          tests.push({
+            id,
+            name: expandedName,
+            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+            describe: parentDescribe,
+            tags,
+            line,
+          });
+        }
+        continue; // Skip adding the base test
+      }
     }
 
     const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
@@ -69,7 +88,7 @@ export function parsePlaywrightSpec(
 /** Extracts only the test names from content without building a full SpecFile. */
 export function extractTestNames(content: string): string[] {
   const names: string[] = [];
-  const describeBlocks = findDescribeBlocks(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
 
   let match: RegExpExecArray | null;
   TEST_RE.lastIndex = 0;
@@ -81,59 +100,6 @@ export function extractTestNames(content: string): string[] {
   }
 
   return names;
-}
-
-// ─── Describe block tracking ──────────────────────────────────────────────────
-
-interface DescribeBlock {
-  name: string;
-  /** Index of the opening brace of the callback */
-  start: number;
-  /** Index of the matching closing brace */
-  end: number;
-}
-
-function findDescribeBlocks(content: string): DescribeBlock[] {
-  const blocks: DescribeBlock[] = [];
-
-  let match: RegExpExecArray | null;
-  DESCRIBE_RE.lastIndex = 0;
-
-  while ((match = DESCRIBE_RE.exec(content)) !== null) {
-    const matchEnd = match.index + match[0].length;
-    const afterMatch = content.substring(matchEnd);
-
-    // Walk forward to find the opening brace of the callback arrow/function
-    const braceOffset = afterMatch.indexOf('{');
-    if (braceOffset === -1) continue;
-
-    const braceStart = matchEnd + braceOffset;
-    const braceEnd = findMatchingBrace(content, braceStart);
-
-    if (braceEnd !== -1) {
-      blocks.push({ name: match[2], start: braceStart, end: braceEnd });
-    }
-  }
-
-  return blocks;
-}
-
-/**
- * Finds the innermost describe block that contains `index`.
- * Returns undefined when the test is at the top level.
- */
-function resolveParentDescribe(blocks: DescribeBlock[], index: number): string | undefined {
-  let innermost: DescribeBlock | undefined;
-
-  for (const block of blocks) {
-    if (index > block.start && index < block.end) {
-      if (!innermost || block.start > innermost.start) {
-        innermost = block;
-      }
-    }
-  }
-
-  return innermost?.name;
 }
 
 // ─── Tag extraction ───────────────────────────────────────────────────────────
@@ -164,12 +130,4 @@ function extractInlineTags(content: string, testIndex: number): TestTag[] {
   }
 
   return tags;
-}
-
-/**
- * Check if this test matches the `test.each(...)` pattern
- */
-function isParameterizedTest(content: string, testIndex: number): boolean {
-  const window = content.substring(Math.max(0, testIndex - 50), testIndex);
-  return /\.each\s*\(/.test(window);
 }

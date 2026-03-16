@@ -2,24 +2,6 @@ import path from 'path';
 import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt } from './common';
 
-// ─── Regex patterns ───────────────────────────────────────────────────────────
-//
-// JUnit tests are Java methods annotated with @Test.
-// Simplified compared to TestNG.
-//
-// Patterns:
-//   @Test
-//   public void loginTest() { ... }
-//
-//   @Test
-//   @Tag("smoke")
-//   @Tag("login")
-//   public void shouldHandleInvalidPassword() { ... }
-//
-//   @Test
-//   @Ignore("Not yet implemented")
-//   public void skippedTest() { ... }
-
 const TEST_METHOD_RE = /@Test\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 
 const CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
@@ -27,8 +9,6 @@ const CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 const IGNORE_RE = /@Ignore/;
 
 const TAG_RE = /@Tag\s*\(\s*"([^"]+)"\s*\)/g;
-
-// ─── Public API ───────────────────────────────────────────────────────────────
 
 export function parseJUnitSpec(
   filePath: string,

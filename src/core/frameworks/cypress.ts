@@ -1,18 +1,11 @@
 import path from 'path';
 import { TestCase, SpecFile } from '../../types';
-import { hashId, lineNumberAt, findMatchingBrace } from './common';
-
-// ─── Regex patterns ───────────────────────────────────────────────────────────
-//
-// Cypress uses Mocha-style describe/it syntax.
-// Patterns handled: describe(), it(), specify(), test()
-// Modifiers: .skip, .only
+import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
+import { extractParameterizedDataFromForEach, generateParameterizedTestName } from './parameterized';
 
 const DESCRIBE_RE = /describe\s*\(\s*(['"`])([\s\S]*?)\1/g;
 
 const TEST_RE = /(?:^|[ \t]+)(?:it|specify|test)\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
-
-// ─── Public API ───────────────────────────────────────────────────────────────
 
 export function parseCypressSpec(
   filePath: string,
@@ -20,7 +13,7 @@ export function parseCypressSpec(
   projectRoot: string
 ): SpecFile {
   const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, '/');
-  const describeBlocks = findDescribeBlocks(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
   const tests: TestCase[] = [];
 
   let match: RegExpExecArray | null;
@@ -32,6 +25,26 @@ export function parseCypressSpec(
     const line = lineNumberAt(content, matchIndex);
 
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
+
+    // Check if this is a parameterized test (forEach loop)
+    const paramData = extractParameterizedDataFromForEach(content, testName);
+    if (paramData?.hasParameters && paramData.count > 0) {
+      // Expand to individual test cases
+      for (let i = 0; i < paramData.count; i++) {
+        const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
+        const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+        
+        tests.push({
+          id,
+          name: expandedName,
+          fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+          describe: parentDescribe,
+          tags: [{ name: '@parameterized' }],
+          line,
+        });
+      }
+      continue; // Skip adding the base test
+    }
 
     const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
 
@@ -59,7 +72,7 @@ export function parseCypressSpec(
 /** Extracts only the test names from content without building a full SpecFile. */
 export function extractTestNames(content: string): string[] {
   const names: string[] = [];
-  const describeBlocks = findDescribeBlocks(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
 
   let match: RegExpExecArray | null;
   TEST_RE.lastIndex = 0;
@@ -71,57 +84,4 @@ export function extractTestNames(content: string): string[] {
   }
 
   return names;
-}
-
-// ─── Describe block tracking ──────────────────────────────────────────────────
-
-interface DescribeBlock {
-  name: string;
-  /** Index of the opening brace of the callback */
-  start: number;
-  /** Index of the matching closing brace */
-  end: number;
-}
-
-function findDescribeBlocks(content: string): DescribeBlock[] {
-  const blocks: DescribeBlock[] = [];
-
-  let match: RegExpExecArray | null;
-  DESCRIBE_RE.lastIndex = 0;
-
-  while ((match = DESCRIBE_RE.exec(content)) !== null) {
-    const matchEnd = match.index + match[0].length;
-    const afterMatch = content.substring(matchEnd);
-
-    // Walk forward to find the opening brace of the callback arrow/function
-    const braceOffset = afterMatch.indexOf('{');
-    if (braceOffset === -1) continue;
-
-    const braceStart = matchEnd + braceOffset;
-    const braceEnd = findMatchingBrace(content, braceStart);
-
-    if (braceEnd !== -1) {
-      blocks.push({ name: match[2], start: braceStart, end: braceEnd });
-    }
-  }
-
-  return blocks;
-}
-
-/**
- * Finds the innermost describe block that contains `index`.
- * Returns undefined when the test is at the top level.
- */
-function resolveParentDescribe(blocks: DescribeBlock[], index: number): string | undefined {
-  let innermost: DescribeBlock | undefined;
-
-  for (const block of blocks) {
-    if (index > block.start && index < block.end) {
-      if (!innermost || block.start > innermost.start) {
-        innermost = block;
-      }
-    }
-  }
-
-  return innermost?.name;
 }

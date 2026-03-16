@@ -1,1 +1,0 @@
-export { syncCommand } from './sync'

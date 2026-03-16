@@ -34,7 +34,7 @@ __export(src_exports, {
   Core: () => core_exports,
   Git: () => git_exports,
   buildHistory: () => buildHistory,
-  cli: () => cli,
+  cli: () => main,
   detectFramework: () => detectFramework,
   extractTestNamesFromContent: () => extractTestNamesFromContent,
   findSpecFiles: () => findSpecFiles,
@@ -45,11 +45,11 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 
 // src/cli.ts
-var import_commander2 = require("commander");
+var import_dotenv2 = require("dotenv");
 
-// src/commands/sync.ts
-var import_commander = require("commander");
-var import_chalk = __toESM(require("chalk"));
+// src/sync.ts
+var import_path9 = __toESM(require("path"));
+var import_fs3 = __toESM(require("fs"));
 var import_dotenv = __toESM(require("dotenv"));
 
 // src/core/index.ts
@@ -206,6 +206,119 @@ function findMatchingBrace(content, openPos) {
   }
   return -1;
 }
+function findDescribeBlocks(content, describePattern) {
+  const blocks = [];
+  let match;
+  describePattern.lastIndex = 0;
+  while ((match = describePattern.exec(content)) !== null) {
+    const matchEnd = match.index + match[0].length;
+    const afterMatch = content.substring(matchEnd);
+    const braceOffset = afterMatch.indexOf("{");
+    if (braceOffset === -1) continue;
+    const braceStart = matchEnd + braceOffset;
+    const braceEnd = findMatchingBrace(content, braceStart);
+    if (braceEnd !== -1) {
+      blocks.push({ name: match[2] || match[1], start: braceStart, end: braceEnd });
+    }
+  }
+  return blocks;
+}
+function resolveParentDescribe(blocks, index) {
+  let innermost;
+  for (const block of blocks) {
+    if (index > block.start && index < block.end) {
+      if (!innermost || block.start > innermost.start) {
+        innermost = block;
+      }
+    }
+  }
+  return innermost?.name;
+}
+
+// src/core/frameworks/parameterized.ts
+function extractParameterizedDataFromEach(content) {
+  const eachRegex = new RegExp(
+    `(?:test|describe)\\.each\\s*\\(\\s*\\[([\\s\\S]*?)\\]\\s*\\)`,
+    "g"
+  );
+  let match;
+  while ((match = eachRegex.exec(content)) !== null) {
+    const dataContent = match[1];
+    const paramCount = countParameterSets(dataContent);
+    if (paramCount > 0) {
+      return {
+        count: paramCount,
+        hasParameters: true
+      };
+    }
+  }
+  return null;
+}
+function extractParameterizedDataFromForEach(content, testName) {
+  const contextStart = Math.max(0, content.lastIndexOf("\n", content.indexOf(testName)) - 1e3);
+  const contextEnd = content.indexOf(testName);
+  const context = content.substring(contextStart, contextEnd);
+  const forEachMatch = context.match(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i);
+  const forMatch = context.match(/\bfor\s*\(\s*(?:let|var|const)\s+(\w+)\s+(?:of|in)\s+(.+?)\s*\)/);
+  if (forEachMatch || forMatch) {
+    const arrayDeclMatch = context.match(
+      /(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/
+    );
+    if (arrayDeclMatch) {
+      const arrayContent = arrayDeclMatch[1];
+      const count = countParameterSets(arrayContent);
+      if (count > 0) {
+        return {
+          count,
+          hasParameters: true
+        };
+      }
+    }
+    return {
+      count: 0,
+      // Unknown
+      hasParameters: true
+    };
+  }
+  return null;
+}
+function countParameterSets(dataContent) {
+  let count = 0;
+  let inString = false;
+  let stringChar = "";
+  let braceDepth = 0;
+  let bracketDepth = 0;
+  for (let i = 0; i < dataContent.length; i++) {
+    const char = dataContent[i];
+    const prevChar = i > 0 ? dataContent[i - 1] : "";
+    if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
+      if (!inString) {
+        inString = true;
+        stringChar = char;
+      } else if (char === stringChar) {
+        inString = false;
+      }
+      continue;
+    }
+    if (inString) continue;
+    if (char === "{" && bracketDepth === 0) {
+      braceDepth++;
+    } else if (char === "}" && bracketDepth === 0) {
+      braceDepth--;
+      if (braceDepth === 0) {
+        count++;
+      }
+    } else if (char === "[") {
+      bracketDepth++;
+    } else if (char === "]") {
+      bracketDepth--;
+    }
+  }
+  return count;
+}
+function generateParameterizedTestName(baseName, paramIndex, paramCount) {
+  return `${baseName} [${paramIndex + 1}/${paramCount}]`;
+}
 
 // src/core/frameworks/playwright.ts
 var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
@@ -213,7 +326,7 @@ var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\
 var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\2|\[([^\]]+)\])/g;
 function parsePlaywrightSpec(filePath, content, projectRoot) {
   const relativePath = import_path2.default.relative(projectRoot, filePath).replace(/\\/g, "/");
-  const describeBlocks = findDescribeBlocks(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
   const tests = [];
   let match;
   TEST_RE.lastIndex = 0;
@@ -223,9 +336,24 @@ function parsePlaywrightSpec(filePath, content, projectRoot) {
     const line = lineNumberAt(content, matchIndex);
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const tags = extractInlineTags(content, matchIndex);
-    const isParameterized = isParameterizedTest(content, matchIndex);
-    if (isParameterized) {
+    const paramData = extractParameterizedDataFromEach(content);
+    if (paramData?.hasParameters) {
       tags.push({ name: "@parameterized" });
+      if (paramData.count > 0) {
+        for (let i = 0; i < paramData.count; i++) {
+          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
+          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+          tests.push({
+            id: id2,
+            name: expandedName,
+            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+            describe: parentDescribe,
+            tags,
+            line
+          });
+        }
+        continue;
+      }
     }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
     tests.push({
@@ -249,7 +377,7 @@ function parsePlaywrightSpec(filePath, content, projectRoot) {
 }
 function extractTestNames(content) {
   const names = [];
-  const describeBlocks = findDescribeBlocks(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
   let match;
   TEST_RE.lastIndex = 0;
   while ((match = TEST_RE.exec(content)) !== null) {
@@ -258,34 +386,6 @@ function extractTestNames(content) {
     names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
   }
   return names;
-}
-function findDescribeBlocks(content) {
-  const blocks = [];
-  let match;
-  DESCRIBE_RE.lastIndex = 0;
-  while ((match = DESCRIBE_RE.exec(content)) !== null) {
-    const matchEnd = match.index + match[0].length;
-    const afterMatch = content.substring(matchEnd);
-    const braceOffset = afterMatch.indexOf("{");
-    if (braceOffset === -1) continue;
-    const braceStart = matchEnd + braceOffset;
-    const braceEnd = findMatchingBrace(content, braceStart);
-    if (braceEnd !== -1) {
-      blocks.push({ name: match[2], start: braceStart, end: braceEnd });
-    }
-  }
-  return blocks;
-}
-function resolveParentDescribe(blocks, index) {
-  let innermost;
-  for (const block of blocks) {
-    if (index > block.start && index < block.end) {
-      if (!innermost || block.start > innermost.start) {
-        innermost = block;
-      }
-    }
-  }
-  return innermost?.name;
 }
 function extractInlineTags(content, testIndex) {
   const window = content.substring(testIndex, testIndex + 300);
@@ -302,10 +402,6 @@ function extractInlineTags(content, testIndex) {
   }
   return tags;
 }
-function isParameterizedTest(content, testIndex) {
-  const window = content.substring(Math.max(0, testIndex - 50), testIndex);
-  return /\.each\s*\(/.test(window);
-}
 
 // src/core/frameworks/cypress.ts
 var import_path3 = __toESM(require("path"));
@@ -313,7 +409,7 @@ var DESCRIBE_RE2 = /describe\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE2 = /(?:^|[ \t]+)(?:it|specify|test)\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseCypressSpec(filePath, content, projectRoot) {
   const relativePath = import_path3.default.relative(projectRoot, filePath).replace(/\\/g, "/");
-  const describeBlocks = findDescribeBlocks2(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE2);
   const tests = [];
   let match;
   TEST_RE2.lastIndex = 0;
@@ -321,7 +417,23 @@ function parseCypressSpec(filePath, content, projectRoot) {
     const testName = match[2];
     const matchIndex = match.index;
     const line = lineNumberAt(content, matchIndex);
-    const parentDescribe = resolveParentDescribe2(describeBlocks, matchIndex);
+    const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
+    const paramData = extractParameterizedDataFromForEach(content, testName);
+    if (paramData?.hasParameters && paramData.count > 0) {
+      for (let i = 0; i < paramData.count; i++) {
+        const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
+        const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+        tests.push({
+          id: id2,
+          name: expandedName,
+          fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+          describe: parentDescribe,
+          tags: [{ name: "@parameterized" }],
+          line
+        });
+      }
+      continue;
+    }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
     tests.push({
       id,
@@ -344,43 +456,15 @@ function parseCypressSpec(filePath, content, projectRoot) {
 }
 function extractTestNames2(content) {
   const names = [];
-  const describeBlocks = findDescribeBlocks2(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE2);
   let match;
   TEST_RE2.lastIndex = 0;
   while ((match = TEST_RE2.exec(content)) !== null) {
     const testName = match[2];
-    const parentDescribe = resolveParentDescribe2(describeBlocks, match.index);
+    const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
     names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
   }
   return names;
-}
-function findDescribeBlocks2(content) {
-  const blocks = [];
-  let match;
-  DESCRIBE_RE2.lastIndex = 0;
-  while ((match = DESCRIBE_RE2.exec(content)) !== null) {
-    const matchEnd = match.index + match[0].length;
-    const afterMatch = content.substring(matchEnd);
-    const braceOffset = afterMatch.indexOf("{");
-    if (braceOffset === -1) continue;
-    const braceStart = matchEnd + braceOffset;
-    const braceEnd = findMatchingBrace(content, braceStart);
-    if (braceEnd !== -1) {
-      blocks.push({ name: match[2], start: braceStart, end: braceEnd });
-    }
-  }
-  return blocks;
-}
-function resolveParentDescribe2(blocks, index) {
-  let innermost;
-  for (const block of blocks) {
-    if (index > block.start && index < block.end) {
-      if (!innermost || block.start > innermost.start) {
-        innermost = block;
-      }
-    }
-  }
-  return innermost?.name;
 }
 
 // src/core/frameworks/vitest.ts
@@ -389,7 +473,7 @@ var DESCRIBE_RE3 = /describe\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g
 var TEST_RE3 = /(?:^|[ \t]+)(?:test|it)\s*(?:\.(?:skip|only|todo))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseVitestSpec(filePath, content, projectRoot) {
   const relativePath = import_path4.default.relative(projectRoot, filePath).replace(/\\/g, "/");
-  const describeBlocks = findDescribeBlocks3(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE3);
   const tests = [];
   let match;
   TEST_RE3.lastIndex = 0;
@@ -397,9 +481,28 @@ function parseVitestSpec(filePath, content, projectRoot) {
     const testName = match[2];
     const matchIndex = match.index;
     const line = lineNumberAt(content, matchIndex);
-    const parentDescribe = resolveParentDescribe3(describeBlocks, matchIndex);
+    const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
     const tags = isTodo ? [{ name: "@todo" }] : [];
+    const paramData = extractParameterizedDataFromEach(content);
+    if (paramData?.hasParameters) {
+      tags.push({ name: "@parameterized" });
+      if (paramData.count > 0) {
+        for (let i = 0; i < paramData.count; i++) {
+          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
+          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+          tests.push({
+            id: id2,
+            name: expandedName,
+            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+            describe: parentDescribe,
+            tags,
+            line
+          });
+        }
+        continue;
+      }
+    }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
     tests.push({
       id,
@@ -422,43 +525,15 @@ function parseVitestSpec(filePath, content, projectRoot) {
 }
 function extractTestNames3(content) {
   const names = [];
-  const describeBlocks = findDescribeBlocks3(content);
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE3);
   let match;
   TEST_RE3.lastIndex = 0;
   while ((match = TEST_RE3.exec(content)) !== null) {
     const testName = match[2];
-    const parentDescribe = resolveParentDescribe3(describeBlocks, match.index);
+    const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
     names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
   }
   return names;
-}
-function findDescribeBlocks3(content) {
-  const blocks = [];
-  let match;
-  DESCRIBE_RE3.lastIndex = 0;
-  while ((match = DESCRIBE_RE3.exec(content)) !== null) {
-    const matchEnd = match.index + match[0].length;
-    const afterMatch = content.substring(matchEnd);
-    const braceOffset = afterMatch.indexOf("{");
-    if (braceOffset === -1) continue;
-    const braceStart = matchEnd + braceOffset;
-    const braceEnd = findMatchingBrace(content, braceStart);
-    if (braceEnd !== -1) {
-      blocks.push({ name: match[2], start: braceStart, end: braceEnd });
-    }
-  }
-  return blocks;
-}
-function resolveParentDescribe3(blocks, index) {
-  let innermost;
-  for (const block of blocks) {
-    if (index > block.start && index < block.end) {
-      if (!innermost || block.start > innermost.start) {
-        innermost = block;
-      }
-    }
-  }
-  return innermost?.name;
 }
 
 // src/core/frameworks/testng.ts
@@ -714,6 +789,45 @@ __export(git_exports, {
 // src/git/history.ts
 var import_simple_git = __toESM(require("simple-git"));
 var import_path8 = __toESM(require("path"));
+
+// src/core/frameworks/testDiff.ts
+function levenshteinDistance(a, b) {
+  const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+  for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+  for (let j = 1; j <= b.length; j++) {
+    for (let i = 1; i <= a.length; i++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[j][i] = Math.min(
+        matrix[j][i - 1] + 1,
+        // deletion
+        matrix[j - 1][i] + 1,
+        // insertion
+        matrix[j - 1][i - 1] + cost
+        // substitution
+      );
+    }
+  }
+  return matrix[b.length][a.length];
+}
+function normalizeTestName(name) {
+  return name.toLowerCase().replace(/[_\-\s]+/g, " ").trim();
+}
+function calculateSimilarity(a, b) {
+  const normA = normalizeTestName(a);
+  const normB = normalizeTestName(b);
+  if (normA === normB) return 1;
+  const distance = levenshteinDistance(normA, normB);
+  const maxLength = Math.max(normA.length, normB.length);
+  if (maxLength === 0) return 1;
+  return 1 - distance / maxLength;
+}
+function isSameTest(a, b) {
+  const similarity = calculateSimilarity(a, b);
+  return similarity > 0.85;
+}
+
+// src/git/history.ts
 async function getLatestCommitHash(projectPath) {
   const git = (0, import_simple_git.default)(projectPath);
   try {
@@ -726,6 +840,8 @@ async function getLatestCommitHash(projectPath) {
 async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHistory) {
   const git = (0, import_simple_git.default)(projectPath);
   const relativeTestDir = testDir.replace(/^\.\//, "");
+  const errors = [];
+  const warnings = [];
   let logArgs;
   if (sinceCommit) {
     logArgs = [`${sinceCommit}..HEAD`, "--", relativeTestDir];
@@ -740,38 +856,49 @@ async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHi
   } catch (error) {
     if (error instanceof Error) {
       console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
+      warnings.push(`Git log failed: ${error.message}`);
     }
-    return [];
+    return { entries: [], errors, warnings };
   }
   const commits = [...logResult.all].reverse();
-  const history = [];
+  const entries = [];
   for (const commit of commits) {
-    const fileChanges = await getCommitFileChanges(
-      git,
-      commit.hash,
-      fullHistory ? void 0 : relativeTestDir
-    );
-    const specChanges = await buildSpecChanges(
-      git,
-      commit.hash,
-      fileChanges,
-      framework,
-      projectPath
-    );
-    if (specChanges.length === 0) continue;
-    history.push({
-      commit: {
-        hash: commit.hash,
-        shortHash: commit.hash.substring(0, 7),
-        message: commit.message,
-        author: commit.author_name,
-        date: new Date(commit.date).toISOString(),
-        changes: fileChanges
-      },
-      specs: specChanges
-    });
+    try {
+      const fileChanges = await getCommitFileChanges(
+        git,
+        commit.hash,
+        fullHistory ? void 0 : relativeTestDir
+      );
+      const specChanges = await buildSpecChanges(
+        git,
+        commit.hash,
+        fileChanges,
+        framework,
+        projectPath,
+        errors
+      );
+      if (specChanges.length === 0) continue;
+      entries.push({
+        commit: {
+          hash: commit.hash,
+          shortHash: commit.hash.substring(0, 7),
+          message: commit.message,
+          author: commit.author_name,
+          date: new Date(commit.date).toISOString(),
+          changes: fileChanges
+        },
+        specs: specChanges
+      });
+    } catch (error) {
+      errors.push({
+        commit: commit.hash,
+        file: "unknown",
+        reason: error instanceof Error ? error.message : "Unknown error",
+        partial: true
+      });
+    }
   }
-  return history;
+  return { entries, errors, warnings };
 }
 async function getCommitFileChanges(git, hash, testDir) {
   try {
@@ -822,14 +949,20 @@ function mapGitStatus(status) {
       return null;
   }
 }
-async function buildSpecChanges(git, hash, fileChanges, framework, projectPath) {
+async function buildSpecChanges(git, hash, fileChanges, framework, projectPath, errors) {
   const entries = [];
   for (const change of fileChanges) {
     if (!isSpecFile(change.path)) continue;
     try {
       const entry = await buildSpecEntry(git, hash, change, framework, projectPath);
       if (entry) entries.push(entry);
-    } catch {
+    } catch (error) {
+      errors.push({
+        commit: hash,
+        file: change.path,
+        reason: error instanceof Error ? error.message : "Unknown error",
+        partial: true
+      });
     }
   }
   return entries;
@@ -894,7 +1027,7 @@ function diffTestNames(previous, current) {
   const matchedAdded = /* @__PURE__ */ new Set();
   for (const removedName of removed) {
     const renameCandidate = added.find(
-      (addedName) => !matchedAdded.has(addedName) && similarNames(removedName, addedName)
+      (addedName) => !matchedAdded.has(addedName) && isSameTest(removedName, addedName)
     );
     if (renameCandidate) {
       changes.push({ type: "modified", name: renameCandidate, oldName: removedName });
@@ -910,17 +1043,10 @@ function diffTestNames(previous, current) {
   }
   return changes;
 }
-function similarNames(a, b) {
-  const wordsA = new Set(a.toLowerCase().split(/\s+/));
-  const wordsB = new Set(b.toLowerCase().split(/\s+/));
-  const intersection = [...wordsA].filter((w) => wordsB.has(w)).length;
-  const union = (/* @__PURE__ */ new Set([...wordsA, ...wordsB])).size;
-  return union > 0 && intersection / union > 0.5;
-}
 
 // src/sync-client.ts
-async function getSyncMarker(dashboardUrl, apiToken, projectId) {
-  const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
+async function getProjectSyncRecord(dashboardUrl, apiToken, projectId) {
+  const url = new URL(`/api/projects/${projectId}/sync-record`, dashboardUrl).toString();
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${apiToken}`
@@ -935,14 +1061,13 @@ async function getSyncMarker(dashboardUrl, apiToken, projectId) {
       const errorBody = await response.text().catch(() => "");
       throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ""}`);
     }
-    const data = await response.json();
-    return data?.lastSyncedCommit || data?.commitHash || null;
+    return await response.json();
   } catch (error) {
     return null;
   }
 }
-async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
-  const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
+async function saveProjectSyncRecord(dashboardUrl, apiToken, record) {
+  const url = new URL(`/api/projects/${record.projectId}/sync-record`, dashboardUrl).toString();
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${apiToken}`
@@ -950,12 +1075,30 @@ async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
   const response = await fetch(url, {
     method: "POST",
     headers,
-    body: JSON.stringify({ commitHash })
+    body: JSON.stringify(record)
   });
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
     throw new Error(
-      `Failed to save sync marker: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
+      `Failed to save sync record: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
+    );
+  }
+}
+async function updateProjectLastSyncCommit(dashboardUrl, apiToken, projectId, commitHash) {
+  const url = new URL(`/api/projects/${projectId}/sync-record/last-sync`, dashboardUrl).toString();
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${apiToken}`
+  };
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ lastSyncCommit: commitHash })
+  });
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => "");
+    throw new Error(
+      `Failed to update sync record: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
     );
   }
 }
@@ -979,15 +1122,17 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
   return response.json();
 }
 
-// src/commands/sync.ts
-var import_path9 = __toESM(require("path"));
-var import_fs3 = __toESM(require("fs"));
-import_dotenv.default.config({ debug: false });
-function deduplicateChanges(changes) {
+// src/sync.ts
+function getChangeKey(change, specPath) {
+  const path10 = specPath ?? "";
+  const oldName = change.oldName ?? "";
+  return `${path10}:${change.type}:${change.name}:${oldName}`;
+}
+function deduplicateChanges(changes, specPath) {
   const seen = /* @__PURE__ */ new Set();
   const deduplicated = [];
   for (const change of changes) {
-    const key = `${change.type}:${change.name}:${change.oldName ?? ""}`;
+    const key = getChangeKey(change, specPath);
     if (!seen.has(key)) {
       seen.add(key);
       deduplicated.push(change);
@@ -995,166 +1140,202 @@ function deduplicateChanges(changes) {
   }
   return deduplicated;
 }
-var syncCommand = new import_commander.Command("sync").description("Sync test data to dashboard").option("--project-id <id>", "Project ID from init").option("--dashboard-url <url>", "Dashboard URL").option("--full-history", "Scan all commits in repo (use for projects that moved tests)").action(async (options) => {
+async function syncProject(options) {
+  const { projectId, apiKey, dashboardUrl } = options;
+  const envLocalPath = import_path9.default.join(process.cwd(), ".env.local");
+  if (import_fs3.default.existsSync(envLocalPath)) {
+    import_dotenv.default.config({ path: envLocalPath, debug: false });
+  }
+  console.log("[sync] Detecting framework...");
+  const detection = detectFramework(process.cwd());
+  console.log(`[sync] Detected framework: ${detection.framework}`);
+  console.log(`[sync] Test directory: ${detection.testDir}`);
+  console.log("[sync] Parsing test specifications...");
+  const specs = parseAllSpecs(process.cwd(), detection.testDir, detection.framework);
+  console.log(`[sync] Found ${specs.length} spec files`);
+  const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
+  console.log(`[sync] Total tests: ${totalTests}`);
+  console.log("[sync] Checking sync status...");
+  let syncRecord = null;
+  let isFirstSync = false;
   try {
-    const projectPath = process.cwd();
-    const envLocalPath = import_path9.default.join(projectPath, ".env.local");
-    if (import_fs3.default.existsSync(envLocalPath)) {
-      import_dotenv.default.config({ path: envLocalPath, debug: false });
+    syncRecord = await getProjectSyncRecord(dashboardUrl, apiKey, projectId);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`[sync] Warning: Could not retrieve sync record: ${error.message}`);
     }
-    const projectId = options.projectId || process.env.CHRONICLE_PROJECT_ID;
-    const dashboardUrl = options.dashboardUrl || process.env.CHRONICLE_DASHBOARD_URL || "http://localhost:3000";
-    const apiKey = process.env.CHRONICLE_API_KEY;
-    if (!projectId) {
-      console.error(import_chalk.default.red("Error: Missing project ID"));
-      console.log(import_chalk.default.yellow("\nSet CHRONICLE_PROJECT_ID in .env.local:"));
-      console.log(import_chalk.default.white("  CHRONICLE_PROJECT_ID=<id-from-init-command>"));
-      console.log(import_chalk.default.gray("Or use --project-id flag"));
-      process.exit(1);
+  }
+  isFirstSync = !syncRecord;
+  if (isFirstSync) {
+    console.log("[sync] First sync detected - creating baseline");
+  } else {
+    console.log(
+      `[sync] Subsequent sync - last synced: ${syncRecord.lastSyncCommit.substring(0, 7)}`
+    );
+  }
+  console.log("[sync] Building git history...");
+  const sinceCommit = isFirstSync ? void 0 : syncRecord.lastSyncCommit;
+  const history = await buildHistory(
+    process.cwd(),
+    detection.testDir,
+    detection.framework,
+    sinceCommit,
+    false
+    // never do full history anymore
+  );
+  console.log(`[sync] Built history for ${history.entries.length} commits`);
+  if (history.errors.length > 0) {
+    console.warn(`[sync] Warning: ${history.errors.length} commits had processing issues:`);
+    history.errors.slice(0, 5).forEach((error) => {
+      console.warn(`[sync]   - ${error.commit.substring(0, 7)}: ${error.file} (${error.reason})`);
+    });
+    if (history.errors.length > 5) {
+      console.warn(`[sync]   ... and ${history.errors.length - 5} more`);
     }
-    if (!dashboardUrl) {
-      console.error(import_chalk.default.red("Error: Missing dashboard URL"));
-      console.log(import_chalk.default.yellow("Set CHRONICLE_DASHBOARD_URL in .env.local or use --dashboard-url"));
-      process.exit(1);
-    }
-    if (!apiKey) {
-      console.error(import_chalk.default.red("Error: Missing API key"));
-      console.log(import_chalk.default.yellow("\nAdd your API key to .env.local:"));
-      console.log(import_chalk.default.white("  CHRONICLE_API_KEY=<your-api-key>"));
-      console.log(import_chalk.default.gray("Or visit http://localhost:3000/auth/settings to retrieve your key"));
-      process.exit(1);
-    }
-    console.log(import_chalk.default.blue("\u{1F50D} Detecting framework..."));
-    const detection = detectFramework(projectPath);
-    console.log(import_chalk.default.green(`\u2713 Detected framework: ${detection.framework}`));
-    console.log(import_chalk.default.gray(`  Test directory: ${detection.testDir}`));
-    console.log(import_chalk.default.blue("\u{1F4DD} Parsing test specifications..."));
-    const specs = parseAllSpecs(projectPath, detection.testDir, detection.framework);
-    console.log(import_chalk.default.green(`\u2713 Found ${specs.length} spec files`));
-    const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
-    console.log(import_chalk.default.gray(`  Total tests: ${totalTests}`));
-    console.log(import_chalk.default.blue("\u{1F4DA} Building git history..."));
-    let sinceCommit;
-    if (!options.fullHistory) {
-      try {
-        const marker = await getSyncMarker(dashboardUrl, apiKey, projectId);
-        if (marker) {
-          sinceCommit = marker;
-          console.log(import_chalk.default.gray(`  Last synced: ${marker.substring(0, 7)}`));
-        } else {
-          console.log(import_chalk.default.gray("  No prior sync marker found, syncing full history"));
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(import_chalk.default.gray(`  Warning: ${error.message}`));
-        }
-      }
-    } else {
-      console.log(import_chalk.default.gray("  Full history mode: scanning all commits"));
-    }
-    const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit, options.fullHistory);
-    console.log(import_chalk.default.green(`\u2713 Built history for ${history.length} commits`));
-    const tags = {};
-    specs.forEach((spec) => {
-      spec.tests.forEach((test) => {
-        test.tags?.forEach((tag) => {
-          tags[tag.name] = (tags[tag.name] || 0) + 1;
-        });
+  }
+  if (history.warnings.length > 0) {
+    history.warnings.forEach((warning) => {
+      console.warn(`[sync] Warning: ${warning}`);
+    });
+  }
+  const tags = {};
+  specs.forEach((spec) => {
+    spec.tests.forEach((test) => {
+      test.tags?.forEach((tag) => {
+        tags[tag.name] = (tags[tag.name] || 0) + 1;
       });
     });
-    const stats = {
-      totalSpecs: specs.length,
-      totalTests,
-      tags
-    };
-    console.log();
-    console.log(import_chalk.default.blue("\u{1F4CA} Summary"));
-    console.log(import_chalk.default.gray(`  Specs: ${specs.length}`));
-    console.log(import_chalk.default.gray(`  Tests: ${totalTests}`));
-    console.log();
-    console.log(import_chalk.default.blue("\u{1F680} Syncing to dashboard..."));
-    const transformedSpecs = specs.map((spec) => ({
-      filePath: spec.path,
-      framework: spec.framework,
-      tests: spec.tests.map((test) => ({
-        name: test.name,
-        lineNumber: test.line,
-        tags: test.tags.map((tag) => tag.name)
-      }))
-    }));
-    const transformedHistory = history.map((entry) => {
-      const allChanges = [];
-      for (const spec of entry.specs) {
-        const deduplicatedChanges = deduplicateChanges(spec.changes);
-        for (const change of deduplicatedChanges) {
-          allChanges.push({
-            specPath: spec.specPath,
-            testName: change.name,
-            type: change.type === "removed" ? "deleted" : change.type,
-            oldName: change.oldName
-          });
-        }
-      }
-      const seenKeys = /* @__PURE__ */ new Set();
-      const uniqueChanges = allChanges.filter((change) => {
-        const key = `${change.specPath}:${change.type}:${change.testName}`;
-        if (seenKeys.has(key)) return false;
-        seenKeys.add(key);
-        return true;
-      });
-      return {
-        commitHash: entry.commit.hash,
-        commitMessage: entry.commit.message,
-        author: entry.commit.author,
-        commitDate: entry.commit.date,
-        changes: uniqueChanges.map((change) => ({
-          specFile: change.specPath,
-          testName: change.testName,
+  });
+  const stats = {
+    totalSpecs: specs.length,
+    totalTests,
+    tags
+  };
+  console.log("[sync] Summary");
+  console.log(`[sync] Specs: ${specs.length}`);
+  console.log(`[sync] Tests: ${totalTests}`);
+  console.log("[sync] Syncing to dashboard...");
+  const transformedSpecs = specs.map((spec) => ({
+    filePath: spec.path,
+    framework: spec.framework,
+    tests: spec.tests.map((test) => ({
+      name: test.name,
+      lineNumber: test.line,
+      tags: test.tags.map((tag) => tag.name)
+    }))
+  }));
+  const transformedHistory = history.entries.map((entry) => {
+    const allChanges = [];
+    for (const spec of entry.specs) {
+      const deduplicatedChanges = deduplicateChanges(spec.changes, spec.specPath);
+      for (const change of deduplicatedChanges) {
+        allChanges.push({
+          specPath: spec.specPath,
+          testName: change.name,
           type: change.type,
-          details: change.oldName ? { old_name: change.oldName } : void 0
-        }))
-      };
-    });
-    const payload = {
-      projectId,
-      specs: transformedSpecs,
-      history: transformedHistory,
-      stats,
-      timestamp: (/* @__PURE__ */ new Date()).toISOString()
-    };
-    await syncToDashboard(dashboardUrl, apiKey, payload);
-    console.log(import_chalk.default.green("\u2713 Sync successful!"));
-    console.log(import_chalk.default.gray(`  Synced ${specs.length} specs with ${totalTests} tests`));
-    if (history.length > 0) {
-      try {
-        const lastHash = history[history.length - 1].commit.hash;
-        await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
-        console.log(import_chalk.default.gray(`  Saved sync marker: ${lastHash.substring(0, 7)}`));
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(import_chalk.default.yellow(`  Warning: Could not save sync marker: ${error.message}`));
-        }
+          oldName: change.oldName
+        });
       }
+    }
+    const seenKeys = /* @__PURE__ */ new Set();
+    const uniqueChanges = allChanges.filter((change) => {
+      const key = getChangeKey(
+        {
+          type: change.type,
+          name: change.testName,
+          oldName: change.oldName
+        },
+        change.specPath
+      );
+      if (seenKeys.has(key)) return false;
+      seenKeys.add(key);
+      return true;
+    });
+    return {
+      commitHash: entry.commit.hash,
+      commitMessage: entry.commit.message,
+      author: entry.commit.author,
+      commitDate: entry.commit.date,
+      changes: uniqueChanges.map((change) => ({
+        specFile: change.specPath,
+        testName: change.testName,
+        type: change.type === "removed" ? "deleted" : change.type,
+        details: change.oldName ? { old_name: change.oldName } : void 0
+      }))
+    };
+  });
+  const payload = {
+    projectId,
+    specs: transformedSpecs,
+    history: transformedHistory,
+    stats,
+    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+  };
+  await syncToDashboard(dashboardUrl, apiKey, payload);
+  console.log("[sync] Sync successful!");
+  console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
+  try {
+    let lastHash = null;
+    if (history.entries.length > 0) {
+      lastHash = history.entries[history.entries.length - 1].commit.hash;
+    } else {
+      lastHash = await getLatestCommitHash(process.cwd());
+    }
+    if (!lastHash) {
+      console.log("[sync] Warning: Could not determine last commit hash");
+      return;
+    }
+    if (isFirstSync) {
+      const currentCommit = await getLatestCommitHash(process.cwd());
+      if (!currentCommit) {
+        throw new Error("Could not determine current commit for baseline");
+      }
+      const newRecord = {
+        projectId,
+        firstSyncDate: (/* @__PURE__ */ new Date()).toISOString(),
+        firstSyncCommit: currentCommit,
+        baselineStats: {
+          totalTests,
+          totalFiles: specs.length,
+          tags
+        },
+        lastSyncCommit: lastHash,
+        detectedFramework: detection.framework
+      };
+      await saveProjectSyncRecord(dashboardUrl, apiKey, newRecord);
+      console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
+    } else {
+      await updateProjectLastSyncCommit(dashboardUrl, apiKey, projectId, lastHash);
+      console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}`);
     }
   } catch (error) {
-    console.error(import_chalk.default.red("Error during sync:"));
     if (error instanceof Error) {
-      console.error(import_chalk.default.red(`  ${error.message}`));
-    } else {
-      console.error(import_chalk.default.red(`  ${String(error)}`));
+      console.log(`[sync] Warning: Could not save sync record: ${error.message}`);
     }
-    process.exit(1);
   }
-});
+}
 
 // src/cli.ts
-var cli = new import_commander2.Command().name("test-chronicle-agent").description("CLI agent for syncing test data to test-chronicle dashboard").version("0.1.0");
-cli.addCommand(syncCommand);
+(0, import_dotenv2.config)({ path: ".env.local" });
 async function main() {
   try {
-    await cli.parseAsync(process.argv);
+    const projectId = process.env.CHRONICLE_PROJECT_ID;
+    const apiKey = process.env.CHRONICLE_API_KEY;
+    const dashboardUrl = process.env.CHRONICLE_DASHBOARD_URL || "http://localhost:3000";
+    if (!projectId || !apiKey) {
+      console.error("Error: CHRONICLE_PROJECT_ID and CHRONICLE_API_KEY are required");
+      process.exit(1);
+    }
+    const options = {
+      projectId,
+      apiKey,
+      dashboardUrl
+    };
+    await syncProject(options);
+    process.exit(0);
   } catch (error) {
-    console.error("Fatal error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Fatal error:", message);
     process.exit(1);
   }
 }

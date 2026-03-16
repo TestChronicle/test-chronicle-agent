@@ -8,7 +8,7 @@
  * See: docs/FRAMEWORK_ARCHITECTURE.md
  */
 
-import { SpecFile } from '../../types';
+import { SpecFile } from '../types';
 
 /**
  * Feature support matrix for a framework

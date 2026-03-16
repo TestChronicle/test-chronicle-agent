@@ -1,7 +1,8 @@
 import simpleGit from 'simple-git';
 import path from 'path';
-import { Framework, GitFileChange, CommitHistory, SpecHistoryEntry, TestChange } from '../types';
+import { Framework, GitFileChange, CommitHistory, SpecHistoryEntry, TestChange, HistoryError, HistoryBuildResult } from '../types';
 import { extractTestNamesFromContent } from '../core/parser';
+import { isSameTest } from '../core/frameworks/testDiff';
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
@@ -26,6 +27,8 @@ export async function getLatestCommitHash(projectPath: string): Promise<string |
  * Builds the full commit history for the given test directory.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
+ * 
+ * Returns both the history entries and any errors encountered during processing.
  */
 export async function buildHistory(
   projectPath: string,
@@ -33,9 +36,11 @@ export async function buildHistory(
   framework: Framework,
   sinceCommit?: string,
   fullHistory?: boolean
-): Promise<CommitHistory[]> {
+): Promise<HistoryBuildResult> {
   const git = simpleGit(projectPath);
   const relativeTestDir = testDir.replace(/^\.\//, '');
+  const errors: HistoryError[] = [];
+  const warnings: string[] = [];
 
   let logArgs: string[];
   
@@ -58,45 +63,56 @@ export async function buildHistory(
     // Log the error for debugging
     if (error instanceof Error) {
       console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
+      warnings.push(`Git log failed: ${error.message}`);
     }
-    return [];
+    return { entries: [], errors, warnings };
   }
 
   const commits = [...logResult.all].reverse(); // oldest first for timeline ordering
-  const history: CommitHistory[] = [];
+  const entries: CommitHistory[] = [];
 
   for (const commit of commits) {
-    // When doing full history, don't filter by testDir in getCommitFileChanges
-    // Instead let buildSpecChanges filter to only test files
-    const fileChanges = await getCommitFileChanges(
-      git,
-      commit.hash,
-      fullHistory ? undefined : relativeTestDir
-    );
-    const specChanges = await buildSpecChanges(
-      git,
-      commit.hash,
-      fileChanges,
-      framework,
-      projectPath
-    );
+    try {
+      // When doing full history, don't filter by testDir in getCommitFileChanges
+      // Instead let buildSpecChanges filter to only test files
+      const fileChanges = await getCommitFileChanges(
+        git,
+        commit.hash,
+        fullHistory ? undefined : relativeTestDir
+      );
+      const specChanges = await buildSpecChanges(
+        git,
+        commit.hash,
+        fileChanges,
+        framework,
+        projectPath,
+        errors
+      );
 
-    if (specChanges.length === 0) continue;
+      if (specChanges.length === 0) continue;
 
-    history.push({
-      commit: {
-        hash: commit.hash,
-        shortHash: commit.hash.substring(0, 7),
-        message: commit.message,
-        author: commit.author_name,
-        date: new Date(commit.date).toISOString(),
-        changes: fileChanges,
-      },
-      specs: specChanges,
-    });
+      entries.push({
+        commit: {
+          hash: commit.hash,
+          shortHash: commit.hash.substring(0, 7),
+          message: commit.message,
+          author: commit.author_name,
+          date: new Date(commit.date).toISOString(),
+          changes: fileChanges,
+        },
+        specs: specChanges,
+      });
+    } catch (error) {
+      errors.push({
+        commit: commit.hash,
+        file: 'unknown',
+        reason: error instanceof Error ? error.message : 'Unknown error',
+        partial: true,
+      });
+    }
   }
 
-  return history;
+  return { entries, errors, warnings };
 }
 
 // ─── File change detection ────────────────────────────────────────────────────
@@ -172,7 +188,8 @@ async function buildSpecChanges(
   hash: string,
   fileChanges: GitFileChange[],
   framework: Framework,
-  projectPath: string
+  projectPath: string,
+  errors: HistoryError[]
 ): Promise<SpecHistoryEntry[]> {
   const entries: SpecHistoryEntry[] = [];
 
@@ -182,8 +199,14 @@ async function buildSpecChanges(
     try {
       const entry = await buildSpecEntry(git, hash, change, framework, projectPath);
       if (entry) entries.push(entry);
-    } catch {
-      // Skip files that can't be retrieved (e.g. very old history)
+    } catch (error) {
+      errors.push({
+        commit: hash,
+        file: change.path,
+        reason: error instanceof Error ? error.message : 'Unknown error',
+        partial: true,
+      });
+      // Continue processing other files even if one fails
     }
   }
 
@@ -270,8 +293,8 @@ function isSpecFile(filePath: string): boolean {
 
 /**
  * Diffs two sets of test names.
- * Applies a simple rename heuristic: if a removed and added name share
- * more than half their words, treat it as a rename rather than remove+add.
+ * Uses Levenshtein distance-based similarity (85%+ threshold) to detect renames.
+ * This is significantly more accurate than word-overlap similarity.
  */
 function diffTestNames(previous: Set<string>, current: Set<string>): TestChange[] {
   const added = [...current].filter((t) => !previous.has(t));
@@ -282,7 +305,7 @@ function diffTestNames(previous: Set<string>, current: Set<string>): TestChange[
 
   for (const removedName of removed) {
     const renameCandidate = added.find(
-      (addedName) => !matchedAdded.has(addedName) && similarNames(removedName, addedName)
+      (addedName) => !matchedAdded.has(addedName) && isSameTest(removedName, addedName)
     );
 
     if (renameCandidate) {
@@ -300,13 +323,4 @@ function diffTestNames(previous: Set<string>, current: Set<string>): TestChange[
   }
 
   return changes;
-}
-
-/** Word-overlap similarity — returns true when >50% of words are shared. */
-function similarNames(a: string, b: string): boolean {
-  const wordsA = new Set(a.toLowerCase().split(/\s+/));
-  const wordsB = new Set(b.toLowerCase().split(/\s+/));
-  const intersection = [...wordsA].filter((w) => wordsB.has(w)).length;
-  const union = new Set([...wordsA, ...wordsB]).size;
-  return union > 0 && intersection / union > 0.5;
 }

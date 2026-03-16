@@ -2,22 +2,6 @@ import path from 'path';
 import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt } from './common';
 
-// ─── Regex patterns ───────────────────────────────────────────────────────────
-//
-// TestNG tests are Java methods annotated with @Test.
-// Pattern: @Test or @Test(groups = {...}, enabled = true/false)
-// Followed by: method signature with name
-//
-// Examples:
-//   @Test
-//   public void loginTest() { ... }
-//
-//   @Test(groups = {"smoke", "login"})
-//   public void shouldHandleInvalidPassword() { ... }
-//
-//   @Test(enabled = false)
-//   public void skippedTest() { ... }
-
 const TEST_METHOD_RE = /@Test\s*(?:\([^)]*\))?\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 
 const CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
