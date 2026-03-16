@@ -114,6 +114,7 @@ export const syncCommand = new Command('sync')
       }
       
       const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit, options.fullHistory)
+      console.log(chalk.green(`✓ Built history for ${history.length} commits`))
 
       // Compute stats
       const tags: Record<string, number> = {}
