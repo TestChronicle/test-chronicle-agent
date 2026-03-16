@@ -51,7 +51,7 @@ That's it! Your tests will sync automatically on every push.
 If you've reorganized your test structure during development (e.g., moved tests between directories), use the `full-history` flag on your first sync to capture the complete history:
 
 ```yaml
-- uses: TestChronicle/test-chronicle-agent@v1
+- uses: TestChronicle/test-chronicle-agent@v0.1.0
   with:
     api-key: ${{ secrets.CHRONICLE_API_KEY }}
     project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
