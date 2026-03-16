@@ -1053,6 +1053,7 @@ var syncCommand = new import_commander.Command("sync").description("Sync test da
       console.log(import_chalk.default.gray("  Full history mode: scanning all commits"));
     }
     const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit, options.fullHistory);
+    console.log(import_chalk.default.green(`\u2713 Built history for ${history.length} commits`));
     const tags = {};
     specs.forEach((spec) => {
       spec.tests.forEach((test) => {
