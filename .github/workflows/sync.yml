@@ -17,7 +17,8 @@ jobs:
         with:
           fetch-depth: 0
       
-      - uses: TestChronicle/test-chronicle-agent@v0.1.0
+      - uses: TestChronicle/test-chronicle-agent@feat--add-support-for-full-history
         with:
           api-key: ${{ secrets.CHRONICLE_API_KEY }}
           project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
+          full-history: true
