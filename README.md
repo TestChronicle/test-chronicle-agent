@@ -51,29 +51,6 @@ That's it! Your tests will sync automatically on every push.
 If you've reorganized your test structure during development (e.g., moved tests between directories), use the `full-history` flag on your first sync to capture the complete history:
 
 ```yaml
-- uses: TestChronicle/test-chronicle-agent@v0.1.0
-  with:
-    api-key: ${{ secrets.CHRONICLE_API_KEY }}
-    project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
-    full-history: true  # Scan all repo commits for test changes
-```
-
-This will scan all commits in your repository to find test changes, even if they occurred before tests were in their current location. Subsequent syncs will only process new commits (faster and more efficient).
-
-### GitHub Action Inputs
-
-| Input | Required | Default | Description |
-|-------|:--------:|:-------:|-------------|
-| `api-key` | ✅ | - | Chronicle API key for authentication |
-| `project-id` | ✅ | - | Project ID from dashboard |
-| `dashboard-url` | ❌ | `https://www.testchronicle.com` | Dashboard URL (local testing only) |
-| `full-history` | ❌ | `false` | Scan all commits (use if tests were moved) |
-
-### Using Full History on First Sync
-
-If you've reorganized your test structure during development (e.g., moved tests between directories), use the `full-history` flag on your first sync to capture the complete history:
-
-```yaml
 - uses: TestChronicle/test-chronicle-agent@v1
   with:
     api-key: ${{ secrets.CHRONICLE_API_KEY }}
