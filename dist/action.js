@@ -31,6 +31,7 @@ async function run() {
     const apiKey = process.env["INPUT_API-KEY"];
     const projectId = process.env["INPUT_PROJECT-ID"];
     const dashboardUrl = process.env["INPUT_DASHBOARD-URL"];
+    const fullHistory = process.env["INPUT_FULL-HISTORY"] === "true";
     if (!apiKey) {
       throw new Error("api-key input is required");
     }
@@ -47,9 +48,13 @@ async function run() {
     if (dashboardUrl) {
       env.CHRONICLE_DASHBOARD_URL = dashboardUrl;
     }
+    let syncCommand = "sync";
+    if (fullHistory) {
+      syncCommand += " --full-history";
+    }
     try {
       const cliPath = path.join(__dirname, "cli-bundle", "index.js");
-      (0, import_child_process.execSync)(`node ${cliPath} sync`, {
+      (0, import_child_process.execSync)(`node ${cliPath} ${syncCommand}`, {
         env,
         stdio: "inherit"
       });

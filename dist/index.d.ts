@@ -130,7 +130,12 @@ declare function getLatestCommitHash(projectPath: string): Promise<string | null
  * Builds the full commit history for the given test directory.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  */
-declare function buildHistory(projectPath: string, testDir: string, framework: Framework, sinceCommit?: string): Promise<CommitHistory[]>;
+/**
+ * Builds the full commit history for the given test directory.
+ * If `sinceCommit` is provided, only commits after that hash are returned.
+ * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
+ */
+declare function buildHistory(projectPath: string, testDir: string, framework: Framework, sinceCommit?: string, fullHistory?: boolean): Promise<CommitHistory[]>;
 
 declare const index_buildHistory: typeof buildHistory;
 declare const index_getLatestCommitHash: typeof getLatestCommitHash;

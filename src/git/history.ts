@@ -22,24 +22,43 @@ export async function getLatestCommitHash(projectPath: string): Promise<string |
  * Builds the full commit history for the given test directory.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  */
+/**
+ * Builds the full commit history for the given test directory.
+ * If `sinceCommit` is provided, only commits after that hash are returned.
+ * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
+ */
 export async function buildHistory(
   projectPath: string,
   testDir: string,
   framework: Framework,
-  sinceCommit?: string
+  sinceCommit?: string,
+  fullHistory?: boolean
 ): Promise<CommitHistory[]> {
   const git = simpleGit(projectPath);
   const relativeTestDir = testDir.replace(/^\.\//, '');
 
-  const logArgs: string[] = ['--', relativeTestDir];
+  let logArgs: string[];
+  
   if (sinceCommit) {
-    logArgs.unshift(`${sinceCommit}..HEAD`);
+    // For incremental sync: explicitly specify range and path
+    logArgs = [`${sinceCommit}..HEAD`, '--', relativeTestDir];
+  } else if (fullHistory) {
+    // For full history scan: get ALL commits in the repo
+    // The filtering by test files will happen in buildSpecChanges
+    logArgs = ['--all'];
+  } else {
+    // For standard full sync: get all commits affecting the path
+    logArgs = ['--all', '--', relativeTestDir];
   }
 
   let logResult;
   try {
     logResult = await git.log(logArgs);
-  } catch {
+  } catch (error) {
+    // Log the error for debugging
+    if (error instanceof Error) {
+      console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
+    }
     return [];
   }
 
@@ -47,7 +66,13 @@ export async function buildHistory(
   const history: CommitHistory[] = [];
 
   for (const commit of commits) {
-    const fileChanges = await getCommitFileChanges(git, commit.hash, relativeTestDir);
+    // When doing full history, don't filter by testDir in getCommitFileChanges
+    // Instead let buildSpecChanges filter to only test files
+    const fileChanges = await getCommitFileChanges(
+      git,
+      commit.hash,
+      fullHistory ? undefined : relativeTestDir
+    );
     const specChanges = await buildSpecChanges(
       git,
       commit.hash,
@@ -79,7 +104,7 @@ export async function buildHistory(
 async function getCommitFileChanges(
   git: ReturnType<typeof simpleGit>,
   hash: string,
-  testDir: string
+  testDir?: string
 ): Promise<GitFileChange[]> {
   try {
     // Use diff-tree to get the file status for this commit
@@ -103,12 +128,14 @@ async function getCommitFileChanges(
         // Rename: R<score>\t<old>\t<new>
         const oldPath = parts[1];
         const newPath = parts[2];
-        if (isInTestDir(newPath, testDir) || isInTestDir(oldPath, testDir)) {
+        // If testDir is specified, filter by directory; otherwise include all renames
+        if (!testDir || isInTestDir(newPath, testDir) || isInTestDir(oldPath, testDir)) {
           changes.push({ path: newPath, oldPath, status: 'renamed' });
         }
       } else {
         const filePath = parts[1];
-        if (!isInTestDir(filePath, testDir)) continue;
+        // If testDir is specified, filter by directory; otherwise include all files
+        if (testDir && !isInTestDir(filePath, testDir)) continue;
 
         const mapped = mapGitStatus(status);
         if (mapped) changes.push({ path: filePath, status: mapped });

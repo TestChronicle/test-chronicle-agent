@@ -693,23 +693,34 @@ function parseAllSpecs(projectRoot, testDir, framework) {
 // src/git/history.ts
 var import_simple_git = __toESM(__nccwpck_require__(65));
 var import_path8 = __toESM(__nccwpck_require__(928));
-async function buildHistory(projectPath, testDir, framework, sinceCommit) {
+async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHistory) {
   const git = (0, import_simple_git.default)(projectPath);
   const relativeTestDir = testDir.replace(/^\.\//, "");
-  const logArgs = ["--", relativeTestDir];
+  let logArgs;
   if (sinceCommit) {
-    logArgs.unshift(`${sinceCommit}..HEAD`);
+    logArgs = [`${sinceCommit}..HEAD`, "--", relativeTestDir];
+  } else if (fullHistory) {
+    logArgs = ["--all"];
+  } else {
+    logArgs = ["--all", "--", relativeTestDir];
   }
   let logResult;
   try {
     logResult = await git.log(logArgs);
-  } catch {
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
+    }
     return [];
   }
   const commits = [...logResult.all].reverse();
   const history = [];
   for (const commit of commits) {
-    const fileChanges = await getCommitFileChanges(git, commit.hash, relativeTestDir);
+    const fileChanges = await getCommitFileChanges(
+      git,
+      commit.hash,
+      fullHistory ? void 0 : relativeTestDir
+    );
     const specChanges = await buildSpecChanges(
       git,
       commit.hash,
@@ -751,12 +762,12 @@ async function getCommitFileChanges(git, hash, testDir) {
       if (status.startsWith("R")) {
         const oldPath = parts[1];
         const newPath = parts[2];
-        if (isInTestDir(newPath, testDir) || isInTestDir(oldPath, testDir)) {
+        if (!testDir || isInTestDir(newPath, testDir) || isInTestDir(oldPath, testDir)) {
           changes.push({ path: newPath, oldPath, status: "renamed" });
         }
       } else {
         const filePath = parts[1];
-        if (!isInTestDir(filePath, testDir)) continue;
+        if (testDir && !isInTestDir(filePath, testDir)) continue;
         const mapped = mapGitStatus(status);
         if (mapped) changes.push({ path: filePath, status: mapped });
       }
@@ -954,9 +965,9 @@ function deduplicateChanges(changes) {
   }
   return deduplicated;
 }
-var syncCommand = new import_commander.Command("sync").description("Sync test data to dashboard").option("--project-id <id>", "Project ID from init").option("--dashboard-url <url>", "Dashboard URL").option("--path <path>", "Project path (defaults to current directory)").action(async (options) => {
+var syncCommand = new import_commander.Command("sync").description("Sync test data to dashboard").option("--project-id <id>", "Project ID from init").option("--dashboard-url <url>", "Dashboard URL").option("--full-history", "Scan all commits in repo (use for projects that moved tests)").action(async (options) => {
   try {
-    const projectPath = options.path || process.cwd();
+    const projectPath = process.cwd();
     const envLocalPath = import_path9.default.join(projectPath, ".env.local");
     if (import_fs3.default.existsSync(envLocalPath)) {
       import_dotenv.default.config({ path: envLocalPath, debug: false });
@@ -994,21 +1005,24 @@ var syncCommand = new import_commander.Command("sync").description("Sync test da
     console.log(import_chalk.default.gray(`  Total tests: ${totalTests}`));
     console.log(import_chalk.default.blue("\u{1F4DA} Building git history..."));
     let sinceCommit;
-    try {
-      const marker = await getSyncMarker(dashboardUrl, apiKey, projectId);
-      if (marker) {
-        sinceCommit = marker;
-        console.log(import_chalk.default.gray(`  Last synced: ${marker.substring(0, 7)}`));
-      } else {
-        console.log(import_chalk.default.gray("  No prior sync marker found, syncing full history"));
+    if (!options.fullHistory) {
+      try {
+        const marker = await getSyncMarker(dashboardUrl, apiKey, projectId);
+        if (marker) {
+          sinceCommit = marker;
+          console.log(import_chalk.default.gray(`  Last synced: ${marker.substring(0, 7)}`));
+        } else {
+          console.log(import_chalk.default.gray("  No prior sync marker found, syncing full history"));
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(import_chalk.default.gray(`  Warning: ${error.message}`));
+        }
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(import_chalk.default.gray(`  Warning: ${error.message}`));
-      }
+    } else {
+      console.log(import_chalk.default.gray("  Full history mode: scanning all commits"));
     }
-    const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit);
-    console.log(import_chalk.default.green(`\u2713 Built history for ${history.length} commits`));
+    const history = await buildHistory(projectPath, detection.testDir, detection.framework, sinceCommit, options.fullHistory);
     const tags = {};
     specs.forEach((spec) => {
       spec.tests.forEach((test) => {

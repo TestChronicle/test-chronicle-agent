@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
       
-      - uses: TestChronicle/test-chronicle-agent@v1
+      - uses: TestChronicle/test-chronicle-agent@v0.1.0
         with:
           api-key: ${{ secrets.CHRONICLE_API_KEY }}
           project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
@@ -46,6 +46,18 @@ jobs:
 
 That's it! Your tests will sync automatically on every push.
 
+### Using Full History on First Sync
+
+If you've reorganized your test structure during development (e.g., moved tests between directories), use the `full-history` flag on your first sync to capture the complete history:
+
+```yaml
+- uses: TestChronicle/test-chronicle-agent@v0.1.0
+  with:
+    api-key: ${{ secrets.CHRONICLE_API_KEY }}
+    project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
+    full-history: true  # Scan all repo commits for test changes
+```
+
 ## 🎯 Supported Frameworks
 
 | Framework | Test Names | Specs | Tags | Parameterized |
@@ -59,15 +71,6 @@ That's it! Your tests will sync automatically on every push.
 **Note:** 🟡 = Partial support (class names instead of describe blocks for Java frameworks)
 
 Framework detection is automatic. No configuration needed.
-
-## ⚙️ Configuration
-
-The GitHub Action requires two secrets configured in your repository:
-
-```bash
-CHRONICLE_API_KEY          # Required - get from dashboard
-CHRONICLE_PROJECT_ID       # Required - from dashboard
-```
 
 ## 📊 What Gets Synced
 
