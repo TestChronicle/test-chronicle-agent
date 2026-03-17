@@ -8,18 +8,18 @@ config({ path: '.env.local' });
  * CLI entry point for test-chronicle agent
  *
  * Environment variables (set by GitHub Action or user):
- * - CHRONICLE_PROJECT_ID: Project ID
- * - CHRONICLE_API_KEY: API key
+ * - PROJECT_ID: Project ID
+ * - API_KEY: API key
  * - CHRONICLE_DASHBOARD_URL: Dashboard URL (optional, default: http://localhost:3000)
  */
 async function main() {
     try {
-        const projectId = process.env.CHRONICLE_PROJECT_ID;
-        const apiKey = process.env.CHRONICLE_API_KEY;
+        const projectId = process.env.PROJECT_ID;
+        const apiKey = process.env.API_KEY;
         const dashboardUrl = process.env.CHRONICLE_DASHBOARD_URL || 'http://localhost:3000';
 
         if (!projectId || !apiKey) {
-            console.error('Error: CHRONICLE_PROJECT_ID and CHRONICLE_API_KEY are required');
+            console.error('Error: PROJECT_ID and API_KEY are required');
             process.exit(1);
         }
 

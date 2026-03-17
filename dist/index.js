@@ -132,8 +132,8 @@ var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports2, module2) {
     "use strict";
     init_cjs_shims();
-    var fs2 = require("fs");
-    var path9 = require("path");
+    var fs3 = require("fs");
+    var path10 = require("path");
     var os2 = require("os");
     var crypto = require("crypto");
     var packageJson = require_package();
@@ -271,7 +271,7 @@ var require_main = __commonJS({
       if (options && options.path && options.path.length > 0) {
         if (Array.isArray(options.path)) {
           for (const filepath of options.path) {
-            if (fs2.existsSync(filepath)) {
+            if (fs3.existsSync(filepath)) {
               possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
             }
           }
@@ -279,15 +279,15 @@ var require_main = __commonJS({
           possibleVaultPath = options.path.endsWith(".vault") ? options.path : `${options.path}.vault`;
         }
       } else {
-        possibleVaultPath = path9.resolve(process.cwd(), ".env.vault");
+        possibleVaultPath = path10.resolve(process.cwd(), ".env.vault");
       }
-      if (fs2.existsSync(possibleVaultPath)) {
+      if (fs3.existsSync(possibleVaultPath)) {
         return possibleVaultPath;
       }
       return null;
     }
     function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path9.join(os2.homedir(), envPath.slice(1)) : envPath;
+      return envPath[0] === "~" ? path10.join(os2.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
       const debug2 = parseBoolean(process.env.DOTENV_CONFIG_DEBUG || options && options.debug);
@@ -304,7 +304,7 @@ var require_main = __commonJS({
       return { parsed };
     }
     function configDotenv(options) {
-      const dotenvPath = path9.resolve(process.cwd(), ".env");
+      const dotenvPath = path10.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       let processEnv = process.env;
       if (options && options.processEnv != null) {
@@ -332,13 +332,13 @@ var require_main = __commonJS({
       }
       let lastError;
       const parsedAll = {};
-      for (const path10 of optionPaths) {
+      for (const path11 of optionPaths) {
         try {
-          const parsed = DotenvModule.parse(fs2.readFileSync(path10, { encoding }));
+          const parsed = DotenvModule.parse(fs3.readFileSync(path11, { encoding }));
           DotenvModule.populate(parsedAll, parsed, options);
         } catch (e) {
           if (debug2) {
-            _debug(`Failed to load ${path10} ${e.message}`);
+            _debug(`Failed to load ${path11} ${e.message}`);
           }
           lastError = e;
         }
@@ -351,7 +351,7 @@ var require_main = __commonJS({
         const shortPaths = [];
         for (const filePath of optionPaths) {
           try {
-            const relative = path9.relative(process.cwd(), filePath);
+            const relative = path10.relative(process.cwd(), filePath);
             shortPaths.push(relative);
           } catch (e) {
             if (debug2) {
@@ -924,6 +924,123 @@ var require_browser = __commonJS({
   }
 });
 
+// node_modules/has-flag/index.js
+var require_has_flag = __commonJS({
+  "node_modules/has-flag/index.js"(exports2, module2) {
+    "use strict";
+    init_cjs_shims();
+    module2.exports = (flag, argv = process.argv) => {
+      const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
+      const position = argv.indexOf(prefix + flag);
+      const terminatorPosition = argv.indexOf("--");
+      return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+    };
+  }
+});
+
+// node_modules/supports-color/index.js
+var require_supports_color = __commonJS({
+  "node_modules/supports-color/index.js"(exports2, module2) {
+    "use strict";
+    init_cjs_shims();
+    var os2 = require("os");
+    var tty = require("tty");
+    var hasFlag = require_has_flag();
+    var { env } = process;
+    var forceColor;
+    if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
+      forceColor = 0;
+    } else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
+      forceColor = 1;
+    }
+    if ("FORCE_COLOR" in env) {
+      if (env.FORCE_COLOR === "true") {
+        forceColor = 1;
+      } else if (env.FORCE_COLOR === "false") {
+        forceColor = 0;
+      } else {
+        forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
+      }
+    }
+    function translateLevel(level) {
+      if (level === 0) {
+        return false;
+      }
+      return {
+        level,
+        hasBasic: true,
+        has256: level >= 2,
+        has16m: level >= 3
+      };
+    }
+    function supportsColor(haveStream, streamIsTTY) {
+      if (forceColor === 0) {
+        return 0;
+      }
+      if (hasFlag("color=16m") || hasFlag("color=full") || hasFlag("color=truecolor")) {
+        return 3;
+      }
+      if (hasFlag("color=256")) {
+        return 2;
+      }
+      if (haveStream && !streamIsTTY && forceColor === void 0) {
+        return 0;
+      }
+      const min = forceColor || 0;
+      if (env.TERM === "dumb") {
+        return min;
+      }
+      if (process.platform === "win32") {
+        const osRelease = os2.release().split(".");
+        if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
+          return Number(osRelease[2]) >= 14931 ? 3 : 2;
+        }
+        return 1;
+      }
+      if ("CI" in env) {
+        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env) || env.CI_NAME === "codeship") {
+          return 1;
+        }
+        return min;
+      }
+      if ("TEAMCITY_VERSION" in env) {
+        return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
+      }
+      if (env.COLORTERM === "truecolor") {
+        return 3;
+      }
+      if ("TERM_PROGRAM" in env) {
+        const version = parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+        switch (env.TERM_PROGRAM) {
+          case "iTerm.app":
+            return version >= 3 ? 3 : 2;
+          case "Apple_Terminal":
+            return 2;
+        }
+      }
+      if (/-256(color)?$/i.test(env.TERM)) {
+        return 2;
+      }
+      if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
+        return 1;
+      }
+      if ("COLORTERM" in env) {
+        return 1;
+      }
+      return min;
+    }
+    function getSupportLevel(stream) {
+      const level = supportsColor(stream, stream && stream.isTTY);
+      return translateLevel(level);
+    }
+    module2.exports = {
+      supportsColor: getSupportLevel,
+      stdout: translateLevel(supportsColor(true, tty.isatty(1))),
+      stderr: translateLevel(supportsColor(true, tty.isatty(2)))
+    };
+  }
+});
+
 // node_modules/debug/src/node.js
 var require_node = __commonJS({
   "node_modules/debug/src/node.js"(exports2, module2) {
@@ -944,7 +1061,7 @@ var require_node = __commonJS({
     );
     exports2.colors = [6, 2, 3, 4, 5, 1];
     try {
-      const supportsColor = require("supports-color");
+      const supportsColor = require_supports_color();
       if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
         exports2.colors = [
           20,
@@ -1125,10 +1242,10 @@ var require_src2 = __commonJS({
     var fs_1 = require("fs");
     var debug_1 = __importDefault(require_src());
     var log = debug_1.default("@kwsites/file-exists");
-    function check(path9, isFile, isDirectory) {
-      log(`checking %s`, path9);
+    function check(path10, isFile, isDirectory) {
+      log(`checking %s`, path10);
       try {
-        const stat = fs_1.statSync(path9);
+        const stat = fs_1.statSync(path10);
         if (stat.isFile() && isFile) {
           log(`[OK] path represents a file`);
           return true;
@@ -1148,8 +1265,8 @@ var require_src2 = __commonJS({
         throw e;
       }
     }
-    function exists2(path9, type = exports2.READABLE) {
-      return check(path9, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
+    function exists2(path10, type = exports2.READABLE) {
+      return check(path10, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
     }
     exports2.exists = exists2;
     exports2.FILE = 1;
@@ -1233,10 +1350,13 @@ init_cjs_shims();
 
 // src/cli.ts
 init_cjs_shims();
-var import_dotenv = __toESM(require_main());
+var import_dotenv2 = __toESM(require_main());
 
 // src/sync.ts
 init_cjs_shims();
+var import_path9 = __toESM(require("path"));
+var import_fs4 = __toESM(require("fs"));
+var import_dotenv = __toESM(require_main());
 
 // src/core/index.ts
 var core_exports = {};
@@ -5024,8 +5144,8 @@ function pathspec(...paths) {
   cache.set(key, paths);
   return key;
 }
-function isPathSpec(path9) {
-  return path9 instanceof String && cache.has(path9);
+function isPathSpec(path10) {
+  return path10 instanceof String && cache.has(path10);
 }
 function toPaths(pathSpec) {
   return cache.get(pathSpec) || [];
@@ -5114,8 +5234,8 @@ function toLinesWithContent(input = "", trimmed2 = true, separator = "\n") {
 function forEachLineWithContent(input, callback) {
   return toLinesWithContent(input, true).map((line) => callback(line));
 }
-function folderExists(path9) {
-  return (0, import_file_exists.exists)(path9, import_file_exists.FOLDER);
+function folderExists(path10) {
+  return (0, import_file_exists.exists)(path10, import_file_exists.FOLDER);
 }
 function append(target, item) {
   if (Array.isArray(target)) {
@@ -5519,8 +5639,8 @@ function checkIsRepoRootTask() {
     commands,
     format: "utf-8",
     onError,
-    parser(path9) {
-      return /^\.(git)?$/.test(path9.trim());
+    parser(path10) {
+      return /^\.(git)?$/.test(path10.trim());
     }
   };
 }
@@ -5954,11 +6074,11 @@ function parseGrep(grep) {
   const paths = /* @__PURE__ */ new Set();
   const results = {};
   forEachLineWithContent(grep, (input) => {
-    const [path9, line, preview] = input.split(NULL);
-    paths.add(path9);
-    (results[path9] = results[path9] || []).push({
+    const [path10, line, preview] = input.split(NULL);
+    paths.add(path10);
+    (results[path10] = results[path10] || []).push({
       line: asNumber(line),
-      path: path9,
+      path: path10,
       preview
     });
   });
@@ -6721,14 +6841,14 @@ var init_hash_object = __esm2({
     init_task();
   }
 });
-function parseInit(bare, path9, text) {
+function parseInit(bare, path10, text) {
   const response = String(text).trim();
   let result;
   if (result = initResponseRegex.exec(response)) {
-    return new InitSummary(bare, path9, false, result[1]);
+    return new InitSummary(bare, path10, false, result[1]);
   }
   if (result = reInitResponseRegex.exec(response)) {
-    return new InitSummary(bare, path9, true, result[1]);
+    return new InitSummary(bare, path10, true, result[1]);
   }
   let gitDir = "";
   const tokens = response.split(" ");
@@ -6739,7 +6859,7 @@ function parseInit(bare, path9, text) {
       break;
     }
   }
-  return new InitSummary(bare, path9, /^re/i.test(response), gitDir);
+  return new InitSummary(bare, path10, /^re/i.test(response), gitDir);
 }
 var InitSummary;
 var initResponseRegex;
@@ -6748,9 +6868,9 @@ var init_InitSummary = __esm2({
   "src/lib/responses/InitSummary.ts"() {
     "use strict";
     InitSummary = class {
-      constructor(bare, path9, existing, gitDir) {
+      constructor(bare, path10, existing, gitDir) {
         this.bare = bare;
-        this.path = path9;
+        this.path = path10;
         this.existing = existing;
         this.gitDir = gitDir;
       }
@@ -6762,7 +6882,7 @@ var init_InitSummary = __esm2({
 function hasBareCommand(command) {
   return command.includes(bareCommand);
 }
-function initTask(bare = false, path9, customArgs) {
+function initTask(bare = false, path10, customArgs) {
   const commands = ["init", ...customArgs];
   if (bare && !hasBareCommand(commands)) {
     commands.splice(1, 0, bareCommand);
@@ -6771,7 +6891,7 @@ function initTask(bare = false, path9, customArgs) {
     commands,
     format: "utf-8",
     parser(text) {
-      return parseInit(commands.includes("--bare"), path9, text);
+      return parseInit(commands.includes("--bare"), path10, text);
     }
   };
 }
@@ -7587,12 +7707,12 @@ var init_FileStatusSummary = __esm2({
     "use strict";
     fromPathRegex = /^(.+)\0(.+)$/;
     FileStatusSummary = class {
-      constructor(path9, index, working_dir) {
-        this.path = path9;
+      constructor(path10, index, working_dir) {
+        this.path = path10;
         this.index = index;
         this.working_dir = working_dir;
         if (index === "R" || working_dir === "R") {
-          const detail = fromPathRegex.exec(path9) || [null, path9, path9];
+          const detail = fromPathRegex.exec(path10) || [null, path10, path10];
           this.from = detail[2] || "";
           this.path = detail[1] || "";
         }
@@ -7623,14 +7743,14 @@ function splitLine(result, lineStr) {
     default:
       return;
   }
-  function data(index, workingDir, path9) {
+  function data(index, workingDir, path10) {
     const raw = `${index}${workingDir}`;
     const handler = parsers6.get(raw);
     if (handler) {
-      handler(result, path9);
+      handler(result, path10);
     }
     if (raw !== "##" && raw !== "!!") {
-      result.files.push(new FileStatusSummary(path9, index, workingDir));
+      result.files.push(new FileStatusSummary(path10, index, workingDir));
     }
   }
 }
@@ -7982,9 +8102,9 @@ var init_simple_git_api = __esm2({
           next
         );
       }
-      hashObject(path9, write) {
+      hashObject(path10, write) {
         return this._runTask(
-          hashObjectTask(path9, write === true),
+          hashObjectTask(path10, write === true),
           trailingFunctionArgument(arguments)
         );
       }
@@ -8338,8 +8458,8 @@ var init_branch = __esm2({
   }
 });
 function toPath(input) {
-  const path9 = input.trim().replace(/^["']|["']$/g, "");
-  return path9 && (0, import_node_path2.normalize)(path9);
+  const path10 = input.trim().replace(/^["']|["']$/g, "");
+  return path10 && (0, import_node_path2.normalize)(path10);
 }
 var parseCheckIgnore;
 var init_CheckIgnore = __esm2({
@@ -8624,8 +8744,8 @@ __export2(sub_module_exports, {
   subModuleTask: () => subModuleTask,
   updateSubModuleTask: () => updateSubModuleTask
 });
-function addSubModuleTask(repo, path9) {
-  return subModuleTask(["add", repo, path9]);
+function addSubModuleTask(repo, path10) {
+  return subModuleTask(["add", repo, path10]);
 }
 function initSubModuleTask(customArgs) {
   return subModuleTask(["init", ...customArgs]);
@@ -8939,8 +9059,8 @@ var require_git = __commonJS2({
       }
       return this._runTask(straightThroughStringTask2(command, this._trimmed), next);
     };
-    Git2.prototype.submoduleAdd = function(repo, path9, then) {
-      return this._runTask(addSubModuleTask2(repo, path9), trailingFunctionArgument2(arguments));
+    Git2.prototype.submoduleAdd = function(repo, path10, then) {
+      return this._runTask(addSubModuleTask2(repo, path10), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.submoduleUpdate = function(args, then) {
       return this._runTask(
@@ -9878,9 +9998,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 
 // src/sync.ts
 function getChangeKey(change, specPath) {
-  const path9 = specPath ?? "";
+  const path10 = specPath ?? "";
   const oldName = change.oldName ?? "";
-  return `${path9}:${change.type}:${change.name}:${oldName}`;
+  return `${path10}:${change.type}:${change.name}:${oldName}`;
 }
 function deduplicateChanges(changes, specPath) {
   const seen = /* @__PURE__ */ new Set();
@@ -9896,6 +10016,10 @@ function deduplicateChanges(changes, specPath) {
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
+  const envLocalPath = import_path9.default.join(process.cwd(), ".env.local");
+  if (import_fs4.default.existsSync(envLocalPath)) {
+    import_dotenv.default.config({ path: envLocalPath, debug: false });
+  }
   console.log("[sync] Detecting framework...");
   const detection = detectFramework(process.cwd());
   console.log(`[sync] Detected framework: ${detection.framework}`);
@@ -10064,14 +10188,14 @@ async function syncProject(options) {
 }
 
 // src/cli.ts
-(0, import_dotenv.config)({ path: ".env.local" });
+(0, import_dotenv2.config)({ path: ".env.local" });
 async function main() {
   try {
-    const projectId = process.env.CHRONICLE_PROJECT_ID;
-    const apiKey = process.env.CHRONICLE_API_KEY;
+    const projectId = process.env.PROJECT_ID;
+    const apiKey = process.env.API_KEY;
     const dashboardUrl = process.env.CHRONICLE_DASHBOARD_URL || "http://localhost:3000";
     if (!projectId || !apiKey) {
-      console.error("Error: CHRONICLE_PROJECT_ID and CHRONICLE_API_KEY are required");
+      console.error("Error: PROJECT_ID and API_KEY are required");
       process.exit(1);
     }
     const options = {

@@ -1,26 +1,18 @@
 name: 'Test Chronicle Agent'
-description: 'Sync test results and specifications to Test Chronicle dashboard'
+description: 'CLI agent for syncing test data to test-chronicle dashboard'
 author: 'Daniel Williams'
 
 branding:
   icon: 'activity'
-  color: 'blue'
+  color: 'green'
 
 inputs:
-  api-key:
+  API_KEY:
     description: 'Chronicle API key for authentication'
     required: true
-  project-id:
+  PROJECT_ID:
     description: 'Project ID in Chronicle dashboard'
     required: true
-  dashboard-url:
-    description: 'Chronicle dashboard URL (for local testing only; defaults to production)'
-    required: false
-    default: 'https://www.testchronicle.com'
-  full-history:
-    description: 'Scan all commits in repo (use if tests were moved or restructured before sync)'
-    required: false
-    default: 'false'
 
 outputs:
   sync-status:

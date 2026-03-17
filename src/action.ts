@@ -14,11 +14,11 @@ async function run() {
         const dashboardUrl = process.env['INPUT_DASHBOARD_URL'];
 
         if (!apiKey) {
-            throw new Error('api-key input is required');
+            throw new Error('api_key input is required');
         }
 
         if (!projectId) {
-            throw new Error('project-id input is required');
+            throw new Error('project_id input is required');
         }
 
         console.log('[action] Starting Test Chronicle Agent...');

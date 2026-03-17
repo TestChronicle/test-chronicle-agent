@@ -23,8 +23,8 @@ jobs:
 
             - uses: TestChronicle/test-chronicle-agent@v0.1.0
               with:
-                  api-key: ${{ secrets.CHRONICLE_API_KEY }}
-                  project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
+                  api-key: ${{ secrets.API_KEY }}
+                  project-id: ${{ secrets.PROJECT_ID }}
 ```
 
 ### Setup Instructions
@@ -39,8 +39,8 @@ jobs:
 
 3. **Add secrets to GitHub**
     - Go to Settings → Secrets and variables → Actions
-    - Add `CHRONICLE_API_KEY` with your API key
-    - Add `CHRONICLE_PROJECT_ID` with your project ID
+    - Add `API_KEY` with your API key
+    - Add `PROJECT_ID` with your project ID
 
 4. **Add the workflow** to your repository
 
