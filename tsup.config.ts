@@ -6,7 +6,7 @@ export default defineConfig({
         cli: 'src/cli.ts',
         action: 'src/action.ts',
     },
-    noExternal: ['glob'],
+    noExternal: ['dotenv', 'glob', 'simple-git'],
     format: ['cjs'],
     target: 'es2020',
     dts: true,
