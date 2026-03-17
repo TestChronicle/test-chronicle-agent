@@ -8,17 +8,17 @@ import { syncProject, SyncOptions } from './sync';
 async function run() {
     try {
         // Get inputs from GitHub Actions
-        // GitHub automatically sets INPUT_<INPUT_NAME> for each input (with hyphens replaced by underscores)
-        const apiKey = process.env['INPUT_API_KEY'];
-        const projectId = process.env['INPUT_PROJECT_ID'];
-        const dashboardUrl = process.env['INPUT_DASHBOARD_URL'];
+        // GitHub automatically sets <INPUT_NAME> for each input
+        const apiKey = process.env['API_KEY'];
+        const projectId = process.env['PROJECT_ID'];
+        const dashboardUrl = process.env['DASHBOARD_URL'];
 
         if (!apiKey) {
-            throw new Error('api_key input is required');
+            throw new Error('API_KEY input is required');
         }
 
         if (!projectId) {
-            throw new Error('project_id input is required');
+            throw new Error('PROJECT_ID input is required');
         }
 
         console.log('[action] Starting Test Chronicle Agent...');
