@@ -9,89 +9,85 @@ const TEST_RE = /(?:^|[ \t]+)(?:test|it)\s*(?:\.(?:skip|only|todo))?\s*\(\s*(['"
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export function parseVitestSpec(
-  filePath: string,
-  content: string,
-  projectRoot: string
-): SpecFile {
-  const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, '/');
-  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
-  const tests: TestCase[] = [];
+export function parseVitestSpec(filePath: string, content: string, projectRoot: string): SpecFile {
+    const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, '/');
+    const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
+    const tests: TestCase[] = [];
 
-  let match: RegExpExecArray | null;
-  TEST_RE.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    TEST_RE.lastIndex = 0;
 
-  while ((match = TEST_RE.exec(content)) !== null) {
-    const testName = match[2];
-    const matchIndex = match.index;
-    const line = lineNumberAt(content, matchIndex);
+    while ((match = TEST_RE.exec(content)) !== null) {
+        const testName = match[2];
+        const matchIndex = match.index;
+        const line = lineNumberAt(content, matchIndex);
 
-    const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
+        const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
 
-    // Check if this is a .todo() test and mark it
-    const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
-    const tags = isTodo ? [{ name: '@todo' }] : [];
+        // Check if this is a .todo() test and mark it
+        const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
+        const tags = isTodo ? [{ name: '@todo' }] : [];
 
-    // Check if this is a parameterized test (test.each() or describe.each())
-    const paramData = extractParameterizedDataFromEach(content);
-    if (paramData?.hasParameters) {
-      tags.push({ name: '@parameterized' });
-      
-      // If we have a parameter count, expand to individual test cases
-      if (paramData.count > 0) {
-        for (let i = 0; i < paramData.count; i++) {
-          const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
-          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
-          
-          tests.push({
+        // Check if this is a parameterized test (test.each() or describe.each())
+        const paramData = extractParameterizedDataFromEach(content);
+        if (paramData?.hasParameters) {
+            tags.push({ name: '@parameterized' });
+
+            // If we have a parameter count, expand to individual test cases
+            if (paramData.count > 0) {
+                for (let i = 0; i < paramData.count; i++) {
+                    const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
+                    const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+
+                    tests.push({
+                        id,
+                        name: expandedName,
+                        fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+                        describe: parentDescribe,
+                        tags,
+                        line,
+                    });
+                }
+                continue; // Skip adding the base test
+            }
+        }
+
+        const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
+
+        tests.push({
             id,
-            name: expandedName,
-            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+            name: testName,
+            fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
             describe: parentDescribe,
             tags,
             line,
-          });
-        }
-        continue; // Skip adding the base test
-      }
+        });
     }
 
-    const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
-
-    tests.push({
-      id,
-      name: testName,
-      fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
-      describe: parentDescribe,
-      tags,
-      line,
-    });
-  }
-
-  return {
-    id: hashId(relativePath),
-    path: relativePath,
-    name: path.basename(filePath),
-    framework: 'vitest',
-    tests,
-    testCount: tests.length,
-    lastModified: new Date().toISOString(),
-  };
+    return {
+        id: hashId(relativePath),
+        path: relativePath,
+        name: path.basename(filePath),
+        framework: 'vitest',
+        tests,
+        testCount: tests.length,
+        lastModified: new Date().toISOString(),
+    };
 }
 
 /** Extracts only the test names from content without building a full SpecFile. */
 export function extractTestNames(content: string): string[] {
-  const names: string[] = [];
-  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
+    const names: string[] = [];
+    const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
 
-  let match: RegExpExecArray | null;
-  TEST_RE.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    TEST_RE.lastIndex = 0;
 
-  while ((match = TEST_RE.exec(content)) !== null) {
-    const testName = match[2];
-    const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
-    names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
-  }
+    while ((match = TEST_RE.exec(content)) !== null) {
+        const testName = match[2];
+        const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
+        names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
+    }
 
-  return names;
+    return names;
 }

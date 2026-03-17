@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       releaseVersion:
-        description: "Release version (e.g., v0.1.0)"
+        description: 'Release version (e.g., v0.1.0)'
         required: true
         type: string
       majorReleaseVersion:
-        description: "Major version tag (e.g., v0)"
+        description: 'Major version tag (e.g., v0)'
         required: true
         type: choice
         options:
@@ -22,31 +22,31 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
     name: Build & Release
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
-      
+
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+
       - name: 📦 Install dependencies
         run: npm ci --prefer-offline --no-audit
-      
+
       - name: 🧪 Run tests
         run: npm test
-      
+
       - name: 🔨 Build action
         run: npm run build
-      
+
       - name: 📝 Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
+
       - name: 📌 Create release commit and tag
         run: |
           git add -A
@@ -54,7 +54,7 @@ jobs:
           git tag ${{ inputs.releaseVersion }}
           git push origin ${{ inputs.releaseVersion }}
           git push origin main
-      
+
       - name: 🚀 Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -74,7 +74,7 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: 📌 Update major version tag
         run: |
           git tag -f ${{ inputs.majorReleaseVersion }}

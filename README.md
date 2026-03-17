@@ -10,37 +10,37 @@ Use test-chronicle-agent as a GitHub Action to automatically sync your tests on 
 name: 🔄 Sync Tests to Chronicle
 
 on:
-  push:
-    branches: [main]
+    push:
+        branches: [main]
 
 jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - uses: TestChronicle/test-chronicle-agent@v0.1.0
-        with:
-          api-key: ${{ secrets.CHRONICLE_API_KEY }}
-          project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
+    sync:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: TestChronicle/test-chronicle-agent@v0.1.0
+              with:
+                  api-key: ${{ secrets.CHRONICLE_API_KEY }}
+                  project-id: ${{ secrets.CHRONICLE_PROJECT_ID }}
 ```
 
 ### Setup Instructions
 
 1. **Create a project on the dashboard**
-   - Go to your Test Chronicle dashboard
-   - Create a new project and copy the Project ID
+    - Go to your Test Chronicle dashboard
+    - Create a new project and copy the Project ID
 
 2. **Get your API key**
-   - From your Test Chronicle dashboard settings
-   - Copy your personal API key
+    - From your Test Chronicle dashboard settings
+    - Copy your personal API key
 
 3. **Add secrets to GitHub**
-   - Go to Settings → Secrets and variables → Actions
-   - Add `CHRONICLE_API_KEY` with your API key
-   - Add `CHRONICLE_PROJECT_ID` with your project ID
+    - Go to Settings → Secrets and variables → Actions
+    - Add `CHRONICLE_API_KEY` with your API key
+    - Add `CHRONICLE_PROJECT_ID` with your project ID
 
 4. **Add the workflow** to your repository
 
@@ -48,13 +48,13 @@ That's it! Your tests will sync automatically on merges to main.
 
 ## 🎯 Supported Frameworks
 
-| Framework | Test Names | Specs | Tags | Parameterized |
-|-----------|:----------:|:-----:|:----:|:-------------:|
-| Playwright | ✅ | ✅ | ✅ | ✅ |
-| Cypress | ✅ | ✅ | ❌ | ✅ |
-| Vitest | ✅ | ✅ | ❌ | ✅ |
-| TestNG | ✅ | 🟡 | ✅ | ❌ |
-| JUnit | ✅ | 🟡 | 🟡 | ❌ |
+| Framework  | Test Names | Specs | Tags | Parameterized |
+| ---------- | :--------: | :---: | :--: | :-----------: |
+| Playwright |     ✅     |  ✅   |  ✅  |      ✅       |
+| Cypress    |     ✅     |  ✅   |  ❌  |      ✅       |
+| Vitest     |     ✅     |  ✅   |  ❌  |      ✅       |
+| TestNG     |     ✅     |  🟡   |  ✅  |      ❌       |
+| JUnit      |     ✅     |  🟡   |  🟡  |      ❌       |
 
 **Note:** 🟡 = Partial support (class names instead of describe blocks for Java frameworks)
 

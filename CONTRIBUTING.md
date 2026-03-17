@@ -32,33 +32,36 @@ npm test
 ### Making Changes
 
 1. **Create a branch** for your feature/fix:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
 
 2. **Make your changes** and ensure code quality:
-   ```bash
-   # Run tests while developing
-   npm run test:watch
 
-   # Build to check for TypeScript errors
-   npm run build
+    ```bash
+    # Run tests while developing
+    npm run test:watch
 
-   # Run all tests before committing
-   npm test
-   ```
+    # Build to check for TypeScript errors
+    npm run build
+
+    # Run all tests before committing
+    npm test
+    ```
 
 3. **Commit with clear messages**:
-   ```bash
-   git commit -m "feat: description of your change"
-   git commit -m "fix: description of your fix"
-   git commit -m "docs: update documentation"
-   ```
+
+    ```bash
+    git commit -m "feat: description of your change"
+    git commit -m "fix: description of your fix"
+    git commit -m "docs: update documentation"
+    ```
 
 4. **Push and create a Pull Request**:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
+    ```bash
+    git push origin feature/your-feature-name
+    ```
 
 ## Code Style
 
@@ -86,24 +89,24 @@ npm test src/core/detector.spec.ts
 Use the standard pattern (see `src/**/*.spec.ts` files):
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('Feature Name', () => {
-  beforeEach(() => {
-    // Setup
-  })
+    beforeEach(() => {
+        // Setup
+    });
 
-  it('should do something', () => {
-    // Arrange
-    const input = 'test'
+    it('should do something', () => {
+        // Arrange
+        const input = 'test';
 
-    // Act
-    const result = myFunction(input)
+        // Act
+        const result = myFunction(input);
 
-    // Assert
-    expect(result).toBe('expected')
-  })
-})
+        // Assert
+        expect(result).toBe('expected');
+    });
+});
 ```
 
 ### Test Coverage
@@ -139,32 +142,34 @@ test-chronicle-agent/
 To add support for a new test framework:
 
 1. **Create parser** in `src/core/frameworks/{framework}.ts`:
-   ```typescript
-   import { IFrameworkParser } from '../base'
 
-   export const myFrameworkParser: IFrameworkParser = {
-     parseFile(filePath, content, projectRoot) {
-       // Parse and extract test specs
-     },
-     extractTestNames(content) {
-       // Quick extraction for git history
-     },
-     supportedFeatures: {
-       tags: true,
-       describes: true,
-       parameterized: false,
-       lineNumbers: true,
-       asyncTests: true,
-     },
-   }
-   ```
+    ```typescript
+    import { IFrameworkParser } from '../base';
+
+    export const myFrameworkParser: IFrameworkParser = {
+        parseFile(filePath, content, projectRoot) {
+            // Parse and extract test specs
+        },
+        extractTestNames(content) {
+            // Quick extraction for git history
+        },
+        supportedFeatures: {
+            tags: true,
+            describes: true,
+            parameterized: false,
+            lineNumbers: true,
+            asyncTests: true,
+        },
+    };
+    ```
 
 2. **Register in detector** at `src/core/detector.ts`:
-   ```typescript
-   if (packageDeps.includes('my-framework')) {
-     return 'myframework'
-   }
-   ```
+
+    ```typescript
+    if (packageDeps.includes('my-framework')) {
+        return 'myframework';
+    }
+    ```
 
 3. **Add tests** in `src/core/frameworks/{framework}.spec.ts`
 
@@ -183,6 +188,7 @@ Follow conventional commits:
 - `refactor:` - Code restructuring without behavior change
 
 Example:
+
 ```
 feat: add support for Cypress framework
 
