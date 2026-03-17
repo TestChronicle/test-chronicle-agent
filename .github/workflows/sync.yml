@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: TestChronicle/test-chronicle-agent@v0.1.7
+      - uses: TestChronicle/test-chronicle-agent@v0.1.8
         with:
           API_KEY: ${{ secrets.API_KEY }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
