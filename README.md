@@ -23,8 +23,8 @@ jobs:
 
             - uses: TestChronicle/test-chronicle-agent@v0.1.0
               with:
-                  api-key: ${{ secrets.API_KEY }}
-                  project-id: ${{ secrets.PROJECT_ID }}
+                  API_KEY: ${{ secrets.API_KEY }}
+                  PROJECT_ID: ${{ secrets.PROJECT_ID }}
 ```
 
 ### Setup Instructions
