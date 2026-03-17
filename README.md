@@ -4,7 +4,7 @@ Keep your test suite visible. Sync test specs and history to your dashboard auto
 
 ## 🚀 GitHub Action
 
-Use test-chronicle-agent as a GitHub Action to automatically sync your tests on every push:
+Use test-chronicle-agent as a GitHub Action to automatically sync your tests on merges to main:
 
 ```yaml
 name: 🔄 Sync Tests to Chronicle
@@ -44,7 +44,7 @@ jobs:
 
 4. **Add the workflow** to your repository
 
-That's it! Your tests will sync automatically on every push.
+That's it! Your tests will sync automatically on merges to main.
 
 ## 🎯 Supported Frameworks
 
@@ -71,7 +71,7 @@ This gives you a complete view of your test suite on the dashboard.
 
 ## 🔄 How It Works
 
-Once installed as a GitHub Action, test-chronicle-agent automatically syncs your test suite on every push. Your tests are parsed, changes are tracked from git history, and everything is sent to your dashboard for visualization and analysis.
+Once installed as a GitHub Action, test-chronicle-agent automatically syncs your test suite on merges to main. Your tests are parsed, changes are tracked from git history, and everything is sent to your dashboard for visualization and analysis.
 
 ## 📄 License
 
