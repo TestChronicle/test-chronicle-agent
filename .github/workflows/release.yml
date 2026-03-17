@@ -60,15 +60,7 @@ jobs:
         with:
           tag_name: ${{ inputs.releaseVersion }}
           files: |
-            dist/action.js
-            dist/action.d.ts
-            dist/action.js.map
-            dist/cli.js
-            dist/cli.d.ts
-            dist/cli.js.map
-            dist/index.js
-            dist/index.d.ts
-            dist/index.js.map
+            dist/**
             action.yml
             package.json
           generate_release_notes: true

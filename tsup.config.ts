@@ -6,6 +6,7 @@ export default defineConfig({
         cli: 'src/cli.ts',
         action: 'src/action.ts',
     },
+    noExternal: [],
     format: ['cjs'],
     target: 'es2020',
     dts: true,
