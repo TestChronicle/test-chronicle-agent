@@ -198,10 +198,7 @@ function resolveParentDescribe(blocks, index) {
 
 // src/core/frameworks/parameterized.ts
 function extractParameterizedDataFromEach(content) {
-  const eachRegex = new RegExp(
-    `(?:test|describe)\\.each\\s*\\(\\s*\\[([\\s\\S]*?)\\]\\s*\\)`,
-    "g"
-  );
+  const eachRegex = new RegExp(`(?:test|describe)\\.each\\s*\\(\\s*\\[([\\s\\S]*?)\\]\\s*\\)`, "g");
   let match;
   while ((match = eachRegex.exec(content)) !== null) {
     const dataContent = match[1];
@@ -222,9 +219,7 @@ function extractParameterizedDataFromForEach(content, testName) {
   const forEachMatch = context.match(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i);
   const forMatch = context.match(/\bfor\s*\(\s*(?:let|var|const)\s+(\w+)\s+(?:of|in)\s+(.+?)\s*\)/);
   if (forEachMatch || forMatch) {
-    const arrayDeclMatch = context.match(
-      /(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/
-    );
+    const arrayDeclMatch = context.match(/(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/);
     if (arrayDeclMatch) {
       const arrayContent = arrayDeclMatch[1];
       const count = countParameterSets(arrayContent);
@@ -818,19 +813,8 @@ async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHi
   const entries = [];
   for (const commit of commits) {
     try {
-      const fileChanges = await getCommitFileChanges(
-        git,
-        commit.hash,
-        fullHistory ? void 0 : relativeTestDir
-      );
-      const specChanges = await buildSpecChanges(
-        git,
-        commit.hash,
-        fileChanges,
-        framework,
-        projectPath,
-        errors
-      );
+      const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? void 0 : relativeTestDir);
+      const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors);
       if (specChanges.length === 0) continue;
       entries.push({
         commit: {
@@ -1119,9 +1103,7 @@ async function syncProject(options) {
   if (isFirstSync) {
     console.log("[sync] First sync detected - creating baseline");
   } else {
-    console.log(
-      `[sync] Subsequent sync - last synced: ${syncRecord.lastSyncCommit.substring(0, 7)}`
-    );
+    console.log(`[sync] Subsequent sync - last synced: ${syncRecord.lastSyncCommit.substring(0, 7)}`);
   }
   console.log("[sync] Building git history...");
   const sinceCommit = isFirstSync ? void 0 : syncRecord.lastSyncCommit;
