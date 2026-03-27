@@ -44,8 +44,8 @@
     "@vercel/ncc": "^0.38.4",
     "tsup": "^8.1.0",
     "tsx": "^4.16.2",
-    "typescript": "^5.4.5",
-    "vitest": "^4.1.0"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
   },
   "engines": {
     "node": ">=18.0.0"
