@@ -9563,7 +9563,7 @@ async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHi
   for (const commit of commits) {
     try {
       const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? void 0 : relativeTestDir);
-      const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors);
+      const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors, fullHistory ? void 0 : relativeTestDir);
       if (specChanges.length === 0) continue;
       entries.push({
         commit: {
@@ -9637,12 +9637,22 @@ function mapGitStatus(status) {
       return null;
   }
 }
-async function buildSpecChanges(git, hash, fileChanges, framework, projectPath, errors) {
+async function buildSpecChanges(git, hash, fileChanges, framework, projectPath, errors, testDir) {
   const entries = [];
   for (const change of fileChanges) {
     if (!isSpecFile(change.path)) continue;
+    let effectiveChange = change;
+    if (change.status === "renamed" && change.oldPath && testDir) {
+      const oldInTestDir = isInTestDir(change.oldPath, testDir);
+      const newInTestDir = isInTestDir(change.path, testDir);
+      if (!oldInTestDir && newInTestDir) {
+        effectiveChange = { path: change.path, status: "added" };
+      } else if (oldInTestDir && !newInTestDir) {
+        effectiveChange = { path: change.oldPath, status: "deleted" };
+      }
+    }
     try {
-      const entry = await buildSpecEntry(git, hash, change, framework, projectPath);
+      const entry = await buildSpecEntry(git, hash, effectiveChange, framework, projectPath);
       if (entry) entries.push(entry);
     } catch (error) {
       errors.push({

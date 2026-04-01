@@ -84,7 +84,7 @@ export async function buildHistory(
             // When doing full history, don't filter by testDir in getCommitFileChanges
             // Instead let buildSpecChanges filter to only test files
             const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? undefined : relativeTestDir);
-            const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors);
+            const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors, fullHistory ? undefined : relativeTestDir);
 
             if (specChanges.length === 0) continue;
 
@@ -190,14 +190,29 @@ async function buildSpecChanges(
     framework: Framework,
     projectPath: string,
     errors: HistoryError[],
+    testDir?: string,
 ): Promise<SpecHistoryEntry[]> {
     const entries: SpecHistoryEntry[] = [];
 
     for (const change of fileChanges) {
         if (!isSpecFile(change.path)) continue;
 
+        // Normalize cross-testDir renames: if a spec file moves INTO the tracked
+        // test directory, treat it as a brand-new addition (all tests are added).
+        // If it moves OUT of the test directory, treat it as a deletion.
+        let effectiveChange = change;
+        if (change.status === 'renamed' && change.oldPath && testDir) {
+            const oldInTestDir = isInTestDir(change.oldPath, testDir);
+            const newInTestDir = isInTestDir(change.path, testDir);
+            if (!oldInTestDir && newInTestDir) {
+                effectiveChange = { path: change.path, status: 'added' };
+            } else if (oldInTestDir && !newInTestDir) {
+                effectiveChange = { path: change.oldPath, status: 'deleted' };
+            }
+        }
+
         try {
-            const entry = await buildSpecEntry(git, hash, change, framework, projectPath);
+            const entry = await buildSpecEntry(git, hash, effectiveChange, framework, projectPath);
             if (entry) entries.push(entry);
         } catch (error) {
             errors.push({
