@@ -192,12 +192,30 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             return true;
         });
 
+        // Detect cross-spec moves: if the same test name is both removed from one spec
+        // and added to a different spec in the same commit, it's a move — suppress the
+        // remove entry so the test isn't double-counted as remove + add.
+        const removedByName = new Map<string, number>();
+        uniqueChanges.forEach((c, i) => {
+            if (c.type === 'removed') removedByName.set(c.testName, i);
+        });
+        const suppressedRemoves = new Set<number>();
+        uniqueChanges.forEach((c) => {
+            if (c.type === 'added') {
+                const removeIdx = removedByName.get(c.testName);
+                if (removeIdx !== undefined && uniqueChanges[removeIdx].specPath !== c.specPath) {
+                    suppressedRemoves.add(removeIdx);
+                }
+            }
+        });
+        const deduplicatedChanges = uniqueChanges.filter((_, i) => !suppressedRemoves.has(i));
+
         return {
             commitHash: entry.commit.hash,
             commitMessage: entry.commit.message,
             author: entry.commit.author,
             commitDate: entry.commit.date,
-            changes: uniqueChanges.map((change) => ({
+            changes: deduplicatedChanges.map((change) => ({
                 specFile: change.specPath,
                 testName: change.testName,
                 type: change.type === 'removed' ? 'deleted' : change.type,

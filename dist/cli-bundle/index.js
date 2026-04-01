@@ -9947,8 +9947,8 @@ async function syncProject(options) {
   const transformedHistory = history.entries.map((entry) => {
     const allChanges = [];
     for (const spec of entry.specs) {
-      const deduplicatedChanges = deduplicateChanges(spec.changes, spec.specPath);
-      for (const change of deduplicatedChanges) {
+      const deduplicatedChanges2 = deduplicateChanges(spec.changes, spec.specPath);
+      for (const change of deduplicatedChanges2) {
         allChanges.push({
           specPath: spec.specPath,
           testName: change.name,
@@ -9971,12 +9971,26 @@ async function syncProject(options) {
       seenKeys.add(key);
       return true;
     });
+    const removedByName = /* @__PURE__ */ new Map();
+    uniqueChanges.forEach((c, i) => {
+      if (c.type === "removed") removedByName.set(c.testName, i);
+    });
+    const suppressedRemoves = /* @__PURE__ */ new Set();
+    uniqueChanges.forEach((c) => {
+      if (c.type === "added") {
+        const removeIdx = removedByName.get(c.testName);
+        if (removeIdx !== void 0 && uniqueChanges[removeIdx].specPath !== c.specPath) {
+          suppressedRemoves.add(removeIdx);
+        }
+      }
+    });
+    const deduplicatedChanges = uniqueChanges.filter((_2, i) => !suppressedRemoves.has(i));
     return {
       commitHash: entry.commit.hash,
       commitMessage: entry.commit.message,
       author: entry.commit.author,
       commitDate: entry.commit.date,
-      changes: uniqueChanges.map((change) => ({
+      changes: deduplicatedChanges.map((change) => ({
         specFile: change.specPath,
         testName: change.testName,
         type: change.type === "removed" ? "deleted" : change.type,
