@@ -1,16 +1,11 @@
-import path from 'path'
-import fs from 'fs'
-import dotenv from 'dotenv'
+import path from 'path';
+import fs from 'fs';
+import dotenv from 'dotenv';
 import { detectFramework } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash } from './git';
-import {
-    getProjectSyncRecord,
-    saveProjectSyncRecord,
-    updateProjectLastSyncCommit,
-    syncToDashboard,
-} from './sync-client';
-import { TestChange, ProjectSyncRecord } from './types';
+import { getSyncMarker, saveSyncMarker, syncToDashboard } from './sync-client';
+import { TestChange } from './types';
 
 // Configuration for sync operation
 export interface SyncOptions {
@@ -50,18 +45,16 @@ function deduplicateChanges(changes: TestChange[], specPath?: string): TestChang
 }
 
 /**
- * Core sync function - syncs test data to dashboard
- * Implements the baseline sync model:
- * - First sync: Creates baseline stats and saves ProjectSyncRecord
- * - Subsequent syncs: Uses lastSyncCommit from ProjectSyncRecord for incremental updates
+ * Core sync function - syncs test data to dashboard.
+ * First sync creates a baseline marker; subsequent syncs are incremental from the last commit.
  */
 export async function syncProject(options: SyncOptions): Promise<void> {
     const { projectId, apiKey, dashboardUrl } = options;
 
     // Load .env.local from project directory if it exists
-    const envLocalPath = path.join(process.cwd(), '.env.local')
+    const envLocalPath = path.join(process.cwd(), '.env.local');
     if (fs.existsSync(envLocalPath)) {
-        dotenv.config({ path: envLocalPath, debug: false })
+        dotenv.config({ path: envLocalPath, debug: false });
     }
 
     console.log('[sync] Detecting framework...');
@@ -78,28 +71,28 @@ export async function syncProject(options: SyncOptions): Promise<void> {
 
     // Check if this is first sync or subsequent sync
     console.log('[sync] Checking sync status...');
-    let syncRecord: ProjectSyncRecord | null = null;
+    let lastSyncCommit: string | null = null;
     let isFirstSync = false;
 
     try {
-        syncRecord = await getProjectSyncRecord(dashboardUrl, apiKey, projectId);
+        lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
     } catch (error) {
         if (error instanceof Error) {
-            console.log(`[sync] Warning: Could not retrieve sync record: ${error.message}`);
+            console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
         }
     }
 
-    isFirstSync = !syncRecord;
+    isFirstSync = !lastSyncCommit;
     if (isFirstSync) {
         console.log('[sync] First sync detected - creating baseline');
     } else {
-        console.log(`[sync] Subsequent sync - last synced: ${syncRecord!.lastSyncCommit.substring(0, 7)}`);
+        console.log(`[sync] Subsequent sync - last synced: ${lastSyncCommit!.substring(0, 7)}`);
     }
 
     console.log('[sync] Building git history...');
 
     // For first sync, scan all commits; for subsequent, only scan incremental
-    const sinceCommit = isFirstSync ? undefined : syncRecord!.lastSyncCommit;
+    const sinceCommit = isFirstSync ? undefined : lastSyncCommit!;
     const history = await buildHistory(
         process.cwd(),
         detection.testDir,
@@ -225,7 +218,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     console.log('[sync] Sync successful!');
     console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
 
-    // Handle baseline sync record and incremental marker
+    // Handle baseline sync and incremental marker
     try {
         let lastHash: string | null = null;
 
@@ -240,36 +233,16 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             return;
         }
 
+        await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
+
         if (isFirstSync) {
-            // Create and save baseline sync record for first sync
-            const currentCommit = await getLatestCommitHash(process.cwd());
-            if (!currentCommit) {
-                throw new Error('Could not determine current commit for baseline');
-            }
-
-            const newRecord: ProjectSyncRecord = {
-                projectId,
-                firstSyncDate: new Date().toISOString(),
-                firstSyncCommit: currentCommit,
-                baselineStats: {
-                    totalTests,
-                    totalFiles: specs.length,
-                    tags,
-                },
-                lastSyncCommit: lastHash,
-                detectedFramework: detection.framework,
-            };
-
-            await saveProjectSyncRecord(dashboardUrl, apiKey, newRecord);
             console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
         } else {
-            // Update last sync commit for incremental syncs
-            await updateProjectLastSyncCommit(dashboardUrl, apiKey, projectId, lastHash);
             console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}`);
         }
     } catch (error) {
         if (error instanceof Error) {
-            console.log(`[sync] Warning: Could not save sync record: ${error.message}`);
+            console.log(`[sync] Warning: Could not save sync marker: ${error.message}`);
         }
     }
 }

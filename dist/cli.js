@@ -9777,8 +9777,8 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
-async function getProjectSyncRecord(dashboardUrl, apiToken, projectId) {
-  const url = new URL(`/api/projects/${projectId}/sync-record`, dashboardUrl).toString();
+async function getSyncMarker(dashboardUrl, apiToken, projectId) {
+  const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${apiToken}`
@@ -9793,13 +9793,14 @@ async function getProjectSyncRecord(dashboardUrl, apiToken, projectId) {
       const errorBody = await response.text().catch(() => "");
       throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ""}`);
     }
-    return await response.json();
+    const data = await response.json();
+    return data?.lastSyncedCommit || data?.commitHash || null;
   } catch (error) {
     return null;
   }
 }
-async function saveProjectSyncRecord(dashboardUrl, apiToken, record) {
-  const url = new URL(`/api/projects/${record.projectId}/sync-record`, dashboardUrl).toString();
+async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
+  const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${apiToken}`
@@ -9807,30 +9808,12 @@ async function saveProjectSyncRecord(dashboardUrl, apiToken, record) {
   const response = await fetch(url, {
     method: "POST",
     headers,
-    body: JSON.stringify(record)
+    body: JSON.stringify({ commitHash })
   });
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
     throw new Error(
-      `Failed to save sync record: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
-    );
-  }
-}
-async function updateProjectLastSyncCommit(dashboardUrl, apiToken, projectId, commitHash) {
-  const url = new URL(`/api/projects/${projectId}/sync-record/last-sync`, dashboardUrl).toString();
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${apiToken}`
-  };
-  const response = await fetch(url, {
-    method: "PATCH",
-    headers,
-    body: JSON.stringify({ lastSyncCommit: commitHash })
-  });
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => "");
-    throw new Error(
-      `Failed to update sync record: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
+      `Failed to save sync marker: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
     );
   }
 }
@@ -9888,23 +9871,23 @@ async function syncProject(options) {
   const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
   console.log(`[sync] Total tests: ${totalTests}`);
   console.log("[sync] Checking sync status...");
-  let syncRecord = null;
+  let lastSyncCommit = null;
   let isFirstSync = false;
   try {
-    syncRecord = await getProjectSyncRecord(dashboardUrl, apiKey, projectId);
+    lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`[sync] Warning: Could not retrieve sync record: ${error.message}`);
+      console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
     }
   }
-  isFirstSync = !syncRecord;
+  isFirstSync = !lastSyncCommit;
   if (isFirstSync) {
     console.log("[sync] First sync detected - creating baseline");
   } else {
-    console.log(`[sync] Subsequent sync - last synced: ${syncRecord.lastSyncCommit.substring(0, 7)}`);
+    console.log(`[sync] Subsequent sync - last synced: ${lastSyncCommit.substring(0, 7)}`);
   }
   console.log("[sync] Building git history...");
-  const sinceCommit = isFirstSync ? void 0 : syncRecord.lastSyncCommit;
+  const sinceCommit = isFirstSync ? void 0 : lastSyncCommit;
   const history = await buildHistory(
     process.cwd(),
     detection.testDir,
@@ -10015,32 +9998,15 @@ async function syncProject(options) {
       console.log("[sync] Warning: Could not determine last commit hash");
       return;
     }
+    await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
     if (isFirstSync) {
-      const currentCommit = await getLatestCommitHash(process.cwd());
-      if (!currentCommit) {
-        throw new Error("Could not determine current commit for baseline");
-      }
-      const newRecord = {
-        projectId,
-        firstSyncDate: (/* @__PURE__ */ new Date()).toISOString(),
-        firstSyncCommit: currentCommit,
-        baselineStats: {
-          totalTests,
-          totalFiles: specs.length,
-          tags
-        },
-        lastSyncCommit: lastHash,
-        detectedFramework: detection.framework
-      };
-      await saveProjectSyncRecord(dashboardUrl, apiKey, newRecord);
       console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
     } else {
-      await updateProjectLastSyncCommit(dashboardUrl, apiKey, projectId, lastHash);
       console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}`);
     }
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`[sync] Warning: Could not save sync record: ${error.message}`);
+      console.log(`[sync] Warning: Could not save sync marker: ${error.message}`);
     }
   }
 }
