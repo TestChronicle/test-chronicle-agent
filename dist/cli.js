@@ -4414,23 +4414,76 @@ function resolveParentDescribe(blocks, index) {
   return innermost?.name;
 }
 
-// src/core/frameworks/parameterized.ts
-init_cjs_shims();
-function extractParameterizedDataFromEach(content) {
-  const eachRegex = new RegExp(`(?:test|describe)\\.each\\s*\\(\\s*\\[([\\s\\S]*?)\\]\\s*\\)`, "g");
+// src/core/frameworks/playwright.ts
+var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
+var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
+var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\2|\[([^\]]+)\])/g;
+function parsePlaywrightSpec(filePath, content, projectRoot) {
+  const relativePath = import_path2.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
+  const tests = [];
   let match;
-  while ((match = eachRegex.exec(content)) !== null) {
-    const dataContent = match[1];
-    const paramCount = countParameterSets(dataContent);
-    if (paramCount > 0) {
-      return {
-        count: paramCount,
-        hasParameters: true
-      };
+  TEST_RE.lastIndex = 0;
+  while ((match = TEST_RE.exec(content)) !== null) {
+    const testName = match[2];
+    const matchIndex = match.index;
+    const line = lineNumberAt(content, matchIndex);
+    const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
+    const tags = extractInlineTags(content, matchIndex);
+    const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
+    tests.push({
+      id,
+      name: testName,
+      fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
+      describe: parentDescribe,
+      tags,
+      line
+    });
+  }
+  return {
+    id: hashId(relativePath),
+    path: relativePath,
+    name: import_path2.default.basename(filePath),
+    framework: "playwright",
+    tests,
+    testCount: tests.length,
+    lastModified: (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+function extractTestNames(content) {
+  const names = [];
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
+  let match;
+  TEST_RE.lastIndex = 0;
+  while ((match = TEST_RE.exec(content)) !== null) {
+    const testName = match[2];
+    const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
+    names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
+  }
+  return names;
+}
+function extractInlineTags(content, testIndex) {
+  const window2 = content.substring(testIndex, testIndex + 300);
+  const tags = [];
+  let match;
+  INLINE_TAG_RE.lastIndex = 0;
+  while ((match = INLINE_TAG_RE.exec(window2)) !== null) {
+    if (match[2]) {
+      tags.push({ name: match[2] });
+    } else if (match[3]) {
+      const tagList = match[3].split(",").map((t) => t.trim().replace(/^['"`]|['"`]$/g, "")).filter((t) => t.length > 0);
+      tagList.forEach((t) => tags.push({ name: t }));
     }
   }
-  return null;
+  return tags;
 }
+
+// src/core/frameworks/cypress.ts
+init_cjs_shims();
+var import_path3 = __toESM(require("path"));
+
+// src/core/frameworks/parameterized.ts
+init_cjs_shims();
 function extractParameterizedDataFromForEach(content, testName) {
   const contextStart = Math.max(0, content.lastIndexOf("\n", content.indexOf(testName)) - 1e3);
   const contextEnd = content.indexOf(testName);
@@ -4495,92 +4548,7 @@ function generateParameterizedTestName(baseName, paramIndex, paramCount) {
   return `${baseName} [${paramIndex + 1}/${paramCount}]`;
 }
 
-// src/core/frameworks/playwright.ts
-var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
-var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
-var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\2|\[([^\]]+)\])/g;
-function parsePlaywrightSpec(filePath, content, projectRoot) {
-  const relativePath = import_path2.default.relative(projectRoot, filePath).replace(/\\/g, "/");
-  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
-  const tests = [];
-  let match;
-  TEST_RE.lastIndex = 0;
-  while ((match = TEST_RE.exec(content)) !== null) {
-    const testName = match[2];
-    const matchIndex = match.index;
-    const line = lineNumberAt(content, matchIndex);
-    const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
-    const tags = extractInlineTags(content, matchIndex);
-    const paramData = extractParameterizedDataFromEach(content);
-    if (paramData?.hasParameters) {
-      tags.push({ name: "@parameterized" });
-      if (paramData.count > 0) {
-        for (let i = 0; i < paramData.count; i++) {
-          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
-          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
-          tests.push({
-            id: id2,
-            name: expandedName,
-            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
-            describe: parentDescribe,
-            tags,
-            line
-          });
-        }
-        continue;
-      }
-    }
-    const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
-    tests.push({
-      id,
-      name: testName,
-      fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
-      describe: parentDescribe,
-      tags,
-      line
-    });
-  }
-  return {
-    id: hashId(relativePath),
-    path: relativePath,
-    name: import_path2.default.basename(filePath),
-    framework: "playwright",
-    tests,
-    testCount: tests.length,
-    lastModified: (/* @__PURE__ */ new Date()).toISOString()
-  };
-}
-function extractTestNames(content) {
-  const names = [];
-  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
-  let match;
-  TEST_RE.lastIndex = 0;
-  while ((match = TEST_RE.exec(content)) !== null) {
-    const testName = match[2];
-    const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
-    names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
-  }
-  return names;
-}
-function extractInlineTags(content, testIndex) {
-  const window2 = content.substring(testIndex, testIndex + 300);
-  const tags = [];
-  let match;
-  INLINE_TAG_RE.lastIndex = 0;
-  while ((match = INLINE_TAG_RE.exec(window2)) !== null) {
-    if (match[2]) {
-      tags.push({ name: match[2] });
-    } else if (match[3]) {
-      const tagList = match[3].split(",").map((t) => t.trim().replace(/^['"`]|['"`]$/g, "")).filter((t) => t.length > 0);
-      tagList.forEach((t) => tags.push({ name: t }));
-    }
-  }
-  return tags;
-}
-
 // src/core/frameworks/cypress.ts
-init_cjs_shims();
-var import_path3 = __toESM(require("path"));
 var DESCRIBE_RE2 = /describe\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE2 = /(?:^|[ \t]+)(?:it|specify|test)\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseCypressSpec(filePath, content, projectRoot) {
@@ -4661,25 +4629,6 @@ function parseVitestSpec(filePath, content, projectRoot) {
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
     const tags = isTodo ? [{ name: "@todo" }] : [];
-    const paramData = extractParameterizedDataFromEach(content);
-    if (paramData?.hasParameters) {
-      tags.push({ name: "@parameterized" });
-      if (paramData.count > 0) {
-        for (let i = 0; i < paramData.count; i++) {
-          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
-          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
-          tests.push({
-            id: id2,
-            name: expandedName,
-            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
-            describe: parentDescribe,
-            tags,
-            line
-          });
-        }
-        continue;
-      }
-    }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
     tests.push({
       id,
@@ -9607,7 +9556,15 @@ async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHi
   for (const commit of commits) {
     try {
       const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? void 0 : relativeTestDir);
-      const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors);
+      const specChanges = await buildSpecChanges(
+        git,
+        commit.hash,
+        fileChanges,
+        framework,
+        projectPath,
+        errors,
+        fullHistory ? void 0 : relativeTestDir
+      );
       if (specChanges.length === 0) continue;
       entries.push({
         commit: {
@@ -9666,7 +9623,8 @@ async function getCommitFileChanges(git, hash, testDir) {
   }
 }
 function isInTestDir(filePath, testDir) {
-  return filePath.startsWith(testDir) || import_path8.default.dirname(filePath) === testDir;
+  const normalised = testDir.endsWith("/") ? testDir : testDir + "/";
+  return filePath.startsWith(normalised) || import_path8.default.dirname(filePath) + "/" === normalised;
 }
 function mapGitStatus(status) {
   switch (status[0]) {
@@ -9680,12 +9638,22 @@ function mapGitStatus(status) {
       return null;
   }
 }
-async function buildSpecChanges(git, hash, fileChanges, framework, projectPath, errors) {
+async function buildSpecChanges(git, hash, fileChanges, framework, projectPath, errors, testDir) {
   const entries = [];
   for (const change of fileChanges) {
     if (!isSpecFile(change.path)) continue;
+    let effectiveChange = change;
+    if (change.status === "renamed" && change.oldPath && testDir) {
+      const oldInTestDir = isInTestDir(change.oldPath, testDir);
+      const newInTestDir = isInTestDir(change.path, testDir);
+      if (!oldInTestDir && newInTestDir) {
+        effectiveChange = { path: change.path, status: "added" };
+      } else if (oldInTestDir && !newInTestDir) {
+        effectiveChange = { path: change.oldPath, status: "deleted" };
+      }
+    }
     try {
-      const entry = await buildSpecEntry(git, hash, change, framework, projectPath);
+      const entry = await buildSpecEntry(git, hash, effectiveChange, framework, projectPath);
       if (entry) entries.push(entry);
     } catch (error) {
       errors.push({
@@ -9702,6 +9670,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
   if (change.status === "added") {
     const content = await getFileAtCommit(git, hash, change.path);
     const tests = extractTestNamesFromContent(content, framework);
+    if (tests.length === 0) return null;
     return {
       specPath: change.path,
       fileStatus: "added",
@@ -9711,10 +9680,11 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
   if (change.status === "deleted") {
     const content = await getFileAtCommit(git, `${hash}^`, change.path);
     const tests = extractTestNamesFromContent(content, framework);
+    if (tests.length === 0) return null;
     return {
       specPath: change.path,
       fileStatus: "deleted",
-      changes: tests.map((name) => ({ type: "removed", name }))
+      changes: tests.map((name) => ({ type: "deleted", name }))
     };
   }
   if (change.status === "renamed" && change.oldPath) {
@@ -9725,6 +9695,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
     const currentTests2 = new Set(extractTestNamesFromContent(currentContent, framework));
     const previousTests2 = new Set(extractTestNamesFromContent(previousContent, framework));
     const testChanges = diffTestNames(previousTests2, currentTests2);
+    if (testChanges.length === 0) return null;
     return {
       specPath: change.path,
       fileStatus: "renamed",
@@ -9764,7 +9735,7 @@ function diffTestNames(previous, current) {
       changes.push({ type: "modified", name: renameCandidate, oldName: removedName });
       matchedAdded.add(renameCandidate);
     } else {
-      changes.push({ type: "removed", name: removedName });
+      changes.push({ type: "deleted", name: removedName });
     }
   }
   for (const addedName of added) {
@@ -9777,8 +9748,8 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
-async function getProjectSyncRecord(dashboardUrl, apiToken, projectId) {
-  const url = new URL(`/api/projects/${projectId}/sync-record`, dashboardUrl).toString();
+async function getSyncMarker(dashboardUrl, apiToken, projectId) {
+  const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${apiToken}`
@@ -9793,13 +9764,14 @@ async function getProjectSyncRecord(dashboardUrl, apiToken, projectId) {
       const errorBody = await response.text().catch(() => "");
       throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ""}`);
     }
-    return await response.json();
+    const data = await response.json();
+    return data?.lastSyncedCommit || data?.commitHash || null;
   } catch (error) {
     return null;
   }
 }
-async function saveProjectSyncRecord(dashboardUrl, apiToken, record) {
-  const url = new URL(`/api/projects/${record.projectId}/sync-record`, dashboardUrl).toString();
+async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
+  const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${apiToken}`
@@ -9807,30 +9779,12 @@ async function saveProjectSyncRecord(dashboardUrl, apiToken, record) {
   const response = await fetch(url, {
     method: "POST",
     headers,
-    body: JSON.stringify(record)
+    body: JSON.stringify({ commitHash })
   });
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
     throw new Error(
-      `Failed to save sync record: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
-    );
-  }
-}
-async function updateProjectLastSyncCommit(dashboardUrl, apiToken, projectId, commitHash) {
-  const url = new URL(`/api/projects/${projectId}/sync-record/last-sync`, dashboardUrl).toString();
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${apiToken}`
-  };
-  const response = await fetch(url, {
-    method: "PATCH",
-    headers,
-    body: JSON.stringify({ lastSyncCommit: commitHash })
-  });
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => "");
-    throw new Error(
-      `Failed to update sync record: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
+      `Failed to save sync marker: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
     );
   }
 }
@@ -9860,18 +9814,6 @@ function getChangeKey(change, specPath) {
   const oldName = change.oldName ?? "";
   return `${path10}:${change.type}:${change.name}:${oldName}`;
 }
-function deduplicateChanges(changes, specPath) {
-  const seen = /* @__PURE__ */ new Set();
-  const deduplicated = [];
-  for (const change of changes) {
-    const key = getChangeKey(change, specPath);
-    if (!seen.has(key)) {
-      seen.add(key);
-      deduplicated.push(change);
-    }
-  }
-  return deduplicated;
-}
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
   const envLocalPath = import_path9.default.join(process.cwd(), ".env.local");
@@ -9888,23 +9830,23 @@ async function syncProject(options) {
   const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
   console.log(`[sync] Total tests: ${totalTests}`);
   console.log("[sync] Checking sync status...");
-  let syncRecord = null;
+  let lastSyncCommit = null;
   let isFirstSync = false;
   try {
-    syncRecord = await getProjectSyncRecord(dashboardUrl, apiKey, projectId);
+    lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`[sync] Warning: Could not retrieve sync record: ${error.message}`);
+      console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
     }
   }
-  isFirstSync = !syncRecord;
+  isFirstSync = !lastSyncCommit;
   if (isFirstSync) {
     console.log("[sync] First sync detected - creating baseline");
   } else {
-    console.log(`[sync] Subsequent sync - last synced: ${syncRecord.lastSyncCommit.substring(0, 7)}`);
+    console.log(`[sync] Subsequent sync - last synced: ${lastSyncCommit.substring(0, 7)}`);
   }
   console.log("[sync] Building git history...");
-  const sinceCommit = isFirstSync ? void 0 : syncRecord.lastSyncCommit;
+  const sinceCommit = isFirstSync ? void 0 : lastSyncCommit;
   const history = await buildHistory(
     process.cwd(),
     detection.testDir,
@@ -9957,8 +9899,7 @@ async function syncProject(options) {
   const transformedHistory = history.entries.map((entry) => {
     const allChanges = [];
     for (const spec of entry.specs) {
-      const deduplicatedChanges = deduplicateChanges(spec.changes, spec.specPath);
-      for (const change of deduplicatedChanges) {
+      for (const change of spec.changes) {
         allChanges.push({
           specPath: spec.specPath,
           testName: change.name,
@@ -9981,15 +9922,38 @@ async function syncProject(options) {
       seenKeys.add(key);
       return true;
     });
+    const removedByName = /* @__PURE__ */ new Map();
+    uniqueChanges.forEach((c, i) => {
+      if (c.type === "deleted") {
+        const existing = removedByName.get(c.testName) ?? [];
+        existing.push(i);
+        removedByName.set(c.testName, existing);
+      }
+    });
+    const suppressedRemoves = /* @__PURE__ */ new Set();
+    uniqueChanges.forEach((c) => {
+      if (c.type === "added") {
+        const removeIndices = removedByName.get(c.testName);
+        if (removeIndices) {
+          const crossSpecIdx = removeIndices.find(
+            (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath
+          );
+          if (crossSpecIdx !== void 0) {
+            suppressedRemoves.add(crossSpecIdx);
+          }
+        }
+      }
+    });
+    const deduplicatedChanges = uniqueChanges.filter((_2, i) => !suppressedRemoves.has(i));
     return {
       commitHash: entry.commit.hash,
       commitMessage: entry.commit.message,
       author: entry.commit.author,
       commitDate: entry.commit.date,
-      changes: uniqueChanges.map((change) => ({
+      changes: deduplicatedChanges.map((change) => ({
         specFile: change.specPath,
         testName: change.testName,
-        type: change.type === "removed" ? "deleted" : change.type,
+        type: change.type,
         details: change.oldName ? { old_name: change.oldName } : void 0
       }))
     };
@@ -10015,32 +9979,15 @@ async function syncProject(options) {
       console.log("[sync] Warning: Could not determine last commit hash");
       return;
     }
+    await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
     if (isFirstSync) {
-      const currentCommit = await getLatestCommitHash(process.cwd());
-      if (!currentCommit) {
-        throw new Error("Could not determine current commit for baseline");
-      }
-      const newRecord = {
-        projectId,
-        firstSyncDate: (/* @__PURE__ */ new Date()).toISOString(),
-        firstSyncCommit: currentCommit,
-        baselineStats: {
-          totalTests,
-          totalFiles: specs.length,
-          tags
-        },
-        lastSyncCommit: lastHash,
-        detectedFramework: detection.framework
-      };
-      await saveProjectSyncRecord(dashboardUrl, apiKey, newRecord);
       console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
     } else {
-      await updateProjectLastSyncCommit(dashboardUrl, apiKey, projectId, lastHash);
       console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}`);
     }
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`[sync] Warning: Could not save sync record: ${error.message}`);
+      console.log(`[sync] Warning: Could not save sync marker: ${error.message}`);
     }
   }
 }

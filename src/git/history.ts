@@ -84,7 +84,15 @@ export async function buildHistory(
             // When doing full history, don't filter by testDir in getCommitFileChanges
             // Instead let buildSpecChanges filter to only test files
             const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? undefined : relativeTestDir);
-            const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors);
+            const specChanges = await buildSpecChanges(
+                git,
+                commit.hash,
+                fileChanges,
+                framework,
+                projectPath,
+                errors,
+                fullHistory ? undefined : relativeTestDir,
+            );
 
             if (specChanges.length === 0) continue;
 
@@ -162,7 +170,10 @@ async function getCommitFileChanges(
 }
 
 function isInTestDir(filePath: string, testDir: string): boolean {
-    return filePath.startsWith(testDir) || path.dirname(filePath) === testDir;
+    // Normalise to forward slashes and ensure testDir ends with / to avoid
+    // prefix false positives (e.g. "test" matching "testing/foo.spec.ts")
+    const normalised = testDir.endsWith('/') ? testDir : testDir + '/';
+    return filePath.startsWith(normalised) || path.dirname(filePath) + '/' === normalised;
 }
 
 function mapGitStatus(status: string): GitFileChange['status'] | null {
@@ -187,14 +198,29 @@ async function buildSpecChanges(
     framework: Framework,
     projectPath: string,
     errors: HistoryError[],
+    testDir?: string,
 ): Promise<SpecHistoryEntry[]> {
     const entries: SpecHistoryEntry[] = [];
 
     for (const change of fileChanges) {
         if (!isSpecFile(change.path)) continue;
 
+        // Normalize cross-testDir renames: if a spec file moves INTO the tracked
+        // test directory, treat it as a brand-new addition (all tests are added).
+        // If it moves OUT of the test directory, treat it as a deletion.
+        let effectiveChange = change;
+        if (change.status === 'renamed' && change.oldPath && testDir) {
+            const oldInTestDir = isInTestDir(change.oldPath, testDir);
+            const newInTestDir = isInTestDir(change.path, testDir);
+            if (!oldInTestDir && newInTestDir) {
+                effectiveChange = { path: change.path, status: 'added' };
+            } else if (oldInTestDir && !newInTestDir) {
+                effectiveChange = { path: change.oldPath, status: 'deleted' };
+            }
+        }
+
         try {
-            const entry = await buildSpecEntry(git, hash, change, framework, projectPath);
+            const entry = await buildSpecEntry(git, hash, effectiveChange, framework, projectPath);
             if (entry) entries.push(entry);
         } catch (error) {
             errors.push({
@@ -220,6 +246,7 @@ async function buildSpecEntry(
     if (change.status === 'added') {
         const content = await getFileAtCommit(git, hash, change.path);
         const tests = extractTestNamesFromContent(content, framework);
+        if (tests.length === 0) return null;
         return {
             specPath: change.path,
             fileStatus: 'added',
@@ -230,10 +257,11 @@ async function buildSpecEntry(
     if (change.status === 'deleted') {
         const content = await getFileAtCommit(git, `${hash}^`, change.path);
         const tests = extractTestNamesFromContent(content, framework);
+        if (tests.length === 0) return null;
         return {
             specPath: change.path,
             fileStatus: 'deleted',
-            changes: tests.map((name) => ({ type: 'removed', name })),
+            changes: tests.map((name) => ({ type: 'deleted', name })),
         };
     }
 
@@ -247,6 +275,7 @@ async function buildSpecEntry(
         const previousTests = new Set(extractTestNamesFromContent(previousContent, framework));
 
         const testChanges = diffTestNames(previousTests, currentTests);
+        if (testChanges.length === 0) return null;
 
         return {
             specPath: change.path,
@@ -305,7 +334,7 @@ function diffTestNames(previous: Set<string>, current: Set<string>): TestChange[
             changes.push({ type: 'modified', name: renameCandidate, oldName: removedName });
             matchedAdded.add(renameCandidate);
         } else {
-            changes.push({ type: 'removed', name: removedName });
+            changes.push({ type: 'deleted', name: removedName });
         }
     }
 

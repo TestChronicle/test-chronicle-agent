@@ -1,16 +1,11 @@
-import path from 'path'
-import fs from 'fs'
-import dotenv from 'dotenv'
+import path from 'path';
+import fs from 'fs';
+import dotenv from 'dotenv';
 import { detectFramework } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash } from './git';
-import {
-    getProjectSyncRecord,
-    saveProjectSyncRecord,
-    updateProjectLastSyncCommit,
-    syncToDashboard,
-} from './sync-client';
-import { TestChange, ProjectSyncRecord } from './types';
+import { getSyncMarker, saveSyncMarker, syncToDashboard } from './sync-client';
+import { TestChange } from './types';
 
 // Configuration for sync operation
 export interface SyncOptions {
@@ -30,38 +25,16 @@ function getChangeKey(change: TestChange, specPath?: string): string {
 }
 
 /**
- * Deduplicates test changes using a consistent composite key.
- * Removes duplicate entries that have the same (specPath, type, name, oldName) combination.
- */
-function deduplicateChanges(changes: TestChange[], specPath?: string): TestChange[] {
-    const seen = new Set<string>();
-    const deduplicated: TestChange[] = [];
-
-    for (const change of changes) {
-        const key = getChangeKey(change, specPath);
-
-        if (!seen.has(key)) {
-            seen.add(key);
-            deduplicated.push(change);
-        }
-    }
-
-    return deduplicated;
-}
-
-/**
- * Core sync function - syncs test data to dashboard
- * Implements the baseline sync model:
- * - First sync: Creates baseline stats and saves ProjectSyncRecord
- * - Subsequent syncs: Uses lastSyncCommit from ProjectSyncRecord for incremental updates
+ * Core sync function - syncs test data to dashboard.
+ * First sync creates a baseline marker; subsequent syncs are incremental from the last commit.
  */
 export async function syncProject(options: SyncOptions): Promise<void> {
     const { projectId, apiKey, dashboardUrl } = options;
 
     // Load .env.local from project directory if it exists
-    const envLocalPath = path.join(process.cwd(), '.env.local')
+    const envLocalPath = path.join(process.cwd(), '.env.local');
     if (fs.existsSync(envLocalPath)) {
-        dotenv.config({ path: envLocalPath, debug: false })
+        dotenv.config({ path: envLocalPath, debug: false });
     }
 
     console.log('[sync] Detecting framework...');
@@ -78,28 +51,28 @@ export async function syncProject(options: SyncOptions): Promise<void> {
 
     // Check if this is first sync or subsequent sync
     console.log('[sync] Checking sync status...');
-    let syncRecord: ProjectSyncRecord | null = null;
+    let lastSyncCommit: string | null = null;
     let isFirstSync = false;
 
     try {
-        syncRecord = await getProjectSyncRecord(dashboardUrl, apiKey, projectId);
+        lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
     } catch (error) {
         if (error instanceof Error) {
-            console.log(`[sync] Warning: Could not retrieve sync record: ${error.message}`);
+            console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
         }
     }
 
-    isFirstSync = !syncRecord;
+    isFirstSync = !lastSyncCommit;
     if (isFirstSync) {
         console.log('[sync] First sync detected - creating baseline');
     } else {
-        console.log(`[sync] Subsequent sync - last synced: ${syncRecord!.lastSyncCommit.substring(0, 7)}`);
+        console.log(`[sync] Subsequent sync - last synced: ${lastSyncCommit!.substring(0, 7)}`);
     }
 
     console.log('[sync] Building git history...');
 
     // For first sync, scan all commits; for subsequent, only scan incremental
-    const sinceCommit = isFirstSync ? undefined : syncRecord!.lastSyncCommit;
+    const sinceCommit = isFirstSync ? undefined : lastSyncCommit!;
     const history = await buildHistory(
         process.cwd(),
         detection.testDir,
@@ -165,15 +138,12 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         const allChanges: Array<{
             specPath: string;
             testName: string;
-            type: 'added' | 'removed' | 'modified';
+            type: 'added' | 'deleted' | 'modified';
             oldName?: string;
         }> = [];
 
         for (const spec of entry.specs) {
-            // Deduplicate changes for this spec using consistent key function
-            const deduplicatedChanges = deduplicateChanges(spec.changes, spec.specPath);
-
-            for (const change of deduplicatedChanges) {
+            for (const change of spec.changes) {
                 allChanges.push({
                     specPath: spec.specPath,
                     testName: change.name,
@@ -199,15 +169,42 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             return true;
         });
 
+        // Detect cross-spec moves: if the same test name is both removed from one spec
+        // and added to a different spec in the same commit, it's a move — suppress the
+        // remove entry so the test isn't double-counted as remove + add.
+        const removedByName = new Map<string, number[]>();
+        uniqueChanges.forEach((c, i) => {
+            if (c.type === 'deleted') {
+                const existing = removedByName.get(c.testName) ?? [];
+                existing.push(i);
+                removedByName.set(c.testName, existing);
+            }
+        });
+        const suppressedRemoves = new Set<number>();
+        uniqueChanges.forEach((c) => {
+            if (c.type === 'added') {
+                const removeIndices = removedByName.get(c.testName);
+                if (removeIndices) {
+                    const crossSpecIdx = removeIndices.find(
+                        (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath,
+                    );
+                    if (crossSpecIdx !== undefined) {
+                        suppressedRemoves.add(crossSpecIdx);
+                    }
+                }
+            }
+        });
+        const deduplicatedChanges = uniqueChanges.filter((_, i) => !suppressedRemoves.has(i));
+
         return {
             commitHash: entry.commit.hash,
             commitMessage: entry.commit.message,
             author: entry.commit.author,
             commitDate: entry.commit.date,
-            changes: uniqueChanges.map((change) => ({
+            changes: deduplicatedChanges.map((change) => ({
                 specFile: change.specPath,
                 testName: change.testName,
-                type: change.type === 'removed' ? 'deleted' : change.type,
+                type: change.type,
                 details: change.oldName ? { old_name: change.oldName } : undefined,
             })),
         };
@@ -225,7 +222,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     console.log('[sync] Sync successful!');
     console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
 
-    // Handle baseline sync record and incremental marker
+    // Handle baseline sync and incremental marker
     try {
         let lastHash: string | null = null;
 
@@ -240,36 +237,16 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             return;
         }
 
+        await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
+
         if (isFirstSync) {
-            // Create and save baseline sync record for first sync
-            const currentCommit = await getLatestCommitHash(process.cwd());
-            if (!currentCommit) {
-                throw new Error('Could not determine current commit for baseline');
-            }
-
-            const newRecord: ProjectSyncRecord = {
-                projectId,
-                firstSyncDate: new Date().toISOString(),
-                firstSyncCommit: currentCommit,
-                baselineStats: {
-                    totalTests,
-                    totalFiles: specs.length,
-                    tags,
-                },
-                lastSyncCommit: lastHash,
-                detectedFramework: detection.framework,
-            };
-
-            await saveProjectSyncRecord(dashboardUrl, apiKey, newRecord);
             console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
         } else {
-            // Update last sync commit for incremental syncs
-            await updateProjectLastSyncCommit(dashboardUrl, apiKey, projectId, lastHash);
             console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}`);
         }
     } catch (error) {
         if (error instanceof Error) {
-            console.log(`[sync] Warning: Could not save sync record: ${error.message}`);
+            console.log(`[sync] Warning: Could not save sync marker: ${error.message}`);
         }
     }
 }
