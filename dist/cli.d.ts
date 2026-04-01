@@ -7,5 +7,5 @@
  * - CHRONICLE_DASHBOARD_URL: Dashboard URL (optional, default: http://localhost:3000)
  */
 declare function main(): Promise<void>;
-
 export { main as cli };
+//# sourceMappingURL=cli.d.ts.map

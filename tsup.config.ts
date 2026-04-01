@@ -9,7 +9,6 @@ export default defineConfig({
     noExternal: ['dotenv', 'glob', 'simple-git'],
     format: ['cjs'],
     target: 'es2020',
-    dts: true,
     clean: true,
     minify: false,
     sourcemap: true,

@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "dev": "tsx src/cli.ts",
-    "build": "tsup && npm run bundle:cli",
+    "build": "tsup && tsc -p tsconfig.build.json && npm run bundle:cli",
     "bundle:cli": "ncc build dist/cli.js -o dist/cli-bundle --target es2020",
     "test": "vitest run",
     "test:watch": "vitest watch"
