@@ -4421,23 +4421,76 @@ function resolveParentDescribe(blocks, index) {
   return innermost?.name;
 }
 
-// src/core/frameworks/parameterized.ts
-init_cjs_shims();
-function extractParameterizedDataFromEach(content) {
-  const eachRegex = new RegExp(`(?:test|describe)\\.each\\s*\\(\\s*\\[([\\s\\S]*?)\\]\\s*\\)`, "g");
+// src/core/frameworks/playwright.ts
+var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
+var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
+var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\2|\[([^\]]+)\])/g;
+function parsePlaywrightSpec(filePath, content, projectRoot) {
+  const relativePath = import_path2.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
+  const tests = [];
   let match;
-  while ((match = eachRegex.exec(content)) !== null) {
-    const dataContent = match[1];
-    const paramCount = countParameterSets(dataContent);
-    if (paramCount > 0) {
-      return {
-        count: paramCount,
-        hasParameters: true
-      };
+  TEST_RE.lastIndex = 0;
+  while ((match = TEST_RE.exec(content)) !== null) {
+    const testName = match[2];
+    const matchIndex = match.index;
+    const line = lineNumberAt(content, matchIndex);
+    const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
+    const tags = extractInlineTags(content, matchIndex);
+    const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
+    tests.push({
+      id,
+      name: testName,
+      fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
+      describe: parentDescribe,
+      tags,
+      line
+    });
+  }
+  return {
+    id: hashId(relativePath),
+    path: relativePath,
+    name: import_path2.default.basename(filePath),
+    framework: "playwright",
+    tests,
+    testCount: tests.length,
+    lastModified: (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+function extractTestNames(content) {
+  const names = [];
+  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
+  let match;
+  TEST_RE.lastIndex = 0;
+  while ((match = TEST_RE.exec(content)) !== null) {
+    const testName = match[2];
+    const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
+    names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
+  }
+  return names;
+}
+function extractInlineTags(content, testIndex) {
+  const window2 = content.substring(testIndex, testIndex + 300);
+  const tags = [];
+  let match;
+  INLINE_TAG_RE.lastIndex = 0;
+  while ((match = INLINE_TAG_RE.exec(window2)) !== null) {
+    if (match[2]) {
+      tags.push({ name: match[2] });
+    } else if (match[3]) {
+      const tagList = match[3].split(",").map((t) => t.trim().replace(/^['"`]|['"`]$/g, "")).filter((t) => t.length > 0);
+      tagList.forEach((t) => tags.push({ name: t }));
     }
   }
-  return null;
+  return tags;
 }
+
+// src/core/frameworks/cypress.ts
+init_cjs_shims();
+var import_path3 = __toESM(__nccwpck_require__(928));
+
+// src/core/frameworks/parameterized.ts
+init_cjs_shims();
 function extractParameterizedDataFromForEach(content, testName) {
   const contextStart = Math.max(0, content.lastIndexOf("\n", content.indexOf(testName)) - 1e3);
   const contextEnd = content.indexOf(testName);
@@ -4502,92 +4555,7 @@ function generateParameterizedTestName(baseName, paramIndex, paramCount) {
   return `${baseName} [${paramIndex + 1}/${paramCount}]`;
 }
 
-// src/core/frameworks/playwright.ts
-var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
-var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
-var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\2|\[([^\]]+)\])/g;
-function parsePlaywrightSpec(filePath, content, projectRoot) {
-  const relativePath = import_path2.default.relative(projectRoot, filePath).replace(/\\/g, "/");
-  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
-  const tests = [];
-  let match;
-  TEST_RE.lastIndex = 0;
-  while ((match = TEST_RE.exec(content)) !== null) {
-    const testName = match[2];
-    const matchIndex = match.index;
-    const line = lineNumberAt(content, matchIndex);
-    const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
-    const tags = extractInlineTags(content, matchIndex);
-    const paramData = extractParameterizedDataFromEach(content);
-    if (paramData?.hasParameters) {
-      tags.push({ name: "@parameterized" });
-      if (paramData.count > 0) {
-        for (let i = 0; i < paramData.count; i++) {
-          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
-          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
-          tests.push({
-            id: id2,
-            name: expandedName,
-            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
-            describe: parentDescribe,
-            tags,
-            line
-          });
-        }
-        continue;
-      }
-    }
-    const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
-    tests.push({
-      id,
-      name: testName,
-      fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
-      describe: parentDescribe,
-      tags,
-      line
-    });
-  }
-  return {
-    id: hashId(relativePath),
-    path: relativePath,
-    name: import_path2.default.basename(filePath),
-    framework: "playwright",
-    tests,
-    testCount: tests.length,
-    lastModified: (/* @__PURE__ */ new Date()).toISOString()
-  };
-}
-function extractTestNames(content) {
-  const names = [];
-  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
-  let match;
-  TEST_RE.lastIndex = 0;
-  while ((match = TEST_RE.exec(content)) !== null) {
-    const testName = match[2];
-    const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
-    names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
-  }
-  return names;
-}
-function extractInlineTags(content, testIndex) {
-  const window2 = content.substring(testIndex, testIndex + 300);
-  const tags = [];
-  let match;
-  INLINE_TAG_RE.lastIndex = 0;
-  while ((match = INLINE_TAG_RE.exec(window2)) !== null) {
-    if (match[2]) {
-      tags.push({ name: match[2] });
-    } else if (match[3]) {
-      const tagList = match[3].split(",").map((t) => t.trim().replace(/^['"`]|['"`]$/g, "")).filter((t) => t.length > 0);
-      tagList.forEach((t) => tags.push({ name: t }));
-    }
-  }
-  return tags;
-}
-
 // src/core/frameworks/cypress.ts
-init_cjs_shims();
-var import_path3 = __toESM(__nccwpck_require__(928));
 var DESCRIBE_RE2 = /describe\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE2 = /(?:^|[ \t]+)(?:it|specify|test)\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseCypressSpec(filePath, content, projectRoot) {
@@ -4668,25 +4636,6 @@ function parseVitestSpec(filePath, content, projectRoot) {
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
     const tags = isTodo ? [{ name: "@todo" }] : [];
-    const paramData = extractParameterizedDataFromEach(content);
-    if (paramData?.hasParameters) {
-      tags.push({ name: "@parameterized" });
-      if (paramData.count > 0) {
-        for (let i = 0; i < paramData.count; i++) {
-          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
-          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
-          tests.push({
-            id: id2,
-            name: expandedName,
-            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
-            describe: parentDescribe,
-            tags,
-            line
-          });
-        }
-        continue;
-      }
-    }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
     tests.push({
       id,
@@ -9673,7 +9622,8 @@ async function getCommitFileChanges(git, hash, testDir) {
   }
 }
 function isInTestDir(filePath, testDir) {
-  return filePath.startsWith(testDir) || import_path8.default.dirname(filePath) === testDir;
+  const normalised = testDir.endsWith("/") ? testDir : testDir + "/";
+  return filePath.startsWith(normalised) || import_path8.default.dirname(filePath) + "/" === normalised;
 }
 function mapGitStatus(status) {
   switch (status[0]) {
@@ -9709,6 +9659,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
   if (change.status === "added") {
     const content = await getFileAtCommit(git, hash, change.path);
     const tests = extractTestNamesFromContent(content, framework);
+    if (tests.length === 0) return null;
     return {
       specPath: change.path,
       fileStatus: "added",
@@ -9718,6 +9669,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
   if (change.status === "deleted") {
     const content = await getFileAtCommit(git, `${hash}^`, change.path);
     const tests = extractTestNamesFromContent(content, framework);
+    if (tests.length === 0) return null;
     return {
       specPath: change.path,
       fileStatus: "deleted",
@@ -9732,6 +9684,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
     const currentTests2 = new Set(extractTestNamesFromContent(currentContent, framework));
     const previousTests2 = new Set(extractTestNamesFromContent(previousContent, framework));
     const testChanges = diffTestNames(previousTests2, currentTests2);
+    if (testChanges.length === 0) return null;
     return {
       specPath: change.path,
       fileStatus: "renamed",
@@ -9973,14 +9926,23 @@ async function syncProject(options) {
     });
     const removedByName = /* @__PURE__ */ new Map();
     uniqueChanges.forEach((c, i) => {
-      if (c.type === "removed") removedByName.set(c.testName, i);
+      if (c.type === "removed") {
+        const existing = removedByName.get(c.testName) ?? [];
+        existing.push(i);
+        removedByName.set(c.testName, existing);
+      }
     });
     const suppressedRemoves = /* @__PURE__ */ new Set();
     uniqueChanges.forEach((c) => {
       if (c.type === "added") {
-        const removeIdx = removedByName.get(c.testName);
-        if (removeIdx !== void 0 && uniqueChanges[removeIdx].specPath !== c.specPath) {
-          suppressedRemoves.add(removeIdx);
+        const removeIndices = removedByName.get(c.testName);
+        if (removeIndices) {
+          const crossSpecIdx = removeIndices.find(
+            (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath
+          );
+          if (crossSpecIdx !== void 0) {
+            suppressedRemoves.add(crossSpecIdx);
+          }
         }
       }
     });

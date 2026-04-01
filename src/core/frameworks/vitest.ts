@@ -1,7 +1,6 @@
 import path from 'path';
 import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
-import { extractParameterizedDataFromEach, generateParameterizedTestName } from './parameterized';
 
 const DESCRIBE_RE = /describe\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 
@@ -27,30 +26,6 @@ export function parseVitestSpec(filePath: string, content: string, projectRoot: 
         // Check if this is a .todo() test and mark it
         const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
         const tags = isTodo ? [{ name: '@todo' }] : [];
-
-        // Check if this is a parameterized test (test.each() or describe.each())
-        const paramData = extractParameterizedDataFromEach(content);
-        if (paramData?.hasParameters) {
-            tags.push({ name: '@parameterized' });
-
-            // If we have a parameter count, expand to individual test cases
-            if (paramData.count > 0) {
-                for (let i = 0; i < paramData.count; i++) {
-                    const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
-                    const expandedName = generateParameterizedTestName(testName, i, paramData.count);
-
-                    tests.push({
-                        id,
-                        name: expandedName,
-                        fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
-                        describe: parentDescribe,
-                        tags,
-                        line,
-                    });
-                }
-                continue; // Skip adding the base test
-            }
-        }
 
         const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
 

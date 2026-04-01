@@ -162,7 +162,10 @@ async function getCommitFileChanges(
 }
 
 function isInTestDir(filePath: string, testDir: string): boolean {
-    return filePath.startsWith(testDir) || path.dirname(filePath) === testDir;
+    // Normalise to forward slashes and ensure testDir ends with / to avoid
+    // prefix false positives (e.g. "test" matching "testing/foo.spec.ts")
+    const normalised = testDir.endsWith('/') ? testDir : testDir + '/';
+    return filePath.startsWith(normalised) || path.dirname(filePath) + '/' === normalised;
 }
 
 function mapGitStatus(status: string): GitFileChange['status'] | null {
@@ -220,6 +223,7 @@ async function buildSpecEntry(
     if (change.status === 'added') {
         const content = await getFileAtCommit(git, hash, change.path);
         const tests = extractTestNamesFromContent(content, framework);
+        if (tests.length === 0) return null;
         return {
             specPath: change.path,
             fileStatus: 'added',
@@ -230,6 +234,7 @@ async function buildSpecEntry(
     if (change.status === 'deleted') {
         const content = await getFileAtCommit(git, `${hash}^`, change.path);
         const tests = extractTestNamesFromContent(content, framework);
+        if (tests.length === 0) return null;
         return {
             specPath: change.path,
             fileStatus: 'deleted',
@@ -247,6 +252,7 @@ async function buildSpecEntry(
         const previousTests = new Set(extractTestNamesFromContent(previousContent, framework));
 
         const testChanges = diffTestNames(previousTests, currentTests);
+        if (testChanges.length === 0) return null;
 
         return {
             specPath: change.path,
