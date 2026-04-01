@@ -101,7 +101,7 @@ export interface GitCommit {
 }
 
 export interface TestChange {
-    type: 'added' | 'removed' | 'modified';
+    type: 'added' | 'deleted' | 'modified';
     name: string;
     oldName?: string;
 }

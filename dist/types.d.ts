@@ -81,7 +81,7 @@ export interface GitCommit {
     changes: GitFileChange[];
 }
 export interface TestChange {
-    type: 'added' | 'removed' | 'modified';
+    type: 'added' | 'deleted' | 'modified';
     name: string;
     oldName?: string;
 }

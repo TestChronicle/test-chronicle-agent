@@ -9545,7 +9545,15 @@ async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHi
   for (const commit of commits) {
     try {
       const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? void 0 : relativeTestDir);
-      const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors, fullHistory ? void 0 : relativeTestDir);
+      const specChanges = await buildSpecChanges(
+        git,
+        commit.hash,
+        fileChanges,
+        framework,
+        projectPath,
+        errors,
+        fullHistory ? void 0 : relativeTestDir
+      );
       if (specChanges.length === 0) continue;
       entries.push({
         commit: {
@@ -9665,7 +9673,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
     return {
       specPath: change.path,
       fileStatus: "deleted",
-      changes: tests.map((name) => ({ type: "removed", name }))
+      changes: tests.map((name) => ({ type: "deleted", name }))
     };
   }
   if (change.status === "renamed" && change.oldPath) {
@@ -9716,7 +9724,7 @@ function diffTestNames(previous, current) {
       changes.push({ type: "modified", name: renameCandidate, oldName: removedName });
       matchedAdded.add(renameCandidate);
     } else {
-      changes.push({ type: "removed", name: removedName });
+      changes.push({ type: "deleted", name: removedName });
     }
   }
   for (const addedName of added) {
@@ -9794,18 +9802,6 @@ function getChangeKey(change, specPath) {
   const path10 = specPath ?? "";
   const oldName = change.oldName ?? "";
   return `${path10}:${change.type}:${change.name}:${oldName}`;
-}
-function deduplicateChanges(changes, specPath) {
-  const seen = /* @__PURE__ */ new Set();
-  const deduplicated = [];
-  for (const change of changes) {
-    const key = getChangeKey(change, specPath);
-    if (!seen.has(key)) {
-      seen.add(key);
-      deduplicated.push(change);
-    }
-  }
-  return deduplicated;
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
@@ -9892,8 +9888,7 @@ async function syncProject(options) {
   const transformedHistory = history.entries.map((entry) => {
     const allChanges = [];
     for (const spec of entry.specs) {
-      const deduplicatedChanges2 = deduplicateChanges(spec.changes, spec.specPath);
-      for (const change of deduplicatedChanges2) {
+      for (const change of spec.changes) {
         allChanges.push({
           specPath: spec.specPath,
           testName: change.name,
@@ -9918,7 +9913,7 @@ async function syncProject(options) {
     });
     const removedByName = /* @__PURE__ */ new Map();
     uniqueChanges.forEach((c, i) => {
-      if (c.type === "removed") {
+      if (c.type === "deleted") {
         const existing = removedByName.get(c.testName) ?? [];
         existing.push(i);
         removedByName.set(c.testName, existing);
@@ -9947,7 +9942,7 @@ async function syncProject(options) {
       changes: deduplicatedChanges.map((change) => ({
         specFile: change.specPath,
         testName: change.testName,
-        type: change.type === "removed" ? "deleted" : change.type,
+        type: change.type,
         details: change.oldName ? { old_name: change.oldName } : void 0
       }))
     };

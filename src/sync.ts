@@ -25,26 +25,6 @@ function getChangeKey(change: TestChange, specPath?: string): string {
 }
 
 /**
- * Deduplicates test changes using a consistent composite key.
- * Removes duplicate entries that have the same (specPath, type, name, oldName) combination.
- */
-function deduplicateChanges(changes: TestChange[], specPath?: string): TestChange[] {
-    const seen = new Set<string>();
-    const deduplicated: TestChange[] = [];
-
-    for (const change of changes) {
-        const key = getChangeKey(change, specPath);
-
-        if (!seen.has(key)) {
-            seen.add(key);
-            deduplicated.push(change);
-        }
-    }
-
-    return deduplicated;
-}
-
-/**
  * Core sync function - syncs test data to dashboard.
  * First sync creates a baseline marker; subsequent syncs are incremental from the last commit.
  */
@@ -158,15 +138,12 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         const allChanges: Array<{
             specPath: string;
             testName: string;
-            type: 'added' | 'removed' | 'modified';
+            type: 'added' | 'deleted' | 'modified';
             oldName?: string;
         }> = [];
 
         for (const spec of entry.specs) {
-            // Deduplicate changes for this spec using consistent key function
-            const deduplicatedChanges = deduplicateChanges(spec.changes, spec.specPath);
-
-            for (const change of deduplicatedChanges) {
+            for (const change of spec.changes) {
                 allChanges.push({
                     specPath: spec.specPath,
                     testName: change.name,
@@ -197,7 +174,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         // remove entry so the test isn't double-counted as remove + add.
         const removedByName = new Map<string, number[]>();
         uniqueChanges.forEach((c, i) => {
-            if (c.type === 'removed') {
+            if (c.type === 'deleted') {
                 const existing = removedByName.get(c.testName) ?? [];
                 existing.push(i);
                 removedByName.set(c.testName, existing);
@@ -227,7 +204,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             changes: deduplicatedChanges.map((change) => ({
                 specFile: change.specPath,
                 testName: change.testName,
-                type: change.type === 'removed' ? 'deleted' : change.type,
+                type: change.type,
                 details: change.oldName ? { old_name: change.oldName } : undefined,
             })),
         };

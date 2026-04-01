@@ -84,7 +84,15 @@ export async function buildHistory(
             // When doing full history, don't filter by testDir in getCommitFileChanges
             // Instead let buildSpecChanges filter to only test files
             const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? undefined : relativeTestDir);
-            const specChanges = await buildSpecChanges(git, commit.hash, fileChanges, framework, projectPath, errors, fullHistory ? undefined : relativeTestDir);
+            const specChanges = await buildSpecChanges(
+                git,
+                commit.hash,
+                fileChanges,
+                framework,
+                projectPath,
+                errors,
+                fullHistory ? undefined : relativeTestDir,
+            );
 
             if (specChanges.length === 0) continue;
 
@@ -253,7 +261,7 @@ async function buildSpecEntry(
         return {
             specPath: change.path,
             fileStatus: 'deleted',
-            changes: tests.map((name) => ({ type: 'removed', name })),
+            changes: tests.map((name) => ({ type: 'deleted', name })),
         };
     }
 
@@ -326,7 +334,7 @@ function diffTestNames(previous: Set<string>, current: Set<string>): TestChange[
             changes.push({ type: 'modified', name: renameCandidate, oldName: removedName });
             matchedAdded.add(renameCandidate);
         } else {
-            changes.push({ type: 'removed', name: removedName });
+            changes.push({ type: 'deleted', name: removedName });
         }
     }
 
