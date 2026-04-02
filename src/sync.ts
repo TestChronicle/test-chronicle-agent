@@ -201,6 +201,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
 
         return {
             commitHash: entry.commit.hash,
+            shortHash: entry.commit.shortHash,
             commitMessage: entry.commit.message,
             author: entry.commit.author,
             commitDate: entry.commit.date,
