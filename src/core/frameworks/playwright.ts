@@ -1,7 +1,6 @@
 import path from 'path';
 import { TestCase, TestTag, SpecFile } from '../../types';
 import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
-import { extractParameterizedDataFromEach, generateParameterizedTestName } from './parameterized';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 //
@@ -32,30 +31,6 @@ export function parsePlaywrightSpec(filePath: string, content: string, projectRo
 
         const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
         const tags = extractInlineTags(content, matchIndex);
-
-        // Check if this is a parameterized test (test.each())
-        const paramData = extractParameterizedDataFromEach(content);
-        if (paramData?.hasParameters) {
-            tags.push({ name: '@parameterized' });
-
-            // If we have a parameter count, expand to individual test cases
-            if (paramData.count > 0) {
-                for (let i = 0; i < paramData.count; i++) {
-                    const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
-                    const expandedName = generateParameterizedTestName(testName, i, paramData.count);
-
-                    tests.push({
-                        id,
-                        name: expandedName,
-                        fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
-                        describe: parentDescribe,
-                        tags,
-                        line,
-                    });
-                }
-                continue; // Skip adding the base test
-            }
-        }
 
         const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
 

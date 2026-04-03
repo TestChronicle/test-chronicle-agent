@@ -81,7 +81,7 @@ export interface GitCommit {
     changes: GitFileChange[];
 }
 export interface TestChange {
-    type: 'added' | 'removed' | 'modified';
+    type: 'added' | 'deleted' | 'modified';
     name: string;
     oldName?: string;
 }
@@ -104,27 +104,6 @@ export interface HistoryBuildResult {
     entries: CommitHistory[];
     errors: HistoryError[];
     warnings: string[];
-}
-/**
- * Project sync baseline record - saved on first sync.
- * Tracks the baseline for all future incremental syncs.
- */
-export interface ProjectSyncRecord {
-    projectId: string;
-    /** ISO date string when first sync occurred */
-    firstSyncDate: string;
-    /** Git commit hash at time of first sync */
-    firstSyncCommit: string;
-    /** Baseline test statistics (current state at first sync) */
-    baselineStats: {
-        totalTests: number;
-        totalFiles: number;
-        tags: Record<string, number>;
-    };
-    /** Last synced commit hash (for next incremental sync) */
-    lastSyncCommit: string;
-    /** Framework detected at first sync (for consistency checks) */
-    detectedFramework: Framework;
 }
 export interface DetectionResult {
     framework: Framework;
