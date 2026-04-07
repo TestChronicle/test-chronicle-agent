@@ -4881,6 +4881,31 @@ function extractTestNamesFromContent(content, framework) {
       return [];
   }
 }
+function extractTestsWithLinesFromContent(content, framework) {
+  const dummyPath = "/__git_history__/test.spec.ts";
+  const dummyRoot = "/__git_history__";
+  let spec;
+  switch (framework) {
+    case "playwright":
+      spec = parsePlaywrightSpec(dummyPath, content, dummyRoot);
+      break;
+    case "cypress":
+      spec = parseCypressSpec(dummyPath, content, dummyRoot);
+      break;
+    case "vitest":
+      spec = parseVitestSpec(dummyPath, content, dummyRoot);
+      break;
+    case "testng":
+      spec = parseTestNGSpec(dummyPath, content, dummyRoot);
+      break;
+    case "junit":
+      spec = parseJUnitSpec(dummyPath, content, dummyRoot);
+      break;
+    default:
+      return [];
+  }
+  return spec.tests.map((t) => ({ name: t.fullName, line: t.line }));
+}
 function findSpecFiles(projectRoot, testDir, framework) {
   const patterns = getTestFilePatterns(framework);
   const baseDir = import_path7.default.resolve(projectRoot, testDir);
@@ -9640,7 +9665,7 @@ function mapGitStatus(status) {
     case "D":
       return "deleted";
     case "M":
-      return "modified";
+      return "changed";
     default:
       return null;
   }
@@ -9716,11 +9741,13 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
   const currentTests = new Set(extractTestNamesFromContent(current, framework));
   const previousTests = new Set(extractTestNamesFromContent(previous, framework));
   const changes = diffTestNames(previousTests, currentTests);
-  if (changes.length === 0) return null;
+  const maintenanceChanges = detectMaintenanceChanges(previous, current, framework, changes);
+  const allChanges = [...changes, ...maintenanceChanges];
+  if (allChanges.length === 0) return null;
   return {
     specPath: change.path,
-    fileStatus: "modified",
-    changes
+    fileStatus: "changed",
+    changes: allChanges
   };
 }
 async function getFileAtCommit(git, ref, filePath) {
@@ -9728,6 +9755,38 @@ async function getFileAtCommit(git, ref, filePath) {
 }
 function isSpecFile(filePath) {
   return /\.(spec|test)\.[jt]s$/.test(filePath);
+}
+function detectMaintenanceChanges(previousContent, currentContent, framework, alreadyChangedTests) {
+  if (!previousContent || !currentContent) return [];
+  const prevTests = extractTestsWithLinesFromContent(previousContent, framework);
+  const currTests = extractTestsWithLinesFromContent(currentContent, framework);
+  if (prevTests.length === 0 || currTests.length === 0) return [];
+  const alreadyChangedNames = new Set(
+    alreadyChangedTests.flatMap((c) => c.oldName ? [c.name, c.oldName] : [c.name])
+  );
+  const prevNames = new Set(prevTests.map((t) => t.name));
+  const currNames = new Set(currTests.map((t) => t.name));
+  const stableNames = [...currNames].filter((name) => prevNames.has(name) && !alreadyChangedNames.has(name));
+  if (stableNames.length === 0) return [];
+  const prevLines = previousContent.split("\n");
+  const currLines = currentContent.split("\n");
+  function getTestSpan(tests, name, lines) {
+    const sorted2 = [...tests].sort((a, b) => a.line - b.line);
+    const idx = sorted2.findIndex((t) => t.name === name);
+    if (idx === -1) return "";
+    const start = sorted2[idx].line - 1;
+    const end = idx + 1 < sorted2.length ? sorted2[idx + 1].line - 1 : lines.length;
+    return lines.slice(start, end).join("\n");
+  }
+  const results = [];
+  for (const name of stableNames) {
+    const prevSpan = getTestSpan(prevTests, name, prevLines);
+    const currSpan = getTestSpan(currTests, name, currLines);
+    if (prevSpan !== currSpan) {
+      results.push({ type: "maintenance", name });
+    }
+  }
+  return results;
 }
 function diffTestNames(previous, current) {
   const added = [...current].filter((t) => !previous.has(t));
@@ -9739,7 +9798,7 @@ function diffTestNames(previous, current) {
       (addedName) => !matchedAdded.has(addedName) && isSameTest(removedName, addedName)
     );
     if (renameCandidate) {
-      changes.push({ type: "modified", name: renameCandidate, oldName: removedName });
+      changes.push({ type: "renamed", name: renameCandidate, oldName: removedName });
       matchedAdded.add(renameCandidate);
     } else {
       changes.push({ type: "deleted", name: removedName });

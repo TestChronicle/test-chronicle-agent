@@ -2,6 +2,11 @@ import { Framework, SpecFile } from '../types';
 export declare function parseSpecFile(filePath: string, content: string, projectRoot: string, framework: Framework): SpecFile;
 /** Extract test names from raw file content without constructing a full SpecFile. */
 export declare function extractTestNamesFromContent(content: string, framework: Framework): string[];
+/** Extract test names with their line numbers from raw file content. */
+export declare function extractTestsWithLinesFromContent(content: string, framework: Framework): {
+    name: string;
+    line: number;
+}[];
 /** Resolve all spec files under testDir for the given framework. */
 export declare function findSpecFiles(projectRoot: string, testDir: string, framework: Framework): string[];
 /** Parse all spec files in a project directory. */
