@@ -138,7 +138,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         const allChanges: Array<{
             specPath: string;
             testName: string;
-            type: 'added' | 'deleted' | 'modified';
+            type: 'added' | 'deleted' | 'renamed' | 'maintenance';
             oldName?: string;
         }> = [];
 

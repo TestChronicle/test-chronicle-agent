@@ -1,5 +1,5 @@
 export type Framework = 'playwright' | 'cypress' | 'testng' | 'junit' | 'vitest' | 'unknown';
-export type ChangeStatus = 'added' | 'removed' | 'modified' | 'unchanged';
+export type ChangeStatus = 'added' | 'removed' | 'changed' | 'unchanged';
 export interface TestTag {
     name: string;
 }
@@ -67,7 +67,7 @@ export interface GlobalConfig {
 }
 export interface GitFileChange {
     path: string;
-    status: 'added' | 'deleted' | 'modified' | 'renamed';
+    status: 'added' | 'deleted' | 'renamed' | 'changed';
     /** Previous path, only present on renames */
     oldPath?: string;
 }
@@ -81,13 +81,13 @@ export interface GitCommit {
     changes: GitFileChange[];
 }
 export interface TestChange {
-    type: 'added' | 'deleted' | 'modified';
+    type: 'added' | 'deleted' | 'renamed' | 'maintenance';
     name: string;
     oldName?: string;
 }
 export interface SpecHistoryEntry {
     specPath: string;
-    fileStatus: 'added' | 'deleted' | 'modified' | 'renamed';
+    fileStatus: 'added' | 'deleted' | 'renamed' | 'changed';
     changes: TestChange[];
 }
 export interface CommitHistory {

@@ -9,7 +9,7 @@ import {
     HistoryError,
     HistoryBuildResult,
 } from '../types';
-import { extractTestNamesFromContent } from '../core/parser';
+import { extractTestNamesFromContent, extractTestsWithLinesFromContent } from '../core/parser';
 import { isSameTest } from '../core/frameworks/testDiff';
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -183,7 +183,7 @@ function mapGitStatus(status: string): GitFileChange['status'] | null {
         case 'D':
             return 'deleted';
         case 'M':
-            return 'modified';
+            return 'changed';
         default:
             return null;
     }
@@ -284,7 +284,7 @@ async function buildSpecEntry(
         };
     }
 
-    // Modified file — diff test names between current and parent
+    // Changed file — diff test names between current and parent
     const [current, previous] = await Promise.all([
         getFileAtCommit(git, hash, change.path),
         getFileAtCommit(git, `${hash}^`, change.path).catch(() => ''),
@@ -294,12 +294,14 @@ async function buildSpecEntry(
     const previousTests = new Set(extractTestNamesFromContent(previous, framework));
 
     const changes = diffTestNames(previousTests, currentTests);
-    if (changes.length === 0) return null;
+    const maintenanceChanges = detectMaintenanceChanges(previous, current, framework, changes);
+    const allChanges = [...changes, ...maintenanceChanges];
+    if (allChanges.length === 0) return null;
 
     return {
         specPath: change.path,
-        fileStatus: 'modified',
-        changes,
+        fileStatus: 'changed',
+        changes: allChanges,
     };
 }
 
@@ -311,6 +313,60 @@ async function getFileAtCommit(git: ReturnType<typeof simpleGit>, ref: string, f
 
 function isSpecFile(filePath: string): boolean {
     return /\.(spec|test)\.[jt]s$/.test(filePath);
+}
+
+/**
+ * Detects maintenance changes: tests whose names are stable between two versions
+ * but whose body content has changed.
+ */
+function detectMaintenanceChanges(
+    previousContent: string,
+    currentContent: string,
+    framework: Framework,
+    alreadyChangedTests: TestChange[],
+): TestChange[] {
+    if (!previousContent || !currentContent) return [];
+
+    const prevTests = extractTestsWithLinesFromContent(previousContent, framework);
+    const currTests = extractTestsWithLinesFromContent(currentContent, framework);
+
+    if (prevTests.length === 0 || currTests.length === 0) return [];
+
+    // Names that appear in both versions (not added, deleted, or renamed)
+    const alreadyChangedNames = new Set(
+        alreadyChangedTests.flatMap((c) => (c.oldName ? [c.name, c.oldName] : [c.name])),
+    );
+    const prevNames = new Set(prevTests.map((t) => t.name));
+    const currNames = new Set(currTests.map((t) => t.name));
+    const stableNames = [...currNames].filter((name) => prevNames.has(name) && !alreadyChangedNames.has(name));
+
+    if (stableNames.length === 0) return [];
+
+    const prevLines = previousContent.split('\n');
+    const currLines = currentContent.split('\n');
+
+    /**
+     * Returns the line slice representing the body of a test.
+     * The span is from the test's start line to one line before the next test (or EOF).
+     */
+    function getTestSpan(tests: { name: string; line: number }[], name: string, lines: string[]): string {
+        const sorted = [...tests].sort((a, b) => a.line - b.line);
+        const idx = sorted.findIndex((t) => t.name === name);
+        if (idx === -1) return '';
+        const start = sorted[idx].line - 1; // 0-indexed
+        const end = idx + 1 < sorted.length ? sorted[idx + 1].line - 1 : lines.length;
+        return lines.slice(start, end).join('\n');
+    }
+
+    const results: TestChange[] = [];
+    for (const name of stableNames) {
+        const prevSpan = getTestSpan(prevTests, name, prevLines);
+        const currSpan = getTestSpan(currTests, name, currLines);
+        if (prevSpan !== currSpan) {
+            results.push({ type: 'maintenance', name });
+        }
+    }
+    return results;
 }
 
 /**
@@ -331,7 +387,7 @@ function diffTestNames(previous: Set<string>, current: Set<string>): TestChange[
         );
 
         if (renameCandidate) {
-            changes.push({ type: 'modified', name: renameCandidate, oldName: removedName });
+            changes.push({ type: 'renamed', name: renameCandidate, oldName: removedName });
             matchedAdded.add(renameCandidate);
         } else {
             changes.push({ type: 'deleted', name: removedName });

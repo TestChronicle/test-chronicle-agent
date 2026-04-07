@@ -61,6 +61,36 @@ export function extractTestNamesFromContent(content: string, framework: Framewor
     }
 }
 
+/** Extract test names with their line numbers from raw file content. */
+export function extractTestsWithLinesFromContent(
+    content: string,
+    framework: Framework,
+): { name: string; line: number }[] {
+    const dummyPath = '/__git_history__/test.spec.ts';
+    const dummyRoot = '/__git_history__';
+    let spec: SpecFile;
+    switch (framework) {
+        case 'playwright':
+            spec = parsePlaywrightSpec(dummyPath, content, dummyRoot);
+            break;
+        case 'cypress':
+            spec = parseCypressSpec(dummyPath, content, dummyRoot);
+            break;
+        case 'vitest':
+            spec = parseVitestSpec(dummyPath, content, dummyRoot);
+            break;
+        case 'testng':
+            spec = parseTestNGSpec(dummyPath, content, dummyRoot);
+            break;
+        case 'junit':
+            spec = parseJUnitSpec(dummyPath, content, dummyRoot);
+            break;
+        default:
+            return [];
+    }
+    return spec.tests.map((t) => ({ name: t.fullName, line: t.line }));
+}
+
 /** Resolve all spec files under testDir for the given framework. */
 export function findSpecFiles(projectRoot: string, testDir: string, framework: Framework): string[] {
     // Each framework has different test file patterns
