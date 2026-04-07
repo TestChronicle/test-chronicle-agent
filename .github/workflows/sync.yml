@@ -1,10 +1,6 @@
 name: 🔄 Sync Tests to Chronicle
 
 on:
-  push:
-    branches: [main]
-
-  # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
 
 jobs:
