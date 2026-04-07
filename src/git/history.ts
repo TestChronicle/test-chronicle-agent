@@ -183,7 +183,7 @@ function mapGitStatus(status: string): GitFileChange['status'] | null {
         case 'D':
             return 'deleted';
         case 'M':
-            return 'modified';
+            return 'changed';
         default:
             return null;
     }
@@ -284,7 +284,7 @@ async function buildSpecEntry(
         };
     }
 
-    // Modified file — diff test names between current and parent
+    // Changed file — diff test names between current and parent
     const [current, previous] = await Promise.all([
         getFileAtCommit(git, hash, change.path),
         getFileAtCommit(git, `${hash}^`, change.path).catch(() => ''),
@@ -300,7 +300,7 @@ async function buildSpecEntry(
 
     return {
         specPath: change.path,
-        fileStatus: 'modified',
+        fileStatus: 'changed',
         changes: allChanges,
     };
 }

@@ -85,7 +85,7 @@ export interface GlobalConfig {
 
 export interface GitFileChange {
     path: string;
-    status: 'added' | 'deleted' | 'renamed' | 'modified';
+    status: 'added' | 'deleted' | 'renamed' | 'changed';
     /** Previous path, only present on renames */
     oldPath?: string;
 }
@@ -108,7 +108,7 @@ export interface TestChange {
 
 export interface SpecHistoryEntry {
     specPath: string;
-    fileStatus: 'added' | 'deleted' | 'renamed' | 'modified';
+    fileStatus: 'added' | 'deleted' | 'renamed' | 'changed';
     changes: TestChange[];
 }
 
