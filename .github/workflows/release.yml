@@ -53,7 +53,6 @@ jobs:
           git commit -m "release ${{ inputs.releaseVersion }}" --no-verify || echo "No changes to commit"
           git tag ${{ inputs.releaseVersion }}
           git push origin ${{ inputs.releaseVersion }}
-          git push origin main
 
       - name: 🚀 Create GitHub Release
         uses: softprops/action-gh-release@v2
