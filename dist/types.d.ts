@@ -1,5 +1,5 @@
 export type Framework = 'playwright' | 'cypress' | 'testng' | 'junit' | 'vitest' | 'unknown';
-export type ChangeStatus = 'added' | 'removed' | 'modified' | 'unchanged';
+export type ChangeStatus = 'added' | 'removed' | 'changed' | 'unchanged';
 export interface TestTag {
     name: string;
 }
