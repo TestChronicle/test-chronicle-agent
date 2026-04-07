@@ -5,7 +5,7 @@ describe('math', () => {
         expect(1 + 2).toBe(3);
     });
 
-    it('multiplies numbers correctly', () => {
-        expect(3 * 5).toBe(15);
+    it('subtracts numbers correctly', () => {
+        expect(3 - 2).toBe(1);
     });
 });
