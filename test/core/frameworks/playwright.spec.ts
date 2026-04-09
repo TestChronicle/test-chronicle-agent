@@ -71,7 +71,7 @@ describe('Playwright parser — inline tags', () => {
         const content = `test('critical test', { tag: ['@smoke', '@critical'] }, async ({ page }) => {})`;
         const spec = parsePlaywrightSpec(FILE, content, ROOT);
         expect(spec.tests[0].tags).toHaveLength(2);
-        expect(spec.tests[0].tags.map(t => t.name)).toEqual(['@smoke', '@critical']);
+        expect(spec.tests[0].tags.map((t) => t.name)).toEqual(['@smoke', '@critical']);
     });
 
     it('returns empty tags when no inline tag is present', () => {

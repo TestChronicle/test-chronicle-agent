@@ -38,7 +38,7 @@ public class AuthTest {
 }`;
         const spec = parseJUnitSpec(FILE, content, ROOT);
         expect(spec.tests).toHaveLength(2);
-        expect(spec.tests.map(t => t.name)).toEqual(['loginTest', 'logoutTest']);
+        expect(spec.tests.map((t) => t.name)).toEqual(['loginTest', 'logoutTest']);
     });
 });
 

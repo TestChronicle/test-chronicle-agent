@@ -97,16 +97,16 @@ describe('SpecFile output contract — shared across all parsers', () => {
     });
 
     it('framework field matches the parser used', () => {
-        expect(fixtures.find(f => f.label === 'playwright')!.spec.framework).toBe('playwright');
-        expect(fixtures.find(f => f.label === 'vitest')!.spec.framework).toBe('vitest');
-        expect(fixtures.find(f => f.label === 'cypress')!.spec.framework).toBe('cypress');
-        expect(fixtures.find(f => f.label === 'testng')!.spec.framework).toBe('testng');
-        expect(fixtures.find(f => f.label === 'junit')!.spec.framework).toBe('junit');
+        expect(fixtures.find((f) => f.label === 'playwright')!.spec.framework).toBe('playwright');
+        expect(fixtures.find((f) => f.label === 'vitest')!.spec.framework).toBe('vitest');
+        expect(fixtures.find((f) => f.label === 'cypress')!.spec.framework).toBe('cypress');
+        expect(fixtures.find((f) => f.label === 'testng')!.spec.framework).toBe('testng');
+        expect(fixtures.find((f) => f.label === 'junit')!.spec.framework).toBe('junit');
     });
 
     it('tests[].id values are unique within each spec file', () => {
         for (const { label, spec } of fixtures) {
-            const ids = spec.tests.map(t => t.id);
+            const ids = spec.tests.map((t) => t.id);
             const unique = new Set(ids);
             expect(unique.size, `${label}: duplicate test ids`).toBe(ids.length);
         }
