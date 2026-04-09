@@ -4417,7 +4417,7 @@ function resolveParentDescribe(blocks, index) {
 // src/core/frameworks/playwright.ts
 var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
-var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\2|\[([^\]]+)\])/g;
+var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\1|\[([^\]]+)\])/g;
 function parsePlaywrightSpec(filePath, content, projectRoot) {
   const relativePath = import_path2.default.relative(projectRoot, filePath).replace(/\\/g, "/");
   const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
@@ -4679,9 +4679,7 @@ function parseTestNGSpec(filePath, content, projectRoot) {
     const testName = match[1];
     const matchIndex = match.index;
     const line = lineNumberAt(content, matchIndex);
-    const annotationStart = content.lastIndexOf("@Test", matchIndex);
-    if (annotationStart === -1) continue;
-    const annotationText = content.substring(annotationStart, matchIndex);
+    const annotationText = match[0];
     const tags = extractTestNGTags(annotationText);
     const isEnabled = isTestEnabled(annotationText);
     if (!isEnabled) {
@@ -4714,13 +4712,8 @@ function extractTestNames4(content) {
   TEST_METHOD_RE.lastIndex = 0;
   while ((match = TEST_METHOD_RE.exec(content)) !== null) {
     const testName = match[1];
-    const matchIndex = match.index;
-    const annotationStart = content.lastIndexOf("@Test", matchIndex);
-    if (annotationStart !== -1) {
-      const annotationText = content.substring(annotationStart, matchIndex);
-      if (!isTestEnabled(annotationText)) {
-        continue;
-      }
+    if (!isTestEnabled(match[0])) {
+      continue;
     }
     names.push(className ? `${className} > ${testName}` : testName);
   }
@@ -4766,9 +4759,8 @@ function parseJUnitSpec(filePath, content, projectRoot) {
     const testName = match[1];
     const matchIndex = match.index;
     const line = lineNumberAt(content, matchIndex);
-    const methodStart = content.lastIndexOf("@Test", matchIndex);
-    if (methodStart === -1) continue;
-    const annotationBlockStart = Math.max(0, methodStart - 500);
+    const prevBracePos = content.lastIndexOf("}", matchIndex - 1);
+    const annotationBlockStart = prevBracePos !== -1 ? prevBracePos + 1 : 0;
     const annotationBlock = content.substring(annotationBlockStart, matchIndex);
     if (IGNORE_RE.test(annotationBlock)) {
       continue;
@@ -4802,13 +4794,11 @@ function extractTestNames5(content) {
   while ((match = TEST_METHOD_RE2.exec(content)) !== null) {
     const testName = match[1];
     const matchIndex = match.index;
-    const methodStart = content.lastIndexOf("@Test", matchIndex);
-    if (methodStart !== -1) {
-      const annotationBlockStart = Math.max(0, methodStart - 500);
-      const annotationBlock = content.substring(annotationBlockStart, matchIndex);
-      if (IGNORE_RE.test(annotationBlock)) {
-        continue;
-      }
+    const prevBracePos2 = content.lastIndexOf("}", matchIndex - 1);
+    const annotationBlockStart2 = prevBracePos2 !== -1 ? prevBracePos2 + 1 : 0;
+    const annotationBlock2 = content.substring(annotationBlockStart2, matchIndex);
+    if (IGNORE_RE.test(annotationBlock2)) {
+      continue;
     }
     names.push(className ? `${className} > ${testName}` : testName);
   }
@@ -9950,7 +9940,7 @@ async function syncProject(options) {
     filePath: spec.path,
     framework: spec.framework,
     tests: spec.tests.map((test) => ({
-      name: test.name,
+      name: test.fullName,
       lineNumber: test.line,
       tags: test.tags.map((tag) => tag.name)
     }))
