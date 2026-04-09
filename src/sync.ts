@@ -125,7 +125,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         filePath: spec.path,
         framework: spec.framework,
         tests: spec.tests.map((test) => ({
-            name: test.name,
+            name: test.fullName,
             lineNumber: test.line,
             tags: test.tags.map((tag) => tag.name),
         })),
