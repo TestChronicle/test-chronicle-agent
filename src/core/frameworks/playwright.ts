@@ -12,7 +12,7 @@ const DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(
 const TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 
 // Matches: { tag: '@critical' }  or  { tag: ['@critical', '@smoke'] }
-const INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\2|\[([^\]]+)\])/g;
+const INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\1|\[([^\]]+)\])/g;
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
