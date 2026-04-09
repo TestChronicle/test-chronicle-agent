@@ -69,7 +69,6 @@ export function extractTestNames(content: string): string[] {
 
     while ((match = TEST_METHOD_RE.exec(content)) !== null) {
         const testName = match[1];
-        const matchIndex = match.index;
 
         // Check if test is enabled
         if (!isTestEnabled(match[0])) {
