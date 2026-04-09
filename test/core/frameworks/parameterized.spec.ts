@@ -8,10 +8,10 @@ import {
 describe('extractParameterizedDataFromEach', () => {
     it('returns correct count for a 2-item object array', () => {
         const content = `
-test.each([
-    { user: 'alice', role: 'admin' },
-    { user: 'bob',   role: 'viewer' },
-])('should display role for $user', ({ user, role }) => {})`;
+        test.each([
+            { user: 'alice', role: 'admin' },
+            { user: 'bob',   role: 'viewer' },
+        ])('should display role for $user', ({ user, role }) => {})`;
         const result = extractParameterizedDataFromEach(content);
         expect(result).not.toBeNull();
         expect(result!.hasParameters).toBe(true);
@@ -20,11 +20,11 @@ test.each([
 
     it('returns correct count for a 3-item object array', () => {
         const content = `
-test.each([
-    { id: 1, name: 'alpha' },
-    { id: 2, name: 'beta' },
-    { id: 3, name: 'gamma' },
-])('loads item $name', ({ name }) => {})`;
+        test.each([
+            { id: 1, name: 'alpha' },
+            { id: 2, name: 'beta' },
+            { id: 3, name: 'gamma' },
+        ])('loads item $name', ({ name }) => {})`;
         const result = extractParameterizedDataFromEach(content);
         expect(result).not.toBeNull();
         expect(result!.count).toBe(3);

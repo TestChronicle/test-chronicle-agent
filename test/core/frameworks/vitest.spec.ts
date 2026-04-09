@@ -21,9 +21,9 @@ describe('Vitest parser — basic extraction', () => {
 
     it('uses > separator for tests inside a describe block', () => {
         const content = `
-describe('UserService', () => {
-    it('creates a user', () => {})
-})`;
+        describe('UserService', () => {
+            it('creates a user', () => {})
+        })`;
         const spec = parseVitestSpec(FILE, content, ROOT);
         expect(spec.tests[0].fullName).toBe('UserService > creates a user');
         expect(spec.tests[0].describe).toBe('UserService');

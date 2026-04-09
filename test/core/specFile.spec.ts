@@ -14,9 +14,9 @@ const fixtures: Array<{ label: string; spec: SpecFile }> = [
         spec: parsePlaywrightSpec(
             '/project/tests/login.spec.ts',
             `test.describe('Auth', () => {
-    test('should login', async () => {})
-    test('should logout', async () => {})
-})`,
+                test('should login', async () => {})
+                test('should logout', async () => {})
+            })`,
             ROOT,
         ),
     },
@@ -25,9 +25,9 @@ const fixtures: Array<{ label: string; spec: SpecFile }> = [
         spec: parseVitestSpec(
             '/project/src/math.spec.ts',
             `describe('Math', () => {
-    it('adds', () => {})
-    it('subtracts', () => {})
-})`,
+                it('adds', () => {})
+                it('subtracts', () => {})
+            })`,
             ROOT,
         ),
     },
@@ -36,9 +36,9 @@ const fixtures: Array<{ label: string; spec: SpecFile }> = [
         spec: parseCypressSpec(
             '/project/cypress/e2e/home.cy.ts',
             `describe('Home', () => {
-    it('loads', () => {})
-    specify('has title', () => {})
-})`,
+                it('loads', () => {})
+                specify('has title', () => {})
+            })`,
             ROOT,
         ),
     },
@@ -47,11 +47,11 @@ const fixtures: Array<{ label: string; spec: SpecFile }> = [
         spec: parseTestNGSpec(
             '/project/src/test/HomeTest.java',
             `public class HomeTest {
-    @Test
-    public void loadsPage() {}
-    @Test
-    public void hasTitle() {}
-}`,
+                @Test
+                public void loadsPage() {}
+                @Test
+                public void hasTitle() {}
+            }`,
             ROOT,
         ),
     },
@@ -60,11 +60,11 @@ const fixtures: Array<{ label: string; spec: SpecFile }> = [
         spec: parseJUnitSpec(
             '/project/src/test/HomeTest.java',
             `public class HomeTest {
-    @Test
-    public void loadsPage() {}
-    @Test
-    public void hasTitle() {}
-}`,
+                @Test
+                public void loadsPage() {}
+                @Test
+                public void hasTitle() {}
+            }`,
             ROOT,
         ),
     },

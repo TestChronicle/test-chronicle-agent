@@ -16,9 +16,9 @@ describe('Playwright parser — basic extraction', () => {
 
     it('uses > separator for tests inside a describe block', () => {
         const content = `
-test.describe('Authentication', () => {
-    test('logs in successfully', async ({ page }) => {})
-})`;
+        test.describe('Authentication', () => {
+            test('logs in successfully', async ({ page }) => {})
+        })`;
         const spec = parsePlaywrightSpec(FILE, content, ROOT);
         expect(spec.tests).toHaveLength(1);
         expect(spec.tests[0].fullName).toBe('Authentication > logs in successfully');
@@ -27,11 +27,11 @@ test.describe('Authentication', () => {
 
     it('uses the innermost describe for nested describes', () => {
         const content = `
-test.describe('Outer', () => {
-    test.describe('Inner', () => {
-        test('deep test', async ({ page }) => {})
-    })
-})`;
+        test.describe('Outer', () => {
+            test.describe('Inner', () => {
+                test('deep test', async ({ page }) => {})
+            })
+        })`;
         const spec = parsePlaywrightSpec(FILE, content, ROOT);
         expect(spec.tests[0].fullName).toBe('Inner > deep test');
     });

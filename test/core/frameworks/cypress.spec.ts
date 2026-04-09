@@ -28,9 +28,9 @@ describe('Cypress parser — basic extraction', () => {
 
     it('uses > separator for tests inside a describe block', () => {
         const content = `
-describe('Login page', () => {
-    it('shows an error for invalid credentials', () => {})
-})`;
+        describe('Login page', () => {
+            it('shows an error for invalid credentials', () => {})
+        })`;
         const spec = parseCypressSpec(FILE, content, ROOT);
         expect(spec.tests[0].fullName).toBe('Login page > shows an error for invalid credentials');
         expect(spec.tests[0].describe).toBe('Login page');
