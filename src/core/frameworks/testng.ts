@@ -26,12 +26,8 @@ export function parseTestNGSpec(filePath: string, content: string, projectRoot: 
         const matchIndex = match.index;
         const line = lineNumberAt(content, matchIndex);
 
-        // Look backward to find the @Test annotation
-        const annotationStart = content.lastIndexOf('@Test', matchIndex);
-        if (annotationStart === -1) continue;
-
-        // Extract annotation content if it exists
-        const annotationText = content.substring(annotationStart, matchIndex);
+        // match[0] contains the full @Test(...) annotation and method signature
+        const annotationText = match[0];
         const tags = extractTestNGTags(annotationText);
         const isEnabled = isTestEnabled(annotationText);
 
@@ -76,12 +72,8 @@ export function extractTestNames(content: string): string[] {
         const matchIndex = match.index;
 
         // Check if test is enabled
-        const annotationStart = content.lastIndexOf('@Test', matchIndex);
-        if (annotationStart !== -1) {
-            const annotationText = content.substring(annotationStart, matchIndex);
-            if (!isTestEnabled(annotationText)) {
-                continue;
-            }
+        if (!isTestEnabled(match[0])) {
+            continue;
         }
 
         names.push(className ? `${className} > ${testName}` : testName);
