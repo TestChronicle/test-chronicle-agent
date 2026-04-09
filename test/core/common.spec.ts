@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { hashId, lineNumberAt, findMatchingBrace, findDescribeBlocks, resolveParentDescribe } from '../../src/core/frameworks/common';
+import {
+    hashId,
+    lineNumberAt,
+    findMatchingBrace,
+    findDescribeBlocks,
+    resolveParentDescribe,
+} from '../../src/core/frameworks/common';
 
 describe('hashId', () => {
     it('always produces exactly 8 hex characters', () => {
@@ -25,8 +31,8 @@ describe('lineNumberAt', () => {
 
     it('increments line number after each newline', () => {
         const content = 'line one\nline two\nline three';
-        expect(lineNumberAt(content, 9)).toBe(2);   // start of "line two"
-        expect(lineNumberAt(content, 18)).toBe(3);  // start of "line three"
+        expect(lineNumberAt(content, 9)).toBe(2); // start of "line two"
+        expect(lineNumberAt(content, 18)).toBe(3); // start of "line three"
     });
 
     it('returns 1 for a single-line string at any position', () => {
@@ -73,7 +79,7 @@ describe('findDescribeBlocks', () => {
         ].join('\n');
         const blocks = findDescribeBlocks(content, DESCRIBE_RE);
         expect(blocks).toHaveLength(2);
-        expect(blocks.map(b => b.name)).toEqual(['Suite A', 'Suite B']);
+        expect(blocks.map((b) => b.name)).toEqual(['Suite A', 'Suite B']);
     });
 
     it('returns empty array when no describe blocks exist', () => {
