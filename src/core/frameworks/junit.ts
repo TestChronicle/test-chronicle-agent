@@ -24,12 +24,10 @@ export function parseJUnitSpec(filePath: string, content: string, projectRoot: s
         const matchIndex = match.index;
         const line = lineNumberAt(content, matchIndex);
 
-        // Look backward to find annotations for this method
-        const methodStart = content.lastIndexOf('@Test', matchIndex);
-        if (methodStart === -1) continue;
-
-        // Look further back to find any tags or ignore annotations
-        const annotationBlockStart = Math.max(0, methodStart - 500);
+        // Scope the annotation block to between the previous method's closing
+        // brace and this @Test, to avoid bleeding across method boundaries.
+        const prevBracePos = content.lastIndexOf('}', matchIndex - 1);
+        const annotationBlockStart = prevBracePos !== -1 ? prevBracePos + 1 : 0;
         const annotationBlock = content.substring(annotationBlockStart, matchIndex);
 
         // Check if test is ignored
@@ -75,15 +73,13 @@ export function extractTestNames(content: string): string[] {
         const testName = match[1];
         const matchIndex = match.index;
 
-        // Check if test is ignored
-        const methodStart = content.lastIndexOf('@Test', matchIndex);
-        if (methodStart !== -1) {
-            const annotationBlockStart = Math.max(0, methodStart - 500);
-            const annotationBlock = content.substring(annotationBlockStart, matchIndex);
-
-            if (IGNORE_RE.test(annotationBlock)) {
-                continue; // Skip ignored tests
-            }
+        // Scope the annotation block to between the previous closing brace and
+        // this @Test to avoid bleeding across method boundaries.
+        const prevBracePos2 = content.lastIndexOf('}', matchIndex - 1);
+        const annotationBlockStart2 = prevBracePos2 !== -1 ? prevBracePos2 + 1 : 0;
+        const annotationBlock2 = content.substring(annotationBlockStart2, matchIndex);
+        if (IGNORE_RE.test(annotationBlock2)) {
+            continue; // Skip ignored tests
         }
 
         names.push(className ? `${className} > ${testName}` : testName);
