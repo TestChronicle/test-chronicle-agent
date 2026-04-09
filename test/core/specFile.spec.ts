@@ -5,68 +5,30 @@ import { parseCypressSpec } from '../../src/core/frameworks/cypress';
 import { parseTestNGSpec } from '../../src/core/frameworks/testng';
 import { parseJUnitSpec } from '../../src/core/frameworks/junit';
 import type { SpecFile } from '../../src/types';
+import { SPEC_FILE } from '../fixtures';
 
 const ROOT = '/project';
 
 const fixtures: Array<{ label: string; spec: SpecFile }> = [
     {
         label: 'playwright',
-        spec: parsePlaywrightSpec(
-            '/project/tests/login.spec.ts',
-            `test.describe('Auth', () => {
-                test('should login', async () => {})
-                test('should logout', async () => {})
-            })`,
-            ROOT,
-        ),
+        spec: parsePlaywrightSpec('/project/tests/login.spec.ts', SPEC_FILE.playwright, ROOT),
     },
     {
         label: 'vitest',
-        spec: parseVitestSpec(
-            '/project/src/math.spec.ts',
-            `describe('Math', () => {
-                it('adds', () => {})
-                it('subtracts', () => {})
-            })`,
-            ROOT,
-        ),
+        spec: parseVitestSpec('/project/src/math.spec.ts', SPEC_FILE.vitest, ROOT),
     },
     {
         label: 'cypress',
-        spec: parseCypressSpec(
-            '/project/cypress/e2e/home.cy.ts',
-            `describe('Home', () => {
-                it('loads', () => {})
-                specify('has title', () => {})
-            })`,
-            ROOT,
-        ),
+        spec: parseCypressSpec('/project/cypress/e2e/home.cy.ts', SPEC_FILE.cypress, ROOT),
     },
     {
         label: 'testng',
-        spec: parseTestNGSpec(
-            '/project/src/test/HomeTest.java',
-            `public class HomeTest {
-                @Test
-                public void loadsPage() {}
-                @Test
-                public void hasTitle() {}
-            }`,
-            ROOT,
-        ),
+        spec: parseTestNGSpec('/project/src/test/HomeTest.java', SPEC_FILE.testng, ROOT),
     },
     {
         label: 'junit',
-        spec: parseJUnitSpec(
-            '/project/src/test/HomeTest.java',
-            `public class HomeTest {
-                @Test
-                public void loadsPage() {}
-                @Test
-                public void hasTitle() {}
-            }`,
-            ROOT,
-        ),
+        spec: parseJUnitSpec('/project/src/test/HomeTest.java', SPEC_FILE.junit, ROOT),
     },
 ];
 

@@ -4,34 +4,24 @@ import {
     isLikelyParameterizedTest,
     generateParameterizedTestName,
 } from '../../../src/core/frameworks/parameterized';
+import { PARAMETERIZED } from '../../fixtures';
 
 describe('extractParameterizedDataFromEach', () => {
     it('returns correct count for a 2-item object array', () => {
-        const content = `
-        test.each([
-            { user: 'alice', role: 'admin' },
-            { user: 'bob',   role: 'viewer' },
-        ])('should display role for $user', ({ user, role }) => {})`;
-        const result = extractParameterizedDataFromEach(content);
+        const result = extractParameterizedDataFromEach(PARAMETERIZED.each2items);
         expect(result).not.toBeNull();
         expect(result!.hasParameters).toBe(true);
         expect(result!.count).toBe(2);
     });
 
     it('returns correct count for a 3-item object array', () => {
-        const content = `
-        test.each([
-            { id: 1, name: 'alpha' },
-            { id: 2, name: 'beta' },
-            { id: 3, name: 'gamma' },
-        ])('loads item $name', ({ name }) => {})`;
-        const result = extractParameterizedDataFromEach(content);
+        const result = extractParameterizedDataFromEach(PARAMETERIZED.each3items);
         expect(result).not.toBeNull();
         expect(result!.count).toBe(3);
     });
 
     it('returns null when no .each() pattern is present', () => {
-        const result = extractParameterizedDataFromEach(`test('plain test', () => {})`);
+        const result = extractParameterizedDataFromEach(PARAMETERIZED.plain);
         expect(result).toBeNull();
     });
 });
