@@ -9824,6 +9824,21 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
+async function fetchProjectConfig(dashboardUrl, apiToken, projectId) {
+  const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiToken}`
+      }
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
 async function getSyncMarker(dashboardUrl, apiToken, projectId) {
   const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
   const headers = {
@@ -9896,10 +9911,31 @@ async function syncProject(options) {
   if (import_fs4.default.existsSync(envLocalPath)) {
     import_dotenv.default.config({ path: envLocalPath, debug: false });
   }
+  console.log("[sync] Fetching project config from dashboard...");
+  let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
+  const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
+  if (projectConfig === null) {
+    console.log("\u26A0\uFE0F Could not reach dashboard config endpoint \u2014 using auto-detected config");
+  } else if (overrideCount > 0) {
+    console.log(`\u2699\uFE0F Loaded project config from dashboard (${overrideCount} framework override(s))`);
+  } else {
+    console.log("\u2139\uFE0F No project overrides set \u2014 using auto-detected config");
+  }
   console.log("[sync] Detecting framework...");
   const detection = detectFramework(process.cwd());
   console.log(`[sync] Detected framework: ${detection.framework}`);
   console.log(`[sync] Test directory: ${detection.testDir}`);
+  if (projectConfig?.primaryFramework) {
+    detection.framework = projectConfig.primaryFramework;
+    console.log(`[sync] Framework overridden to: ${detection.framework}`);
+  }
+  if (projectConfig?.frameworkOverrides?.length) {
+    const match = projectConfig.frameworkOverrides.find((o) => o.framework === detection.framework);
+    if (match?.dirs?.length) {
+      detection.testDir = match.dirs[0];
+      console.log(`[sync] Test directory overridden to: ${detection.testDir}`);
+    }
+  }
   console.log("[sync] Parsing test specifications...");
   const specs = parseAllSpecs(process.cwd(), detection.testDir, detection.framework);
   console.log(`[sync] Found ${specs.length} spec files`);

@@ -137,3 +137,16 @@ export interface DetectionResult {
     testDir: string;
     confidence: 'high' | 'medium' | 'low';
 }
+
+// ─── Dashboard sync config ────────────────────────────────────────────────────
+
+export interface FrameworkOverride {
+    framework: Framework;
+    dirs: string[];
+}
+
+export interface DashboardSyncConfig {
+    frameworkOverrides?: FrameworkOverride[];
+    testDirExcludes?: string[];
+    primaryFramework?: Framework;
+}
