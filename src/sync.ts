@@ -37,15 +37,15 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         dotenv.config({ path: envLocalPath, debug: false });
     }
 
-    console.log('[sync] Fetching project config from dashboard...');
+    console.log('[config] Fetching project config from dashboard...');
     let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
     const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
     if (projectConfig === null) {
-        console.log('⚠️ Could not reach dashboard config endpoint — using auto-detected config');
+        console.log('[config] Warning: Could not reach dashboard config endpoint. Using auto-detected config');
     } else if (overrideCount > 0) {
-        console.log(`⚙️ Loaded project config from dashboard (${overrideCount} framework override(s))`);
+        console.log(`[config] Loaded project config from dashboard (${overrideCount} framework override(s))`);
     } else {
-        console.log('ℹ️ No project overrides set — using auto-detected config');
+        console.log('[config] No project overrides set. Using auto-detected config');
     }
 
     console.log('[sync] Detecting framework...');
@@ -54,15 +54,11 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     console.log(`[sync] Test directory: ${detection.testDir}`);
 
     // Apply dashboard overrides on top of auto-detection
-    if (projectConfig?.primaryFramework) {
-        detection.framework = projectConfig.primaryFramework;
-        console.log(`[sync] Framework overridden to: ${detection.framework}`);
-    }
     if (projectConfig?.frameworkOverrides?.length) {
         const match = projectConfig.frameworkOverrides.find((o) => o.framework === detection.framework);
         if (match?.dirs?.length) {
             detection.testDir = match.dirs[0];
-            console.log(`[sync] Test directory overridden to: ${detection.testDir}`);
+            console.log(`[config] Test directory overridden to: ${detection.testDir}`);
         }
     }
 
