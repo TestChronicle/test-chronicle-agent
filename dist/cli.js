@@ -9884,29 +9884,25 @@ async function syncProject(options) {
   if (import_fs4.default.existsSync(envLocalPath)) {
     import_dotenv.default.config({ path: envLocalPath, debug: false });
   }
-  console.log("[sync] Fetching project config from dashboard...");
+  console.log("[config] Fetching project config from dashboard...");
   let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
   const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
   if (projectConfig === null) {
-    console.log("\u26A0\uFE0F Could not reach dashboard config endpoint \u2014 using auto-detected config");
+    console.log("[config] Warning: Could not reach dashboard config endpoint. Using auto-detected config");
   } else if (overrideCount > 0) {
-    console.log(`\u2699\uFE0F Loaded project config from dashboard (${overrideCount} framework override(s))`);
+    console.log(`[config] Loaded project config from dashboard (${overrideCount} framework override(s))`);
   } else {
-    console.log("\u2139\uFE0F No project overrides set \u2014 using auto-detected config");
+    console.log("[config] No project overrides set. Using auto-detected config");
   }
   console.log("[sync] Detecting framework...");
   const detection = detectFramework(process.cwd());
   console.log(`[sync] Detected framework: ${detection.framework}`);
   console.log(`[sync] Test directory: ${detection.testDir}`);
-  if (projectConfig?.primaryFramework) {
-    detection.framework = projectConfig.primaryFramework;
-    console.log(`[sync] Framework overridden to: ${detection.framework}`);
-  }
   if (projectConfig?.frameworkOverrides?.length) {
     const match = projectConfig.frameworkOverrides.find((o) => o.framework === detection.framework);
     if (match?.dirs?.length) {
       detection.testDir = match.dirs[0];
-      console.log(`[sync] Test directory overridden to: ${detection.testDir}`);
+      console.log(`[config] Test directory overridden to: ${detection.testDir}`);
     }
   }
   console.log("[sync] Parsing test specifications...");
