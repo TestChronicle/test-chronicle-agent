@@ -1226,6 +1226,8 @@ __export(src_exports, {
   extractTestsWithLinesFromContent: () => extractTestsWithLinesFromContent,
   findSpecFiles: () => findSpecFiles,
   getLatestCommitHash: () => getLatestCommitHash,
+  getRepoUrl: () => getRepoUrl,
+  normaliseRemoteUrl: () => normaliseRemoteUrl,
   parseAllSpecs: () => parseAllSpecs,
   parseSpecFile: () => parseSpecFile
 });
@@ -4948,7 +4950,9 @@ function parseAllSpecs(projectRoot, testDir, framework) {
 var git_exports = {};
 __export(git_exports, {
   buildHistory: () => buildHistory,
-  getLatestCommitHash: () => getLatestCommitHash
+  getLatestCommitHash: () => getLatestCommitHash,
+  getRepoUrl: () => getRepoUrl,
+  normaliseRemoteUrl: () => normaliseRemoteUrl
 });
 init_cjs_shims();
 
@@ -9570,6 +9574,29 @@ async function getLatestCommitHash(projectPath) {
     return null;
   }
 }
+function normaliseRemoteUrl(raw) {
+  const trimmed2 = raw.trim();
+  const sshMatch = trimmed2.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
+  if (sshMatch) {
+    return `https://${sshMatch[1]}/${sshMatch[2]}`;
+  }
+  if (trimmed2.startsWith("https://") || trimmed2.startsWith("http://")) {
+    return trimmed2.replace(/\.git$/, "").replace(/\/$/, "");
+  }
+  return null;
+}
+async function getRepoUrl(projectPath) {
+  const git = esm_default(projectPath);
+  try {
+    const remotes = await git.getRemotes(true);
+    const origin = remotes.find((r) => r.name === "origin");
+    const raw = origin?.refs?.fetch || origin?.refs?.push;
+    if (!raw) return null;
+    return normaliseRemoteUrl(raw);
+  } catch {
+    return null;
+  }
+}
 async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHistory) {
   const git = esm_default(projectPath);
   const relativeTestDir = testDir.replace(/^\.\//, "");
@@ -9911,6 +9938,11 @@ async function syncProject(options) {
   if (import_fs4.default.existsSync(envLocalPath)) {
     import_dotenv.default.config({ path: envLocalPath, debug: false });
   }
+  const detectedRepoUrl = await getRepoUrl(process.cwd());
+  if (detectedRepoUrl) {
+    console.log(`[sync] Detected repository URL: ${detectedRepoUrl}`);
+  }
+  const repoUrl = detectedRepoUrl ?? void 0;
   console.log("[config] Fetching project config from dashboard...");
   let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
   const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
@@ -10071,7 +10103,8 @@ async function syncProject(options) {
     specs: transformedSpecs,
     history: transformedHistory,
     stats,
-    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+    ...repoUrl ? { repoUrl } : {}
   };
   await syncToDashboard(dashboardUrl, apiKey, payload);
   console.log("[sync] Sync successful!");
@@ -10141,6 +10174,8 @@ init_cjs_shims();
   extractTestsWithLinesFromContent,
   findSpecFiles,
   getLatestCommitHash,
+  getRepoUrl,
+  normaliseRemoteUrl,
   parseAllSpecs,
   parseSpecFile
 });
