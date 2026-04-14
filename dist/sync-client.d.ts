@@ -20,6 +20,7 @@ export declare function syncToDashboard(dashboardUrl: string, apiToken: string, 
     history: unknown[];
     stats: unknown;
     timestamp: string;
+    repoUrl?: string;
 }): Promise<{
     success: true;
     projectId: string;

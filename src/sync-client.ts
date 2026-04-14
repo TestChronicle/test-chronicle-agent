@@ -101,6 +101,7 @@ export async function syncToDashboard(
         history: unknown[];
         stats: unknown;
         timestamp: string;
+        repoUrl?: string;
     },
 ): Promise<{ success: true; projectId: string; synced_at: string }> {
     const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();

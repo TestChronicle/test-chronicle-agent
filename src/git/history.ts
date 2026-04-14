@@ -28,6 +28,46 @@ export async function getLatestCommitHash(projectPath: string): Promise<string |
 }
 
 /**
+ * Normalises a git remote URL to a clean HTTPS URL without a trailing `.git`.
+ * Supports SSH (`git@github.com:owner/repo.git`) and HTTPS forms.
+ * Returns null when the URL cannot be parsed or belongs to an unrecognised host.
+ */
+export function normaliseRemoteUrl(raw: string): string | null {
+    const trimmed = raw.trim();
+
+    // SSH form: git@hostname:owner/repo[.git]
+    const sshMatch = trimmed.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
+    if (sshMatch) {
+        return `https://${sshMatch[1]}/${sshMatch[2]}`;
+    }
+
+    // HTTPS form: strip trailing .git and slash
+    if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
+        return trimmed.replace(/\.git$/, '').replace(/\/$/, '');
+    }
+
+    return null;
+}
+
+/**
+ * Attempts to read the `origin` remote URL from the git repository at
+ * `projectPath` and returns a normalised HTTPS URL.
+ * Returns null if the remote cannot be found or the URL is unrecognised.
+ */
+export async function getRepoUrl(projectPath: string): Promise<string | null> {
+    const git = simpleGit(projectPath);
+    try {
+        const remotes = await git.getRemotes(true);
+        const origin = remotes.find((r) => r.name === 'origin');
+        const raw = origin?.refs?.fetch || origin?.refs?.push;
+        if (!raw) return null;
+        return normaliseRemoteUrl(raw);
+    } catch {
+        return null;
+    }
+}
+
+/**
  * Builds the full commit history for the given test directory.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  */

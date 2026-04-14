@@ -3,7 +3,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { detectFramework } from './core';
 import { parseAllSpecs } from './core';
-import { buildHistory, getLatestCommitHash } from './git';
+import { buildHistory, getLatestCommitHash, getRepoUrl } from './git';
 import { getSyncMarker, saveSyncMarker, syncToDashboard, fetchProjectConfig } from './sync-client';
 import { TestChange } from './types';
 
@@ -36,6 +36,13 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     if (fs.existsSync(envLocalPath)) {
         dotenv.config({ path: envLocalPath, debug: false });
     }
+
+    // Resolve repo URL: explicit option takes priority, then auto-detect from git remote
+    const detectedRepoUrl = await getRepoUrl(process.cwd());
+    if (detectedRepoUrl) {
+        console.log(`[sync] Detected repository URL: ${detectedRepoUrl}`);
+    }
+    const repoUrl = detectedRepoUrl ?? undefined;
 
     console.log('[config] Fetching project config from dashboard...');
     let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
@@ -236,6 +243,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         history: transformedHistory,
         stats,
         timestamp: new Date().toISOString(),
+        ...(repoUrl ? { repoUrl } : {}),
     };
 
     await syncToDashboard(dashboardUrl, apiKey, payload);
