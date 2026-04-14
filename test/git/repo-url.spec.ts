@@ -77,7 +77,6 @@ describe('getRepoUrl', () => {
     });
 
     it('returns null for a directory with no git remote', async () => {
-        // os.tmpdir() is never a git repository — exercises the catch → null path
         const result = await getRepoUrl(os.tmpdir());
         expect(result).toBeNull();
     });
