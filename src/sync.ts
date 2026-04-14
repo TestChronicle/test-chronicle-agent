@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { detectFramework } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash } from './git';
-import { getSyncMarker, saveSyncMarker, syncToDashboard } from './sync-client';
+import { getSyncMarker, saveSyncMarker, syncToDashboard, fetchProjectConfig } from './sync-client';
 import { TestChange } from './types';
 
 // Configuration for sync operation
@@ -37,10 +37,30 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         dotenv.config({ path: envLocalPath, debug: false });
     }
 
+    console.log('[config] Fetching project config from dashboard...');
+    let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
+    const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
+    if (projectConfig === null) {
+        console.log('[config] Warning: Could not reach dashboard config endpoint. Using auto-detected config');
+    } else if (overrideCount > 0) {
+        console.log(`[config] Loaded project config from dashboard (${overrideCount} framework override(s))`);
+    } else {
+        console.log('[config] No project overrides set. Using auto-detected config');
+    }
+
     console.log('[sync] Detecting framework...');
     const detection = detectFramework(process.cwd());
     console.log(`[sync] Detected framework: ${detection.framework}`);
     console.log(`[sync] Test directory: ${detection.testDir}`);
+
+    // Apply dashboard overrides on top of auto-detection
+    if (projectConfig?.frameworkOverrides?.length) {
+        const match = projectConfig.frameworkOverrides.find((o) => o.framework === detection.framework);
+        if (match?.dirs?.length) {
+            detection.testDir = match.dirs[0];
+            console.log(`[config] Test directory overridden to: ${detection.testDir}`);
+        }
+    }
 
     console.log('[sync] Parsing test specifications...');
     const specs = parseAllSpecs(process.cwd(), detection.testDir, detection.framework);

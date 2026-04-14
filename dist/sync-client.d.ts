@@ -1,3 +1,10 @@
+import { DashboardSyncConfig } from './types';
+/**
+ * Fetch the project-level sync configuration from the dashboard.
+ * Returns null on network error or non-OK response so the caller can
+ * fall back to auto-detection gracefully.
+ */
+export declare function fetchProjectConfig(dashboardUrl: string, apiToken: string, projectId: string): Promise<DashboardSyncConfig | null>;
 /**
  * Get the last synced commit hash from the dashboard.
  * Returns null if no sync has been performed yet.

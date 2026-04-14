@@ -1,5 +1,32 @@
 // Sync client for posting data to dashboard
 
+import { DashboardSyncConfig } from './types';
+
+/**
+ * Fetch the project-level sync configuration from the dashboard.
+ * Returns null on network error or non-OK response so the caller can
+ * fall back to auto-detection gracefully.
+ */
+export async function fetchProjectConfig(
+    dashboardUrl: string,
+    apiToken: string,
+    projectId: string,
+): Promise<DashboardSyncConfig | null> {
+    const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${apiToken}`,
+            },
+        });
+        if (!response.ok) return null;
+        return (await response.json()) as DashboardSyncConfig;
+    } catch {
+        return null;
+    }
+}
+
 /**
  * Get the last synced commit hash from the dashboard.
  * Returns null if no sync has been performed yet.
