@@ -55,6 +55,7 @@ That's it! Your tests will sync automatically on merges to main.
 | Vitest     |     ✅     |  ✅   |  ❌  |      ✅       |
 | TestNG     |     ✅     |  🟡   |  ✅  |      ❌       |
 | JUnit      |     ✅     |  🟡   |  🟡  |      ❌       |
+| Jest      |     ✅     |  ✅   |  ❌  |      ✅       |
 
 **Note:** 🟡 = Partial support (class names instead of describe blocks for Java frameworks)
 
