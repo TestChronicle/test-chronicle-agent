@@ -105,9 +105,11 @@ export async function buildHistory(
         logArgs = [`--since=${sinceDate.toISOString()}`, ...logArgs];
     }
 
-    let logResult;
+    // Single git log call returns commit metadata + file changes in one shot,
+    // eliminating N individual diff-tree subprocess calls.
+    let commits: CommitWithFiles[];
     try {
-        logResult = await git.log(logArgs);
+        commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : allTestDirs);
     } catch (error) {
         if (error instanceof Error) {
             console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
@@ -116,8 +118,6 @@ export async function buildHistory(
         return { entries: [], errors, warnings };
     }
 
-    const commits = [...logResult.all].reverse(); // oldest first for timeline ordering
-
     if (commits.length === 0) {
         return { entries: [], errors, warnings };
     }
@@ -125,7 +125,7 @@ export async function buildHistory(
     console.log(`[sync] Processing ${commits.length} commits...`);
 
     // Report roughly 10 times across the full run, minimum every 50 commits
-    const BATCH_SIZE = 5;
+    const BATCH_SIZE = 20;
     const reportEvery = Math.max(50, Math.floor(commits.length / 10));
 
     // Process commits in parallel batches — preserving index order for timeline integrity
@@ -139,15 +139,10 @@ export async function buildHistory(
             batch.map(async (commit, batchIdx) => {
                 const slotIdx = batchStart + batchIdx;
                 try {
-                    const fileChanges = await getCommitFileChanges(
-                        git,
-                        commit.hash,
-                        fullHistory ? undefined : allTestDirs,
-                    );
                     const specChanges = await buildSpecChanges(
                         git,
                         commit.hash,
-                        fileChanges,
+                        commit.fileChanges,
                         frameworkConfigs,
                         projectPath,
                         errors,
@@ -162,9 +157,9 @@ export async function buildHistory(
                                 hash: commit.hash,
                                 shortHash: commit.hash.substring(0, 7),
                                 message: commit.message,
-                                author: commit.author_name,
+                                author: commit.author,
                                 date: new Date(commit.date).toISOString(),
-                                changes: fileChanges,
+                                changes: commit.fileChanges,
                             },
                             specs: specChanges,
                         } as CommitHistory,
@@ -204,52 +199,91 @@ export async function buildHistory(
 
 // ─── File change detection ────────────────────────────────────────────────────
 
-async function getCommitFileChanges(
+interface CommitWithFiles {
+    hash: string;
+    author: string;
+    date: string;
+    message: string;
+    fileChanges: GitFileChange[];
+}
+
+/**
+ * Fetches all commits in the given log range together with their per-file change
+ * status in a single git process call, replacing the previous N+1 diff-tree pattern.
+ */
+async function fetchCommitsWithFiles(
     git: ReturnType<typeof simpleGit>,
-    hash: string,
-    testDirs?: string[],
-): Promise<GitFileChange[]> {
-    try {
-        // Use diff-tree to get the file status for this commit
-        const raw = await git.raw([
-            'diff-tree',
-            '--no-commit-id',
-            '-r',
-            '--name-status',
-            '-M', // detect renames
-            hash,
-        ]);
+    logArgs: string[],
+    testDirs: string[],
+): Promise<CommitWithFiles[]> {
+    // Use NUL byte as commit separator and ASCII unit-separator (\x1f) between header fields
+    const COMMIT_SEP = '\0';
+    const FIELD_SEP = '\x1f';
 
-        const changes: GitFileChange[] = [];
+    const raw = await git.raw([
+        'log',
+        `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,
+        '--name-status',
+        '--diff-filter=ADRM',
+        '-M',
+        ...logArgs,
+    ]);
 
-        for (const line of raw.trim().split('\n')) {
-            if (!line) continue;
+    if (!raw.trim()) return [];
+
+    const result: CommitWithFiles[] = [];
+    const blocks = raw.split(COMMIT_SEP).filter(Boolean);
+
+    for (const block of blocks) {
+        const lines = block.split('\n');
+        const [hash, author, date, ...msgParts] = lines[0].split(FIELD_SEP);
+        const message = msgParts.join(FIELD_SEP);
+
+        if (!hash?.trim()) continue;
+
+        const fileChanges: GitFileChange[] = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i];
+            if (!line || !line.trim()) continue;
+
             const parts = line.split('\t');
             const status = parts[0];
 
             if (status.startsWith('R')) {
-                // Rename: R<score>\t<old>\t<new>
                 const oldPath = parts[1];
                 const newPath = parts[2];
-                if (!testDirs || isInAnyTestDir(newPath, testDirs) || isInAnyTestDir(oldPath, testDirs)) {
-                    changes.push({ path: newPath, oldPath, status: 'renamed' });
+                if (!newPath) continue;
+                if (!testDirs.length || isInAnyTestDir(newPath, testDirs) || isInAnyTestDir(oldPath, testDirs)) {
+                    fileChanges.push({ path: newPath.trim(), oldPath: oldPath.trim(), status: 'renamed' });
                 }
             } else {
                 const filePath = parts[1];
-                if (testDirs && !isInAnyTestDir(filePath, testDirs)) continue;
-
+                if (!filePath) continue;
+                if (testDirs.length && !isInAnyTestDir(filePath.trim(), testDirs)) continue;
                 const mapped = mapGitStatus(status);
-                if (mapped) changes.push({ path: filePath, status: mapped });
+                if (mapped) fileChanges.push({ path: filePath.trim(), status: mapped });
             }
         }
 
-        return changes;
-    } catch {
-        return [];
+        // Skip commits with no relevant file changes (e.g. only type/permission changes)
+        if (fileChanges.length > 0) {
+            result.push({
+                hash: hash.trim(),
+                author: author ?? '',
+                date: date ?? '',
+                message: message ?? '',
+                fileChanges,
+            });
+        }
     }
+
+    return result.reverse(); // oldest first for timeline ordering
 }
 
 function isInTestDir(filePath: string, testDir: string): boolean {
+    // '.' means project root — all files belong to it
+    if (testDir === '.') return true;
     // Normalise and ensure testDir ends with / to avoid prefix false positives
     const normalised = testDir.endsWith('/') ? testDir : testDir + '/';
     return filePath.startsWith(normalised) || path.dirname(filePath) + '/' === normalised;

@@ -9646,9 +9646,9 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
   if (sinceDate && !sinceCommit) {
     logArgs = [`--since=${sinceDate.toISOString()}`, ...logArgs];
   }
-  let logResult;
+  let commits;
   try {
-    logResult = await git.log(logArgs);
+    commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : allTestDirs);
   } catch (error) {
     if (error instanceof Error) {
       console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
@@ -9656,12 +9656,11 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
     }
     return { entries: [], errors, warnings };
   }
-  const commits = [...logResult.all].reverse();
   if (commits.length === 0) {
     return { entries: [], errors, warnings };
   }
   console.log(`[sync] Processing ${commits.length} commits...`);
-  const BATCH_SIZE = 5;
+  const BATCH_SIZE = 20;
   const reportEvery = Math.max(50, Math.floor(commits.length / 10));
   const slots = new Array(commits.length).fill(null);
   let processed = 0;
@@ -9671,15 +9670,10 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
       batch.map(async (commit, batchIdx) => {
         const slotIdx = batchStart + batchIdx;
         try {
-          const fileChanges = await getCommitFileChanges(
-            git,
-            commit.hash,
-            fullHistory ? void 0 : allTestDirs
-          );
           const specChanges = await buildSpecChanges(
             git,
             commit.hash,
-            fileChanges,
+            commit.fileChanges,
             frameworkConfigs,
             projectPath,
             errors
@@ -9692,9 +9686,9 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
                 hash: commit.hash,
                 shortHash: commit.hash.substring(0, 7),
                 message: commit.message,
-                author: commit.author_name,
+                author: commit.author,
                 date: new Date(commit.date).toISOString(),
-                changes: fileChanges
+                changes: commit.fileChanges
               },
               specs: specChanges
             }
@@ -9722,41 +9716,54 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
   const entries = slots.filter((e) => e !== null);
   return { entries, errors, warnings };
 }
-async function getCommitFileChanges(git, hash, testDirs) {
-  try {
-    const raw = await git.raw([
-      "diff-tree",
-      "--no-commit-id",
-      "-r",
-      "--name-status",
-      "-M",
-      // detect renames
-      hash
-    ]);
-    const changes = [];
-    for (const line of raw.trim().split("\n")) {
-      if (!line) continue;
+async function fetchCommitsWithFiles(git, logArgs, testDirs) {
+  const COMMIT_SEP = "\0";
+  const FIELD_SEP = "";
+  const raw = await git.raw([
+    "log",
+    `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,
+    "--name-status",
+    "--diff-filter=ADRM",
+    "-M",
+    ...logArgs
+  ]);
+  if (!raw.trim()) return [];
+  const result = [];
+  const blocks = raw.split(COMMIT_SEP).filter(Boolean);
+  for (const block of blocks) {
+    const lines = block.split("\n");
+    const [hash, author, date, ...msgParts] = lines[0].split(FIELD_SEP);
+    const message = msgParts.join(FIELD_SEP);
+    if (!hash?.trim()) continue;
+    const fileChanges = [];
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line || !line.trim()) continue;
       const parts = line.split("	");
       const status = parts[0];
       if (status.startsWith("R")) {
         const oldPath = parts[1];
         const newPath = parts[2];
-        if (!testDirs || isInAnyTestDir(newPath, testDirs) || isInAnyTestDir(oldPath, testDirs)) {
-          changes.push({ path: newPath, oldPath, status: "renamed" });
+        if (!newPath) continue;
+        if (!testDirs.length || isInAnyTestDir(newPath, testDirs) || isInAnyTestDir(oldPath, testDirs)) {
+          fileChanges.push({ path: newPath.trim(), oldPath: oldPath.trim(), status: "renamed" });
         }
       } else {
         const filePath = parts[1];
-        if (testDirs && !isInAnyTestDir(filePath, testDirs)) continue;
+        if (!filePath) continue;
+        if (testDirs.length && !isInAnyTestDir(filePath.trim(), testDirs)) continue;
         const mapped = mapGitStatus(status);
-        if (mapped) changes.push({ path: filePath, status: mapped });
+        if (mapped) fileChanges.push({ path: filePath.trim(), status: mapped });
       }
     }
-    return changes;
-  } catch {
-    return [];
+    if (fileChanges.length > 0) {
+      result.push({ hash: hash.trim(), author: author ?? "", date: date ?? "", message: message ?? "", fileChanges });
+    }
   }
+  return result.reverse();
 }
 function isInTestDir(filePath, testDir) {
+  if (testDir === ".") return true;
   const normalised = testDir.endsWith("/") ? testDir : testDir + "/";
   return filePath.startsWith(normalised) || import_path8.default.dirname(filePath) + "/" === normalised;
 }
