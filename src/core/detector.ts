@@ -56,6 +56,8 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
                 let testDir: string;
                 if (framework === 'playwright') {
                     testDir = extractPlaywrightTestDir(fullPath, projectPath);
+                } else if (framework === 'cypress') {
+                    testDir = extractCypressTestDir(fullPath, projectPath);
                 } else if (framework === 'vitest') {
                     testDir = extractVitestTestDir(fullPath, projectPath);
                 } else {
@@ -90,6 +92,8 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
             let testDir: string;
             if (framework === 'playwright') {
                 testDir = extractPlaywrightTestDir(configPath, projectPath);
+            } else if (framework === 'cypress') {
+                testDir = extractCypressTestDir(configPath, projectPath);
             } else {
                 testDir = guessTestDir(projectPath);
             }
@@ -129,10 +133,36 @@ function extractPlaywrightTestDir(configPath: string, projectPath: string): stri
     return guessTestDir(projectPath);
 }
 
-function extractVitestTestDir(_configPath: string, projectPath: string): string {
-    // Vitest tests can be scattered throughout the project matching *.spec.ts or *.test.ts
-    // For now, just use guessTestDir since we don't parse the vitest config
-    return guessTestDir(projectPath);
+function extractCypressTestDir(configPath: string, projectPath: string): string {
+    try {
+        const content = readFileSync(configPath, 'utf-8');
+        // specPattern: 'path/**/*.cy.ts' or e2e: { specPattern: ... }
+        const specPattern = content.match(/specPattern\s*:\s*['"\`]([^'"\`]+)['"\`]/);
+        if (specPattern) {
+            // Extract the directory portion of the glob pattern
+            const dir = specPattern[1].replace(/\*.*$/, '').replace(/\/$/, '');
+            if (dir) return './' + dir;
+        }
+    } catch {
+        // Unparseable config — fall through
+    }
+
+    // Cypress default: cypress/e2e
+    const defaultDir = './cypress/e2e';
+    if (existsSync(path.join(projectPath, defaultDir))) return defaultDir;
+
+    // Fallback to legacy cypress/integration
+    const legacyDir = './cypress/integration';
+    if (existsSync(path.join(projectPath, legacyDir))) return legacyDir;
+
+    return defaultDir;
+}
+
+function extractVitestTestDir(_configPath: string, _projectPath: string): string {
+    // Vitest is designed for co-located tests scattered throughout the project.
+    // Using '.' (project root) lets the **/*.test.ts glob find them all regardless
+    // of where they live — next to components, inside __tests__ folders, etc.
+    return '.';
 }
 
 function guessTestDir(projectPath: string): string {
@@ -140,6 +170,8 @@ function guessTestDir(projectPath: string): string {
         './tests',
         './test',
         './e2e',
+        './cypress/e2e',
+        './cypress/integration',
         './src',
         './playwright/e2e/tests',
         './playwright/tests',
