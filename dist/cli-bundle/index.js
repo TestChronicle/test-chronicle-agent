@@ -4284,6 +4284,8 @@ function detectFrameworks(projectPath) {
         let testDir;
         if (framework === "playwright") {
           testDir = extractPlaywrightTestDir(fullPath, projectPath);
+        } else if (framework === "cypress") {
+          testDir = extractCypressTestDir(fullPath, projectPath);
         } else if (framework === "vitest") {
           testDir = extractVitestTestDir(fullPath, projectPath);
         } else {
@@ -4312,6 +4314,8 @@ function detectFrameworks(projectPath) {
       let testDir;
       if (framework === "playwright") {
         testDir = extractPlaywrightTestDir(configPath, projectPath);
+      } else if (framework === "cypress") {
+        testDir = extractCypressTestDir(configPath, projectPath);
       } else {
         testDir = guessTestDir(projectPath);
       }
@@ -4338,14 +4342,32 @@ function extractPlaywrightTestDir(configPath, projectPath) {
   }
   return guessTestDir(projectPath);
 }
-function extractVitestTestDir(_configPath, projectPath) {
-  return guessTestDir(projectPath);
+function extractCypressTestDir(configPath, projectPath) {
+  try {
+    const content = (0, import_fs2.readFileSync)(configPath, "utf-8");
+    const specPattern = content.match(/specPattern\s*:\s*['"\`]([^'"\`]+)['"\`]/);
+    if (specPattern) {
+      const dir = specPattern[1].replace(/\*.*$/, "").replace(/\/$/, "");
+      if (dir) return "./" + dir;
+    }
+  } catch {
+  }
+  const defaultDir = "./cypress/e2e";
+  if ((0, import_fs2.existsSync)(import_path.default.join(projectPath, defaultDir))) return defaultDir;
+  const legacyDir = "./cypress/integration";
+  if ((0, import_fs2.existsSync)(import_path.default.join(projectPath, legacyDir))) return legacyDir;
+  return defaultDir;
+}
+function extractVitestTestDir(_configPath, _projectPath) {
+  return ".";
 }
 function guessTestDir(projectPath) {
   const candidates = [
     "./tests",
     "./test",
     "./e2e",
+    "./cypress/e2e",
+    "./cypress/integration",
     "./src",
     "./playwright/e2e/tests",
     "./playwright/tests",
@@ -9635,11 +9657,7 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
   const entries = [];
   for (const commit of commits) {
     try {
-      const fileChanges = await getCommitFileChanges(
-        git,
-        commit.hash,
-        fullHistory ? void 0 : allTestDirs
-      );
+      const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? void 0 : allTestDirs);
       const specChanges = await buildSpecChanges(
         git,
         commit.hash,
@@ -10032,7 +10050,9 @@ async function syncProject(options) {
   if (frameworkConfigs.length === 0) {
     const primary = projectConfig?.primaryFramework;
     frameworkConfigs = [{ framework: primary ?? "unknown", testDir: "./tests", confidence: "low" }];
-    console.log(`[config] No frameworks remain after exclusions, falling back to: ${frameworkConfigs[0].framework}`);
+    console.log(
+      `[config] No frameworks remain after exclusions, falling back to: ${frameworkConfigs[0].framework}`
+    );
   }
   console.log(`[sync] Active frameworks (${frameworkConfigs.length}):`);
   for (const { framework, testDir, confidence } of frameworkConfigs) {
