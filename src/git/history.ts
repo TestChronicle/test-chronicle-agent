@@ -80,6 +80,7 @@ export async function buildHistory(
     frameworkConfigs: DetectionResult[],
     sinceCommit?: string,
     fullHistory?: boolean,
+    sinceDate?: Date,
 ): Promise<HistoryBuildResult> {
     const git = simpleGit(projectPath);
     const errors: HistoryError[] = [];
@@ -99,6 +100,11 @@ export async function buildHistory(
         logArgs = allTestDirs.length > 0 ? ['--all', '--', ...allTestDirs] : ['--all'];
     }
 
+    // For first syncs (no sinceCommit), cap how far back we look
+    if (sinceDate && !sinceCommit) {
+        logArgs = [`--since=${sinceDate.toISOString()}`, ...logArgs];
+    }
+
     let logResult;
     try {
         logResult = await git.log(logArgs);
@@ -111,42 +117,87 @@ export async function buildHistory(
     }
 
     const commits = [...logResult.all].reverse(); // oldest first for timeline ordering
-    const entries: CommitHistory[] = [];
 
-    for (const commit of commits) {
-        try {
-            const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? undefined : allTestDirs);
-            const specChanges = await buildSpecChanges(
-                git,
-                commit.hash,
-                fileChanges,
-                frameworkConfigs,
-                projectPath,
-                errors,
-            );
+    if (commits.length === 0) {
+        return { entries: [], errors, warnings };
+    }
 
-            if (specChanges.length === 0) continue;
+    console.log(`[sync] Processing ${commits.length} commits...`);
 
-            entries.push({
-                commit: {
-                    hash: commit.hash,
-                    shortHash: commit.hash.substring(0, 7),
-                    message: commit.message,
-                    author: commit.author_name,
-                    date: new Date(commit.date).toISOString(),
-                    changes: fileChanges,
-                },
-                specs: specChanges,
-            });
-        } catch (error) {
-            errors.push({
-                commit: commit.hash,
-                file: 'unknown',
-                reason: error instanceof Error ? error.message : 'Unknown error',
-                partial: true,
-            });
+    // Report roughly 10 times across the full run, minimum every 50 commits
+    const BATCH_SIZE = 5;
+    const reportEvery = Math.max(50, Math.floor(commits.length / 10));
+
+    // Process commits in parallel batches — preserving index order for timeline integrity
+    const slots: (CommitHistory | null)[] = new Array(commits.length).fill(null);
+    let processed = 0;
+
+    for (let batchStart = 0; batchStart < commits.length; batchStart += BATCH_SIZE) {
+        const batch = commits.slice(batchStart, batchStart + BATCH_SIZE);
+
+        const batchResults = await Promise.all(
+            batch.map(async (commit, batchIdx) => {
+                const slotIdx = batchStart + batchIdx;
+                try {
+                    const fileChanges = await getCommitFileChanges(
+                        git,
+                        commit.hash,
+                        fullHistory ? undefined : allTestDirs,
+                    );
+                    const specChanges = await buildSpecChanges(
+                        git,
+                        commit.hash,
+                        fileChanges,
+                        frameworkConfigs,
+                        projectPath,
+                        errors,
+                    );
+
+                    if (specChanges.length === 0) return { slotIdx, entry: null };
+
+                    return {
+                        slotIdx,
+                        entry: {
+                            commit: {
+                                hash: commit.hash,
+                                shortHash: commit.hash.substring(0, 7),
+                                message: commit.message,
+                                author: commit.author_name,
+                                date: new Date(commit.date).toISOString(),
+                                changes: fileChanges,
+                            },
+                            specs: specChanges,
+                        } as CommitHistory,
+                    };
+                } catch (error) {
+                    errors.push({
+                        commit: commit.hash,
+                        file: 'unknown',
+                        reason: error instanceof Error ? error.message : 'Unknown error',
+                        partial: true,
+                    });
+                    return { slotIdx, entry: null };
+                }
+            }),
+        );
+
+        for (const { slotIdx, entry } of batchResults) {
+            slots[slotIdx] = entry;
+        }
+
+        const prevProcessed = processed;
+        processed += batch.length;
+
+        // Report progress when we cross a reporting threshold or finish
+        if (
+            Math.floor(prevProcessed / reportEvery) !== Math.floor(processed / reportEvery) ||
+            processed >= commits.length
+        ) {
+            console.log(`[sync]   → ${processed}/${commits.length} commits processed`);
         }
     }
+
+    const entries = slots.filter((e): e is CommitHistory => e !== null);
 
     return { entries, errors, warnings };
 }

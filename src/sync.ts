@@ -7,6 +7,9 @@ import { buildHistory, getLatestCommitHash, getRepoUrl } from './git';
 import { getSyncMarker, saveSyncMarker, syncToDashboard, fetchProjectConfig } from './sync-client';
 import { DetectionResult, TestChange } from './types';
 
+/** Maximum number of days of history to fetch on a first sync. */
+const MAX_FIRST_SYNC_DAYS = 365;
+
 // Configuration for sync operation
 export interface SyncOptions {
     projectId: string;
@@ -143,11 +146,16 @@ export async function syncProject(options: SyncOptions): Promise<void> {
 
     // For first sync, scan all commits; for subsequent, only scan incremental
     const sinceCommit = isFirstSync ? undefined : lastSyncCommit!;
+    const sinceDate = isFirstSync ? new Date(Date.now() - MAX_FIRST_SYNC_DAYS * 86_400_000) : undefined;
+    if (sinceDate) {
+        console.log(`[sync] First sync: limiting history to last ${MAX_FIRST_SYNC_DAYS} days`);
+    }
     const history = await buildHistory(
         process.cwd(),
         frameworkConfigs,
         sinceCommit,
         false, // never do full history anymore
+        sinceDate,
     );
     console.log(`[sync] Built history for ${history.entries.length} commits`);
 

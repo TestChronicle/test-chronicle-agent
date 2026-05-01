@@ -22,7 +22,7 @@ export declare function getRepoUrl(projectPath: string): Promise<string | null>;
  *
  * Returns both the history entries and any errors encountered during processing.
  */
-export declare function buildHistory(projectPath: string, frameworkConfigs: DetectionResult[], sinceCommit?: string, fullHistory?: boolean): Promise<HistoryBuildResult>;
+export declare function buildHistory(projectPath: string, frameworkConfigs: DetectionResult[], sinceCommit?: string, fullHistory?: boolean, sinceDate?: Date): Promise<HistoryBuildResult>;
 /**
  * Resolves the framework for a given file path by finding the most specific
  * (longest) matching testDir across all framework configs.
