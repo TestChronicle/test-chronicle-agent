@@ -216,9 +216,10 @@ async function fetchCommitsWithFiles(
     logArgs: string[],
     testDirs: string[],
 ): Promise<CommitWithFiles[]> {
-    // Use NUL byte as commit separator and ASCII unit-separator (\x1f) between header fields
-    const COMMIT_SEP = '\0';
-    const FIELD_SEP = '\x1f';
+    // Use a unique sentinel that won't appear in commit messages or file paths.
+    // Avoid NUL bytes — Node rejects them in child process arguments.
+    const COMMIT_SEP = '<<<COMMIT>>>';
+    const FIELD_SEP = '<<<F>>>';
 
     const raw = await git.raw([
         'log',
