@@ -1,4 +1,4 @@
-import { Framework, HistoryBuildResult } from '../types';
+import { Framework, HistoryBuildResult, DetectionResult } from '../types';
 /**
  * Returns the hash of the most recent commit, or null if no history exists.
  */
@@ -16,15 +16,17 @@ export declare function normaliseRemoteUrl(raw: string): string | null;
  */
 export declare function getRepoUrl(projectPath: string): Promise<string | null>;
 /**
- * Builds the full commit history for the given test directory.
- * If `sinceCommit` is provided, only commits after that hash are returned.
- */
-/**
- * Builds the full commit history for the given test directory.
+ * Builds the full commit history across all configured framework test directories.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
  *
  * Returns both the history entries and any errors encountered during processing.
  */
-export declare function buildHistory(projectPath: string, testDir: string, framework: Framework, sinceCommit?: string, fullHistory?: boolean): Promise<HistoryBuildResult>;
+export declare function buildHistory(projectPath: string, frameworkConfigs: DetectionResult[], sinceCommit?: string, fullHistory?: boolean): Promise<HistoryBuildResult>;
+/**
+ * Resolves the framework for a given file path by finding the most specific
+ * (longest) matching testDir across all framework configs.
+ * Returns null if the file does not belong to any configured test directory.
+ */
+export declare function resolveFrameworkForFile(filePath: string, frameworkConfigs: DetectionResult[]): Framework | null;
 //# sourceMappingURL=history.d.ts.map

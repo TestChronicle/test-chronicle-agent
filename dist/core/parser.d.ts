@@ -1,4 +1,4 @@
-import { Framework, SpecFile } from '../types';
+import { Framework, SpecFile, DetectionResult } from '../types';
 export declare function parseSpecFile(filePath: string, content: string, projectRoot: string, framework: Framework): SpecFile;
 /** Extract test names from raw file content without constructing a full SpecFile. */
 export declare function extractTestNamesFromContent(content: string, framework: Framework): string[];
@@ -9,6 +9,6 @@ export declare function extractTestsWithLinesFromContent(content: string, framew
 }[];
 /** Resolve all spec files under testDir for the given framework. */
 export declare function findSpecFiles(projectRoot: string, testDir: string, framework: Framework): string[];
-/** Parse all spec files in a project directory. */
-export declare function parseAllSpecs(projectRoot: string, testDir: string, framework: Framework): SpecFile[];
+/** Parse all spec files across multiple framework configs, deduplicating by file path. */
+export declare function parseAllSpecs(projectRoot: string, frameworkConfigs: DetectionResult[]): SpecFile[];
 //# sourceMappingURL=parser.d.ts.map

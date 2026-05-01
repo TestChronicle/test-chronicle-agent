@@ -4272,11 +4272,15 @@ var SIGNATURES = {
     packageDeps: ["vitest"]
   }
 };
-function detectFramework(projectPath) {
+function detectFrameworks(projectPath) {
+  const results = [];
+  const seen = /* @__PURE__ */ new Set();
   for (const [framework, sig] of Object.entries(SIGNATURES)) {
     for (const configFile of sig.configFiles) {
       const fullPath = import_path.default.join(projectPath, configFile);
       if ((0, import_fs2.existsSync)(fullPath)) {
+        if (seen.has(framework)) break;
+        seen.add(framework);
         let testDir;
         if (framework === "playwright") {
           testDir = extractPlaywrightTestDir(fullPath, projectPath);
@@ -4285,23 +4289,41 @@ function detectFramework(projectPath) {
         } else {
           testDir = guessTestDir(projectPath);
         }
-        return { framework, testDir, confidence: "high" };
+        results.push({ framework, testDir, confidence: "high" });
+        break;
       }
     }
   }
-  const nestedPlaywright = ts("**/playwright.config.{ts,js,mjs}", {
-    cwd: projectPath,
-    ignore: ["**/node_modules/**", "**/dist/**"],
-    absolute: true
-  });
-  if (nestedPlaywright.length > 0) {
-    const configPath = nestedPlaywright[0];
-    const testDir = extractPlaywrightTestDir(configPath, projectPath);
-    return { framework: "playwright", testDir, confidence: "high" };
+  const nestedConfigGlobs = {
+    playwright: "**/playwright.config.{ts,js,mjs}",
+    cypress: "**/cypress.config.{ts,js}",
+    vitest: "**/vitest.config.{ts,js}"
+  };
+  for (const [framework, glob] of Object.entries(nestedConfigGlobs)) {
+    if (seen.has(framework)) continue;
+    const matches = ts(glob, {
+      cwd: projectPath,
+      ignore: ["**/node_modules/**", "**/dist/**"],
+      absolute: true
+    });
+    if (matches.length > 0) {
+      seen.add(framework);
+      const configPath = matches[0];
+      let testDir;
+      if (framework === "playwright") {
+        testDir = extractPlaywrightTestDir(configPath, projectPath);
+      } else {
+        testDir = guessTestDir(projectPath);
+      }
+      results.push({ framework, testDir, confidence: "high" });
+    }
   }
-  const depsResult = detectFromPackageJson(projectPath);
-  if (depsResult) return depsResult;
-  return { framework: "unknown", testDir: "./tests", confidence: "low" };
+  const pkgResults = detectAllFromPackageJson(projectPath, seen);
+  results.push(...pkgResults);
+  if (results.length === 0) {
+    return [{ framework: "unknown", testDir: "./tests", confidence: "low" }];
+  }
+  return results;
 }
 function extractPlaywrightTestDir(configPath, projectPath) {
   try {
@@ -4337,9 +4359,10 @@ function guessTestDir(projectPath) {
   }
   return "./tests";
 }
-function detectFromPackageJson(projectPath) {
+function detectAllFromPackageJson(projectPath, alreadySeen) {
   const pkgPath = import_path.default.join(projectPath, "package.json");
-  if (!(0, import_fs2.existsSync)(pkgPath)) return null;
+  if (!(0, import_fs2.existsSync)(pkgPath)) return [];
+  const results = [];
   try {
     const pkg = JSON.parse((0, import_fs2.readFileSync)(pkgPath, "utf-8"));
     const allDeps = {
@@ -4347,17 +4370,19 @@ function detectFromPackageJson(projectPath) {
       ...pkg.devDependencies
     };
     for (const [framework, sig] of Object.entries(SIGNATURES)) {
+      if (alreadySeen.has(framework)) continue;
       if (sig.packageDeps.some((dep) => dep in allDeps)) {
-        return {
+        alreadySeen.add(framework);
+        results.push({
           framework,
           testDir: guessTestDir(projectPath),
           confidence: "medium"
-        };
+        });
       }
     }
   } catch {
   }
-  return null;
+  return results;
 }
 
 // src/core/parser.ts
@@ -4921,12 +4946,22 @@ function getTestFilePatterns(framework) {
       return ["**/*.spec.ts", "**/*.spec.js", "**/*.test.ts", "**/*.test.js"];
   }
 }
-function parseAllSpecs(projectRoot, testDir, framework) {
-  const files = findSpecFiles(projectRoot, testDir, framework);
-  return files.map((filePath) => {
-    const content = (0, import_fs3.readFileSync)(filePath, "utf-8");
-    return parseSpecFile(filePath, content, projectRoot, framework);
-  });
+function parseAllSpecs(projectRoot, frameworkConfigs) {
+  const seen = /* @__PURE__ */ new Set();
+  const allSpecs = [];
+  const sorted2 = [...frameworkConfigs].sort((a, b) => b.testDir.length - a.testDir.length);
+  for (const { framework, testDir } of sorted2) {
+    if (framework === "unknown") continue;
+    const files = findSpecFiles(projectRoot, testDir, framework);
+    for (const filePath of files) {
+      const normalized = import_path7.default.normalize(filePath);
+      if (seen.has(normalized)) continue;
+      seen.add(normalized);
+      const content = (0, import_fs3.readFileSync)(filePath, "utf-8");
+      allSpecs.push(parseSpecFile(filePath, content, projectRoot, framework));
+    }
+  }
+  return allSpecs;
 }
 
 // src/git/index.ts
@@ -9573,18 +9608,18 @@ async function getRepoUrl(projectPath) {
     return null;
   }
 }
-async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHistory) {
+async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHistory) {
   const git = esm_default(projectPath);
-  const relativeTestDir = testDir.replace(/^\.\//, "");
   const errors = [];
   const warnings = [];
+  const allTestDirs = frameworkConfigs.filter((c) => c.framework !== "unknown").map((c) => c.testDir.replace(/^\.\//, ""));
   let logArgs;
   if (sinceCommit) {
-    logArgs = [`${sinceCommit}..HEAD`, "--", relativeTestDir];
+    logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..HEAD`, "--", ...allTestDirs] : [`${sinceCommit}..HEAD`];
   } else if (fullHistory) {
     logArgs = ["--all"];
   } else {
-    logArgs = ["--all", "--", relativeTestDir];
+    logArgs = allTestDirs.length > 0 ? ["--all", "--", ...allTestDirs] : ["--all"];
   }
   let logResult;
   try {
@@ -9600,15 +9635,18 @@ async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHi
   const entries = [];
   for (const commit of commits) {
     try {
-      const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? void 0 : relativeTestDir);
+      const fileChanges = await getCommitFileChanges(
+        git,
+        commit.hash,
+        fullHistory ? void 0 : allTestDirs
+      );
       const specChanges = await buildSpecChanges(
         git,
         commit.hash,
         fileChanges,
-        framework,
+        frameworkConfigs,
         projectPath,
-        errors,
-        fullHistory ? void 0 : relativeTestDir
+        errors
       );
       if (specChanges.length === 0) continue;
       entries.push({
@@ -9633,7 +9671,7 @@ async function buildHistory(projectPath, testDir, framework, sinceCommit, fullHi
   }
   return { entries, errors, warnings };
 }
-async function getCommitFileChanges(git, hash, testDir) {
+async function getCommitFileChanges(git, hash, testDirs) {
   try {
     const raw = await git.raw([
       "diff-tree",
@@ -9652,12 +9690,12 @@ async function getCommitFileChanges(git, hash, testDir) {
       if (status.startsWith("R")) {
         const oldPath = parts[1];
         const newPath = parts[2];
-        if (!testDir || isInTestDir(newPath, testDir) || isInTestDir(oldPath, testDir)) {
+        if (!testDirs || isInAnyTestDir(newPath, testDirs) || isInAnyTestDir(oldPath, testDirs)) {
           changes.push({ path: newPath, oldPath, status: "renamed" });
         }
       } else {
         const filePath = parts[1];
-        if (testDir && !isInTestDir(filePath, testDir)) continue;
+        if (testDirs && !isInAnyTestDir(filePath, testDirs)) continue;
         const mapped = mapGitStatus(status);
         if (mapped) changes.push({ path: filePath, status: mapped });
       }
@@ -9671,6 +9709,22 @@ function isInTestDir(filePath, testDir) {
   const normalised = testDir.endsWith("/") ? testDir : testDir + "/";
   return filePath.startsWith(normalised) || import_path8.default.dirname(filePath) + "/" === normalised;
 }
+function isInAnyTestDir(filePath, testDirs) {
+  return testDirs.some((dir) => isInTestDir(filePath, dir));
+}
+function resolveFrameworkForFile(filePath, frameworkConfigs) {
+  let bestMatch = null;
+  for (const { framework, testDir } of frameworkConfigs) {
+    if (framework === "unknown") continue;
+    const normalised = testDir.replace(/^\.\//, "");
+    if (isInTestDir(filePath, normalised)) {
+      if (!bestMatch || normalised.length > bestMatch.testDirLength) {
+        bestMatch = { framework, testDirLength: normalised.length };
+      }
+    }
+  }
+  return bestMatch?.framework ?? null;
+}
 function mapGitStatus(status) {
   switch (status[0]) {
     case "A":
@@ -9683,17 +9737,18 @@ function mapGitStatus(status) {
       return null;
   }
 }
-async function buildSpecChanges(git, hash, fileChanges, framework, projectPath, errors, testDir) {
+async function buildSpecChanges(git, hash, fileChanges, frameworkConfigs, projectPath, errors) {
   const entries = [];
   for (const change of fileChanges) {
-    if (!isSpecFile(change.path)) continue;
+    const framework = resolveFrameworkForFile(change.path, frameworkConfigs);
+    if (!framework || !isSpecFile(change.path, framework)) continue;
     let effectiveChange = change;
-    if (change.status === "renamed" && change.oldPath && testDir) {
-      const oldInTestDir = isInTestDir(change.oldPath, testDir);
-      const newInTestDir = isInTestDir(change.path, testDir);
-      if (!oldInTestDir && newInTestDir) {
+    if (change.status === "renamed" && change.oldPath) {
+      const oldFramework = resolveFrameworkForFile(change.oldPath, frameworkConfigs);
+      const newFramework = resolveFrameworkForFile(change.path, frameworkConfigs);
+      if (!oldFramework && newFramework) {
         effectiveChange = { path: change.path, status: "added" };
-      } else if (oldInTestDir && !newInTestDir) {
+      } else if (oldFramework && !newFramework) {
         effectiveChange = { path: change.oldPath, status: "deleted" };
       }
     }
@@ -9766,8 +9821,20 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
 async function getFileAtCommit(git, ref, filePath) {
   return git.show([`${ref}:${filePath}`]);
 }
-function isSpecFile(filePath) {
-  return /\.(spec|test)\.[jt]s$/.test(filePath);
+function isSpecFile(filePath, framework) {
+  switch (framework) {
+    case "playwright":
+      return /\.spec\.[jt]s(x?)$/.test(filePath);
+    case "cypress":
+      return /\.cy\.[jt]s$|\.spec\.[jt]s$/.test(filePath);
+    case "vitest":
+      return /\.(spec|test)\.[jt]sx?$/.test(filePath);
+    case "testng":
+    case "junit":
+      return /(Test|Tests|TestCase)\.java$/.test(filePath);
+    default:
+      return /\.(spec|test)\.[jt]s$/.test(filePath);
+  }
 }
 function detectMaintenanceChanges(previousContent, currentContent, framework, alreadyChangedTests) {
   if (!previousContent || !currentContent) return [];
@@ -9929,19 +9996,50 @@ async function syncProject(options) {
   } else {
     console.log("[config] No project overrides set. Using auto-detected config");
   }
-  console.log("[sync] Detecting framework...");
-  const detection = detectFramework(process.cwd());
-  console.log(`[sync] Detected framework: ${detection.framework}`);
-  console.log(`[sync] Test directory: ${detection.testDir}`);
+  console.log("[sync] Detecting frameworks...");
+  const detected = detectFrameworks(process.cwd());
+  const frameworkMap = new Map(detected.map((d) => [d.framework, d]));
   if (projectConfig?.frameworkOverrides?.length) {
-    const match = projectConfig.frameworkOverrides.find((o) => o.framework === detection.framework);
-    if (match?.dirs?.length) {
-      detection.testDir = match.dirs[0];
-      console.log(`[config] Test directory overridden to: ${detection.testDir}`);
+    for (const override of projectConfig.frameworkOverrides) {
+      if (!override.dirs?.length) continue;
+      const existing = frameworkMap.get(override.framework);
+      if (existing) {
+        existing.testDir = override.dirs[0];
+        console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
+      } else {
+        frameworkMap.set(override.framework, {
+          framework: override.framework,
+          testDir: override.dirs[0],
+          confidence: "high"
+        });
+        console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
+      }
     }
   }
+  if (projectConfig?.testDirExcludes?.length) {
+    for (const excludeDir of projectConfig.testDirExcludes) {
+      const normalised = excludeDir.replace(/^\.\//, "");
+      for (const [fw, config2] of frameworkMap) {
+        const configDir = config2.testDir.replace(/^\.\//, "");
+        if (configDir.startsWith(normalised)) {
+          frameworkMap.delete(fw);
+          console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
+        }
+      }
+    }
+  }
+  let frameworkConfigs = [...frameworkMap.values()];
+  if (frameworkConfigs.length === 0) {
+    const primary = projectConfig?.primaryFramework;
+    frameworkConfigs = [{ framework: primary ?? "unknown", testDir: "./tests", confidence: "low" }];
+    console.log(`[config] No frameworks remain after exclusions, falling back to: ${frameworkConfigs[0].framework}`);
+  }
+  console.log(`[sync] Active frameworks (${frameworkConfigs.length}):`);
+  for (const { framework, testDir, confidence } of frameworkConfigs) {
+    console.log(`[sync]   ${framework} \u2192 ${testDir} (${confidence})`);
+  }
   console.log("[sync] Parsing test specifications...");
-  const specs = parseAllSpecs(process.cwd(), detection.testDir, detection.framework);
+  const specs = parseAllSpecs(process.cwd(), frameworkConfigs);
   console.log(`[sync] Found ${specs.length} spec files`);
   const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
   console.log(`[sync] Total tests: ${totalTests}`);
@@ -9965,8 +10063,7 @@ async function syncProject(options) {
   const sinceCommit = isFirstSync ? void 0 : lastSyncCommit;
   const history = await buildHistory(
     process.cwd(),
-    detection.testDir,
-    detection.framework,
+    frameworkConfigs,
     sinceCommit,
     false
     // never do full history anymore
