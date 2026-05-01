@@ -9612,7 +9612,7 @@ async function getRepoUrl(projectPath) {
     return null;
   }
 }
-async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHistory) {
+async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHistory, sinceDate) {
   const git = esm_default(projectPath);
   const errors = [];
   const warnings = [];
@@ -9625,6 +9625,9 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
   } else {
     logArgs = allTestDirs.length > 0 ? ["--all", "--", ...allTestDirs] : ["--all"];
   }
+  if (sinceDate && !sinceCommit) {
+    logArgs = [`--since=${sinceDate.toISOString()}`, ...logArgs];
+  }
   let logResult;
   try {
     logResult = await git.log(logArgs);
@@ -9636,39 +9639,69 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
     return { entries: [], errors, warnings };
   }
   const commits = [...logResult.all].reverse();
-  const entries = [];
-  for (const commit of commits) {
-    try {
-      const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? void 0 : allTestDirs);
-      const specChanges = await buildSpecChanges(
-        git,
-        commit.hash,
-        fileChanges,
-        frameworkConfigs,
-        projectPath,
-        errors
-      );
-      if (specChanges.length === 0) continue;
-      entries.push({
-        commit: {
-          hash: commit.hash,
-          shortHash: commit.hash.substring(0, 7),
-          message: commit.message,
-          author: commit.author_name,
-          date: new Date(commit.date).toISOString(),
-          changes: fileChanges
-        },
-        specs: specChanges
-      });
-    } catch (error) {
-      errors.push({
-        commit: commit.hash,
-        file: "unknown",
-        reason: error instanceof Error ? error.message : "Unknown error",
-        partial: true
-      });
+  if (commits.length === 0) {
+    return { entries: [], errors, warnings };
+  }
+  console.log(`[sync] Processing ${commits.length} commits...`);
+  const BATCH_SIZE = 5;
+  const reportEvery = Math.max(50, Math.floor(commits.length / 10));
+  const slots = new Array(commits.length).fill(null);
+  let processed = 0;
+  for (let batchStart = 0; batchStart < commits.length; batchStart += BATCH_SIZE) {
+    const batch = commits.slice(batchStart, batchStart + BATCH_SIZE);
+    const batchResults = await Promise.all(
+      batch.map(async (commit, batchIdx) => {
+        const slotIdx = batchStart + batchIdx;
+        try {
+          const fileChanges = await getCommitFileChanges(
+            git,
+            commit.hash,
+            fullHistory ? void 0 : allTestDirs
+          );
+          const specChanges = await buildSpecChanges(
+            git,
+            commit.hash,
+            fileChanges,
+            frameworkConfigs,
+            projectPath,
+            errors
+          );
+          if (specChanges.length === 0) return { slotIdx, entry: null };
+          return {
+            slotIdx,
+            entry: {
+              commit: {
+                hash: commit.hash,
+                shortHash: commit.hash.substring(0, 7),
+                message: commit.message,
+                author: commit.author_name,
+                date: new Date(commit.date).toISOString(),
+                changes: fileChanges
+              },
+              specs: specChanges
+            }
+          };
+        } catch (error) {
+          errors.push({
+            commit: commit.hash,
+            file: "unknown",
+            reason: error instanceof Error ? error.message : "Unknown error",
+            partial: true
+          });
+          return { slotIdx, entry: null };
+        }
+      })
+    );
+    for (const { slotIdx, entry } of batchResults) {
+      slots[slotIdx] = entry;
+    }
+    const prevProcessed = processed;
+    processed += batch.length;
+    if (Math.floor(prevProcessed / reportEvery) !== Math.floor(processed / reportEvery) || processed >= commits.length) {
+      console.log(`[sync]   \u2192 ${processed}/${commits.length} commits processed`);
     }
   }
+  const entries = slots.filter((e) => e !== null);
   return { entries, errors, warnings };
 }
 async function getCommitFileChanges(git, hash, testDirs) {
@@ -9970,6 +10003,7 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 }
 
 // src/sync.ts
+var MAX_FIRST_SYNC_DAYS = 365;
 function getChangeKey(change, specPath) {
   const path10 = specPath ?? "";
   const oldName = change.oldName ?? "";
@@ -10063,12 +10097,17 @@ async function syncProject(options) {
   }
   console.log("[sync] Building git history...");
   const sinceCommit = isFirstSync ? void 0 : lastSyncCommit;
+  const sinceDate = isFirstSync ? new Date(Date.now() - MAX_FIRST_SYNC_DAYS * 864e5) : void 0;
+  if (sinceDate) {
+    console.log(`[sync] First sync: limiting history to last ${MAX_FIRST_SYNC_DAYS} days`);
+  }
   const history = await buildHistory(
     process.cwd(),
     frameworkConfigs,
     sinceCommit,
-    false
+    false,
     // never do full history anymore
+    sinceDate
   );
   console.log(`[sync] Built history for ${history.entries.length} commits`);
   if (history.errors.length > 0) {
