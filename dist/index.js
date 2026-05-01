@@ -9743,8 +9743,8 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
   return { entries, errors, warnings };
 }
 async function fetchCommitsWithFiles(git, logArgs, testDirs) {
-  const COMMIT_SEP = "\0";
-  const FIELD_SEP = "";
+  const COMMIT_SEP = "<<<COMMIT>>>";
+  const FIELD_SEP = "<<<F>>>";
   const raw = await git.raw([
     "log",
     `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,
@@ -9783,7 +9783,13 @@ async function fetchCommitsWithFiles(git, logArgs, testDirs) {
       }
     }
     if (fileChanges.length > 0) {
-      result.push({ hash: hash.trim(), author: author ?? "", date: date ?? "", message: message ?? "", fileChanges });
+      result.push({
+        hash: hash.trim(),
+        author: author ?? "",
+        date: date ?? "",
+        message: message ?? "",
+        fileChanges
+      });
     }
   }
   return result.reverse();
