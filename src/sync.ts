@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import { detectFramework } from './core';
+import { detectFrameworks } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash, getRepoUrl } from './git';
 import { getSyncMarker, saveSyncMarker, syncToDashboard, fetchProjectConfig } from './sync-client';
-import { TestChange } from './types';
+import { DetectionResult, TestChange } from './types';
 
 // Configuration for sync operation
 export interface SyncOptions {
@@ -55,22 +55,65 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         console.log('[config] No project overrides set. Using auto-detected config');
     }
 
-    console.log('[sync] Detecting framework...');
-    const detection = detectFramework(process.cwd());
-    console.log(`[sync] Detected framework: ${detection.framework}`);
-    console.log(`[sync] Test directory: ${detection.testDir}`);
+    console.log('[sync] Detecting frameworks...');
+    const detected = detectFrameworks(process.cwd());
 
-    // Apply dashboard overrides on top of auto-detection
+    // Build a mutable map of framework → DetectionResult for merging overrides
+    const frameworkMap = new Map<string, DetectionResult>(detected.map((d) => [d.framework, d]));
+
+    // Apply dashboard frameworkOverrides:
+    // - If the framework was already detected, update its testDir
+    // - If not detected, add it as a new entry (enables fully dashboard-driven configs)
     if (projectConfig?.frameworkOverrides?.length) {
-        const match = projectConfig.frameworkOverrides.find((o) => o.framework === detection.framework);
-        if (match?.dirs?.length) {
-            detection.testDir = match.dirs[0];
-            console.log(`[config] Test directory overridden to: ${detection.testDir}`);
+        for (const override of projectConfig.frameworkOverrides) {
+            if (!override.dirs?.length) continue;
+            const existing = frameworkMap.get(override.framework);
+            if (existing) {
+                existing.testDir = override.dirs[0];
+                console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
+            } else {
+                frameworkMap.set(override.framework, {
+                    framework: override.framework,
+                    testDir: override.dirs[0],
+                    confidence: 'high',
+                });
+                console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
+            }
         }
     }
 
+    // Apply testDirExcludes: remove any framework config whose testDir starts with an excluded path
+    if (projectConfig?.testDirExcludes?.length) {
+        for (const excludeDir of projectConfig.testDirExcludes) {
+            const normalised = excludeDir.replace(/^\.\//, '');
+            for (const [fw, config] of frameworkMap) {
+                const configDir = config.testDir.replace(/^\.\//, '');
+                if (configDir.startsWith(normalised)) {
+                    frameworkMap.delete(fw);
+                    console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
+                }
+            }
+        }
+    }
+
+    let frameworkConfigs = [...frameworkMap.values()];
+
+    // If nothing remains after exclusions, fall back to the primary framework or unknown
+    if (frameworkConfigs.length === 0) {
+        const primary = projectConfig?.primaryFramework;
+        frameworkConfigs = [{ framework: primary ?? 'unknown', testDir: './tests', confidence: 'low' }];
+        console.log(
+            `[config] No frameworks remain after exclusions, falling back to: ${frameworkConfigs[0].framework}`,
+        );
+    }
+
+    console.log(`[sync] Active frameworks (${frameworkConfigs.length}):`);
+    for (const { framework, testDir, confidence } of frameworkConfigs) {
+        console.log(`[sync]   ${framework} → ${testDir} (${confidence})`);
+    }
+
     console.log('[sync] Parsing test specifications...');
-    const specs = parseAllSpecs(process.cwd(), detection.testDir, detection.framework);
+    const specs = parseAllSpecs(process.cwd(), frameworkConfigs);
     console.log(`[sync] Found ${specs.length} spec files`);
 
     const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
@@ -102,8 +145,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const sinceCommit = isFirstSync ? undefined : lastSyncCommit!;
     const history = await buildHistory(
         process.cwd(),
-        detection.testDir,
-        detection.framework,
+        frameworkConfigs,
         sinceCommit,
         false, // never do full history anymore
     );

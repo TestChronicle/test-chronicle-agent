@@ -8,6 +8,7 @@ import {
     TestChange,
     HistoryError,
     HistoryBuildResult,
+    DetectionResult,
 } from '../types';
 import { extractTestNamesFromContent, extractTestsWithLinesFromContent } from '../core/parser';
 import { isSameTest } from '../core/frameworks/testDiff';
@@ -68,11 +69,7 @@ export async function getRepoUrl(projectPath: string): Promise<string | null> {
 }
 
 /**
- * Builds the full commit history for the given test directory.
- * If `sinceCommit` is provided, only commits after that hash are returned.
- */
-/**
- * Builds the full commit history for the given test directory.
+ * Builds the full commit history across all configured framework test directories.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
  *
@@ -80,35 +77,32 @@ export async function getRepoUrl(projectPath: string): Promise<string | null> {
  */
 export async function buildHistory(
     projectPath: string,
-    testDir: string,
-    framework: Framework,
+    frameworkConfigs: DetectionResult[],
     sinceCommit?: string,
     fullHistory?: boolean,
 ): Promise<HistoryBuildResult> {
     const git = simpleGit(projectPath);
-    const relativeTestDir = testDir.replace(/^\.\//, '');
     const errors: HistoryError[] = [];
     const warnings: string[] = [];
+
+    const allTestDirs = frameworkConfigs
+        .filter((c) => c.framework !== 'unknown')
+        .map((c) => c.testDir.replace(/^\.\//, ''));
 
     let logArgs: string[];
 
     if (sinceCommit) {
-        // For incremental sync: explicitly specify range and path
-        logArgs = [`${sinceCommit}..HEAD`, '--', relativeTestDir];
+        logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..HEAD`, '--', ...allTestDirs] : [`${sinceCommit}..HEAD`];
     } else if (fullHistory) {
-        // For full history scan: get ALL commits in the repo
-        // The filtering by test files will happen in buildSpecChanges
         logArgs = ['--all'];
     } else {
-        // For standard full sync: get all commits affecting the path
-        logArgs = ['--all', '--', relativeTestDir];
+        logArgs = allTestDirs.length > 0 ? ['--all', '--', ...allTestDirs] : ['--all'];
     }
 
     let logResult;
     try {
         logResult = await git.log(logArgs);
     } catch (error) {
-        // Log the error for debugging
         if (error instanceof Error) {
             console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
             warnings.push(`Git log failed: ${error.message}`);
@@ -121,17 +115,14 @@ export async function buildHistory(
 
     for (const commit of commits) {
         try {
-            // When doing full history, don't filter by testDir in getCommitFileChanges
-            // Instead let buildSpecChanges filter to only test files
-            const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? undefined : relativeTestDir);
+            const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? undefined : allTestDirs);
             const specChanges = await buildSpecChanges(
                 git,
                 commit.hash,
                 fileChanges,
-                framework,
+                frameworkConfigs,
                 projectPath,
                 errors,
-                fullHistory ? undefined : relativeTestDir,
             );
 
             if (specChanges.length === 0) continue;
@@ -165,7 +156,7 @@ export async function buildHistory(
 async function getCommitFileChanges(
     git: ReturnType<typeof simpleGit>,
     hash: string,
-    testDir?: string,
+    testDirs?: string[],
 ): Promise<GitFileChange[]> {
     try {
         // Use diff-tree to get the file status for this commit
@@ -189,14 +180,12 @@ async function getCommitFileChanges(
                 // Rename: R<score>\t<old>\t<new>
                 const oldPath = parts[1];
                 const newPath = parts[2];
-                // If testDir is specified, filter by directory; otherwise include all renames
-                if (!testDir || isInTestDir(newPath, testDir) || isInTestDir(oldPath, testDir)) {
+                if (!testDirs || isInAnyTestDir(newPath, testDirs) || isInAnyTestDir(oldPath, testDirs)) {
                     changes.push({ path: newPath, oldPath, status: 'renamed' });
                 }
             } else {
                 const filePath = parts[1];
-                // If testDir is specified, filter by directory; otherwise include all files
-                if (testDir && !isInTestDir(filePath, testDir)) continue;
+                if (testDirs && !isInAnyTestDir(filePath, testDirs)) continue;
 
                 const mapped = mapGitStatus(status);
                 if (mapped) changes.push({ path: filePath, status: mapped });
@@ -210,10 +199,34 @@ async function getCommitFileChanges(
 }
 
 function isInTestDir(filePath: string, testDir: string): boolean {
-    // Normalise to forward slashes and ensure testDir ends with / to avoid
-    // prefix false positives (e.g. "test" matching "testing/foo.spec.ts")
+    // Normalise and ensure testDir ends with / to avoid prefix false positives
     const normalised = testDir.endsWith('/') ? testDir : testDir + '/';
     return filePath.startsWith(normalised) || path.dirname(filePath) + '/' === normalised;
+}
+
+function isInAnyTestDir(filePath: string, testDirs: string[]): boolean {
+    return testDirs.some((dir) => isInTestDir(filePath, dir));
+}
+
+/**
+ * Resolves the framework for a given file path by finding the most specific
+ * (longest) matching testDir across all framework configs.
+ * Returns null if the file does not belong to any configured test directory.
+ */
+export function resolveFrameworkForFile(filePath: string, frameworkConfigs: DetectionResult[]): Framework | null {
+    let bestMatch: { framework: Framework; testDirLength: number } | null = null;
+
+    for (const { framework, testDir } of frameworkConfigs) {
+        if (framework === 'unknown') continue;
+        const normalised = testDir.replace(/^\.\//, '');
+        if (isInTestDir(filePath, normalised)) {
+            if (!bestMatch || normalised.length > bestMatch.testDirLength) {
+                bestMatch = { framework, testDirLength: normalised.length };
+            }
+        }
+    }
+
+    return bestMatch?.framework ?? null;
 }
 
 function mapGitStatus(status: string): GitFileChange['status'] | null {
@@ -235,26 +248,26 @@ async function buildSpecChanges(
     git: ReturnType<typeof simpleGit>,
     hash: string,
     fileChanges: GitFileChange[],
-    framework: Framework,
+    frameworkConfigs: DetectionResult[],
     projectPath: string,
     errors: HistoryError[],
-    testDir?: string,
 ): Promise<SpecHistoryEntry[]> {
     const entries: SpecHistoryEntry[] = [];
 
     for (const change of fileChanges) {
-        if (!isSpecFile(change.path)) continue;
+        // Resolve which framework owns this file based on its path
+        const framework = resolveFrameworkForFile(change.path, frameworkConfigs);
+        if (!framework || !isSpecFile(change.path, framework)) continue;
 
-        // Normalize cross-testDir renames: if a spec file moves INTO the tracked
-        // test directory, treat it as a brand-new addition (all tests are added).
-        // If it moves OUT of the test directory, treat it as a deletion.
+        // Normalize cross-testDir renames: if a spec file moves between tracked
+        // directories (or into/out of a tracked directory), treat it as an add/delete.
         let effectiveChange = change;
-        if (change.status === 'renamed' && change.oldPath && testDir) {
-            const oldInTestDir = isInTestDir(change.oldPath, testDir);
-            const newInTestDir = isInTestDir(change.path, testDir);
-            if (!oldInTestDir && newInTestDir) {
+        if (change.status === 'renamed' && change.oldPath) {
+            const oldFramework = resolveFrameworkForFile(change.oldPath, frameworkConfigs);
+            const newFramework = resolveFrameworkForFile(change.path, frameworkConfigs);
+            if (!oldFramework && newFramework) {
                 effectiveChange = { path: change.path, status: 'added' };
-            } else if (oldInTestDir && !newInTestDir) {
+            } else if (oldFramework && !newFramework) {
                 effectiveChange = { path: change.oldPath, status: 'deleted' };
             }
         }
@@ -269,7 +282,6 @@ async function buildSpecChanges(
                 reason: error instanceof Error ? error.message : 'Unknown error',
                 partial: true,
             });
-            // Continue processing other files even if one fails
         }
     }
 
@@ -351,8 +363,24 @@ async function getFileAtCommit(git: ReturnType<typeof simpleGit>, ref: string, f
     return git.show([`${ref}:${filePath}`]);
 }
 
-function isSpecFile(filePath: string): boolean {
-    return /\.(spec|test)\.[jt]s$/.test(filePath);
+/**
+ * Returns true if the file looks like a spec file for the given framework.
+ * Falls back to a generic extension check when no framework is provided.
+ */
+function isSpecFile(filePath: string, framework?: Framework): boolean {
+    switch (framework) {
+        case 'playwright':
+            return /\.spec\.[jt]s(x?)$/.test(filePath);
+        case 'cypress':
+            return /\.cy\.[jt]s$|\.spec\.[jt]s$/.test(filePath);
+        case 'vitest':
+            return /\.(spec|test)\.[jt]sx?$/.test(filePath);
+        case 'testng':
+        case 'junit':
+            return /(Test|Tests|TestCase)\.java$/.test(filePath);
+        default:
+            return /\.(spec|test)\.[jt]s$/.test(filePath);
+    }
 }
 
 /**

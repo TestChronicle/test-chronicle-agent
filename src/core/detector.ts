@@ -33,8 +33,16 @@ const SIGNATURES: Record<Exclude<Framework, 'unknown'>, FrameworkSignature> = {
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export function detectFramework(projectPath: string): DetectionResult {
-    // 1. Check for config files at the project root
+/**
+ * Detects all test frameworks present in the project.
+ * Returns one DetectionResult per framework found, ordered by confidence.
+ * Falls back to a single unknown result if nothing is detected.
+ */
+export function detectFrameworks(projectPath: string): DetectionResult[] {
+    const results: DetectionResult[] = [];
+    const seen = new Set<Framework>();
+
+    // 1. Check for config files at the project root (high confidence)
     for (const [framework, sig] of Object.entries(SIGNATURES) as [
         Exclude<Framework, 'unknown'>,
         FrameworkSignature,
@@ -42,9 +50,10 @@ export function detectFramework(projectPath: string): DetectionResult {
         for (const configFile of sig.configFiles) {
             const fullPath = path.join(projectPath, configFile);
             if (existsSync(fullPath)) {
-                let testDir: string;
+                if (seen.has(framework)) break;
+                seen.add(framework);
 
-                // Extract testDir from framework-specific config files
+                let testDir: string;
                 if (framework === 'playwright') {
                     testDir = extractPlaywrightTestDir(fullPath, projectPath);
                 } else if (framework === 'vitest') {
@@ -53,29 +62,50 @@ export function detectFramework(projectPath: string): DetectionResult {
                     testDir = guessTestDir(projectPath);
                 }
 
-                return { framework, testDir, confidence: 'high' };
+                results.push({ framework, testDir, confidence: 'high' });
+                break; // found a config for this framework, move to next framework
             }
         }
     }
 
-    // 2. Search nested directories (monorepo support)
-    const nestedPlaywright = globSync('**/playwright.config.{ts,js,mjs}', {
-        cwd: projectPath,
-        ignore: ['**/node_modules/**', '**/dist/**'],
-        absolute: true,
-    });
+    // 2. Search nested directories for frameworks not yet found (monorepo support)
+    const nestedConfigGlobs: Partial<Record<Exclude<Framework, 'unknown'>, string>> = {
+        playwright: '**/playwright.config.{ts,js,mjs}',
+        cypress: '**/cypress.config.{ts,js}',
+        vitest: '**/vitest.config.{ts,js}',
+    };
 
-    if (nestedPlaywright.length > 0) {
-        const configPath = nestedPlaywright[0];
-        const testDir = extractPlaywrightTestDir(configPath, projectPath);
-        return { framework: 'playwright', testDir, confidence: 'high' };
+    for (const [framework, glob] of Object.entries(nestedConfigGlobs) as [Exclude<Framework, 'unknown'>, string][]) {
+        if (seen.has(framework)) continue;
+
+        const matches = globSync(glob, {
+            cwd: projectPath,
+            ignore: ['**/node_modules/**', '**/dist/**'],
+            absolute: true,
+        });
+
+        if (matches.length > 0) {
+            seen.add(framework);
+            const configPath = matches[0];
+            let testDir: string;
+            if (framework === 'playwright') {
+                testDir = extractPlaywrightTestDir(configPath, projectPath);
+            } else {
+                testDir = guessTestDir(projectPath);
+            }
+            results.push({ framework, testDir, confidence: 'high' });
+        }
     }
 
-    // 3. Fall back to package.json dependency inspection
-    const depsResult = detectFromPackageJson(projectPath);
-    if (depsResult) return depsResult;
+    // 3. Fall back to package.json dependency inspection for remaining frameworks
+    const pkgResults = detectAllFromPackageJson(projectPath, seen);
+    results.push(...pkgResults);
 
-    return { framework: 'unknown', testDir: './tests', confidence: 'low' };
+    if (results.length === 0) {
+        return [{ framework: 'unknown', testDir: './tests', confidence: 'low' }];
+    }
+
+    return results;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -126,10 +156,11 @@ function guessTestDir(projectPath: string): string {
     return './tests';
 }
 
-function detectFromPackageJson(projectPath: string): DetectionResult | null {
+function detectAllFromPackageJson(projectPath: string, alreadySeen: Set<Framework>): DetectionResult[] {
     const pkgPath = path.join(projectPath, 'package.json');
-    if (!existsSync(pkgPath)) return null;
+    if (!existsSync(pkgPath)) return [];
 
+    const results: DetectionResult[] = [];
     try {
         const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
         const allDeps: Record<string, string> = {
@@ -141,17 +172,19 @@ function detectFromPackageJson(projectPath: string): DetectionResult | null {
             Exclude<Framework, 'unknown'>,
             FrameworkSignature,
         ][]) {
+            if (alreadySeen.has(framework)) continue;
             if (sig.packageDeps.some((dep) => dep in allDeps)) {
-                return {
+                alreadySeen.add(framework);
+                results.push({
                     framework,
                     testDir: guessTestDir(projectPath),
                     confidence: 'medium',
-                };
+                });
             }
         }
     } catch {
         // Malformed package.json
     }
 
-    return null;
+    return results;
 }
