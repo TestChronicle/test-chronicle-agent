@@ -4,7 +4,13 @@ import dotenv from 'dotenv';
 import { detectFrameworks } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash, getRepoUrl, getDefaultBranch, getRemoteBranchTip } from './git';
-import { getSyncMarker, saveSyncMarker, syncToDashboard, fetchProjectConfig } from './sync-client';
+import {
+    getSyncMarker,
+    saveSyncMarker,
+    syncToDashboard,
+    fetchProjectConfig,
+    validateProjectAccess,
+} from './sync-client';
 import { DetectionResult, TestChange, FrameworkOverride, CommitHistory, SpecFile } from './types';
 
 /** Maximum number of days of history to fetch on a first sync. */
@@ -150,6 +156,10 @@ function deduplicateCommitChanges(entry: CommitHistory): CommitChange[] {
  */
 export async function syncProject(options: SyncOptions): Promise<void> {
     const { projectId, apiKey, dashboardUrl } = options;
+
+    // Validate API key and project ID early — fail fast before any expensive work
+    console.log('[sync] Validating project access...');
+    await validateProjectAccess(dashboardUrl, apiKey, projectId);
 
     // Load .env.local from project directory if it exists
     const envLocalPath = path.join(process.cwd(), '.env.local');
@@ -318,6 +328,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     await syncToDashboard(dashboardUrl, apiKey, payload);
     console.log('[sync] Sync successful!');
     console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
+    console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
 
     // Handle baseline sync and incremental marker
     // Always save the tip of origin/<defaultBranch> as the marker so that
