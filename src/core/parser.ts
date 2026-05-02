@@ -1,7 +1,7 @@
 import { readFileSync, statSync } from 'fs';
 import path from 'path';
 import { globSync } from 'glob';
-import { Framework, SpecFile } from '../types';
+import { Framework, SpecFile, DetectionResult } from '../types';
 import { parsePlaywrightSpec, extractTestNames as playwrightExtractNames } from './frameworks/playwright';
 import { parseCypressSpec, extractTestNames as cypressExtractNames } from './frameworks/cypress';
 import { parseVitestSpec, extractTestNames as vitestExtractNames } from './frameworks/vitest';
@@ -126,12 +126,26 @@ function getTestFilePatterns(framework: Framework): string[] {
     }
 }
 
-/** Parse all spec files in a project directory. */
-export function parseAllSpecs(projectRoot: string, testDir: string, framework: Framework): SpecFile[] {
-    const files = findSpecFiles(projectRoot, testDir, framework);
+/** Parse all spec files across multiple framework configs, deduplicating by file path. */
+export function parseAllSpecs(projectRoot: string, frameworkConfigs: DetectionResult[]): SpecFile[] {
+    const seen = new Set<string>();
+    const allSpecs: SpecFile[] = [];
 
-    return files.map((filePath) => {
-        const content = readFileSync(filePath, 'utf-8');
-        return parseSpecFile(filePath, content, projectRoot, framework);
-    });
+    // Sort configs so most-specific (longest) testDirs are processed first,
+    // ensuring the best framework match wins when testDirs overlap.
+    const sorted = [...frameworkConfigs].sort((a, b) => b.testDir.length - a.testDir.length);
+
+    for (const { framework, testDir } of sorted) {
+        if (framework === 'unknown') continue;
+        const files = findSpecFiles(projectRoot, testDir, framework);
+        for (const filePath of files) {
+            const normalized = path.normalize(filePath);
+            if (seen.has(normalized)) continue;
+            seen.add(normalized);
+            const content = readFileSync(filePath, 'utf-8');
+            allSpecs.push(parseSpecFile(filePath, content, projectRoot, framework));
+        }
+    }
+
+    return allSpecs;
 }

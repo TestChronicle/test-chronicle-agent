@@ -8,6 +8,7 @@ import {
     TestChange,
     HistoryError,
     HistoryBuildResult,
+    DetectionResult,
 } from '../types';
 import { extractTestNamesFromContent, extractTestsWithLinesFromContent } from '../core/parser';
 import { isSameTest } from '../core/frameworks/testDiff';
@@ -68,11 +69,7 @@ export async function getRepoUrl(projectPath: string): Promise<string | null> {
 }
 
 /**
- * Builds the full commit history for the given test directory.
- * If `sinceCommit` is provided, only commits after that hash are returned.
- */
-/**
- * Builds the full commit history for the given test directory.
+ * Builds the full commit history across all configured framework test directories.
  * If `sinceCommit` is provided, only commits after that hash are returned.
  * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
  *
@@ -80,35 +77,40 @@ export async function getRepoUrl(projectPath: string): Promise<string | null> {
  */
 export async function buildHistory(
     projectPath: string,
-    testDir: string,
-    framework: Framework,
+    frameworkConfigs: DetectionResult[],
     sinceCommit?: string,
     fullHistory?: boolean,
+    sinceDate?: Date,
 ): Promise<HistoryBuildResult> {
     const git = simpleGit(projectPath);
-    const relativeTestDir = testDir.replace(/^\.\//, '');
     const errors: HistoryError[] = [];
     const warnings: string[] = [];
+
+    const allTestDirs = frameworkConfigs
+        .filter((c) => c.framework !== 'unknown')
+        .map((c) => c.testDir.replace(/^\.\//, ''));
 
     let logArgs: string[];
 
     if (sinceCommit) {
-        // For incremental sync: explicitly specify range and path
-        logArgs = [`${sinceCommit}..HEAD`, '--', relativeTestDir];
+        logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..HEAD`, '--', ...allTestDirs] : [`${sinceCommit}..HEAD`];
     } else if (fullHistory) {
-        // For full history scan: get ALL commits in the repo
-        // The filtering by test files will happen in buildSpecChanges
         logArgs = ['--all'];
     } else {
-        // For standard full sync: get all commits affecting the path
-        logArgs = ['--all', '--', relativeTestDir];
+        logArgs = allTestDirs.length > 0 ? ['--all', '--', ...allTestDirs] : ['--all'];
     }
 
-    let logResult;
+    // For first syncs (no sinceCommit), cap how far back we look
+    if (sinceDate && !sinceCommit) {
+        logArgs = [`--since=${sinceDate.toISOString()}`, ...logArgs];
+    }
+
+    // Single git log call returns commit metadata + file changes in one shot,
+    // eliminating N individual diff-tree subprocess calls.
+    let commits: CommitWithFiles[];
     try {
-        logResult = await git.log(logArgs);
+        commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : allTestDirs);
     } catch (error) {
-        // Log the error for debugging
         if (error instanceof Error) {
             console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
             warnings.push(`Git log failed: ${error.message}`);
@@ -116,104 +118,201 @@ export async function buildHistory(
         return { entries: [], errors, warnings };
     }
 
-    const commits = [...logResult.all].reverse(); // oldest first for timeline ordering
-    const entries: CommitHistory[] = [];
+    if (commits.length === 0) {
+        return { entries: [], errors, warnings };
+    }
 
-    for (const commit of commits) {
-        try {
-            // When doing full history, don't filter by testDir in getCommitFileChanges
-            // Instead let buildSpecChanges filter to only test files
-            const fileChanges = await getCommitFileChanges(git, commit.hash, fullHistory ? undefined : relativeTestDir);
-            const specChanges = await buildSpecChanges(
-                git,
-                commit.hash,
-                fileChanges,
-                framework,
-                projectPath,
-                errors,
-                fullHistory ? undefined : relativeTestDir,
-            );
+    console.log(`[sync] Processing ${commits.length} commits...`);
 
-            if (specChanges.length === 0) continue;
+    // Report roughly 10 times across the full run, minimum every 50 commits
+    const BATCH_SIZE = 20;
+    const reportEvery = Math.max(50, Math.floor(commits.length / 10));
 
-            entries.push({
-                commit: {
-                    hash: commit.hash,
-                    shortHash: commit.hash.substring(0, 7),
-                    message: commit.message,
-                    author: commit.author_name,
-                    date: new Date(commit.date).toISOString(),
-                    changes: fileChanges,
-                },
-                specs: specChanges,
-            });
-        } catch (error) {
-            errors.push({
-                commit: commit.hash,
-                file: 'unknown',
-                reason: error instanceof Error ? error.message : 'Unknown error',
-                partial: true,
-            });
+    // Process commits in parallel batches — preserving index order for timeline integrity
+    const slots: (CommitHistory | null)[] = new Array(commits.length).fill(null);
+    let processed = 0;
+
+    for (let batchStart = 0; batchStart < commits.length; batchStart += BATCH_SIZE) {
+        const batch = commits.slice(batchStart, batchStart + BATCH_SIZE);
+
+        const batchResults = await Promise.all(
+            batch.map(async (commit, batchIdx) => {
+                const slotIdx = batchStart + batchIdx;
+                try {
+                    const specChanges = await buildSpecChanges(
+                        git,
+                        commit.hash,
+                        commit.fileChanges,
+                        frameworkConfigs,
+                        projectPath,
+                        errors,
+                    );
+
+                    if (specChanges.length === 0) return { slotIdx, entry: null };
+
+                    return {
+                        slotIdx,
+                        entry: {
+                            commit: {
+                                hash: commit.hash,
+                                shortHash: commit.hash.substring(0, 7),
+                                message: commit.message,
+                                author: commit.author,
+                                date: new Date(commit.date).toISOString(),
+                                changes: commit.fileChanges,
+                            },
+                            specs: specChanges,
+                        } as CommitHistory,
+                    };
+                } catch (error) {
+                    errors.push({
+                        commit: commit.hash,
+                        file: 'unknown',
+                        reason: error instanceof Error ? error.message : 'Unknown error',
+                        partial: true,
+                    });
+                    return { slotIdx, entry: null };
+                }
+            }),
+        );
+
+        for (const { slotIdx, entry } of batchResults) {
+            slots[slotIdx] = entry;
+        }
+
+        const prevProcessed = processed;
+        processed += batch.length;
+
+        // Report progress when we cross a reporting threshold or finish
+        if (
+            Math.floor(prevProcessed / reportEvery) !== Math.floor(processed / reportEvery) ||
+            processed >= commits.length
+        ) {
+            console.log(`[sync]   → ${processed}/${commits.length} commits processed`);
         }
     }
+
+    const entries = slots.filter((e): e is CommitHistory => e !== null);
 
     return { entries, errors, warnings };
 }
 
 // ─── File change detection ────────────────────────────────────────────────────
 
-async function getCommitFileChanges(
+interface CommitWithFiles {
+    hash: string;
+    author: string;
+    date: string;
+    message: string;
+    fileChanges: GitFileChange[];
+}
+
+/**
+ * Fetches all commits in the given log range together with their per-file change
+ * status in a single git process call, replacing the previous N+1 diff-tree pattern.
+ */
+async function fetchCommitsWithFiles(
     git: ReturnType<typeof simpleGit>,
-    hash: string,
-    testDir?: string,
-): Promise<GitFileChange[]> {
-    try {
-        // Use diff-tree to get the file status for this commit
-        const raw = await git.raw([
-            'diff-tree',
-            '--no-commit-id',
-            '-r',
-            '--name-status',
-            '-M', // detect renames
-            hash,
-        ]);
+    logArgs: string[],
+    testDirs: string[],
+): Promise<CommitWithFiles[]> {
+    // Use a unique sentinel that won't appear in commit messages or file paths.
+    // Avoid NUL bytes — Node rejects them in child process arguments.
+    const COMMIT_SEP = '<<<COMMIT>>>';
+    const FIELD_SEP = '<<<F>>>';
 
-        const changes: GitFileChange[] = [];
+    const raw = await git.raw([
+        'log',
+        `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,
+        '--name-status',
+        '--diff-filter=ADRM',
+        '-M',
+        ...logArgs,
+    ]);
 
-        for (const line of raw.trim().split('\n')) {
-            if (!line) continue;
+    if (!raw.trim()) return [];
+
+    const result: CommitWithFiles[] = [];
+    const blocks = raw.split(COMMIT_SEP).filter(Boolean);
+
+    for (const block of blocks) {
+        const lines = block.split('\n');
+        const [hash, author, date, ...msgParts] = lines[0].split(FIELD_SEP);
+        const message = msgParts.join(FIELD_SEP);
+
+        if (!hash?.trim()) continue;
+
+        const fileChanges: GitFileChange[] = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i];
+            if (!line || !line.trim()) continue;
+
             const parts = line.split('\t');
             const status = parts[0];
 
             if (status.startsWith('R')) {
-                // Rename: R<score>\t<old>\t<new>
                 const oldPath = parts[1];
                 const newPath = parts[2];
-                // If testDir is specified, filter by directory; otherwise include all renames
-                if (!testDir || isInTestDir(newPath, testDir) || isInTestDir(oldPath, testDir)) {
-                    changes.push({ path: newPath, oldPath, status: 'renamed' });
+                if (!newPath) continue;
+                if (!testDirs.length || isInAnyTestDir(newPath, testDirs) || isInAnyTestDir(oldPath, testDirs)) {
+                    fileChanges.push({ path: newPath.trim(), oldPath: oldPath.trim(), status: 'renamed' });
                 }
             } else {
                 const filePath = parts[1];
-                // If testDir is specified, filter by directory; otherwise include all files
-                if (testDir && !isInTestDir(filePath, testDir)) continue;
-
+                if (!filePath) continue;
+                if (testDirs.length && !isInAnyTestDir(filePath.trim(), testDirs)) continue;
                 const mapped = mapGitStatus(status);
-                if (mapped) changes.push({ path: filePath, status: mapped });
+                if (mapped) fileChanges.push({ path: filePath.trim(), status: mapped });
             }
         }
 
-        return changes;
-    } catch {
-        return [];
+        // Skip commits with no relevant file changes (e.g. only type/permission changes)
+        if (fileChanges.length > 0) {
+            result.push({
+                hash: hash.trim(),
+                author: author ?? '',
+                date: date ?? '',
+                message: message ?? '',
+                fileChanges,
+            });
+        }
     }
+
+    return result.reverse(); // oldest first for timeline ordering
 }
 
 function isInTestDir(filePath: string, testDir: string): boolean {
-    // Normalise to forward slashes and ensure testDir ends with / to avoid
-    // prefix false positives (e.g. "test" matching "testing/foo.spec.ts")
+    // '.' means project root — all files belong to it
+    if (testDir === '.') return true;
+    // Normalise and ensure testDir ends with / to avoid prefix false positives
     const normalised = testDir.endsWith('/') ? testDir : testDir + '/';
     return filePath.startsWith(normalised) || path.dirname(filePath) + '/' === normalised;
+}
+
+function isInAnyTestDir(filePath: string, testDirs: string[]): boolean {
+    return testDirs.some((dir) => isInTestDir(filePath, dir));
+}
+
+/**
+ * Resolves the framework for a given file path by finding the most specific
+ * (longest) matching testDir across all framework configs.
+ * Returns null if the file does not belong to any configured test directory.
+ */
+export function resolveFrameworkForFile(filePath: string, frameworkConfigs: DetectionResult[]): Framework | null {
+    let bestMatch: { framework: Framework; testDirLength: number } | null = null;
+
+    for (const { framework, testDir } of frameworkConfigs) {
+        if (framework === 'unknown') continue;
+        const normalised = testDir.replace(/^\.\//, '');
+        if (isInTestDir(filePath, normalised)) {
+            if (!bestMatch || normalised.length > bestMatch.testDirLength) {
+                bestMatch = { framework, testDirLength: normalised.length };
+            }
+        }
+    }
+
+    return bestMatch?.framework ?? null;
 }
 
 function mapGitStatus(status: string): GitFileChange['status'] | null {
@@ -235,26 +334,26 @@ async function buildSpecChanges(
     git: ReturnType<typeof simpleGit>,
     hash: string,
     fileChanges: GitFileChange[],
-    framework: Framework,
+    frameworkConfigs: DetectionResult[],
     projectPath: string,
     errors: HistoryError[],
-    testDir?: string,
 ): Promise<SpecHistoryEntry[]> {
     const entries: SpecHistoryEntry[] = [];
 
     for (const change of fileChanges) {
-        if (!isSpecFile(change.path)) continue;
+        // Resolve which framework owns this file based on its path
+        const framework = resolveFrameworkForFile(change.path, frameworkConfigs);
+        if (!framework || !isSpecFile(change.path, framework)) continue;
 
-        // Normalize cross-testDir renames: if a spec file moves INTO the tracked
-        // test directory, treat it as a brand-new addition (all tests are added).
-        // If it moves OUT of the test directory, treat it as a deletion.
+        // Normalize cross-testDir renames: if a spec file moves between tracked
+        // directories (or into/out of a tracked directory), treat it as an add/delete.
         let effectiveChange = change;
-        if (change.status === 'renamed' && change.oldPath && testDir) {
-            const oldInTestDir = isInTestDir(change.oldPath, testDir);
-            const newInTestDir = isInTestDir(change.path, testDir);
-            if (!oldInTestDir && newInTestDir) {
+        if (change.status === 'renamed' && change.oldPath) {
+            const oldFramework = resolveFrameworkForFile(change.oldPath, frameworkConfigs);
+            const newFramework = resolveFrameworkForFile(change.path, frameworkConfigs);
+            if (!oldFramework && newFramework) {
                 effectiveChange = { path: change.path, status: 'added' };
-            } else if (oldInTestDir && !newInTestDir) {
+            } else if (oldFramework && !newFramework) {
                 effectiveChange = { path: change.oldPath, status: 'deleted' };
             }
         }
@@ -269,7 +368,6 @@ async function buildSpecChanges(
                 reason: error instanceof Error ? error.message : 'Unknown error',
                 partial: true,
             });
-            // Continue processing other files even if one fails
         }
     }
 
@@ -351,8 +449,24 @@ async function getFileAtCommit(git: ReturnType<typeof simpleGit>, ref: string, f
     return git.show([`${ref}:${filePath}`]);
 }
 
-function isSpecFile(filePath: string): boolean {
-    return /\.(spec|test)\.[jt]s$/.test(filePath);
+/**
+ * Returns true if the file looks like a spec file for the given framework.
+ * Falls back to a generic extension check when no framework is provided.
+ */
+function isSpecFile(filePath: string, framework?: Framework): boolean {
+    switch (framework) {
+        case 'playwright':
+            return /\.spec\.[jt]s(x?)$/.test(filePath);
+        case 'cypress':
+            return /\.cy\.[jt]s$|\.spec\.[jt]s$/.test(filePath);
+        case 'vitest':
+            return /\.(spec|test)\.[jt]sx?$/.test(filePath);
+        case 'testng':
+        case 'junit':
+            return /(Test|Tests|TestCase)\.java$/.test(filePath);
+        default:
+            return /\.(spec|test)\.[jt]s$/.test(filePath);
+    }
 }
 
 /**
