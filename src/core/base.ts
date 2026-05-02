@@ -4,8 +4,6 @@
  * All framework-specific parsers implement this interface.
  * This defines the contract for detecting and parsing test specifications
  * across different test frameworks.
- *
- * See: docs/FRAMEWORK_ARCHITECTURE.md
  */
 
 import { SpecFile } from '../types';
