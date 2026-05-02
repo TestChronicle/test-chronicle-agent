@@ -1,5 +1,11 @@
 import { DashboardSyncConfig } from './types';
 /**
+ * Validates that the API key and project ID are correct by hitting the config
+ * endpoint early. Throws a descriptive error on auth failure or unknown project
+ * so the sync fails fast before doing any expensive local work.
+ */
+export declare function validateProjectAccess(dashboardUrl: string, apiToken: string, projectId: string): Promise<void>;
+/**
  * Fetch the project-level sync configuration from the dashboard.
  * Returns null on network error or non-OK response so the caller can
  * fall back to auto-detection gracefully.
