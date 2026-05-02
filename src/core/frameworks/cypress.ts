@@ -2,6 +2,7 @@ import path from 'path';
 import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
 import { extractParameterizedDataFromForEach, generateParameterizedTestName } from './parameterized';
+import { IFrameworkParser } from '../base';
 
 const DESCRIBE_RE = /describe\s*\(\s*(['"`])([\s\S]*?)\1/g;
 
@@ -81,3 +82,16 @@ export function extractTestNames(content: string): string[] {
 
     return names;
 }
+
+export const cypressParser: IFrameworkParser = {
+    parseFile: parseCypressSpec,
+    extractTestNames,
+    filePatterns: ['**/*.cy.ts', '**/*.cy.js', '**/*.spec.ts', '**/*.spec.js'],
+    supportedFeatures: {
+        tags: false,
+        describes: true,
+        parameterized: true,
+        lineNumbers: true,
+        asyncTests: true,
+    },
+};

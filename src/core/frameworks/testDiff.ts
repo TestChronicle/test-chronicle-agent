@@ -3,6 +3,9 @@
  * Uses Levenshtein distance for 85%+ accuracy on renames.
  */
 
+/** Minimum similarity score (0–1) for two test names to be considered a rename. */
+export const RENAME_SIMILARITY_THRESHOLD = 0.85;
+
 /**
  * Calculates the Levenshtein distance between two strings.
  * This is the minimum number of single-character edits (insertions, deletions, substitutions)
@@ -75,7 +78,7 @@ export function calculateSimilarity(a: string, b: string): number {
  */
 export function isSameTest(a: string, b: string): boolean {
     const similarity = calculateSimilarity(a, b);
-    return similarity > 0.85;
+    return similarity > RENAME_SIMILARITY_THRESHOLD;
 }
 
 /**
@@ -91,7 +94,7 @@ export function findBestMatch(
     for (let i = 0; i < addedTests.length; i++) {
         const similarity = calculateSimilarity(removedTest, addedTests[i]);
 
-        if (similarity > 0.85 && (!bestMatch || similarity > bestMatch.similarity)) {
+        if (similarity > RENAME_SIMILARITY_THRESHOLD && (!bestMatch || similarity > bestMatch.similarity)) {
             bestMatch = {
                 index: i,
                 similarity,

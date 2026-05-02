@@ -1,6 +1,7 @@
 import path from 'path';
 import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt } from './common';
+import { IFrameworkParser } from '../base';
 
 const TEST_METHOD_RE = /@Test\s*(?:\([^)]*\))?\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 
@@ -122,3 +123,16 @@ function extractTestNGTags(annotationText: string): Array<{ name: string }> {
 
     return tags;
 }
+
+export const testngParser: IFrameworkParser = {
+    parseFile: parseTestNGSpec,
+    extractTestNames,
+    filePatterns: ['**/*Test.java', '**/*Tests.java', '**/*TestCase.java'],
+    supportedFeatures: {
+        tags: true,
+        describes: false,
+        parameterized: false,
+        lineNumbers: true,
+        asyncTests: false,
+    },
+};

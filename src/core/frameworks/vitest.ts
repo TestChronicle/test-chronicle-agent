@@ -1,6 +1,7 @@
 import path from 'path';
 import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
+import { IFrameworkParser } from '../base';
 
 const DESCRIBE_RE = /describe\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 
@@ -66,3 +67,16 @@ export function extractTestNames(content: string): string[] {
 
     return names;
 }
+
+export const vitestParser: IFrameworkParser = {
+    parseFile: parseVitestSpec,
+    extractTestNames,
+    filePatterns: ['**/*.test.ts', '**/*.test.js', '**/*.spec.ts', '**/*.spec.js'],
+    supportedFeatures: {
+        tags: true,
+        describes: true,
+        parameterized: false,
+        lineNumbers: true,
+        asyncTests: true,
+    },
+};

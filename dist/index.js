@@ -1219,14 +1219,17 @@ var src_exports = {};
 __export(src_exports, {
   Core: () => core_exports,
   Git: () => git_exports,
+  RENAME_SIMILARITY_THRESHOLD: () => RENAME_SIMILARITY_THRESHOLD,
   buildHistory: () => buildHistory,
   cli: () => main,
   detectFrameworks: () => detectFrameworks,
   extractTestNamesFromContent: () => extractTestNamesFromContent,
   extractTestsWithLinesFromContent: () => extractTestsWithLinesFromContent,
+  findBestMatch: () => findBestMatch,
   findSpecFiles: () => findSpecFiles,
   getLatestCommitHash: () => getLatestCommitHash,
   getRepoUrl: () => getRepoUrl,
+  isSameTest: () => isSameTest,
   normaliseRemoteUrl: () => normaliseRemoteUrl,
   parseAllSpecs: () => parseAllSpecs,
   parseSpecFile: () => parseSpecFile,
@@ -1248,10 +1251,13 @@ var import_dotenv = __toESM(require_main());
 // src/core/index.ts
 var core_exports = {};
 __export(core_exports, {
+  RENAME_SIMILARITY_THRESHOLD: () => RENAME_SIMILARITY_THRESHOLD,
   detectFrameworks: () => detectFrameworks,
   extractTestNamesFromContent: () => extractTestNamesFromContent,
   extractTestsWithLinesFromContent: () => extractTestsWithLinesFromContent,
+  findBestMatch: () => findBestMatch,
   findSpecFiles: () => findSpecFiles,
+  isSameTest: () => isSameTest,
   parseAllSpecs: () => parseAllSpecs,
   parseSpecFile: () => parseSpecFile
 });
@@ -4299,17 +4305,7 @@ function detectFrameworks(projectPath) {
       if ((0, import_fs2.existsSync)(fullPath)) {
         if (seen.has(framework)) break;
         seen.add(framework);
-        let testDir;
-        if (framework === "playwright") {
-          testDir = extractPlaywrightTestDir(fullPath, projectPath);
-        } else if (framework === "cypress") {
-          testDir = extractCypressTestDir(fullPath, projectPath);
-        } else if (framework === "vitest") {
-          testDir = extractVitestTestDir(fullPath, projectPath);
-        } else {
-          testDir = guessTestDir(projectPath);
-        }
-        results.push({ framework, testDir, confidence: "high" });
+        results.push({ framework, testDir: extractTestDir(framework, fullPath, projectPath), confidence: "high" });
         break;
       }
     }
@@ -4329,15 +4325,7 @@ function detectFrameworks(projectPath) {
     if (matches.length > 0) {
       seen.add(framework);
       const configPath = matches[0];
-      let testDir;
-      if (framework === "playwright") {
-        testDir = extractPlaywrightTestDir(configPath, projectPath);
-      } else if (framework === "cypress") {
-        testDir = extractCypressTestDir(configPath, projectPath);
-      } else {
-        testDir = guessTestDir(projectPath);
-      }
-      results.push({ framework, testDir, confidence: "high" });
+      results.push({ framework, testDir: extractTestDir(framework, configPath, projectPath), confidence: "high" });
     }
   }
   const pkgResults = detectAllFromPackageJson(projectPath, seen);
@@ -4346,6 +4334,18 @@ function detectFrameworks(projectPath) {
     return [{ framework: "unknown", testDir: "./tests", confidence: "low" }];
   }
   return results;
+}
+function extractTestDir(framework, configPath, projectPath) {
+  switch (framework) {
+    case "playwright":
+      return extractPlaywrightTestDir(configPath, projectPath);
+    case "cypress":
+      return extractCypressTestDir(configPath, projectPath);
+    case "vitest":
+      return extractVitestTestDir(configPath, projectPath);
+    default:
+      return guessTestDir(projectPath);
+  }
 }
 function extractPlaywrightTestDir(configPath, projectPath) {
   try {
@@ -4490,6 +4490,7 @@ function resolveParentDescribe(blocks, index) {
 var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 var INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\1|\[([^\]]+)\])/g;
+var TAG_SEARCH_WINDOW_CHARS = 300;
 function parsePlaywrightSpec(filePath, content, projectRoot) {
   const relativePath = import_path2.default.relative(projectRoot, filePath).replace(/\\/g, "/");
   const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
@@ -4535,7 +4536,7 @@ function extractTestNames(content) {
   return names;
 }
 function extractInlineTags(content, testIndex) {
-  const window2 = content.substring(testIndex, testIndex + 300);
+  const window2 = content.substring(testIndex, testIndex + TAG_SEARCH_WINDOW_CHARS);
   const tags = [];
   let match;
   INLINE_TAG_RE.lastIndex = 0;
@@ -4549,6 +4550,18 @@ function extractInlineTags(content, testIndex) {
   }
   return tags;
 }
+var playwrightParser = {
+  parseFile: parsePlaywrightSpec,
+  extractTestNames,
+  filePatterns: ["**/*.spec.ts", "**/*.spec.js", "**/*.spec.mjs"],
+  supportedFeatures: {
+    tags: true,
+    describes: true,
+    parameterized: false,
+    lineNumbers: true,
+    asyncTests: true
+  }
+};
 
 // src/core/frameworks/cypress.ts
 init_cjs_shims();
@@ -4682,6 +4695,18 @@ function extractTestNames2(content) {
   }
   return names;
 }
+var cypressParser = {
+  parseFile: parseCypressSpec,
+  extractTestNames: extractTestNames2,
+  filePatterns: ["**/*.cy.ts", "**/*.cy.js", "**/*.spec.ts", "**/*.spec.js"],
+  supportedFeatures: {
+    tags: false,
+    describes: true,
+    parameterized: true,
+    lineNumbers: true,
+    asyncTests: true
+  }
+};
 
 // src/core/frameworks/vitest.ts
 init_cjs_shims();
@@ -4733,6 +4758,18 @@ function extractTestNames3(content) {
   }
   return names;
 }
+var vitestParser = {
+  parseFile: parseVitestSpec,
+  extractTestNames: extractTestNames3,
+  filePatterns: ["**/*.test.ts", "**/*.test.js", "**/*.spec.ts", "**/*.spec.js"],
+  supportedFeatures: {
+    tags: true,
+    describes: true,
+    parameterized: false,
+    lineNumbers: true,
+    asyncTests: true
+  }
+};
 
 // src/core/frameworks/testng.ts
 init_cjs_shims();
@@ -4813,6 +4850,18 @@ function extractTestNGTags(annotationText) {
   }
   return tags;
 }
+var testngParser = {
+  parseFile: parseTestNGSpec,
+  extractTestNames: extractTestNames4,
+  filePatterns: ["**/*Test.java", "**/*Tests.java", "**/*TestCase.java"],
+  supportedFeatures: {
+    tags: true,
+    describes: false,
+    parameterized: false,
+    lineNumbers: true,
+    asyncTests: false
+  }
+};
 
 // src/core/frameworks/junit.ts
 init_cjs_shims();
@@ -4891,29 +4940,35 @@ function extractJUnitTags(annotationBlock) {
   }
   return tags;
 }
+var junitParser = {
+  parseFile: parseJUnitSpec,
+  extractTestNames: extractTestNames5,
+  filePatterns: ["**/*Test.java", "**/*Tests.java", "**/*TestCase.java"],
+  supportedFeatures: {
+    tags: true,
+    describes: false,
+    parameterized: false,
+    lineNumbers: true,
+    asyncTests: false
+  }
+};
 
 // src/core/parser.ts
+var PARSERS = {
+  playwright: playwrightParser,
+  cypress: cypressParser,
+  vitest: vitestParser,
+  testng: testngParser,
+  junit: junitParser
+};
+function getParser(framework) {
+  if (framework === "unknown") return null;
+  return PARSERS[framework];
+}
 function parseSpecFile(filePath, content, projectRoot, framework) {
-  let spec;
-  switch (framework) {
-    case "playwright":
-      spec = parsePlaywrightSpec(filePath, content, projectRoot);
-      break;
-    case "cypress":
-      spec = parseCypressSpec(filePath, content, projectRoot);
-      break;
-    case "vitest":
-      spec = parseVitestSpec(filePath, content, projectRoot);
-      break;
-    case "testng":
-      spec = parseTestNGSpec(filePath, content, projectRoot);
-      break;
-    case "junit":
-      spec = parseJUnitSpec(filePath, content, projectRoot);
-      break;
-    default:
-      throw new Error(`Framework '${framework}' not supported`);
-  }
+  const parser4 = getParser(framework);
+  if (!parser4) throw new Error(`Cannot parse spec for unresolved framework 'unknown'`);
+  const spec = parser4.parseFile(filePath, content, projectRoot);
   try {
     spec.lastModified = (0, import_fs3.statSync)(filePath).mtime.toISOString();
   } catch {
@@ -4921,70 +4976,25 @@ function parseSpecFile(filePath, content, projectRoot, framework) {
   return spec;
 }
 function extractTestNamesFromContent(content, framework) {
-  switch (framework) {
-    case "playwright":
-      return extractTestNames(content);
-    case "cypress":
-      return extractTestNames2(content);
-    case "vitest":
-      return extractTestNames3(content);
-    case "testng":
-      return extractTestNames4(content);
-    case "junit":
-      return extractTestNames5(content);
-    default:
-      return [];
-  }
+  return getParser(framework)?.extractTestNames(content) ?? [];
 }
 function extractTestsWithLinesFromContent(content, framework) {
   const dummyPath = "/__git_history__/test.spec.ts";
   const dummyRoot = "/__git_history__";
-  let spec;
-  switch (framework) {
-    case "playwright":
-      spec = parsePlaywrightSpec(dummyPath, content, dummyRoot);
-      break;
-    case "cypress":
-      spec = parseCypressSpec(dummyPath, content, dummyRoot);
-      break;
-    case "vitest":
-      spec = parseVitestSpec(dummyPath, content, dummyRoot);
-      break;
-    case "testng":
-      spec = parseTestNGSpec(dummyPath, content, dummyRoot);
-      break;
-    case "junit":
-      spec = parseJUnitSpec(dummyPath, content, dummyRoot);
-      break;
-    default:
-      return [];
-  }
+  const parser4 = getParser(framework);
+  if (!parser4) return [];
+  const spec = parser4.parseFile(dummyPath, content, dummyRoot);
   return spec.tests.map((t) => ({ name: t.fullName, line: t.line }));
 }
 function findSpecFiles(projectRoot, testDir, framework) {
-  const patterns = getTestFilePatterns(framework);
+  const parser4 = getParser(framework);
+  if (!parser4) return [];
   const baseDir = import_path7.default.resolve(projectRoot, testDir);
-  return ts(patterns, {
+  return ts(parser4.filePatterns, {
     cwd: baseDir,
     absolute: true,
     ignore: ["**/node_modules/**"]
   });
-}
-function getTestFilePatterns(framework) {
-  switch (framework) {
-    case "playwright":
-      return ["**/*.spec.ts", "**/*.spec.js", "**/*.spec.mjs"];
-    case "cypress":
-      return ["**/*.cy.ts", "**/*.cy.js", "**/*.spec.ts", "**/*.spec.js"];
-    case "vitest":
-      return ["**/*.test.ts", "**/*.test.js", "**/*.spec.ts", "**/*.spec.js"];
-    case "testng":
-      return ["**/*Test.java", "**/*Tests.java", "**/*TestCase.java"];
-    case "junit":
-      return ["**/*Test.java", "**/*Tests.java", "**/*TestCase.java"];
-    default:
-      return ["**/*.spec.ts", "**/*.spec.js", "**/*.test.ts", "**/*.test.js"];
-  }
 }
 function parseAllSpecs(projectRoot, frameworkConfigs) {
   const seen = /* @__PURE__ */ new Set();
@@ -5002,6 +5012,59 @@ function parseAllSpecs(projectRoot, frameworkConfigs) {
     }
   }
   return allSpecs;
+}
+
+// src/core/frameworks/testDiff.ts
+init_cjs_shims();
+var RENAME_SIMILARITY_THRESHOLD = 0.85;
+function levenshteinDistance(a, b) {
+  const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+  for (let j2 = 0; j2 <= b.length; j2++) matrix[j2][0] = j2;
+  for (let j2 = 1; j2 <= b.length; j2++) {
+    for (let i = 1; i <= a.length; i++) {
+      const cost = a[i - 1] === b[j2 - 1] ? 0 : 1;
+      matrix[j2][i] = Math.min(
+        matrix[j2][i - 1] + 1,
+        // deletion
+        matrix[j2 - 1][i] + 1,
+        // insertion
+        matrix[j2 - 1][i - 1] + cost
+        // substitution
+      );
+    }
+  }
+  return matrix[b.length][a.length];
+}
+function normalizeTestName(name) {
+  return name.toLowerCase().replace(/[_\-\s]+/g, " ").trim();
+}
+function calculateSimilarity(a, b) {
+  const normA = normalizeTestName(a);
+  const normB = normalizeTestName(b);
+  if (normA === normB) return 1;
+  const distance = levenshteinDistance(normA, normB);
+  const maxLength = Math.max(normA.length, normB.length);
+  if (maxLength === 0) return 1;
+  return 1 - distance / maxLength;
+}
+function isSameTest(a, b) {
+  const similarity = calculateSimilarity(a, b);
+  return similarity > RENAME_SIMILARITY_THRESHOLD;
+}
+function findBestMatch(removedTest, addedTests) {
+  let bestMatch = null;
+  for (let i = 0; i < addedTests.length; i++) {
+    const similarity = calculateSimilarity(removedTest, addedTests[i]);
+    if (similarity > RENAME_SIMILARITY_THRESHOLD && (!bestMatch || similarity > bestMatch.similarity)) {
+      bestMatch = {
+        index: i,
+        similarity,
+        name: addedTests[i]
+      };
+    }
+  }
+  return bestMatch;
 }
 
 // src/git/index.ts
@@ -9584,46 +9647,6 @@ var esm_default = gitInstanceFactory;
 
 // src/git/history.ts
 var import_path8 = __toESM(require("path"));
-
-// src/core/frameworks/testDiff.ts
-init_cjs_shims();
-function levenshteinDistance(a, b) {
-  const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
-  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
-  for (let j2 = 0; j2 <= b.length; j2++) matrix[j2][0] = j2;
-  for (let j2 = 1; j2 <= b.length; j2++) {
-    for (let i = 1; i <= a.length; i++) {
-      const cost = a[i - 1] === b[j2 - 1] ? 0 : 1;
-      matrix[j2][i] = Math.min(
-        matrix[j2][i - 1] + 1,
-        // deletion
-        matrix[j2 - 1][i] + 1,
-        // insertion
-        matrix[j2 - 1][i - 1] + cost
-        // substitution
-      );
-    }
-  }
-  return matrix[b.length][a.length];
-}
-function normalizeTestName(name) {
-  return name.toLowerCase().replace(/[_\-\s]+/g, " ").trim();
-}
-function calculateSimilarity(a, b) {
-  const normA = normalizeTestName(a);
-  const normB = normalizeTestName(b);
-  if (normA === normB) return 1;
-  const distance = levenshteinDistance(normA, normB);
-  const maxLength = Math.max(normA.length, normB.length);
-  if (maxLength === 0) return 1;
-  return 1 - distance / maxLength;
-}
-function isSameTest(a, b) {
-  const similarity = calculateSimilarity(a, b);
-  return similarity > 0.85;
-}
-
-// src/git/history.ts
 async function getLatestCommitHash(projectPath) {
   const git = esm_default(projectPath);
   try {
@@ -9742,9 +9765,9 @@ async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHist
   const entries = slots.filter((e) => e !== null);
   return { entries, errors, warnings };
 }
+var COMMIT_SEP = "<<<COMMIT>>>";
+var FIELD_SEP = "<<<F>>>";
 async function fetchCommitsWithFiles(git, logArgs, testDirs) {
-  const COMMIT_SEP = "<<<COMMIT>>>";
-  const FIELD_SEP = "<<<F>>>";
   const raw = await git.raw([
     "log",
     `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,
@@ -9984,14 +10007,18 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
+function makeAuthHeaders(apiToken) {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiToken}`
+  };
+}
 async function fetchProjectConfig(dashboardUrl, apiToken, projectId) {
   const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${apiToken}`
-      }
+      headers: makeAuthHeaders(apiToken)
     });
     if (!response.ok) return null;
     return await response.json();
@@ -10001,14 +10028,10 @@ async function fetchProjectConfig(dashboardUrl, apiToken, projectId) {
 }
 async function getSyncMarker(dashboardUrl, apiToken, projectId) {
   const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${apiToken}`
-  };
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers
+      headers: makeAuthHeaders(apiToken)
     });
     if (!response.ok) {
       if (response.status === 404) return null;
@@ -10023,13 +10046,9 @@ async function getSyncMarker(dashboardUrl, apiToken, projectId) {
 }
 async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
   const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${apiToken}`
-  };
   const response = await fetch(url, {
     method: "POST",
-    headers,
+    headers: makeAuthHeaders(apiToken),
     body: JSON.stringify({ commitHash })
   });
   if (!response.ok) {
@@ -10041,13 +10060,9 @@ async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
 }
 async function syncToDashboard(dashboardUrl, apiToken, payload) {
   const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${apiToken}`
-  };
   const response = await fetch(url, {
     method: "POST",
-    headers,
+    headers: makeAuthHeaders(apiToken),
     body: JSON.stringify(payload)
   });
   if (!response.ok) {
@@ -10065,6 +10080,90 @@ function getChangeKey(change, specPath) {
   const path10 = specPath ?? "";
   const oldName = change.oldName ?? "";
   return `${path10}:${change.type}:${change.name}:${oldName}`;
+}
+function applyFrameworkOverrides(frameworkMap, overrides) {
+  for (const override of overrides) {
+    if (!override.dirs?.length) continue;
+    const existing = frameworkMap.get(override.framework);
+    if (existing) {
+      existing.testDir = override.dirs[0];
+      console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
+    } else {
+      frameworkMap.set(override.framework, {
+        framework: override.framework,
+        testDir: override.dirs[0],
+        confidence: "high"
+      });
+      console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
+    }
+  }
+}
+function applyTestDirExcludes(frameworkMap, excludes) {
+  for (const excludeDir of excludes) {
+    const normalised = excludeDir.replace(/^\.\//, "");
+    for (const [fw, config2] of frameworkMap) {
+      const configDir = config2.testDir.replace(/^\.\//, "");
+      if (configDir.startsWith(normalised)) {
+        frameworkMap.delete(fw);
+        console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
+      }
+    }
+  }
+}
+function transformSpecsForPayload(specs) {
+  return specs.map((spec) => ({
+    filePath: spec.path,
+    framework: spec.framework,
+    tests: spec.tests.map((test) => ({
+      name: test.fullName,
+      lineNumber: test.line,
+      tags: test.tags.map((tag) => tag.name)
+    }))
+  }));
+}
+function deduplicateCommitChanges(entry) {
+  const allChanges = [];
+  for (const spec of entry.specs) {
+    for (const change of spec.changes) {
+      allChanges.push({
+        specPath: spec.specPath,
+        testName: change.name,
+        type: change.type,
+        oldName: change.oldName
+      });
+    }
+  }
+  const seenKeys = /* @__PURE__ */ new Set();
+  const uniqueChanges = allChanges.filter((change) => {
+    const key = getChangeKey(
+      { type: change.type, name: change.testName, oldName: change.oldName },
+      change.specPath
+    );
+    if (seenKeys.has(key)) return false;
+    seenKeys.add(key);
+    return true;
+  });
+  const removedByName = /* @__PURE__ */ new Map();
+  uniqueChanges.forEach((c, i) => {
+    if (c.type === "deleted") {
+      const existing = removedByName.get(c.testName) ?? [];
+      existing.push(i);
+      removedByName.set(c.testName, existing);
+    }
+  });
+  const suppressedRemoves = /* @__PURE__ */ new Set();
+  uniqueChanges.forEach((c) => {
+    if (c.type === "added") {
+      const removeIndices = removedByName.get(c.testName);
+      if (removeIndices) {
+        const crossSpecIdx = removeIndices.find(
+          (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath
+        );
+        if (crossSpecIdx !== void 0) suppressedRemoves.add(crossSpecIdx);
+      }
+    }
+  });
+  return uniqueChanges.filter((_2, i) => !suppressedRemoves.has(i));
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
@@ -10090,35 +10189,8 @@ async function syncProject(options) {
   console.log("[sync] Detecting frameworks...");
   const detected = detectFrameworks(process.cwd());
   const frameworkMap = new Map(detected.map((d) => [d.framework, d]));
-  if (projectConfig?.frameworkOverrides?.length) {
-    for (const override of projectConfig.frameworkOverrides) {
-      if (!override.dirs?.length) continue;
-      const existing = frameworkMap.get(override.framework);
-      if (existing) {
-        existing.testDir = override.dirs[0];
-        console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
-      } else {
-        frameworkMap.set(override.framework, {
-          framework: override.framework,
-          testDir: override.dirs[0],
-          confidence: "high"
-        });
-        console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
-      }
-    }
-  }
-  if (projectConfig?.testDirExcludes?.length) {
-    for (const excludeDir of projectConfig.testDirExcludes) {
-      const normalised = excludeDir.replace(/^\.\//, "");
-      for (const [fw, config2] of frameworkMap) {
-        const configDir = config2.testDir.replace(/^\.\//, "");
-        if (configDir.startsWith(normalised)) {
-          frameworkMap.delete(fw);
-          console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
-        }
-      }
-    }
-  }
+  applyFrameworkOverrides(frameworkMap, projectConfig?.frameworkOverrides ?? []);
+  applyTestDirExcludes(frameworkMap, projectConfig?.testDirExcludes ?? []);
   let frameworkConfigs = [...frameworkMap.values()];
   if (frameworkConfigs.length === 0) {
     const primary = projectConfig?.primaryFramework;
@@ -10198,64 +10270,9 @@ async function syncProject(options) {
   console.log(`[sync] Specs: ${specs.length}`);
   console.log(`[sync] Tests: ${totalTests}`);
   console.log("[sync] Syncing to dashboard...");
-  const transformedSpecs = specs.map((spec) => ({
-    filePath: spec.path,
-    framework: spec.framework,
-    tests: spec.tests.map((test) => ({
-      name: test.fullName,
-      lineNumber: test.line,
-      tags: test.tags.map((tag) => tag.name)
-    }))
-  }));
+  const transformedSpecs = transformSpecsForPayload(specs);
   const transformedHistory = history.entries.map((entry) => {
-    const allChanges = [];
-    for (const spec of entry.specs) {
-      for (const change of spec.changes) {
-        allChanges.push({
-          specPath: spec.specPath,
-          testName: change.name,
-          type: change.type,
-          oldName: change.oldName
-        });
-      }
-    }
-    const seenKeys = /* @__PURE__ */ new Set();
-    const uniqueChanges = allChanges.filter((change) => {
-      const key = getChangeKey(
-        {
-          type: change.type,
-          name: change.testName,
-          oldName: change.oldName
-        },
-        change.specPath
-      );
-      if (seenKeys.has(key)) return false;
-      seenKeys.add(key);
-      return true;
-    });
-    const removedByName = /* @__PURE__ */ new Map();
-    uniqueChanges.forEach((c, i) => {
-      if (c.type === "deleted") {
-        const existing = removedByName.get(c.testName) ?? [];
-        existing.push(i);
-        removedByName.set(c.testName, existing);
-      }
-    });
-    const suppressedRemoves = /* @__PURE__ */ new Set();
-    uniqueChanges.forEach((c) => {
-      if (c.type === "added") {
-        const removeIndices = removedByName.get(c.testName);
-        if (removeIndices) {
-          const crossSpecIdx = removeIndices.find(
-            (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath
-          );
-          if (crossSpecIdx !== void 0) {
-            suppressedRemoves.add(crossSpecIdx);
-          }
-        }
-      }
-    });
-    const deduplicatedChanges = uniqueChanges.filter((_2, i) => !suppressedRemoves.has(i));
+    const deduplicatedChanges = deduplicateCommitChanges(entry);
     return {
       commitHash: entry.commit.hash,
       commitMessage: entry.commit.message,
@@ -10338,14 +10355,17 @@ init_cjs_shims();
 0 && (module.exports = {
   Core,
   Git,
+  RENAME_SIMILARITY_THRESHOLD,
   buildHistory,
   cli,
   detectFrameworks,
   extractTestNamesFromContent,
   extractTestsWithLinesFromContent,
+  findBestMatch,
   findSpecFiles,
   getLatestCommitHash,
   getRepoUrl,
+  isSameTest,
   normaliseRemoteUrl,
   parseAllSpecs,
   parseSpecFile,
