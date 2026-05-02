@@ -1,6 +1,7 @@
 import path from 'path';
 import { TestCase, TestTag, SpecFile } from '../../types';
 import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
+import { IFrameworkParser } from '../base';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 //
@@ -13,6 +14,9 @@ const TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])(
 
 // Matches: { tag: '@critical' }  or  { tag: ['@critical', '@smoke'] }
 const INLINE_TAG_RE = /\{\s*tag\s*:\s*(?:(['"`])([@\w\-/]+)\1|\[([^\]]+)\])/g;
+
+// How many characters ahead of a test() call to scan for an inline { tag: ... } object.
+const TAG_SEARCH_WINDOW_CHARS = 300;
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
@@ -76,10 +80,10 @@ export function extractTestNames(content: string): string[] {
 
 /**
  * Looks ahead from `testIndex` for an inline `{ tag: ... }` options object.
- * Only scans the next 200 characters to avoid false positives.
+ * Only scans the next TAG_SEARCH_WINDOW_CHARS characters to avoid false positives.
  */
 function extractInlineTags(content: string, testIndex: number): TestTag[] {
-    const window = content.substring(testIndex, testIndex + 300);
+    const window = content.substring(testIndex, testIndex + TAG_SEARCH_WINDOW_CHARS);
     const tags: TestTag[] = [];
 
     let match: RegExpExecArray | null;
@@ -101,3 +105,16 @@ function extractInlineTags(content: string, testIndex: number): TestTag[] {
 
     return tags;
 }
+
+export const playwrightParser: IFrameworkParser = {
+    parseFile: parsePlaywrightSpec,
+    extractTestNames,
+    filePatterns: ['**/*.spec.ts', '**/*.spec.js', '**/*.spec.mjs'],
+    supportedFeatures: {
+        tags: true,
+        describes: true,
+        parameterized: false,
+        lineNumbers: true,
+        asyncTests: true,
+    },
+};

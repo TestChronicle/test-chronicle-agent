@@ -2,6 +2,18 @@
 
 import { DashboardSyncConfig } from './types';
 
+interface SyncMarkerResponse {
+    lastSyncedCommit?: string;
+    commitHash?: string;
+}
+
+function makeAuthHeaders(apiToken: string): Record<string, string> {
+    return {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiToken}`,
+    };
+}
+
 /**
  * Fetch the project-level sync configuration from the dashboard.
  * Returns null on network error or non-OK response so the caller can
@@ -16,9 +28,7 @@ export async function fetchProjectConfig(
     try {
         const response = await fetch(url, {
             method: 'GET',
-            headers: {
-                Authorization: `Bearer ${apiToken}`,
-            },
+            headers: makeAuthHeaders(apiToken),
         });
         if (!response.ok) return null;
         return (await response.json()) as DashboardSyncConfig;
@@ -34,15 +44,10 @@ export async function fetchProjectConfig(
 export async function getSyncMarker(dashboardUrl: string, apiToken: string, projectId: string): Promise<string | null> {
     const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
 
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiToken}`,
-    };
-
     try {
         const response = await fetch(url, {
             method: 'GET',
-            headers,
+            headers: makeAuthHeaders(apiToken),
         });
 
         if (!response.ok) {
@@ -52,7 +57,7 @@ export async function getSyncMarker(dashboardUrl: string, apiToken: string, proj
             throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ''}`);
         }
 
-        const data = (await response.json()) as any;
+        const data = (await response.json()) as SyncMarkerResponse;
         return data?.lastSyncedCommit || data?.commitHash || null;
     } catch (error) {
         // On error, return null and let sync proceed with full history
@@ -71,14 +76,9 @@ export async function saveSyncMarker(
 ): Promise<void> {
     const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
 
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiToken}`,
-    };
-
     const response = await fetch(url, {
         method: 'POST',
-        headers,
+        headers: makeAuthHeaders(apiToken),
         body: JSON.stringify({ commitHash }),
     });
 
@@ -106,14 +106,9 @@ export async function syncToDashboard(
 ): Promise<{ success: true; projectId: string; synced_at: string }> {
     const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();
 
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiToken}`,
-    };
-
     const response = await fetch(url, {
         method: 'POST',
-        headers,
+        headers: makeAuthHeaders(apiToken),
         body: JSON.stringify(payload),
     });
 

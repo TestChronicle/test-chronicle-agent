@@ -5,7 +5,7 @@ import { detectFrameworks } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash, getRepoUrl } from './git';
 import { getSyncMarker, saveSyncMarker, syncToDashboard, fetchProjectConfig } from './sync-client';
-import { DetectionResult, TestChange } from './types';
+import { DetectionResult, TestChange, FrameworkOverride, CommitHistory, SpecFile } from './types';
 
 /** Maximum number of days of history to fetch on a first sync. */
 const MAX_FIRST_SYNC_DAYS = 365;
@@ -25,6 +25,123 @@ function getChangeKey(change: TestChange, specPath?: string): string {
     const path = specPath ?? '';
     const oldName = change.oldName ?? '';
     return `${path}:${change.type}:${change.name}:${oldName}`;
+}
+
+/**
+ * Merges dashboard frameworkOverrides into the framework map.
+ * Existing entries have their testDir updated; new entries are added.
+ */
+function applyFrameworkOverrides(frameworkMap: Map<string, DetectionResult>, overrides: FrameworkOverride[]): void {
+    for (const override of overrides) {
+        if (!override.dirs?.length) continue;
+        const existing = frameworkMap.get(override.framework);
+        if (existing) {
+            existing.testDir = override.dirs[0];
+            console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
+        } else {
+            frameworkMap.set(override.framework, {
+                framework: override.framework,
+                testDir: override.dirs[0],
+                confidence: 'high',
+            });
+            console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
+        }
+    }
+}
+
+/**
+ * Removes framework entries whose testDir starts with an excluded path.
+ */
+function applyTestDirExcludes(frameworkMap: Map<string, DetectionResult>, excludes: string[]): void {
+    for (const excludeDir of excludes) {
+        const normalised = excludeDir.replace(/^\.\//, '');
+        for (const [fw, config] of frameworkMap) {
+            const configDir = config.testDir.replace(/^\.\//, '');
+            if (configDir.startsWith(normalised)) {
+                frameworkMap.delete(fw);
+                console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
+            }
+        }
+    }
+}
+
+/**
+ * Transforms parsed spec files into the shape expected by the dashboard API.
+ */
+function transformSpecsForPayload(specs: SpecFile[]) {
+    return specs.map((spec) => ({
+        filePath: spec.path,
+        framework: spec.framework,
+        tests: spec.tests.map((test) => ({
+            name: test.fullName,
+            lineNumber: test.line,
+            tags: test.tags.map((tag) => tag.name),
+        })),
+    }));
+}
+
+type CommitChange = {
+    specPath: string;
+    testName: string;
+    type: 'added' | 'deleted' | 'renamed' | 'maintenance';
+    oldName?: string;
+};
+
+/**
+ * Deduplicates all test changes for a single commit entry.
+ * Removes exact duplicates and suppresses cross-spec move double-counting.
+ */
+function deduplicateCommitChanges(entry: CommitHistory): CommitChange[] {
+    // Collect all changes from all specs in this commit
+    const allChanges: CommitChange[] = [];
+    for (const spec of entry.specs) {
+        for (const change of spec.changes) {
+            allChanges.push({
+                specPath: spec.specPath,
+                testName: change.name,
+                type: change.type,
+                oldName: change.oldName,
+            });
+        }
+    }
+
+    // Remove exact duplicates using the same composite key
+    const seenKeys = new Set<string>();
+    const uniqueChanges = allChanges.filter((change) => {
+        const key = getChangeKey(
+            { type: change.type, name: change.testName, oldName: change.oldName },
+            change.specPath,
+        );
+        if (seenKeys.has(key)) return false;
+        seenKeys.add(key);
+        return true;
+    });
+
+    // Detect cross-spec moves: if the same test name is both removed from one spec
+    // and added to a different spec in the same commit, it's a move — suppress the
+    // remove entry so the test isn't double-counted as remove + add.
+    const removedByName = new Map<string, number[]>();
+    uniqueChanges.forEach((c, i) => {
+        if (c.type === 'deleted') {
+            const existing = removedByName.get(c.testName) ?? [];
+            existing.push(i);
+            removedByName.set(c.testName, existing);
+        }
+    });
+    const suppressedRemoves = new Set<number>();
+    uniqueChanges.forEach((c) => {
+        if (c.type === 'added') {
+            const removeIndices = removedByName.get(c.testName);
+            if (removeIndices) {
+                const crossSpecIdx = removeIndices.find(
+                    (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath,
+                );
+                if (crossSpecIdx !== undefined) suppressedRemoves.add(crossSpecIdx);
+            }
+        }
+    });
+
+    return uniqueChanges.filter((_, i) => !suppressedRemoves.has(i));
 }
 
 /**
@@ -64,40 +181,9 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     // Build a mutable map of framework → DetectionResult for merging overrides
     const frameworkMap = new Map<string, DetectionResult>(detected.map((d) => [d.framework, d]));
 
-    // Apply dashboard frameworkOverrides:
-    // - If the framework was already detected, update its testDir
-    // - If not detected, add it as a new entry (enables fully dashboard-driven configs)
-    if (projectConfig?.frameworkOverrides?.length) {
-        for (const override of projectConfig.frameworkOverrides) {
-            if (!override.dirs?.length) continue;
-            const existing = frameworkMap.get(override.framework);
-            if (existing) {
-                existing.testDir = override.dirs[0];
-                console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
-            } else {
-                frameworkMap.set(override.framework, {
-                    framework: override.framework,
-                    testDir: override.dirs[0],
-                    confidence: 'high',
-                });
-                console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
-            }
-        }
-    }
-
-    // Apply testDirExcludes: remove any framework config whose testDir starts with an excluded path
-    if (projectConfig?.testDirExcludes?.length) {
-        for (const excludeDir of projectConfig.testDirExcludes) {
-            const normalised = excludeDir.replace(/^\.\//, '');
-            for (const [fw, config] of frameworkMap) {
-                const configDir = config.testDir.replace(/^\.\//, '');
-                if (configDir.startsWith(normalised)) {
-                    frameworkMap.delete(fw);
-                    console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
-                }
-            }
-        }
-    }
+    // Apply dashboard frameworkOverrides and testDirExcludes from project config
+    applyFrameworkOverrides(frameworkMap, projectConfig?.frameworkOverrides ?? []);
+    applyTestDirExcludes(frameworkMap, projectConfig?.testDirExcludes ?? []);
 
     let frameworkConfigs = [...frameworkMap.values()];
 
@@ -197,82 +283,10 @@ export async function syncProject(options: SyncOptions): Promise<void> {
 
     console.log('[sync] Syncing to dashboard...');
 
-    // Transform specs to match dashboard schema
-    const transformedSpecs = specs.map((spec) => ({
-        filePath: spec.path,
-        framework: spec.framework,
-        tests: spec.tests.map((test) => ({
-            name: test.fullName,
-            lineNumber: test.line,
-            tags: test.tags.map((tag) => tag.name),
-        })),
-    }));
+    const transformedSpecs = transformSpecsForPayload(specs);
 
-    // Transform history to match dashboard schema
-    // Apply strong deduplication at commit level
     const transformedHistory = history.entries.map((entry) => {
-        // Collect all changes from all specs, then deduplicate across the entire commit
-        const allChanges: Array<{
-            specPath: string;
-            testName: string;
-            type: 'added' | 'deleted' | 'renamed' | 'maintenance';
-            oldName?: string;
-        }> = [];
-
-        for (const spec of entry.specs) {
-            for (const change of spec.changes) {
-                allChanges.push({
-                    specPath: spec.specPath,
-                    testName: change.name,
-                    type: change.type,
-                    oldName: change.oldName,
-                });
-            }
-        }
-
-        // Deduplicate across entire commit using same consistent key
-        const seenKeys = new Set<string>();
-        const uniqueChanges = allChanges.filter((change) => {
-            const key = getChangeKey(
-                {
-                    type: change.type,
-                    name: change.testName,
-                    oldName: change.oldName,
-                },
-                change.specPath,
-            );
-            if (seenKeys.has(key)) return false;
-            seenKeys.add(key);
-            return true;
-        });
-
-        // Detect cross-spec moves: if the same test name is both removed from one spec
-        // and added to a different spec in the same commit, it's a move — suppress the
-        // remove entry so the test isn't double-counted as remove + add.
-        const removedByName = new Map<string, number[]>();
-        uniqueChanges.forEach((c, i) => {
-            if (c.type === 'deleted') {
-                const existing = removedByName.get(c.testName) ?? [];
-                existing.push(i);
-                removedByName.set(c.testName, existing);
-            }
-        });
-        const suppressedRemoves = new Set<number>();
-        uniqueChanges.forEach((c) => {
-            if (c.type === 'added') {
-                const removeIndices = removedByName.get(c.testName);
-                if (removeIndices) {
-                    const crossSpecIdx = removeIndices.find(
-                        (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath,
-                    );
-                    if (crossSpecIdx !== undefined) {
-                        suppressedRemoves.add(crossSpecIdx);
-                    }
-                }
-            }
-        });
-        const deduplicatedChanges = uniqueChanges.filter((_, i) => !suppressedRemoves.has(i));
-
+        const deduplicatedChanges = deduplicateCommitChanges(entry);
         return {
             commitHash: entry.commit.hash,
             commitMessage: entry.commit.message,

@@ -72,7 +72,7 @@ describe('fetchProjectConfig', () => {
             `${DASHBOARD_URL}/api/projects/${PROJECT_ID}/config`,
             expect.objectContaining({
                 method: 'GET',
-                headers: { Authorization: `Bearer ${API_TOKEN}` },
+                headers: expect.objectContaining({ Authorization: `Bearer ${API_TOKEN}` }),
             }),
         );
     });

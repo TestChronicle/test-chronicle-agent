@@ -52,19 +52,11 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
             if (existsSync(fullPath)) {
                 if (seen.has(framework)) break;
                 seen.add(framework);
-
-                let testDir: string;
-                if (framework === 'playwright') {
-                    testDir = extractPlaywrightTestDir(fullPath, projectPath);
-                } else if (framework === 'cypress') {
-                    testDir = extractCypressTestDir(fullPath, projectPath);
-                } else if (framework === 'vitest') {
-                    testDir = extractVitestTestDir(fullPath, projectPath);
-                } else {
-                    testDir = guessTestDir(projectPath);
-                }
-
-                results.push({ framework, testDir, confidence: 'high' });
+                results.push({
+                    framework,
+                    testDir: extractTestDir(framework, fullPath, projectPath),
+                    confidence: 'high',
+                });
                 break; // found a config for this framework, move to next framework
             }
         }
@@ -89,15 +81,11 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
         if (matches.length > 0) {
             seen.add(framework);
             const configPath = matches[0];
-            let testDir: string;
-            if (framework === 'playwright') {
-                testDir = extractPlaywrightTestDir(configPath, projectPath);
-            } else if (framework === 'cypress') {
-                testDir = extractCypressTestDir(configPath, projectPath);
-            } else {
-                testDir = guessTestDir(projectPath);
-            }
-            results.push({ framework, testDir, confidence: 'high' });
+            results.push({
+                framework,
+                testDir: extractTestDir(framework, configPath, projectPath),
+                confidence: 'high',
+            });
         }
     }
 
@@ -112,7 +100,24 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
     return results;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────
+
+/**
+ * Dispatch to the framework-specific testDir extractor.
+ * Called from both root-level and nested config detection paths.
+ */
+function extractTestDir(framework: Exclude<Framework, 'unknown'>, configPath: string, projectPath: string): string {
+    switch (framework) {
+        case 'playwright':
+            return extractPlaywrightTestDir(configPath, projectPath);
+        case 'cypress':
+            return extractCypressTestDir(configPath, projectPath);
+        case 'vitest':
+            return extractVitestTestDir(configPath, projectPath);
+        default:
+            return guessTestDir(projectPath);
+    }
+}
 
 function extractPlaywrightTestDir(configPath: string, projectPath: string): string {
     try {

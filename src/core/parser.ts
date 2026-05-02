@@ -2,36 +2,34 @@ import { readFileSync, statSync } from 'fs';
 import path from 'path';
 import { globSync } from 'glob';
 import { Framework, SpecFile, DetectionResult } from '../types';
-import { parsePlaywrightSpec, extractTestNames as playwrightExtractNames } from './frameworks/playwright';
-import { parseCypressSpec, extractTestNames as cypressExtractNames } from './frameworks/cypress';
-import { parseVitestSpec, extractTestNames as vitestExtractNames } from './frameworks/vitest';
-import { parseTestNGSpec, extractTestNames as testngExtractNames } from './frameworks/testng';
-import { parseJUnitSpec, extractTestNames as junitExtractNames } from './frameworks/junit';
+import { IFrameworkParser, FrameworkParserRegistry } from './base';
+import { playwrightParser } from './frameworks/playwright';
+import { cypressParser } from './frameworks/cypress';
+import { vitestParser } from './frameworks/vitest';
+import { testngParser } from './frameworks/testng';
+import { junitParser } from './frameworks/junit';
+
+const PARSERS: Record<Exclude<Framework, 'unknown'>, IFrameworkParser> = {
+    playwright: playwrightParser,
+    cypress: cypressParser,
+    vitest: vitestParser,
+    testng: testngParser,
+    junit: junitParser,
+} satisfies FrameworkParserRegistry;
+
+/** Returns the parser for a framework, or null for 'unknown'. */
+function getParser(framework: Framework): IFrameworkParser | null {
+    if (framework === 'unknown') return null;
+    return PARSERS[framework];
+}
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export function parseSpecFile(filePath: string, content: string, projectRoot: string, framework: Framework): SpecFile {
-    let spec: SpecFile;
+    const parser = getParser(framework);
+    if (!parser) throw new Error(`Cannot parse spec for unresolved framework 'unknown'`);
 
-    switch (framework) {
-        case 'playwright':
-            spec = parsePlaywrightSpec(filePath, content, projectRoot);
-            break;
-        case 'cypress':
-            spec = parseCypressSpec(filePath, content, projectRoot);
-            break;
-        case 'vitest':
-            spec = parseVitestSpec(filePath, content, projectRoot);
-            break;
-        case 'testng':
-            spec = parseTestNGSpec(filePath, content, projectRoot);
-            break;
-        case 'junit':
-            spec = parseJUnitSpec(filePath, content, projectRoot);
-            break;
-        default:
-            throw new Error(`Framework '${framework}' not supported`);
-    }
+    const spec = parser.parseFile(filePath, content, projectRoot);
 
     // Stamp lastModified from the actual file, not parse time
     try {
@@ -45,20 +43,7 @@ export function parseSpecFile(filePath: string, content: string, projectRoot: st
 
 /** Extract test names from raw file content without constructing a full SpecFile. */
 export function extractTestNamesFromContent(content: string, framework: Framework): string[] {
-    switch (framework) {
-        case 'playwright':
-            return playwrightExtractNames(content);
-        case 'cypress':
-            return cypressExtractNames(content);
-        case 'vitest':
-            return vitestExtractNames(content);
-        case 'testng':
-            return testngExtractNames(content);
-        case 'junit':
-            return junitExtractNames(content);
-        default:
-            return [];
-    }
+    return getParser(framework)?.extractTestNames(content) ?? [];
 }
 
 /** Extract test names with their line numbers from raw file content. */
@@ -68,62 +53,24 @@ export function extractTestsWithLinesFromContent(
 ): { name: string; line: number }[] {
     const dummyPath = '/__git_history__/test.spec.ts';
     const dummyRoot = '/__git_history__';
-    let spec: SpecFile;
-    switch (framework) {
-        case 'playwright':
-            spec = parsePlaywrightSpec(dummyPath, content, dummyRoot);
-            break;
-        case 'cypress':
-            spec = parseCypressSpec(dummyPath, content, dummyRoot);
-            break;
-        case 'vitest':
-            spec = parseVitestSpec(dummyPath, content, dummyRoot);
-            break;
-        case 'testng':
-            spec = parseTestNGSpec(dummyPath, content, dummyRoot);
-            break;
-        case 'junit':
-            spec = parseJUnitSpec(dummyPath, content, dummyRoot);
-            break;
-        default:
-            return [];
-    }
+    const parser = getParser(framework);
+    if (!parser) return [];
+    const spec = parser.parseFile(dummyPath, content, dummyRoot);
     return spec.tests.map((t) => ({ name: t.fullName, line: t.line }));
 }
 
 /** Resolve all spec files under testDir for the given framework. */
 export function findSpecFiles(projectRoot: string, testDir: string, framework: Framework): string[] {
-    // Each framework has different test file patterns
-    const patterns = getTestFilePatterns(framework);
+    const parser = getParser(framework);
+    if (!parser) return [];
 
     const baseDir = path.resolve(projectRoot, testDir);
 
-    return globSync(patterns, {
+    return globSync(parser.filePatterns, {
         cwd: baseDir,
         absolute: true,
         ignore: ['**/node_modules/**'],
     });
-}
-
-/**
- * Get test file patterns for each framework.
- * Frameworks may look for different file naming conventions.
- */
-function getTestFilePatterns(framework: Framework): string[] {
-    switch (framework) {
-        case 'playwright':
-            return ['**/*.spec.ts', '**/*.spec.js', '**/*.spec.mjs'];
-        case 'cypress':
-            return ['**/*.cy.ts', '**/*.cy.js', '**/*.spec.ts', '**/*.spec.js'];
-        case 'vitest':
-            return ['**/*.test.ts', '**/*.test.js', '**/*.spec.ts', '**/*.spec.js'];
-        case 'testng':
-            return ['**/*Test.java', '**/*Tests.java', '**/*TestCase.java'];
-        case 'junit':
-            return ['**/*Test.java', '**/*Tests.java', '**/*TestCase.java'];
-        default:
-            return ['**/*.spec.ts', '**/*.spec.js', '**/*.test.ts', '**/*.test.js'];
-    }
 }
 
 /** Parse all spec files across multiple framework configs, deduplicating by file path. */

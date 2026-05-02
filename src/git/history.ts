@@ -199,6 +199,11 @@ export async function buildHistory(
 
 // ─── File change detection ────────────────────────────────────────────────────
 
+// Unique sentinels used to delimit commits and fields in raw git log output.
+// Must not appear in commit messages or file paths.
+const COMMIT_SEP = '<<<COMMIT>>>';
+const FIELD_SEP = '<<<F>>>';
+
 interface CommitWithFiles {
     hash: string;
     author: string;
@@ -216,11 +221,6 @@ async function fetchCommitsWithFiles(
     logArgs: string[],
     testDirs: string[],
 ): Promise<CommitWithFiles[]> {
-    // Use a unique sentinel that won't appear in commit messages or file paths.
-    // Avoid NUL bytes — Node rejects them in child process arguments.
-    const COMMIT_SEP = '<<<COMMIT>>>';
-    const FIELD_SEP = '<<<F>>>';
-
     const raw = await git.raw([
         'log',
         `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,

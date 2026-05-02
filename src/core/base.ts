@@ -84,6 +84,12 @@ export interface IFrameworkParser {
      * Allows the system to know what metadata is available for this framework
      */
     supportedFeatures: FrameworkFeatures;
+
+    /**
+     * Glob patterns for test files belonging to this framework.
+     * Applied relative to the configured testDir.
+     */
+    filePatterns: string[];
 }
 
 /**
