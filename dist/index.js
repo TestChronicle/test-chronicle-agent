@@ -1227,7 +1227,9 @@ __export(src_exports, {
   extractTestsWithLinesFromContent: () => extractTestsWithLinesFromContent,
   findBestMatch: () => findBestMatch,
   findSpecFiles: () => findSpecFiles,
+  getDefaultBranch: () => getDefaultBranch,
   getLatestCommitHash: () => getLatestCommitHash,
+  getRemoteBranchTip: () => getRemoteBranchTip,
   getRepoUrl: () => getRepoUrl,
   isSameTest: () => isSameTest,
   normaliseRemoteUrl: () => normaliseRemoteUrl,
@@ -4305,7 +4307,11 @@ function detectFrameworks(projectPath) {
       if ((0, import_fs2.existsSync)(fullPath)) {
         if (seen.has(framework)) break;
         seen.add(framework);
-        results.push({ framework, testDir: extractTestDir(framework, fullPath, projectPath), confidence: "high" });
+        results.push({
+          framework,
+          testDir: extractTestDir(framework, fullPath, projectPath),
+          confidence: "high"
+        });
         break;
       }
     }
@@ -4325,7 +4331,11 @@ function detectFrameworks(projectPath) {
     if (matches.length > 0) {
       seen.add(framework);
       const configPath = matches[0];
-      results.push({ framework, testDir: extractTestDir(framework, configPath, projectPath), confidence: "high" });
+      results.push({
+        framework,
+        testDir: extractTestDir(framework, configPath, projectPath),
+        confidence: "high"
+      });
     }
   }
   const pkgResults = detectAllFromPackageJson(projectPath, seen);
@@ -5071,7 +5081,9 @@ function findBestMatch(removedTest, addedTests) {
 var git_exports = {};
 __export(git_exports, {
   buildHistory: () => buildHistory,
+  getDefaultBranch: () => getDefaultBranch,
   getLatestCommitHash: () => getLatestCommitHash,
+  getRemoteBranchTip: () => getRemoteBranchTip,
   getRepoUrl: () => getRepoUrl,
   normaliseRemoteUrl: () => normaliseRemoteUrl,
   resolveFrameworkForFile: () => resolveFrameworkForFile
@@ -9656,6 +9668,15 @@ async function getLatestCommitHash(projectPath) {
     return null;
   }
 }
+async function getRemoteBranchTip(projectPath, branch) {
+  const git = esm_default(projectPath);
+  try {
+    const hash = await git.raw(["rev-parse", `origin/${branch}`]);
+    return hash.trim() || null;
+  } catch {
+    return null;
+  }
+}
 function normaliseRemoteUrl(raw) {
   const trimmed2 = raw.trim();
   const sshMatch = trimmed2.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
@@ -9679,18 +9700,36 @@ async function getRepoUrl(projectPath) {
     return null;
   }
 }
-async function buildHistory(projectPath, frameworkConfigs, sinceCommit, fullHistory, sinceDate) {
+async function getDefaultBranch(projectPath) {
+  const git = esm_default(projectPath);
+  try {
+    const ref = await git.raw(["symbolic-ref", "refs/remotes/origin/HEAD"]);
+    const match = ref.trim().match(/^refs\/remotes\/origin\/(.+)$/);
+    if (match) return match[1];
+  } catch {
+  }
+  for (const candidate of ["main", "master"]) {
+    try {
+      await git.raw(["rev-parse", "--verify", `origin/${candidate}`]);
+      return candidate;
+    } catch {
+    }
+  }
+  return "main";
+}
+async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceCommit, fullHistory, sinceDate) {
   const git = esm_default(projectPath);
   const errors = [];
   const warnings = [];
+  const remoteRef = `origin/${defaultBranch}`;
   const allTestDirs = frameworkConfigs.filter((c) => c.framework !== "unknown").map((c) => c.testDir.replace(/^\.\//, ""));
   let logArgs;
   if (sinceCommit) {
-    logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..HEAD`, "--", ...allTestDirs] : [`${sinceCommit}..HEAD`];
+    logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..${remoteRef}`, "--", ...allTestDirs] : [`${sinceCommit}..${remoteRef}`];
   } else if (fullHistory) {
-    logArgs = ["--all"];
+    logArgs = [remoteRef];
   } else {
-    logArgs = allTestDirs.length > 0 ? ["--all", "--", ...allTestDirs] : ["--all"];
+    logArgs = allTestDirs.length > 0 ? [remoteRef, "--", ...allTestDirs] : [remoteRef];
   }
   if (sinceDate && !sinceCommit) {
     logArgs = [`--since=${sinceDate.toISOString()}`, ...logArgs];
@@ -10186,6 +10225,8 @@ async function syncProject(options) {
   } else {
     console.log("[config] No project overrides set. Using auto-detected config");
   }
+  const defaultBranch = projectConfig?.defaultBranch ?? await getDefaultBranch(process.cwd());
+  console.log(`[sync] Default branch: ${defaultBranch}`);
   console.log("[sync] Detecting frameworks...");
   const detected = detectFrameworks(process.cwd());
   const frameworkMap = new Map(detected.map((d) => [d.framework, d]));
@@ -10233,6 +10274,7 @@ async function syncProject(options) {
   const history = await buildHistory(
     process.cwd(),
     frameworkConfigs,
+    defaultBranch,
     sinceCommit,
     false,
     // never do full history anymore
@@ -10298,11 +10340,9 @@ async function syncProject(options) {
   console.log("[sync] Sync successful!");
   console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
   try {
-    let lastHash = null;
-    if (history.entries.length > 0) {
-      lastHash = history.entries[history.entries.length - 1].commit.hash;
-    } else {
-      lastHash = await getLatestCommitHash(process.cwd());
+    let lastHash = await getRemoteBranchTip(process.cwd(), defaultBranch);
+    if (!lastHash) {
+      lastHash = history.entries.length > 0 ? history.entries[history.entries.length - 1].commit.hash : await getLatestCommitHash(process.cwd());
     }
     if (!lastHash) {
       console.log("[sync] Warning: Could not determine last commit hash");
@@ -10363,7 +10403,9 @@ init_cjs_shims();
   extractTestsWithLinesFromContent,
   findBestMatch,
   findSpecFiles,
+  getDefaultBranch,
   getLatestCommitHash,
+  getRemoteBranchTip,
   getRepoUrl,
   isSameTest,
   normaliseRemoteUrl,

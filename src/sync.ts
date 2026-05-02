@@ -3,7 +3,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { detectFrameworks } from './core';
 import { parseAllSpecs } from './core';
-import { buildHistory, getLatestCommitHash, getRepoUrl } from './git';
+import { buildHistory, getLatestCommitHash, getRepoUrl, getDefaultBranch, getRemoteBranchTip } from './git';
 import { getSyncMarker, saveSyncMarker, syncToDashboard, fetchProjectConfig } from './sync-client';
 import { DetectionResult, TestChange, FrameworkOverride, CommitHistory, SpecFile } from './types';
 
@@ -175,6 +175,10 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         console.log('[config] No project overrides set. Using auto-detected config');
     }
 
+    // Resolve the default branch: dashboard setting takes priority, then auto-detect from git
+    const defaultBranch = projectConfig?.defaultBranch ?? (await getDefaultBranch(process.cwd()));
+    console.log(`[sync] Default branch: ${defaultBranch}`);
+
     console.log('[sync] Detecting frameworks...');
     const detected = detectFrameworks(process.cwd());
 
@@ -239,6 +243,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const history = await buildHistory(
         process.cwd(),
         frameworkConfigs,
+        defaultBranch,
         sinceCommit,
         false, // never do full history anymore
         sinceDate,
@@ -315,13 +320,17 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
 
     // Handle baseline sync and incremental marker
+    // Always save the tip of origin/<defaultBranch> as the marker so that
+    // unmerged feature-branch commits can never pollute future incremental syncs.
     try {
-        let lastHash: string | null = null;
+        let lastHash: string | null = await getRemoteBranchTip(process.cwd(), defaultBranch);
 
-        if (history.entries.length > 0) {
-            lastHash = history.entries[history.entries.length - 1].commit.hash;
-        } else {
-            lastHash = await getLatestCommitHash(process.cwd());
+        if (!lastHash) {
+            // Fallback: use the last processed commit or local HEAD
+            lastHash =
+                history.entries.length > 0
+                    ? history.entries[history.entries.length - 1].commit.hash
+                    : await getLatestCommitHash(process.cwd());
         }
 
         if (!lastHash) {

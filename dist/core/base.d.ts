@@ -5,9 +5,7 @@
  * This defines the contract for detecting and parsing test specifications
  * across different test frameworks.
  */
-
 import { SpecFile } from '../types';
-
 /**
  * Feature support matrix for a framework
  *
@@ -24,30 +22,25 @@ export interface FrameworkFeatures {
      * E.g., @smoke, @critical, @slow
      */
     tags: boolean;
-
     /**
      * Supports describe/context/suite grouping?
      * E.g., describe() blocks in JS/TS
      */
     describes: boolean;
-
     /**
      * Supports parameterized/data-driven tests?
      * E.g., test.each() in Playwright, @Parameters in TestNG
      */
     parameterized: boolean;
-
     /**
      * Can accurately locate tests by line number?
      */
     lineNumbers: boolean;
-
     /**
      * Native async/promise-based test support?
      */
     asyncTests: boolean;
 }
-
 /**
  * Framework parser interface
  *
@@ -64,7 +57,6 @@ export interface IFrameworkParser {
      * @returns SpecFile with all discovered tests
      */
     parseFile(filePath: string, content: string, projectRoot: string): SpecFile;
-
     /**
      * Extract test names from file content (lightweight operation)
      *
@@ -75,21 +67,18 @@ export interface IFrameworkParser {
      * @returns Array of test names (or full names if describes are supported)
      */
     extractTestNames(content: string): string[];
-
     /**
      * Framework capabilities and feature support
      *
      * Allows the system to know what metadata is available for this framework
      */
     supportedFeatures: FrameworkFeatures;
-
     /**
      * Glob patterns for test files belonging to this framework.
      * Applied relative to the configured testDir.
      */
     filePatterns: string[];
 }
-
 /**
  * Helper type for framework parser registry
  *
@@ -105,7 +94,6 @@ export interface IFrameworkParser {
  * ```
  */
 export type FrameworkParserRegistry = Record<string, IFrameworkParser>;
-
 /**
  * Common utilities for framework parsers
  *
@@ -116,7 +104,6 @@ export type FrameworkParserRegistry = Record<string, IFrameworkParser>;
  *
  * See common.ts for implementations.
  */
-
 /**
  * Framework-specific pattern definitions
  *
@@ -140,7 +127,6 @@ export interface FrameworkPatterns {
      *   - Group 1-2: The describe block name (including quotes)
      */
     describe?: RegExp;
-
     /**
      * Main pattern to find individual test definitions
      *
@@ -148,14 +134,12 @@ export interface FrameworkPatterns {
      *   - Group 1-2: The test name (including quotes)
      */
     test: RegExp;
-
     /**
      * Pattern to find tags/labels within test context
      *
      * Supports multiple tag formats depending on framework
      */
     tags?: RegExp;
-
     /**
      * Pattern for parameterization markers
      *
@@ -163,7 +147,6 @@ export interface FrameworkPatterns {
      */
     parameterized?: RegExp;
 }
-
 /**
  * Detection result for a discovered test framework
  *
@@ -174,12 +157,10 @@ export interface DetectionResult {
      * The detected framework name
      */
     framework: string;
-
     /**
      * Detected test directory (relative to project root)
      */
     testDir: string;
-
     /**
      * Confidence level of detection
      * - 'high': Found config file or multiple signatures
@@ -188,7 +169,6 @@ export interface DetectionResult {
      */
     confidence: 'high' | 'medium' | 'low';
 }
-
 /**
  * Framework signatures for detection
  *
@@ -201,7 +181,6 @@ export interface FrameworkSignature {
      * E.g., ['playwright.config.ts', 'playwright.config.js']
      */
     configFiles: string[];
-
     /**
      * NPM package names that indicate this framework
      *
@@ -209,3 +188,4 @@ export interface FrameworkSignature {
      */
     packageDeps: string[];
 }
+//# sourceMappingURL=base.d.ts.map

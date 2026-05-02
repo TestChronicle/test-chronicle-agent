@@ -1,15 +1,8 @@
-// ─── Framework ───────────────────────────────────────────────────────────────
-
 export type Framework = 'playwright' | 'cypress' | 'testng' | 'junit' | 'vitest' | 'unknown';
-
 export type ChangeStatus = 'added' | 'removed' | 'changed' | 'unchanged';
-
-// ─── Test structure ───────────────────────────────────────────────────────────
-
 export interface TestTag {
     name: string;
 }
-
 export interface TestCase {
     id: string;
     /** Raw test name as written in the spec file */
@@ -21,7 +14,6 @@ export interface TestCase {
     tags: TestTag[];
     line: number;
 }
-
 export interface SpecFile {
     id: string;
     /** Path relative to the project root */
@@ -34,16 +26,12 @@ export interface SpecFile {
     /** ISO date string */
     lastModified: string;
 }
-
-// ─── Project ─────────────────────────────────────────────────────────────────
-
 export interface ProjectStats {
     totalSpecs: number;
     totalTests: number;
     /** Tag name → count */
     tags: Record<string, number>;
 }
-
 /** Optional per-project config file (test-chronicle.config.json) */
 export interface ProjectConfig {
     name?: string;
@@ -55,7 +43,6 @@ export interface ProjectConfig {
     /** Glob patterns to exclude (relative to testDir) */
     exclude?: string[];
 }
-
 export interface Project {
     id: string;
     name: string;
@@ -66,30 +53,24 @@ export interface Project {
     /** ISO date string */
     lastSynced?: string;
 }
-
 /** Lightweight project reference stored in the global config */
 export interface RegisteredProject {
     id: string;
     name: string;
     path: string;
 }
-
 export interface GlobalConfig {
     projects: RegisteredProject[];
     server?: {
         port?: number;
     };
 }
-
-// ─── Git history ──────────────────────────────────────────────────────────────
-
 export interface GitFileChange {
     path: string;
     status: 'added' | 'deleted' | 'renamed' | 'changed';
     /** Previous path, only present on renames */
     oldPath?: string;
 }
-
 export interface GitCommit {
     hash: string;
     shortHash: string;
@@ -99,55 +80,44 @@ export interface GitCommit {
     date: string;
     changes: GitFileChange[];
 }
-
 export interface TestChange {
     type: 'added' | 'deleted' | 'renamed' | 'maintenance';
     name: string;
     oldName?: string;
 }
-
 export interface SpecHistoryEntry {
     specPath: string;
     fileStatus: 'added' | 'deleted' | 'renamed' | 'changed';
     changes: TestChange[];
 }
-
 export interface CommitHistory {
     commit: GitCommit;
     specs: SpecHistoryEntry[];
 }
-
 export interface HistoryError {
     commit: string;
     file: string;
     reason: string;
     partial?: boolean;
 }
-
 export interface HistoryBuildResult {
     entries: CommitHistory[];
     errors: HistoryError[];
     warnings: string[];
 }
-
-// ─── Framework detection ──────────────────────────────────────────────────────
-
 export interface DetectionResult {
     framework: Framework;
     testDir: string;
     confidence: 'high' | 'medium' | 'low';
 }
-
-// ─── Dashboard sync config ────────────────────────────────────────────────────
-
 export interface FrameworkOverride {
     framework: Framework;
     dirs: string[];
 }
-
 export interface DashboardSyncConfig {
     frameworkOverrides?: FrameworkOverride[];
     testDirExcludes?: string[];
     primaryFramework?: Framework;
     defaultBranch?: string;
 }
+//# sourceMappingURL=types.d.ts.map
