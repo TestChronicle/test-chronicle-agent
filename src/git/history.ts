@@ -29,6 +29,20 @@ export async function getLatestCommitHash(projectPath: string): Promise<string |
 }
 
 /**
+ * Returns the commit hash at the tip of `origin/<branch>`, or null if the
+ * remote ref cannot be resolved (e.g. no remote configured).
+ */
+export async function getRemoteBranchTip(projectPath: string, branch: string): Promise<string | null> {
+    const git = simpleGit(projectPath);
+    try {
+        const hash = await git.raw(['rev-parse', `origin/${branch}`]);
+        return hash.trim() || null;
+    } catch {
+        return null;
+    }
+}
+
+/**
  * Normalises a git remote URL to a clean HTTPS URL without a trailing `.git`.
  * Supports SSH (`git@github.com:owner/repo.git`) and HTTPS forms.
  * Returns null when the URL cannot be parsed or belongs to an unrecognised host.
@@ -69,15 +83,45 @@ export async function getRepoUrl(projectPath: string): Promise<string | null> {
 }
 
 /**
+ * Resolves the name of the default remote branch (e.g. "main", "master").
+ * First attempts to read `origin/HEAD` via `git symbolic-ref`; if that fails,
+ * it probes whether `origin/main` or `origin/master` exist. Falls back to
+ * "main" as a safe default.
+ */
+export async function getDefaultBranch(projectPath: string): Promise<string> {
+    const git = simpleGit(projectPath);
+    try {
+        const ref = await git.raw(['symbolic-ref', 'refs/remotes/origin/HEAD']);
+        // ref looks like "refs/remotes/origin/main\n"
+        const match = ref.trim().match(/^refs\/remotes\/origin\/(.+)$/);
+        if (match) return match[1];
+    } catch {
+        // symbolic-ref not set — probe common branch names
+    }
+    for (const candidate of ['main', 'master']) {
+        try {
+            await git.raw(['rev-parse', '--verify', `origin/${candidate}`]);
+            return candidate;
+        } catch {
+            // not found, try next
+        }
+    }
+    return 'main';
+}
+
+/**
  * Builds the full commit history across all configured framework test directories.
  * If `sinceCommit` is provided, only commits after that hash are returned.
- * If `fullHistory` is true, scans all commits in the repo (for projects that moved tests).
+ * If `fullHistory` is true, scans all commits reachable from the default branch.
+ * Only commits reachable from `origin/<defaultBranch>` are ever included so
+ * that unmerged feature-branch commits are not surfaced.
  *
  * Returns both the history entries and any errors encountered during processing.
  */
 export async function buildHistory(
     projectPath: string,
     frameworkConfigs: DetectionResult[],
+    defaultBranch: string,
     sinceCommit?: string,
     fullHistory?: boolean,
     sinceDate?: Date,
@@ -86,6 +130,8 @@ export async function buildHistory(
     const errors: HistoryError[] = [];
     const warnings: string[] = [];
 
+    const remoteRef = `origin/${defaultBranch}`;
+
     const allTestDirs = frameworkConfigs
         .filter((c) => c.framework !== 'unknown')
         .map((c) => c.testDir.replace(/^\.\//, ''));
@@ -93,11 +139,14 @@ export async function buildHistory(
     let logArgs: string[];
 
     if (sinceCommit) {
-        logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..HEAD`, '--', ...allTestDirs] : [`${sinceCommit}..HEAD`];
+        logArgs =
+            allTestDirs.length > 0
+                ? [`${sinceCommit}..${remoteRef}`, '--', ...allTestDirs]
+                : [`${sinceCommit}..${remoteRef}`];
     } else if (fullHistory) {
-        logArgs = ['--all'];
+        logArgs = [remoteRef];
     } else {
-        logArgs = allTestDirs.length > 0 ? ['--all', '--', ...allTestDirs] : ['--all'];
+        logArgs = allTestDirs.length > 0 ? [remoteRef, '--', ...allTestDirs] : [remoteRef];
     }
 
     // For first syncs (no sinceCommit), cap how far back we look

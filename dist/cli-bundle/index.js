@@ -1,5 +1,12 @@
 #!/usr/bin/env node
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 459:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
 "use strict";
+
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -132,10 +139,10 @@ var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports2, module2) {
     "use strict";
     init_cjs_shims();
-    var fs3 = require("fs");
-    var path10 = require("path");
-    var os2 = require("os");
-    var crypto = require("crypto");
+    var fs3 = __nccwpck_require__(896);
+    var path10 = __nccwpck_require__(928);
+    var os2 = __nccwpck_require__(857);
+    var crypto = __nccwpck_require__(982);
     var packageJson = require_package();
     var version = packageJson.version;
     var TIPS = [
@@ -929,8 +936,8 @@ var require_node = __commonJS({
   "node_modules/debug/src/node.js"(exports2, module2) {
     "use strict";
     init_cjs_shims();
-    var tty = require("tty");
-    var util = require("util");
+    var tty = __nccwpck_require__(18);
+    var util = __nccwpck_require__(23);
     exports2.init = init;
     exports2.log = log;
     exports2.formatArgs = formatArgs;
@@ -944,7 +951,7 @@ var require_node = __commonJS({
     );
     exports2.colors = [6, 2, 3, 4, 5, 1];
     try {
-      const supportsColor = require("supports-color");
+      const supportsColor = __nccwpck_require__(75);
       if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
         exports2.colors = [
           20,
@@ -1122,7 +1129,7 @@ var require_src2 = __commonJS({
       return mod && mod.__esModule ? mod : { "default": mod };
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var fs_1 = require("fs");
+    var fs_1 = __nccwpck_require__(896);
     var debug_1 = __importDefault(require_src());
     var log = debug_1.default("@kwsites/file-exists");
     function check(path10, isFile, isDirectory) {
@@ -1225,8 +1232,8 @@ var import_dotenv2 = __toESM(require_main());
 
 // src/sync.ts
 init_cjs_shims();
-var import_path9 = __toESM(require("path"));
-var import_fs4 = __toESM(require("fs"));
+var import_path9 = __toESM(__nccwpck_require__(928));
+var import_fs4 = __toESM(__nccwpck_require__(896));
 var import_dotenv = __toESM(require_main());
 
 // src/core/index.ts
@@ -1234,20 +1241,20 @@ init_cjs_shims();
 
 // src/core/detector.ts
 init_cjs_shims();
-var import_fs2 = require("fs");
-var import_path = __toESM(require("path"));
+var import_fs2 = __nccwpck_require__(896);
+var import_path = __toESM(__nccwpck_require__(928));
 
 // node_modules/glob/dist/esm/index.min.js
 init_cjs_shims();
-var import_node_url = require("url");
-var import_node_path = require("path");
-var import_node_url2 = require("url");
-var import_fs = require("fs");
-var xi = __toESM(require("fs"), 1);
-var import_promises = require("fs/promises");
-var import_node_events = require("events");
-var import_node_stream = __toESM(require("stream"), 1);
-var import_node_string_decoder = require("string_decoder");
+var import_node_url = __nccwpck_require__(16);
+var import_node_path = __nccwpck_require__(928);
+var import_node_url2 = __nccwpck_require__(16);
+var import_fs = __nccwpck_require__(896);
+var xi = __toESM(__nccwpck_require__(896), 1);
+var import_promises = __nccwpck_require__(943);
+var import_node_events = __nccwpck_require__(434);
+var import_node_stream = __toESM(__nccwpck_require__(203), 1);
+var import_node_string_decoder = __nccwpck_require__(193);
 var Gt = (n5, t, e) => {
   let s = n5 instanceof RegExp ? ce(n5, e) : n5, i = t instanceof RegExp ? ce(t, e) : t, r = s !== null && i != null && ss(s, i, e);
   return r && { start: r[0], end: r[1], pre: e.slice(0, r[0]), body: e.slice(r[0] + s.length, r[1]), post: e.slice(r[1] + i.length) };
@@ -4404,16 +4411,16 @@ function detectAllFromPackageJson(projectPath, alreadySeen) {
 
 // src/core/parser.ts
 init_cjs_shims();
-var import_fs3 = require("fs");
-var import_path7 = __toESM(require("path"));
+var import_fs3 = __nccwpck_require__(896);
+var import_path7 = __toESM(__nccwpck_require__(928));
 
 // src/core/frameworks/playwright.ts
 init_cjs_shims();
-var import_path2 = __toESM(require("path"));
+var import_path2 = __toESM(__nccwpck_require__(928));
 
 // src/core/frameworks/common.ts
 init_cjs_shims();
-var import_crypto = require("crypto");
+var import_crypto = __nccwpck_require__(982);
 function hashId(input) {
   return (0, import_crypto.createHash)("md5").update(input).digest("hex").substring(0, 8);
 }
@@ -4542,7 +4549,7 @@ var playwrightParser = {
 
 // src/core/frameworks/cypress.ts
 init_cjs_shims();
-var import_path3 = __toESM(require("path"));
+var import_path3 = __toESM(__nccwpck_require__(928));
 
 // src/core/frameworks/parameterized.ts
 init_cjs_shims();
@@ -4687,7 +4694,7 @@ var cypressParser = {
 
 // src/core/frameworks/vitest.ts
 init_cjs_shims();
-var import_path4 = __toESM(require("path"));
+var import_path4 = __toESM(__nccwpck_require__(928));
 var DESCRIBE_RE3 = /describe\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE3 = /(?:^|[ \t]+)(?:test|it)\s*(?:\.(?:skip|only|todo))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseVitestSpec(filePath, content, projectRoot) {
@@ -4750,7 +4757,7 @@ var vitestParser = {
 
 // src/core/frameworks/testng.ts
 init_cjs_shims();
-var import_path5 = __toESM(require("path"));
+var import_path5 = __toESM(__nccwpck_require__(928));
 var TEST_METHOD_RE = /@Test\s*(?:\([^)]*\))?\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 var CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 var ENABLED_RE = /enabled\s*=\s*(false|true)/;
@@ -4842,7 +4849,7 @@ var testngParser = {
 
 // src/core/frameworks/junit.ts
 init_cjs_shims();
-var import_path6 = __toESM(require("path"));
+var import_path6 = __toESM(__nccwpck_require__(928));
 var TEST_METHOD_RE2 = /@Test\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 var CLASS_DECLARATION_RE2 = /(?:public\s+)?class\s+(\w+)/;
 var IGNORE_RE = /@Ignore/;
@@ -5038,14 +5045,14 @@ init_cjs_shims();
 
 // node_modules/simple-git/dist/esm/index.js
 init_cjs_shims();
-var import_node_buffer = require("buffer");
+var import_node_buffer = __nccwpck_require__(181);
 var import_file_exists = __toESM(require_dist(), 1);
 var import_debug = __toESM(require_src(), 1);
-var import_child_process = require("child_process");
+var import_child_process = __nccwpck_require__(317);
 var import_promise_deferred = __toESM(require_dist2(), 1);
-var import_node_path2 = require("path");
+var import_node_path2 = __nccwpck_require__(928);
 var import_promise_deferred2 = __toESM(require_dist2(), 1);
-var import_node_events2 = require("events");
+var import_node_events2 = __nccwpck_require__(434);
 var __defProp2 = Object.defineProperty;
 var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -9601,7 +9608,7 @@ init_git_response_error();
 var esm_default = gitInstanceFactory;
 
 // src/git/history.ts
-var import_path8 = __toESM(require("path"));
+var import_path8 = __toESM(__nccwpck_require__(928));
 async function getLatestCommitHash(projectPath) {
   const git = esm_default(projectPath);
   try {
@@ -10328,11 +10335,171 @@ async function main() {
     process.exit(1);
   }
 }
-if (require.main === module) {
+if (require.main === require.cache[eval('__filename')]) {
   main();
 }
 // Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  cli
-});
+0 && (0);
 //# sourceMappingURL=cli.js.map
+
+/***/ }),
+
+/***/ 75:
+/***/ ((module) => {
+
+module.exports = eval("require")("supports-color");
+
+
+/***/ }),
+
+/***/ 181:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("buffer");
+
+/***/ }),
+
+/***/ 317:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
+
+/***/ }),
+
+/***/ 982:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("crypto");
+
+/***/ }),
+
+/***/ 434:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("events");
+
+/***/ }),
+
+/***/ 896:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ 943:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
+
+/***/ }),
+
+/***/ 857:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("os");
+
+/***/ }),
+
+/***/ 928:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("path");
+
+/***/ }),
+
+/***/ 203:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("stream");
+
+/***/ }),
+
+/***/ 193:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("string_decoder");
+
+/***/ }),
+
+/***/ 18:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("tty");
+
+/***/ }),
+
+/***/ 16:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("url");
+
+/***/ }),
+
+/***/ 23:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("util");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId](module, module.exports, __nccwpck_require__);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(459);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
