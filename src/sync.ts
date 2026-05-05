@@ -317,7 +317,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     //  - Each request stays small and completes well within the 60 s timeout
     //  - An intermediate sync marker is saved after each successful chunk so
     //    a re-run after interruption only re-uploads the remaining chunks
-    const HISTORY_CHUNK_SIZE = 200;
+    const HISTORY_CHUNK_SIZE = 100;
     // Reverse so index 0 = oldest commit; git log returns newest-first.
     const historyOldestFirst = [...transformedHistory].reverse();
     const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
