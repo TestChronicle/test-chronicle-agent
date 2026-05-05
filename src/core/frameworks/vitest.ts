@@ -1,6 +1,7 @@
 import path from 'path';
 import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
+import { extractParameterizedDataFromEach, detectParameterizedLoop, isLikelyParameterizedTest } from './parameterized';
 import { IFrameworkParser } from '../base';
 
 const DESCRIBE_RE = /describe\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
@@ -24,9 +25,18 @@ export function parseVitestSpec(filePath: string, content: string, projectRoot: 
 
         const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
 
-        // Check if this is a .todo() test and mark it
+        // Check if test is .todo() and mark it
         const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
         const tags = isTodo ? [{ name: '@todo' }] : [];
+
+        const isParameterized =
+            extractParameterizedDataFromEach(content.substring(Math.max(0, matchIndex - 500), matchIndex + 200)) !==
+                null ||
+            detectParameterizedLoop(content, matchIndex) ||
+            isLikelyParameterizedTest(testName);
+        if (isParameterized) {
+            tags.push({ name: '@parameterized' });
+        }
 
         const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
 
@@ -75,7 +85,7 @@ export const vitestParser: IFrameworkParser = {
     supportedFeatures: {
         tags: true,
         describes: true,
-        parameterized: false,
+        parameterized: true,
         lineNumbers: true,
         asyncTests: true,
     },

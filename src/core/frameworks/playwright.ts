@@ -1,6 +1,7 @@
 import path from 'path';
 import { TestCase, TestTag, SpecFile } from '../../types';
 import { hashId, lineNumberAt, findDescribeBlocks, resolveParentDescribe } from './common';
+import { detectParameterizedLoop, isLikelyParameterizedTest } from './parameterized';
 import { IFrameworkParser } from '../base';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
@@ -35,6 +36,11 @@ export function parsePlaywrightSpec(filePath: string, content: string, projectRo
 
         const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
         const tags = extractInlineTags(content, matchIndex);
+
+        const isParameterized = detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
+        if (isParameterized && !tags.some((t) => t.name === '@parameterized')) {
+            tags.push({ name: '@parameterized' });
+        }
 
         const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
 
@@ -113,7 +119,7 @@ export const playwrightParser: IFrameworkParser = {
     supportedFeatures: {
         tags: true,
         describes: true,
-        parameterized: false,
+        parameterized: true,
         lineNumbers: true,
         asyncTests: true,
     },
