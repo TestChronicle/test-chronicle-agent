@@ -1,6 +1,7 @@
 import { readFileSync, statSync } from 'fs';
 import path from 'path';
 import { globSync } from 'glob';
+import { minimatch } from 'minimatch';
 import { Framework, SpecFile, DetectionResult } from '../types';
 import { IFrameworkParser, FrameworkParserRegistry } from './base';
 import { playwrightParser } from './frameworks/playwright';
@@ -73,6 +74,27 @@ export function findSpecFiles(projectRoot: string, testDir: string, framework: F
         absolute: true,
         ignore: ['**/node_modules/**'],
     });
+}
+
+/**
+ * Returns true when `filePath` (relative or absolute) matches any of the
+ * framework's declared `filePatterns`.  The basename of the file is tested
+ * against each glob pattern so callers don't have to normalise paths.
+ *
+ * This is the single source of truth for "does this file belong to this
+ * framework?" — both the live file-finder and the git-history pipeline use it
+ * so adding a new framework to the parser registry automatically covers both.
+ */
+export function isFrameworkSpecFile(filePath: string, framework: Framework): boolean {
+    const parser = getParser(framework);
+    if (!parser) return false;
+    // Test both the full (normalised) path and the basename so patterns like
+    // '**/*.feature' or '**/*Test.java' resolve correctly regardless of whether
+    // the caller passes an absolute or relative path.
+    const normalised = filePath.replace(/\\/g, '/');
+    return parser.filePatterns.some(
+        (pattern) => minimatch(normalised, pattern) || minimatch(path.basename(normalised), pattern),
+    );
 }
 
 /** Parse all spec files across multiple framework configs, deduplicating by file path. */

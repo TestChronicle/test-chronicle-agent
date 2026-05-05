@@ -333,14 +333,14 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
     const timestamp = new Date().toISOString();
 
+    if (totalChunks > 1) {
+        console.log(`[sync] Uploading in ${totalChunks} batches...`);
+    }
+
     for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         const isLastChunk = chunkIndex === totalChunks - 1;
         const chunkStart = chunkIndex * HISTORY_CHUNK_SIZE;
         const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
-
-        if (totalChunks > 1) {
-            console.log(`[sync] Uploading ${chunkIndex + 1}/${totalChunks} batches...`);
-        }
 
         await syncToDashboard(dashboardUrl, apiKey, {
             projectId,
