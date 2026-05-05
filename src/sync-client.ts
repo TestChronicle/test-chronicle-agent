@@ -183,9 +183,11 @@ export async function syncToDashboard(
             }
             if (attempt < MAX_RETRIES) {
                 const backoffMs = 1000 * 2 ** (attempt - 1); // 1 s, 2 s
-                console.warn(
-                    `[sync] Upload attempt ${attempt} failed (${lastError.message}). Retrying in ${backoffMs / 1000}s…`,
-                );
+                // Timeouts on large payloads are expected (cold start, slow network) —
+                // suppress the message so a successful retry doesn't alarm the user.
+                if (!isAbort) {
+                    console.warn(`[sync] Warning: Upload error, retrying. (${lastError.message})`);
+                }
                 await new Promise((resolve) => setTimeout(resolve, backoffMs));
             }
         } finally {
