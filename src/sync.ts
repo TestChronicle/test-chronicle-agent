@@ -10,7 +10,6 @@ import {
     syncToDashboard,
     fetchProjectConfig,
     validateProjectAccess,
-    UploadTimeoutError,
 } from './sync-client';
 import { DetectionResult, TestChange, FrameworkOverride, CommitHistory, SpecFile } from './types';
 
@@ -211,20 +210,16 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         );
     }
 
-    console.log(`[sync] Active frameworks (${frameworkConfigs.length}):`);
     for (const { framework, testDir, confidence } of frameworkConfigs) {
         console.log(`[sync]   ${framework} → ${testDir} (${confidence})`);
     }
 
     console.log('[sync] Parsing test specifications...');
     const specs = parseAllSpecs(process.cwd(), frameworkConfigs);
-    console.log(`[sync] Found ${specs.length} spec files`);
-
     const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
-    console.log(`[sync] Total tests: ${totalTests}`);
+    console.log(`[sync] Found ${specs.length} spec files with ${totalTests} tests`);
 
     // Check if this is first sync or subsequent sync
-    console.log('[sync] Checking sync status...');
     let lastSyncCommit: string | null = null;
     let isFirstSync = false;
 
@@ -298,10 +293,6 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         parameterizedTestCount,
     };
 
-    console.log('[sync] Summary');
-    console.log(`[sync] Specs: ${specs.length}`);
-    console.log(`[sync] Tests: ${totalTests}`);
-
     console.log('[sync] Syncing to dashboard...');
 
     const transformedSpecs = transformSpecsForPayload(specs);
@@ -322,26 +313,53 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         };
     });
 
-    const payload = {
-        projectId,
-        specs: transformedSpecs,
-        history: transformedHistory,
-        stats,
-        timestamp: new Date().toISOString(),
-        ...(repoUrl ? { repoUrl } : {}),
-    };
+    // Upload history in chunks (oldest-first) so that:
+    //  - Each request stays small and completes well within the 60 s timeout
+    //  - An intermediate sync marker is saved after each successful chunk so
+    //    a re-run after interruption only re-uploads the remaining chunks
+    const HISTORY_CHUNK_SIZE = 500;
+    // Reverse so index 0 = oldest commit; git log returns newest-first.
+    const historyOldestFirst = [...transformedHistory].reverse();
+    const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
+    const timestamp = new Date().toISOString();
 
-    try {
-        await syncToDashboard(dashboardUrl, apiKey, payload);
-        console.log('[sync] Sync successful!');
-        console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
-        console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
-    } catch (err) {
-        if (err instanceof UploadTimeoutError) {
-            console.warn('[sync] Warning: Upload timed out waiting for a response from the server.');
-            console.warn('[sync] Your data may have synced successfully — check your dashboard to confirm.');
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const isLastChunk = chunkIndex === totalChunks - 1;
+        const chunkStart = chunkIndex * HISTORY_CHUNK_SIZE;
+        const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
+
+        if (totalChunks > 1) {
+            console.log(`[sync] Uploading ${chunkIndex + 1}/${totalChunks} (${historyChunk.length} commits)...`);
+        }
+
+        await syncToDashboard(dashboardUrl, apiKey, {
+            projectId,
+            // Only include specs and stats with the first chunk — the server uses
+            // the spec list to upsert files and prune stale entries.
+            specs: chunkIndex === 0 ? transformedSpecs : [],
+            history: historyChunk,
+            stats: chunkIndex === 0 ? stats : {},
+            timestamp,
+            ...(repoUrl ? { repoUrl } : {}),
+            chunkIndex,
+            isLastChunk,
+        });
+
+        if (isLastChunk) {
+            console.log(
+                `[sync] Done — ${specs.length} specs, ${totalTests} tests, ${history.entries.length} commits synced`,
+            );
+            console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
         } else {
-            throw err;
+            // Save the hash of the newest commit in this chunk as an intermediate
+            // marker. buildHistory(since=thatHash) on the next run will return
+            // exactly the commits that haven't been uploaded yet.
+            const newestInChunk = historyChunk[historyChunk.length - 1].commitHash;
+            try {
+                await saveSyncMarker(dashboardUrl, apiKey, projectId, newestInChunk);
+            } catch {
+                // Non-fatal — worst case the next run re-uploads from the previous marker
+            }
         }
     }
 
