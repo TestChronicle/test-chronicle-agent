@@ -8,6 +8,7 @@ import { cypressParser } from './frameworks/cypress';
 import { vitestParser } from './frameworks/vitest';
 import { testngParser } from './frameworks/testng';
 import { junitParser } from './frameworks/junit';
+import { cucumberParser } from './frameworks/cucumber';
 
 const PARSERS: Record<Exclude<Framework, 'unknown'>, IFrameworkParser> = {
     playwright: playwrightParser,
@@ -15,6 +16,7 @@ const PARSERS: Record<Exclude<Framework, 'unknown'>, IFrameworkParser> = {
     vitest: vitestParser,
     testng: testngParser,
     junit: junitParser,
+    cucumber: cucumberParser,
 } satisfies FrameworkParserRegistry;
 
 /** Returns the parser for a framework, or null for 'unknown'. */
