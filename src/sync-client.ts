@@ -144,6 +144,7 @@ export async function syncToDashboard(
 
     const MAX_RETRIES = 3;
     const TIMEOUT_MS = 60_000; // 60 s per chunk
+    const BASE_BACKOFF_MS = 1_000; // 1 s, doubles each retry
 
     let lastError: Error | null = null;
 
@@ -174,7 +175,7 @@ export async function syncToDashboard(
                 lastError = new Error(`Upload timed out after ${TIMEOUT_MS / 1000}s`);
             }
             if (attempt < MAX_RETRIES) {
-                const backoffMs = 1000 * 2 ** (attempt - 1); // 1 s, 2 s
+                const backoffMs = BASE_BACKOFF_MS * 2 ** (attempt - 1); // 1 s, 2 s
                 console.warn(`[sync] Warning: Upload error, retrying. (${lastError.message})`);
                 await new Promise((resolve) => setTimeout(resolve, backoffMs));
             }
