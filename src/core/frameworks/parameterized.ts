@@ -54,23 +54,13 @@ export function extractParameterizedDataFromForEach(content: string, testIndex: 
 
     if (!(forEachMatch || forMatch)) return null;
 
-    // Guard: verify the loop is still open at the point of our test, i.e. it
-    // genuinely wraps this it() call rather than belonging to a previous test's
-    // body that happened to be within the 1 000-char window.
-    // Strategy: find the loop's position in context and count net braces after
-    // it. If net braces go negative, the loop was closed before our test.
+    // Guard: verify the loop is still open at the point of our test (i.e. it
+    // genuinely wraps this it() call rather than being inside a previous test).
     const loopSearchStart = forEachMatch
         ? context.search(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i)
         : context.search(/\bfor\s*\(\s*(?:let|var|const)/);
 
-    if (loopSearchStart === -1) return null;
-
-    let netBraces = 0;
-    for (let i = loopSearchStart; i < context.length; i++) {
-        if (context[i] === '{') netBraces++;
-        else if (context[i] === '}') netBraces--;
-        if (netBraces < 0) return null; // loop was closed before our test
-    }
+    if (loopSearchStart === -1 || !isLoopStillOpen(context, loopSearchStart)) return null;
 
     // The loop is open — now try to count its items from an inline array decl.
     const arrayDeclMatch = context.match(/(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/);
@@ -162,16 +152,34 @@ export function detectParameterizedLoop(content: string, testIndex: number): boo
     const context = content.substring(contextStart, testIndex);
 
     // for...of / for...in wrapping the test
-    if (/\bfor\s*\(\s*(?:const|let|var)\s+.+?\s+(?:of|in)\s+.+?\)/.test(context)) {
+    const forMatch = /\bfor\s*\(\s*(?:const|let|var)\s+.+?\s+(?:of|in)\s+.+?\)/.exec(context);
+    if (forMatch && isLoopStillOpen(context, forMatch.index)) {
         return true;
     }
 
     // .forEach( wrapping the test
-    if (/\.\s*forEach\s*\(/.test(context)) {
+    const forEachMatch = /\.\s*forEach\s*\(/.exec(context);
+    if (forEachMatch && isLoopStillOpen(context, forEachMatch.index)) {
         return true;
     }
 
     return false;
+}
+
+/**
+ * Returns true if the loop/block starting at `loopStart` in `context` has not
+ * been closed by the end of `context` (i.e. net brace depth never goes negative).
+ * A negative net depth means the opening brace was matched by a closing brace
+ * before the current test position — the loop belongs to a previous test's body.
+ */
+function isLoopStillOpen(context: string, loopStart: number): boolean {
+    let netBraces = 0;
+    for (let i = loopStart; i < context.length; i++) {
+        if (context[i] === '{') netBraces++;
+        else if (context[i] === '}') netBraces--;
+        if (netBraces < 0) return false; // closed before our test
+    }
+    return true;
 }
 
 /**

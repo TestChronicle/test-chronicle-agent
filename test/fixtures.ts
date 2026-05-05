@@ -31,6 +31,18 @@ export const PLAYWRIGHT = {
     singleTag: `test('smoke test', { tag: '@smoke' }, async ({ page }) => {})`,
     arrayTags: `test('critical test', { tag: ['@smoke', '@critical'] }, async ({ page }) => {})`,
     noTags: `test('plain test', async ({ page }) => {})`,
+
+    // for..of loop INSIDE the test body — must NOT be tagged @parameterized.
+    forLoopInsideBody: [
+        `test('loops internally', async ({ page }) => {`,
+        `    const items = ['a', 'b', 'c'];`,
+        `    for (const item of items) {`,
+        `        expect(item).toBeTruthy();`,
+        `    }`,
+        `});`,
+        ``,
+        `test('plain test after loop', async ({ page }) => {});`,
+    ].join('\n'),
 };
 
 // ─── Vitest fixtures ──────────────────────────────────────────────────────────
@@ -46,6 +58,18 @@ export const VITEST = {
     only: `test.only('focused', () => {})`,
     todo: `test.todo('not yet implemented')`,
     normal: `test('normal test', () => {})`,
+
+    // for..of loop INSIDE the test body — must NOT be tagged @parameterized.
+    forLoopInsideBody: [
+        `it('loops internally', () => {`,
+        `    const items = ['a', 'b', 'c'];`,
+        `    for (const item of items) {`,
+        `        expect(item).toBeTruthy();`,
+        `    }`,
+        `});`,
+        ``,
+        `it('plain test after loop', () => {});`,
+    ].join('\n'),
 };
 
 // ─── Cypress fixtures ─────────────────────────────────────────────────────────
