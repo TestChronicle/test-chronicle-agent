@@ -54,74 +54,6 @@ var init_cjs_shims = __esm({
   }
 });
 
-// node_modules/dotenv/package.json
-var require_package = __commonJS({
-  "node_modules/dotenv/package.json"(exports2, module2) {
-    module2.exports = {
-      name: "dotenv",
-      version: "17.3.1",
-      description: "Loads environment variables from .env file",
-      main: "lib/main.js",
-      types: "lib/main.d.ts",
-      exports: {
-        ".": {
-          types: "./lib/main.d.ts",
-          require: "./lib/main.js",
-          default: "./lib/main.js"
-        },
-        "./config": "./config.js",
-        "./config.js": "./config.js",
-        "./lib/env-options": "./lib/env-options.js",
-        "./lib/env-options.js": "./lib/env-options.js",
-        "./lib/cli-options": "./lib/cli-options.js",
-        "./lib/cli-options.js": "./lib/cli-options.js",
-        "./package.json": "./package.json"
-      },
-      scripts: {
-        "dts-check": "tsc --project tests/types/tsconfig.json",
-        lint: "standard",
-        pretest: "npm run lint && npm run dts-check",
-        test: "tap run tests/**/*.js --allow-empty-coverage --disable-coverage --timeout=60000",
-        "test:coverage": "tap run tests/**/*.js --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
-        prerelease: "npm test",
-        release: "standard-version"
-      },
-      repository: {
-        type: "git",
-        url: "git://github.com/motdotla/dotenv.git"
-      },
-      homepage: "https://github.com/motdotla/dotenv#readme",
-      funding: "https://dotenvx.com",
-      keywords: [
-        "dotenv",
-        "env",
-        ".env",
-        "environment",
-        "variables",
-        "config",
-        "settings"
-      ],
-      readmeFilename: "README.md",
-      license: "BSD-2-Clause",
-      devDependencies: {
-        "@types/node": "^18.11.3",
-        decache: "^4.6.2",
-        sinon: "^14.0.1",
-        standard: "^17.0.0",
-        "standard-version": "^9.5.0",
-        tap: "^19.2.0",
-        typescript: "^4.8.4"
-      },
-      engines: {
-        node: ">=12"
-      },
-      browser: {
-        fs: false
-      }
-    };
-  }
-});
-
 // node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports2, module2) {
@@ -131,22 +63,15 @@ var require_main = __commonJS({
     var path12 = require("path");
     var os2 = require("os");
     var crypto = require("crypto");
-    var packageJson = require_package();
-    var version = packageJson.version;
     var TIPS = [
-      "\u{1F510} encrypt with Dotenvx: https://dotenvx.com",
-      "\u{1F510} prevent committing .env to code: https://dotenvx.com/precommit",
-      "\u{1F510} prevent building .env in docker: https://dotenvx.com/prebuild",
-      "\u{1F916} agentic secret storage: https://dotenvx.com/as2",
-      "\u26A1\uFE0F secrets for agents: https://dotenvx.com/as2",
-      "\u{1F6E1}\uFE0F auth for agents: https://vestauth.com",
-      "\u{1F6E0}\uFE0F  run anywhere with `dotenvx run -- yourcommand`",
-      "\u2699\uFE0F  specify custom .env file path with { path: '/custom/path/.env' }",
-      "\u2699\uFE0F  enable debug logging with { debug: true }",
-      "\u2699\uFE0F  override existing env vars with { override: true }",
-      "\u2699\uFE0F  suppress all logs with { quiet: true }",
-      "\u2699\uFE0F  write to custom object with { processEnv: myObject }",
-      "\u2699\uFE0F  load multiple .env files with { path: ['.env.local', '.env'] }"
+      "\u25C8 encrypted .env [www.dotenvx.com]",
+      "\u25C8 secrets for agents [www.dotenvx.com]",
+      "\u2301 auth for agents [www.vestauth.com]",
+      "\u2318 custom filepath { path: '/custom/path/.env' }",
+      "\u2318 enable debugging { debug: true }",
+      "\u2318 override existing { override: true }",
+      "\u2318 suppress logs { quiet: true }",
+      "\u2318 multiple files { path: ['.env.local', '.env'] }"
     ];
     function _getRandomTip() {
       return TIPS[Math.floor(Math.random() * TIPS.length)];
@@ -196,14 +121,14 @@ var require_main = __commonJS({
       const keys = _dotenvKey(options).split(",");
       const length = keys.length;
       let decrypted;
-      for (let i = 0; i < length; i++) {
+      for (let i2 = 0; i2 < length; i2++) {
         try {
-          const key = keys[i].trim();
+          const key = keys[i2].trim();
           const attrs = _instructions(result, key);
           decrypted = DotenvModule.decrypt(attrs.ciphertext, attrs.key);
           break;
         } catch (error) {
-          if (i + 1 >= length) {
+          if (i2 + 1 >= length) {
             throw error;
           }
         }
@@ -211,13 +136,13 @@ var require_main = __commonJS({
       return DotenvModule.parse(decrypted);
     }
     function _warn(message) {
-      console.error(`[dotenv@${version}][WARN] ${message}`);
+      console.error(`\u26A0 ${message}`);
     }
     function _debug(message) {
-      console.log(`[dotenv@${version}][DEBUG] ${message}`);
+      console.log(`\u2506 ${message}`);
     }
     function _log(message) {
-      console.log(`[dotenv@${version}] ${message}`);
+      console.log(`\u25C7 ${message}`);
     }
     function _dotenvKey(options) {
       if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
@@ -288,7 +213,7 @@ var require_main = __commonJS({
       const debug2 = parseBoolean(process.env.DOTENV_CONFIG_DEBUG || options && options.debug);
       const quiet = parseBoolean(process.env.DOTENV_CONFIG_QUIET || options && options.quiet);
       if (debug2 || !quiet) {
-        _log("Loading env from encrypted .env.vault");
+        _log("loading env from encrypted .env.vault");
       }
       const parsed = DotenvModule._parseVault(options);
       let processEnv = process.env;
@@ -311,7 +236,7 @@ var require_main = __commonJS({
         encoding = options.encoding;
       } else {
         if (debug2) {
-          _debug("No encoding is specified. UTF-8 is used by default");
+          _debug("no encoding is specified (UTF-8 is used by default)");
         }
       }
       let optionPaths = [dotenvPath];
@@ -333,7 +258,7 @@ var require_main = __commonJS({
           DotenvModule.populate(parsedAll, parsed, options);
         } catch (e) {
           if (debug2) {
-            _debug(`Failed to load ${path13} ${e.message}`);
+            _debug(`failed to load ${path13} ${e.message}`);
           }
           lastError = e;
         }
@@ -350,12 +275,12 @@ var require_main = __commonJS({
             shortPaths.push(relative);
           } catch (e) {
             if (debug2) {
-              _debug(`Failed to load ${filePath} ${e.message}`);
+              _debug(`failed to load ${filePath} ${e.message}`);
             }
             lastError = e;
           }
         }
-        _log(`injecting env (${keysCount}) from ${shortPaths.join(",")} ${dim(`-- tip: ${_getRandomTip()}`)}`);
+        _log(`injected env (${keysCount}) from ${shortPaths.join(",")} ${dim(`// tip: ${_getRandomTip()}`)}`);
       }
       if (lastError) {
         return { parsed: parsedAll, error: lastError };
@@ -369,7 +294,7 @@ var require_main = __commonJS({
       }
       const vaultPath = _vaultPath(options);
       if (!vaultPath) {
-        _warn(`You set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}. Did you forget to build it?`);
+        _warn(`you set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}`);
         return DotenvModule.configDotenv(options);
       }
       return DotenvModule._configVault(options);
@@ -457,10 +382,10 @@ var require_ms = __commonJS({
     init_cjs_shims();
     var s = 1e3;
     var m = s * 60;
-    var h = m * 60;
-    var d = h * 24;
+    var h2 = m * 60;
+    var d = h2 * 24;
     var w = d * 7;
-    var y = d * 365.25;
+    var y2 = d * 365.25;
     module2.exports = function(val, options) {
       options = options || {};
       var type = typeof val;
@@ -492,7 +417,7 @@ var require_ms = __commonJS({
         case "yrs":
         case "yr":
         case "y":
-          return n5 * y;
+          return n5 * y2;
         case "weeks":
         case "week":
         case "w":
@@ -506,7 +431,7 @@ var require_ms = __commonJS({
         case "hrs":
         case "hr":
         case "h":
-          return n5 * h;
+          return n5 * h2;
         case "minutes":
         case "minute":
         case "mins":
@@ -534,8 +459,8 @@ var require_ms = __commonJS({
       if (msAbs >= d) {
         return Math.round(ms2 / d) + "d";
       }
-      if (msAbs >= h) {
-        return Math.round(ms2 / h) + "h";
+      if (msAbs >= h2) {
+        return Math.round(ms2 / h2) + "h";
       }
       if (msAbs >= m) {
         return Math.round(ms2 / m) + "m";
@@ -550,8 +475,8 @@ var require_ms = __commonJS({
       if (msAbs >= d) {
         return plural(ms2, msAbs, d, "day");
       }
-      if (msAbs >= h) {
-        return plural(ms2, msAbs, h, "hour");
+      if (msAbs >= h2) {
+        return plural(ms2, msAbs, h2, "hour");
       }
       if (msAbs >= m) {
         return plural(ms2, msAbs, m, "minute");
@@ -590,8 +515,8 @@ var require_common = __commonJS({
       createDebug.formatters = {};
       function selectColor(namespace) {
         let hash = 0;
-        for (let i = 0; i < namespace.length; i++) {
-          hash = (hash << 5) - hash + namespace.charCodeAt(i);
+        for (let i2 = 0; i2 < namespace.length; i2++) {
+          hash = (hash << 5) - hash + namespace.charCodeAt(i2);
           hash |= 0;
         }
         return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
@@ -863,8 +788,8 @@ var require_browser = __commonJS({
       if (!this.useColors) {
         return;
       }
-      const c = "color: " + this.color;
-      args.splice(1, 0, c, "color: inherit");
+      const c3 = "color: " + this.color;
+      args.splice(1, 0, c3, "color: inherit");
       let index = 0;
       let lastC = 0;
       args[0].replace(/%[a-zA-Z%]/g, (match2) => {
@@ -876,7 +801,7 @@ var require_browser = __commonJS({
           lastC = index;
         }
       });
-      args.splice(lastC, 0, c);
+      args.splice(lastC, 0, c3);
     }
     exports2.log = console.debug || console.log || (() => {
     });
@@ -891,15 +816,15 @@ var require_browser = __commonJS({
       }
     }
     function load() {
-      let r;
+      let r2;
       try {
-        r = exports2.storage.getItem("debug") || exports2.storage.getItem("DEBUG");
+        r2 = exports2.storage.getItem("debug") || exports2.storage.getItem("DEBUG");
       } catch (error) {
       }
-      if (!r && typeof process !== "undefined" && "env" in process) {
-        r = process.env.DEBUG;
+      if (!r2 && typeof process !== "undefined" && "env" in process) {
+        r2 = process.env.DEBUG;
       }
-      return r;
+      return r2;
     }
     function localstorage() {
       try {
@@ -1025,8 +950,8 @@ var require_node = __commonJS({
     exports2.inspectOpts = Object.keys(process.env).filter((key) => {
       return /^debug_/i.test(key);
     }).reduce((obj, key) => {
-      const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_2, k2) => {
-        return k2.toUpperCase();
+      const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_3, k3) => {
+        return k3.toUpperCase();
       });
       let val = process.env[key];
       if (/^(yes|on|true|enabled)$/i.test(val)) {
@@ -1047,8 +972,8 @@ var require_node = __commonJS({
     function formatArgs(args) {
       const { namespace: name, useColors: useColors2 } = this;
       if (useColors2) {
-        const c = this.color;
-        const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
+        const c3 = this.color;
+        const colorCode = "\x1B[3" + (c3 < 8 ? c3 : "8;5;" + c3);
         const prefix = `  ${colorCode};1m${name} \x1B[0m`;
         args[0] = prefix + args[0].split("\n").join("\n" + prefix);
         args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
@@ -1078,8 +1003,8 @@ var require_node = __commonJS({
     function init(debug2) {
       debug2.inspectOpts = {};
       const keys = Object.keys(exports2.inspectOpts);
-      for (let i = 0; i < keys.length; i++) {
-        debug2.inspectOpts[keys[i]] = exports2.inspectOpts[keys[i]];
+      for (let i2 = 0; i2 < keys.length; i2++) {
+        debug2.inspectOpts[keys[i2]] = exports2.inspectOpts[keys[i2]];
       }
     }
     module2.exports = require_common()(exports2);
@@ -1159,7 +1084,7 @@ var require_dist = __commonJS({
     "use strict";
     init_cjs_shims();
     function __export2(m) {
-      for (var p in m) if (!exports2.hasOwnProperty(p)) exports2[p] = m[p];
+      for (var p2 in m) if (!exports2.hasOwnProperty(p2)) exports2[p2] = m[p2];
     }
     Object.defineProperty(exports2, "__esModule", { value: true });
     __export2(require_src2());
@@ -1237,29 +1162,29 @@ var import_promises = require("fs/promises");
 var import_node_events = require("events");
 var import_node_stream = __toESM(require("stream"), 1);
 var import_node_string_decoder = require("string_decoder");
-var Gt = (n5, t, e) => {
-  let s = n5 instanceof RegExp ? ce(n5, e) : n5, i = t instanceof RegExp ? ce(t, e) : t, r = s !== null && i != null && ss(s, i, e);
-  return r && { start: r[0], end: r[1], pre: e.slice(0, r[0]), body: e.slice(r[0] + s.length, r[1]), post: e.slice(r[1] + i.length) };
+var Gt = (n5, t2, e) => {
+  let s = n5 instanceof RegExp ? ce(n5, e) : n5, i2 = t2 instanceof RegExp ? ce(t2, e) : t2, r2 = s !== null && i2 != null && ss(s, i2, e);
+  return r2 && { start: r2[0], end: r2[1], pre: e.slice(0, r2[0]), body: e.slice(r2[0] + s.length, r2[1]), post: e.slice(r2[1] + i2.length) };
 };
-var ce = (n5, t) => {
-  let e = t.match(n5);
+var ce = (n5, t2) => {
+  let e = t2.match(n5);
   return e ? e[0] : null;
 };
-var ss = (n5, t, e) => {
-  let s, i, r, o, h, a = e.indexOf(n5), l = e.indexOf(t, a + 1), u = a;
+var ss = (n5, t2, e) => {
+  let s, i2, r2, o2, h2, a = e.indexOf(n5), l = e.indexOf(t2, a + 1), u = a;
   if (a >= 0 && l > 0) {
-    if (n5 === t) return [a, l];
-    for (s = [], r = e.length; u >= 0 && !h; ) {
+    if (n5 === t2) return [a, l];
+    for (s = [], r2 = e.length; u >= 0 && !h2; ) {
       if (u === a) s.push(u), a = e.indexOf(n5, u + 1);
       else if (s.length === 1) {
-        let c = s.pop();
-        c !== void 0 && (h = [c, l]);
-      } else i = s.pop(), i !== void 0 && i < r && (r = i, o = l), l = e.indexOf(t, u + 1);
+        let c3 = s.pop();
+        c3 !== void 0 && (h2 = [c3, l]);
+      } else i2 = s.pop(), i2 !== void 0 && i2 < r2 && (r2 = i2, o2 = l), l = e.indexOf(t2, u + 1);
       u = a < l && a >= 0 ? a : l;
     }
-    s.length && o !== void 0 && (h = [r, o]);
+    s.length && o2 !== void 0 && (h2 = [r2, o2]);
   }
-  return h;
+  return h2;
 };
 var fe = "\0SLASH" + Math.random() + "\0";
 var ue = "\0OPEN" + Math.random() + "\0";
@@ -1288,16 +1213,16 @@ function ms(n5) {
 }
 function me(n5) {
   if (!n5) return [""];
-  let t = [], e = Gt("{", "}", n5);
+  let t2 = [], e = Gt("{", "}", n5);
   if (!e) return n5.split(",");
-  let { pre: s, body: i, post: r } = e, o = s.split(",");
-  o[o.length - 1] += "{" + i + "}";
-  let h = me(r);
-  return r.length && (o[o.length - 1] += h.shift(), o.push.apply(o, h)), t.push.apply(t, o), t;
+  let { pre: s, body: i2, post: r2 } = e, o2 = s.split(",");
+  o2[o2.length - 1] += "{" + i2 + "}";
+  let h2 = me(r2);
+  return r2.length && (o2[o2.length - 1] += h2.shift(), o2.push.apply(o2, h2)), t2.push.apply(t2, o2), t2;
 }
-function ge(n5, t = {}) {
+function ge(n5, t2 = {}) {
   if (!n5) return [];
-  let { max: e = ds } = t;
+  let { max: e = ds } = t2;
   return n5.slice(0, 2) === "{}" && (n5 = "\\{\\}" + n5.slice(2)), ht(ps(n5), e, true).map(ms);
 }
 function gs(n5) {
@@ -1306,51 +1231,51 @@ function gs(n5) {
 function ws(n5) {
   return /^-?0\d/.test(n5);
 }
-function ys(n5, t) {
-  return n5 <= t;
+function ys(n5, t2) {
+  return n5 <= t2;
 }
-function bs(n5, t) {
-  return n5 >= t;
+function bs(n5, t2) {
+  return n5 >= t2;
 }
-function ht(n5, t, e) {
-  let s = [], i = Gt("{", "}", n5);
-  if (!i) return [n5];
-  let r = i.pre, o = i.post.length ? ht(i.post, t, false) : [""];
-  if (/\$$/.test(i.pre)) for (let h = 0; h < o.length && h < t; h++) {
-    let a = r + "{" + i.body + "}" + o[h];
+function ht(n5, t2, e) {
+  let s = [], i2 = Gt("{", "}", n5);
+  if (!i2) return [n5];
+  let r2 = i2.pre, o2 = i2.post.length ? ht(i2.post, t2, false) : [""];
+  if (/\$$/.test(i2.pre)) for (let h2 = 0; h2 < o2.length && h2 < t2; h2++) {
+    let a = r2 + "{" + i2.body + "}" + o2[h2];
     s.push(a);
   }
   else {
-    let h = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(i.body), a = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(i.body), l = h || a, u = i.body.indexOf(",") >= 0;
-    if (!l && !u) return i.post.match(/,(?!,).*\}/) ? (n5 = i.pre + "{" + i.body + qt + i.post, ht(n5, t, true)) : [n5];
-    let c;
-    if (l) c = i.body.split(/\.\./);
-    else if (c = me(i.body), c.length === 1 && c[0] !== void 0 && (c = ht(c[0], t, false).map(gs), c.length === 1)) return o.map((f) => i.pre + c[0] + f);
+    let h2 = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(i2.body), a = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(i2.body), l = h2 || a, u = i2.body.indexOf(",") >= 0;
+    if (!l && !u) return i2.post.match(/,(?!,).*\}/) ? (n5 = i2.pre + "{" + i2.body + qt + i2.post, ht(n5, t2, true)) : [n5];
+    let c3;
+    if (l) c3 = i2.body.split(/\.\./);
+    else if (c3 = me(i2.body), c3.length === 1 && c3[0] !== void 0 && (c3 = ht(c3[0], t2, false).map(gs), c3.length === 1)) return o2.map((f) => i2.pre + c3[0] + f);
     let d;
-    if (l && c[0] !== void 0 && c[1] !== void 0) {
-      let f = Ht(c[0]), m = Ht(c[1]), p = Math.max(c[0].length, c[1].length), w = c.length === 3 && c[2] !== void 0 ? Math.abs(Ht(c[2])) : 1, g = ys;
+    if (l && c3[0] !== void 0 && c3[1] !== void 0) {
+      let f = Ht(c3[0]), m = Ht(c3[1]), p2 = Math.max(c3[0].length, c3[1].length), w = c3.length === 3 && c3[2] !== void 0 ? Math.abs(Ht(c3[2])) : 1, g = ys;
       m < f && (w *= -1, g = bs);
-      let E = c.some(ws);
+      let E2 = c3.some(ws);
       d = [];
-      for (let y = f; g(y, m); y += w) {
-        let b;
-        if (a) b = String.fromCharCode(y), b === "\\" && (b = "");
-        else if (b = String(y), E) {
-          let z = p - b.length;
-          if (z > 0) {
-            let $ = new Array(z + 1).join("0");
-            y < 0 ? b = "-" + $ + b.slice(1) : b = $ + b;
+      for (let y2 = f; g(y2, m); y2 += w) {
+        let b2;
+        if (a) b2 = String.fromCharCode(y2), b2 === "\\" && (b2 = "");
+        else if (b2 = String(y2), E2) {
+          let z2 = p2 - b2.length;
+          if (z2 > 0) {
+            let $2 = new Array(z2 + 1).join("0");
+            y2 < 0 ? b2 = "-" + $2 + b2.slice(1) : b2 = $2 + b2;
           }
         }
-        d.push(b);
+        d.push(b2);
       }
     } else {
       d = [];
-      for (let f = 0; f < c.length; f++) d.push.apply(d, ht(c[f], t, false));
+      for (let f = 0; f < c3.length; f++) d.push.apply(d, ht(c3[f], t2, false));
     }
-    for (let f = 0; f < d.length; f++) for (let m = 0; m < o.length && s.length < t; m++) {
-      let p = r + d[f] + o[m];
-      (!e || l || p) && s.push(p);
+    for (let f = 0; f < d.length; f++) for (let m = 0; m < o2.length && s.length < t2; m++) {
+      let p2 = r2 + d[f] + o2[m];
+      (!e || l || p2) && s.push(p2);
     }
   }
   return s;
@@ -1363,55 +1288,55 @@ var Ss = { "[:alnum:]": ["\\p{L}\\p{Nl}\\p{Nd}", true], "[:alpha:]": ["\\p{L}\\p
 var lt = (n5) => n5.replace(/[[\]\\-]/g, "\\$&");
 var Es = (n5) => n5.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 var we = (n5) => n5.join("");
-var ye = (n5, t) => {
-  let e = t;
+var ye = (n5, t2) => {
+  let e = t2;
   if (n5.charAt(e) !== "[") throw new Error("not in a brace expression");
-  let s = [], i = [], r = e + 1, o = false, h = false, a = false, l = false, u = e, c = "";
-  t: for (; r < n5.length; ) {
-    let p = n5.charAt(r);
-    if ((p === "!" || p === "^") && r === e + 1) {
-      l = true, r++;
+  let s = [], i2 = [], r2 = e + 1, o2 = false, h2 = false, a = false, l = false, u = e, c3 = "";
+  t: for (; r2 < n5.length; ) {
+    let p2 = n5.charAt(r2);
+    if ((p2 === "!" || p2 === "^") && r2 === e + 1) {
+      l = true, r2++;
       continue;
     }
-    if (p === "]" && o && !a) {
-      u = r + 1;
+    if (p2 === "]" && o2 && !a) {
+      u = r2 + 1;
       break;
     }
-    if (o = true, p === "\\" && !a) {
-      a = true, r++;
+    if (o2 = true, p2 === "\\" && !a) {
+      a = true, r2++;
       continue;
     }
-    if (p === "[" && !a) {
-      for (let [w, [g, S, E]] of Object.entries(Ss)) if (n5.startsWith(w, r)) {
-        if (c) return ["$.", false, n5.length - e, true];
-        r += w.length, E ? i.push(g) : s.push(g), h = h || S;
+    if (p2 === "[" && !a) {
+      for (let [w, [g, S2, E2]] of Object.entries(Ss)) if (n5.startsWith(w, r2)) {
+        if (c3) return ["$.", false, n5.length - e, true];
+        r2 += w.length, E2 ? i2.push(g) : s.push(g), h2 = h2 || S2;
         continue t;
       }
     }
-    if (a = false, c) {
-      p > c ? s.push(lt(c) + "-" + lt(p)) : p === c && s.push(lt(p)), c = "", r++;
+    if (a = false, c3) {
+      p2 > c3 ? s.push(lt(c3) + "-" + lt(p2)) : p2 === c3 && s.push(lt(p2)), c3 = "", r2++;
       continue;
     }
-    if (n5.startsWith("-]", r + 1)) {
-      s.push(lt(p + "-")), r += 2;
+    if (n5.startsWith("-]", r2 + 1)) {
+      s.push(lt(p2 + "-")), r2 += 2;
       continue;
     }
-    if (n5.startsWith("-", r + 1)) {
-      c = p, r += 2;
+    if (n5.startsWith("-", r2 + 1)) {
+      c3 = p2, r2 += 2;
       continue;
     }
-    s.push(lt(p)), r++;
+    s.push(lt(p2)), r2++;
   }
-  if (u < r) return ["", false, 0, false];
-  if (!s.length && !i.length) return ["$.", false, n5.length - e, true];
-  if (i.length === 0 && s.length === 1 && /^\\?.$/.test(s[0]) && !l) {
-    let p = s[0].length === 2 ? s[0].slice(-1) : s[0];
-    return [Es(p), false, u - e, false];
+  if (u < r2) return ["", false, 0, false];
+  if (!s.length && !i2.length) return ["$.", false, n5.length - e, true];
+  if (i2.length === 0 && s.length === 1 && /^\\?.$/.test(s[0]) && !l) {
+    let p2 = s[0].length === 2 ? s[0].slice(-1) : s[0];
+    return [Es(p2), false, u - e, false];
   }
-  let d = "[" + (l ? "^" : "") + we(s) + "]", f = "[" + (l ? "" : "^") + we(i) + "]";
-  return [s.length && i.length ? "(" + d + "|" + f + ")" : s.length ? d : f, h, u - e, true];
+  let d = "[" + (l ? "^" : "") + we(s) + "]", f = "[" + (l ? "" : "^") + we(i2) + "]";
+  return [s.length && i2.length ? "(" + d + "|" + f + ")" : s.length ? d : f, h2, u - e, true];
 };
-var W = (n5, { windowsPathsNoEscape: t = false, magicalBraces: e = true } = {}) => e ? t ? n5.replace(/\[([^\/\\])\]/g, "$1") : n5.replace(/((?!\\).|^)\[([^\/\\])\]/g, "$1$2").replace(/\\([^\/])/g, "$1") : t ? n5.replace(/\[([^\/\\{}])\]/g, "$1") : n5.replace(/((?!\\).|^)\[([^\/\\{}])\]/g, "$1$2").replace(/\\([^\/{}])/g, "$1");
+var W = (n5, { windowsPathsNoEscape: t2 = false, magicalBraces: e = true } = {}) => e ? t2 ? n5.replace(/\[([^\/\\])\]/g, "$1") : n5.replace(/((?!\\).|^)\[([^\/\\])\]/g, "$1$2").replace(/\\([^\/])/g, "$1") : t2 ? n5.replace(/\[([^\/\\{}])\]/g, "$1") : n5.replace(/((?!\\).|^)\[([^\/\\{}])\]/g, "$1$2").replace(/\\([^\/{}])/g, "$1");
 var xs = /* @__PURE__ */ new Set(["!", "?", "+", "*", "@"]);
 var be = (n5) => xs.has(n5);
 var vs = "(?!(?:^|/)\\.\\.?(?:$|/))";
@@ -1425,7 +1350,7 @@ var Se = Kt + "*?";
 var Ee = Kt + "+?";
 var _t, _s, _n, _r, _o, _S, _w, _c, _h, _u, _f, _n_instances, a_fn, _n_static, _a, i_fn, d_fn, E_fn;
 var Q = (_a = class {
-  constructor(t, e, s = {}) {
+  constructor(t2, e, s = {}) {
     __privateAdd(this, _n_instances);
     __publicField(this, "type");
     __privateAdd(this, _t);
@@ -1439,33 +1364,33 @@ var Q = (_a = class {
     __privateAdd(this, _h);
     __privateAdd(this, _u);
     __privateAdd(this, _f, false);
-    this.type = t, t && __privateSet(this, _s, true), __privateSet(this, _o, e), __privateSet(this, _t, __privateGet(this, _o) ? __privateGet(__privateGet(this, _o), _t) : this), __privateSet(this, _h, __privateGet(this, _t) === this ? s : __privateGet(__privateGet(this, _t), _h)), __privateSet(this, _w, __privateGet(this, _t) === this ? [] : __privateGet(__privateGet(this, _t), _w)), t === "!" && !__privateGet(__privateGet(this, _t), _c) && __privateGet(this, _w).push(this), __privateSet(this, _S, __privateGet(this, _o) ? __privateGet(__privateGet(this, _o), _r).length : 0);
+    this.type = t2, t2 && __privateSet(this, _s, true), __privateSet(this, _o, e), __privateSet(this, _t, __privateGet(this, _o) ? __privateGet(__privateGet(this, _o), _t) : this), __privateSet(this, _h, __privateGet(this, _t) === this ? s : __privateGet(__privateGet(this, _t), _h)), __privateSet(this, _w, __privateGet(this, _t) === this ? [] : __privateGet(__privateGet(this, _t), _w)), t2 === "!" && !__privateGet(__privateGet(this, _t), _c) && __privateGet(this, _w).push(this), __privateSet(this, _S, __privateGet(this, _o) ? __privateGet(__privateGet(this, _o), _r).length : 0);
   }
   get hasMagic() {
     if (__privateGet(this, _s) !== void 0) return __privateGet(this, _s);
-    for (let t of __privateGet(this, _r)) if (typeof t != "string" && (t.type || t.hasMagic)) return __privateSet(this, _s, true);
+    for (let t2 of __privateGet(this, _r)) if (typeof t2 != "string" && (t2.type || t2.hasMagic)) return __privateSet(this, _s, true);
     return __privateGet(this, _s);
   }
   toString() {
-    return __privateGet(this, _u) !== void 0 ? __privateGet(this, _u) : this.type ? __privateSet(this, _u, this.type + "(" + __privateGet(this, _r).map((t) => String(t)).join("|") + ")") : __privateSet(this, _u, __privateGet(this, _r).map((t) => String(t)).join(""));
+    return __privateGet(this, _u) !== void 0 ? __privateGet(this, _u) : this.type ? __privateSet(this, _u, this.type + "(" + __privateGet(this, _r).map((t2) => String(t2)).join("|") + ")") : __privateSet(this, _u, __privateGet(this, _r).map((t2) => String(t2)).join(""));
   }
-  push(...t) {
-    for (let e of t) if (e !== "") {
+  push(...t2) {
+    for (let e of t2) if (e !== "") {
       if (typeof e != "string" && !(e instanceof _a && __privateGet(e, _o) === this)) throw new Error("invalid part: " + e);
       __privateGet(this, _r).push(e);
     }
   }
   toJSON() {
-    let t = this.type === null ? __privateGet(this, _r).slice().map((e) => typeof e == "string" ? e : e.toJSON()) : [this.type, ...__privateGet(this, _r).map((e) => e.toJSON())];
-    return this.isStart() && !this.type && t.unshift([]), this.isEnd() && (this === __privateGet(this, _t) || __privateGet(__privateGet(this, _t), _c) && __privateGet(this, _o)?.type === "!") && t.push({}), t;
+    let t2 = this.type === null ? __privateGet(this, _r).slice().map((e) => typeof e == "string" ? e : e.toJSON()) : [this.type, ...__privateGet(this, _r).map((e) => e.toJSON())];
+    return this.isStart() && !this.type && t2.unshift([]), this.isEnd() && (this === __privateGet(this, _t) || __privateGet(__privateGet(this, _t), _c) && __privateGet(this, _o)?.type === "!") && t2.push({}), t2;
   }
   isStart() {
     if (__privateGet(this, _t) === this) return true;
     if (!__privateGet(this, _o)?.isStart()) return false;
     if (__privateGet(this, _S) === 0) return true;
-    let t = __privateGet(this, _o);
+    let t2 = __privateGet(this, _o);
     for (let e = 0; e < __privateGet(this, _S); e++) {
-      let s = __privateGet(t, _r)[e];
+      let s = __privateGet(t2, _r)[e];
       if (!(s instanceof _a && s.type === "!")) return false;
     }
     return true;
@@ -1474,180 +1399,180 @@ var Q = (_a = class {
     if (__privateGet(this, _t) === this || __privateGet(this, _o)?.type === "!") return true;
     if (!__privateGet(this, _o)?.isEnd()) return false;
     if (!this.type) return __privateGet(this, _o)?.isEnd();
-    let t = __privateGet(this, _o) ? __privateGet(__privateGet(this, _o), _r).length : 0;
-    return __privateGet(this, _S) === t - 1;
+    let t2 = __privateGet(this, _o) ? __privateGet(__privateGet(this, _o), _r).length : 0;
+    return __privateGet(this, _S) === t2 - 1;
   }
-  copyIn(t) {
-    typeof t == "string" ? this.push(t) : this.push(t.clone(this));
+  copyIn(t2) {
+    typeof t2 == "string" ? this.push(t2) : this.push(t2.clone(this));
   }
-  clone(t) {
-    let e = new _a(this.type, t);
+  clone(t2) {
+    let e = new _a(this.type, t2);
     for (let s of __privateGet(this, _r)) e.copyIn(s);
     return e;
   }
-  static fromGlob(t, e = {}) {
+  static fromGlob(t2, e = {}) {
     var _a13;
     let s = new _a(null, void 0, e);
-    return __privateMethod(_a13 = _a, _n_static, i_fn).call(_a13, t, s, 0, e), s;
+    return __privateMethod(_a13 = _a, _n_static, i_fn).call(_a13, t2, s, 0, e), s;
   }
   toMMPattern() {
     if (this !== __privateGet(this, _t)) return __privateGet(this, _t).toMMPattern();
-    let t = this.toString(), [e, s, i, r] = this.toRegExpSource();
-    if (!(i || __privateGet(this, _s) || __privateGet(this, _h).nocase && !__privateGet(this, _h).nocaseMagicOnly && t.toUpperCase() !== t.toLowerCase())) return s;
-    let h = (__privateGet(this, _h).nocase ? "i" : "") + (r ? "u" : "");
-    return Object.assign(new RegExp(`^${e}$`, h), { _src: e, _glob: t });
+    let t2 = this.toString(), [e, s, i2, r2] = this.toRegExpSource();
+    if (!(i2 || __privateGet(this, _s) || __privateGet(this, _h).nocase && !__privateGet(this, _h).nocaseMagicOnly && t2.toUpperCase() !== t2.toLowerCase())) return s;
+    let h2 = (__privateGet(this, _h).nocase ? "i" : "") + (r2 ? "u" : "");
+    return Object.assign(new RegExp(`^${e}$`, h2), { _src: e, _glob: t2 });
   }
   get options() {
     return __privateGet(this, _h);
   }
-  toRegExpSource(t) {
-    let e = t ?? !!__privateGet(this, _h).dot;
+  toRegExpSource(t2) {
+    let e = t2 ?? !!__privateGet(this, _h).dot;
     if (__privateGet(this, _t) === this && __privateMethod(this, _n_instances, a_fn).call(this), !this.type) {
       let a = this.isStart() && this.isEnd() && !__privateGet(this, _r).some((f) => typeof f != "string"), l = __privateGet(this, _r).map((f) => {
         var _a13;
-        let [m, p, w, g] = typeof f == "string" ? __privateMethod(_a13 = _a, _n_static, E_fn).call(_a13, f, __privateGet(this, _s), a) : f.toRegExpSource(t);
+        let [m, p2, w, g] = typeof f == "string" ? __privateMethod(_a13 = _a, _n_static, E_fn).call(_a13, f, __privateGet(this, _s), a) : f.toRegExpSource(t2);
         return __privateSet(this, _s, __privateGet(this, _s) || w), __privateSet(this, _n, __privateGet(this, _n) || g), m;
       }).join(""), u = "";
       if (this.isStart() && typeof __privateGet(this, _r)[0] == "string" && !(__privateGet(this, _r).length === 1 && Ts.has(__privateGet(this, _r)[0]))) {
-        let m = Cs, p = e && m.has(l.charAt(0)) || l.startsWith("\\.") && m.has(l.charAt(2)) || l.startsWith("\\.\\.") && m.has(l.charAt(4)), w = !e && !t && m.has(l.charAt(0));
-        u = p ? vs : w ? Ct : "";
+        let m = Cs, p2 = e && m.has(l.charAt(0)) || l.startsWith("\\.") && m.has(l.charAt(2)) || l.startsWith("\\.\\.") && m.has(l.charAt(4)), w = !e && !t2 && m.has(l.charAt(0));
+        u = p2 ? vs : w ? Ct : "";
       }
-      let c = "";
-      return this.isEnd() && __privateGet(__privateGet(this, _t), _c) && __privateGet(this, _o)?.type === "!" && (c = "(?:$|\\/)"), [u + l + c, W(l), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
+      let c3 = "";
+      return this.isEnd() && __privateGet(__privateGet(this, _t), _c) && __privateGet(this, _o)?.type === "!" && (c3 = "(?:$|\\/)"), [u + l + c3, W(l), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
     }
-    let s = this.type === "*" || this.type === "+", i = this.type === "!" ? "(?:(?!(?:" : "(?:", r = __privateMethod(this, _n_instances, d_fn).call(this, e);
-    if (this.isStart() && this.isEnd() && !r && this.type !== "!") {
+    let s = this.type === "*" || this.type === "+", i2 = this.type === "!" ? "(?:(?!(?:" : "(?:", r2 = __privateMethod(this, _n_instances, d_fn).call(this, e);
+    if (this.isStart() && this.isEnd() && !r2 && this.type !== "!") {
       let a = this.toString();
       return __privateSet(this, _r, [a]), this.type = null, __privateSet(this, _s, void 0), [a, W(this.toString()), false, false];
     }
-    let o = !s || t || e || !Ct ? "" : __privateMethod(this, _n_instances, d_fn).call(this, true);
-    o === r && (o = ""), o && (r = `(?:${r})(?:${o})*?`);
-    let h = "";
-    if (this.type === "!" && __privateGet(this, _f)) h = (this.isStart() && !e ? Ct : "") + Ee;
+    let o2 = !s || t2 || e || !Ct ? "" : __privateMethod(this, _n_instances, d_fn).call(this, true);
+    o2 === r2 && (o2 = ""), o2 && (r2 = `(?:${r2})(?:${o2})*?`);
+    let h2 = "";
+    if (this.type === "!" && __privateGet(this, _f)) h2 = (this.isStart() && !e ? Ct : "") + Ee;
     else {
-      let a = this.type === "!" ? "))" + (this.isStart() && !e && !t ? Ct : "") + Se + ")" : this.type === "@" ? ")" : this.type === "?" ? ")?" : this.type === "+" && o ? ")" : this.type === "*" && o ? ")?" : `)${this.type}`;
-      h = i + r + a;
+      let a = this.type === "!" ? "))" + (this.isStart() && !e && !t2 ? Ct : "") + Se + ")" : this.type === "@" ? ")" : this.type === "?" ? ")?" : this.type === "+" && o2 ? ")" : this.type === "*" && o2 ? ")?" : `)${this.type}`;
+      h2 = i2 + r2 + a;
     }
-    return [h, W(r), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
+    return [h2, W(r2), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
   }
 }, _t = new WeakMap(), _s = new WeakMap(), _n = new WeakMap(), _r = new WeakMap(), _o = new WeakMap(), _S = new WeakMap(), _w = new WeakMap(), _c = new WeakMap(), _h = new WeakMap(), _u = new WeakMap(), _f = new WeakMap(), _n_instances = new WeakSet(), a_fn = function() {
   if (this !== __privateGet(this, _t)) throw new Error("should only call on root");
   if (__privateGet(this, _c)) return this;
   this.toString(), __privateSet(this, _c, true);
-  let t;
-  for (; t = __privateGet(this, _w).pop(); ) {
-    if (t.type !== "!") continue;
-    let e = t, s = __privateGet(e, _o);
+  let t2;
+  for (; t2 = __privateGet(this, _w).pop(); ) {
+    if (t2.type !== "!") continue;
+    let e = t2, s = __privateGet(e, _o);
     for (; s; ) {
-      for (let i = __privateGet(e, _S) + 1; !s.type && i < __privateGet(s, _r).length; i++) for (let r of __privateGet(t, _r)) {
-        if (typeof r == "string") throw new Error("string part in extglob AST??");
-        r.copyIn(__privateGet(s, _r)[i]);
+      for (let i2 = __privateGet(e, _S) + 1; !s.type && i2 < __privateGet(s, _r).length; i2++) for (let r2 of __privateGet(t2, _r)) {
+        if (typeof r2 == "string") throw new Error("string part in extglob AST??");
+        r2.copyIn(__privateGet(s, _r)[i2]);
       }
       e = s, s = __privateGet(e, _o);
     }
   }
   return this;
-}, _n_static = new WeakSet(), i_fn = function(t, e, s, i) {
+}, _n_static = new WeakSet(), i_fn = function(t2, e, s, i2) {
   var _a13, _b5;
-  let r = false, o = false, h = -1, a = false;
+  let r2 = false, o2 = false, h2 = -1, a = false;
   if (e.type === null) {
     let f = s, m = "";
-    for (; f < t.length; ) {
-      let p = t.charAt(f++);
-      if (r || p === "\\") {
-        r = !r, m += p;
+    for (; f < t2.length; ) {
+      let p2 = t2.charAt(f++);
+      if (r2 || p2 === "\\") {
+        r2 = !r2, m += p2;
         continue;
       }
-      if (o) {
-        f === h + 1 ? (p === "^" || p === "!") && (a = true) : p === "]" && !(f === h + 2 && a) && (o = false), m += p;
+      if (o2) {
+        f === h2 + 1 ? (p2 === "^" || p2 === "!") && (a = true) : p2 === "]" && !(f === h2 + 2 && a) && (o2 = false), m += p2;
         continue;
-      } else if (p === "[") {
-        o = true, h = f, a = false, m += p;
+      } else if (p2 === "[") {
+        o2 = true, h2 = f, a = false, m += p2;
         continue;
       }
-      if (!i.noext && be(p) && t.charAt(f) === "(") {
+      if (!i2.noext && be(p2) && t2.charAt(f) === "(") {
         e.push(m), m = "";
-        let w = new _a(p, e);
-        f = __privateMethod(_a13 = _a, _n_static, i_fn).call(_a13, t, w, f, i), e.push(w);
+        let w = new _a(p2, e);
+        f = __privateMethod(_a13 = _a, _n_static, i_fn).call(_a13, t2, w, f, i2), e.push(w);
         continue;
       }
-      m += p;
+      m += p2;
     }
     return e.push(m), f;
   }
-  let l = s + 1, u = new _a(null, e), c = [], d = "";
-  for (; l < t.length; ) {
-    let f = t.charAt(l++);
-    if (r || f === "\\") {
-      r = !r, d += f;
+  let l = s + 1, u = new _a(null, e), c3 = [], d = "";
+  for (; l < t2.length; ) {
+    let f = t2.charAt(l++);
+    if (r2 || f === "\\") {
+      r2 = !r2, d += f;
       continue;
     }
-    if (o) {
-      l === h + 1 ? (f === "^" || f === "!") && (a = true) : f === "]" && !(l === h + 2 && a) && (o = false), d += f;
+    if (o2) {
+      l === h2 + 1 ? (f === "^" || f === "!") && (a = true) : f === "]" && !(l === h2 + 2 && a) && (o2 = false), d += f;
       continue;
     } else if (f === "[") {
-      o = true, h = l, a = false, d += f;
+      o2 = true, h2 = l, a = false, d += f;
       continue;
     }
-    if (be(f) && t.charAt(l) === "(") {
+    if (be(f) && t2.charAt(l) === "(") {
       u.push(d), d = "";
       let m = new _a(f, u);
-      u.push(m), l = __privateMethod(_b5 = _a, _n_static, i_fn).call(_b5, t, m, l, i);
+      u.push(m), l = __privateMethod(_b5 = _a, _n_static, i_fn).call(_b5, t2, m, l, i2);
       continue;
     }
     if (f === "|") {
-      u.push(d), d = "", c.push(u), u = new _a(null, e);
+      u.push(d), d = "", c3.push(u), u = new _a(null, e);
       continue;
     }
-    if (f === ")") return d === "" && __privateGet(e, _r).length === 0 && __privateSet(e, _f, true), u.push(d), d = "", e.push(...c, u), l;
+    if (f === ")") return d === "" && __privateGet(e, _r).length === 0 && __privateSet(e, _f, true), u.push(d), d = "", e.push(...c3, u), l;
     d += f;
   }
-  return e.type = null, __privateSet(e, _s, void 0), __privateSet(e, _r, [t.substring(s - 1)]), l;
-}, d_fn = function(t) {
+  return e.type = null, __privateSet(e, _s, void 0), __privateSet(e, _r, [t2.substring(s - 1)]), l;
+}, d_fn = function(t2) {
   return __privateGet(this, _r).map((e) => {
     if (typeof e == "string") throw new Error("string type in extglob ast??");
-    let [s, i, r, o] = e.toRegExpSource(t);
-    return __privateSet(this, _n, __privateGet(this, _n) || o), s;
+    let [s, i2, r2, o2] = e.toRegExpSource(t2);
+    return __privateSet(this, _n, __privateGet(this, _n) || o2), s;
   }).filter((e) => !(this.isStart() && this.isEnd()) || !!e).join("|");
-}, E_fn = function(t, e, s = false) {
-  let i = false, r = "", o = false, h = false;
-  for (let a = 0; a < t.length; a++) {
-    let l = t.charAt(a);
-    if (i) {
-      i = false, r += (As.has(l) ? "\\" : "") + l;
+}, E_fn = function(t2, e, s = false) {
+  let i2 = false, r2 = "", o2 = false, h2 = false;
+  for (let a = 0; a < t2.length; a++) {
+    let l = t2.charAt(a);
+    if (i2) {
+      i2 = false, r2 += (As.has(l) ? "\\" : "") + l;
       continue;
     }
     if (l === "*") {
-      if (h) continue;
-      h = true, r += s && /^[*]+$/.test(t) ? Ee : Se, e = true;
+      if (h2) continue;
+      h2 = true, r2 += s && /^[*]+$/.test(t2) ? Ee : Se, e = true;
       continue;
-    } else h = false;
+    } else h2 = false;
     if (l === "\\") {
-      a === t.length - 1 ? r += "\\\\" : i = true;
+      a === t2.length - 1 ? r2 += "\\\\" : i2 = true;
       continue;
     }
     if (l === "[") {
-      let [u, c, d, f] = ye(t, a);
+      let [u, c3, d, f] = ye(t2, a);
       if (d) {
-        r += u, o = o || c, a += d - 1, e = e || f;
+        r2 += u, o2 = o2 || c3, a += d - 1, e = e || f;
         continue;
       }
     }
     if (l === "?") {
-      r += Kt, e = true;
+      r2 += Kt, e = true;
       continue;
     }
-    r += ks(l);
+    r2 += ks(l);
   }
-  return [r, W(t), !!e, o];
+  return [r2, W(t2), !!e, o2];
 }, __privateAdd(_a, _n_static), _a);
-var tt = (n5, { windowsPathsNoEscape: t = false, magicalBraces: e = false } = {}) => e ? t ? n5.replace(/[?*()[\]{}]/g, "[$&]") : n5.replace(/[?*()[\]\\{}]/g, "\\$&") : t ? n5.replace(/[?*()[\]]/g, "[$&]") : n5.replace(/[?*()[\]\\]/g, "\\$&");
-var O = (n5, t, e = {}) => (at(t), !e.nocomment && t.charAt(0) === "#" ? false : new D(t, e).match(n5));
+var tt = (n5, { windowsPathsNoEscape: t2 = false, magicalBraces: e = false } = {}) => e ? t2 ? n5.replace(/[?*()[\]{}]/g, "[$&]") : n5.replace(/[?*()[\]\\{}]/g, "\\$&") : t2 ? n5.replace(/[?*()[\]]/g, "[$&]") : n5.replace(/[?*()[\]\\]/g, "\\$&");
+var O = (n5, t2, e = {}) => (at(t2), !e.nocomment && t2.charAt(0) === "#" ? false : new D(t2, e).match(n5));
 var Rs = /^\*+([^+@!?\*\[\(]*)$/;
-var Os = (n5) => (t) => !t.startsWith(".") && t.endsWith(n5);
-var Fs = (n5) => (t) => t.endsWith(n5);
-var Ds = (n5) => (n5 = n5.toLowerCase(), (t) => !t.startsWith(".") && t.toLowerCase().endsWith(n5));
-var Ms = (n5) => (n5 = n5.toLowerCase(), (t) => t.toLowerCase().endsWith(n5));
+var Os = (n5) => (t2) => !t2.startsWith(".") && t2.endsWith(n5);
+var Fs = (n5) => (t2) => t2.endsWith(n5);
+var Ds = (n5) => (n5 = n5.toLowerCase(), (t2) => !t2.startsWith(".") && t2.toLowerCase().endsWith(n5));
+var Ms = (n5) => (n5 = n5.toLowerCase(), (t2) => t2.toLowerCase().endsWith(n5));
 var Ns = /^\*+\.\*+$/;
 var _s2 = (n5) => !n5.startsWith(".") && n5.includes(".");
 var Ls = (n5) => n5 !== "." && n5 !== ".." && n5.includes(".");
@@ -1657,29 +1582,29 @@ var js = /^\*+$/;
 var Is = (n5) => n5.length !== 0 && !n5.startsWith(".");
 var zs = (n5) => n5.length !== 0 && n5 !== "." && n5 !== "..";
 var Bs = /^\?+([^+@!?\*\[\(]*)?$/;
-var Us = ([n5, t = ""]) => {
+var Us = ([n5, t2 = ""]) => {
   let e = Ce([n5]);
-  return t ? (t = t.toLowerCase(), (s) => e(s) && s.toLowerCase().endsWith(t)) : e;
+  return t2 ? (t2 = t2.toLowerCase(), (s) => e(s) && s.toLowerCase().endsWith(t2)) : e;
 };
-var $s = ([n5, t = ""]) => {
+var $s = ([n5, t2 = ""]) => {
   let e = Te([n5]);
-  return t ? (t = t.toLowerCase(), (s) => e(s) && s.toLowerCase().endsWith(t)) : e;
+  return t2 ? (t2 = t2.toLowerCase(), (s) => e(s) && s.toLowerCase().endsWith(t2)) : e;
 };
-var Gs = ([n5, t = ""]) => {
+var Gs = ([n5, t2 = ""]) => {
   let e = Te([n5]);
-  return t ? (s) => e(s) && s.endsWith(t) : e;
+  return t2 ? (s) => e(s) && s.endsWith(t2) : e;
 };
-var Hs = ([n5, t = ""]) => {
+var Hs = ([n5, t2 = ""]) => {
   let e = Ce([n5]);
-  return t ? (s) => e(s) && s.endsWith(t) : e;
+  return t2 ? (s) => e(s) && s.endsWith(t2) : e;
 };
 var Ce = ([n5]) => {
-  let t = n5.length;
-  return (e) => e.length === t && !e.startsWith(".");
+  let t2 = n5.length;
+  return (e) => e.length === t2 && !e.startsWith(".");
 };
 var Te = ([n5]) => {
-  let t = n5.length;
-  return (e) => e.length === t && e !== "." && e !== "..";
+  let t2 = n5.length;
+  return (e) => e.length === t2 && e !== "." && e !== "..";
 };
 var Ae = typeof process == "object" && process ? typeof process.env == "object" && process.env && process.env.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix";
 var xe = { win32: { sep: "\\" }, posix: { sep: "/" } };
@@ -1691,42 +1616,42 @@ var Ks = "[^/]";
 var Vs = Ks + "*?";
 var Ys = "(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?";
 var Xs = "(?:(?!(?:\\/|^)\\.).)*?";
-var Js = (n5, t = {}) => (e) => O(e, n5, t);
+var Js = (n5, t2 = {}) => (e) => O(e, n5, t2);
 O.filter = Js;
-var N = (n5, t = {}) => Object.assign({}, n5, t);
+var N = (n5, t2 = {}) => Object.assign({}, n5, t2);
 var Zs = (n5) => {
   if (!n5 || typeof n5 != "object" || !Object.keys(n5).length) return O;
-  let t = O;
-  return Object.assign((s, i, r = {}) => t(s, i, N(n5, r)), { Minimatch: class extends t.Minimatch {
-    constructor(i, r = {}) {
-      super(i, N(n5, r));
+  let t2 = O;
+  return Object.assign((s, i2, r2 = {}) => t2(s, i2, N(n5, r2)), { Minimatch: class extends t2.Minimatch {
+    constructor(i2, r2 = {}) {
+      super(i2, N(n5, r2));
     }
-    static defaults(i) {
-      return t.defaults(N(n5, i)).Minimatch;
+    static defaults(i2) {
+      return t2.defaults(N(n5, i2)).Minimatch;
     }
-  }, AST: class extends t.AST {
-    constructor(i, r, o = {}) {
-      super(i, r, N(n5, o));
+  }, AST: class extends t2.AST {
+    constructor(i2, r2, o2 = {}) {
+      super(i2, r2, N(n5, o2));
     }
-    static fromGlob(i, r = {}) {
-      return t.AST.fromGlob(i, N(n5, r));
+    static fromGlob(i2, r2 = {}) {
+      return t2.AST.fromGlob(i2, N(n5, r2));
     }
-  }, unescape: (s, i = {}) => t.unescape(s, N(n5, i)), escape: (s, i = {}) => t.escape(s, N(n5, i)), filter: (s, i = {}) => t.filter(s, N(n5, i)), defaults: (s) => t.defaults(N(n5, s)), makeRe: (s, i = {}) => t.makeRe(s, N(n5, i)), braceExpand: (s, i = {}) => t.braceExpand(s, N(n5, i)), match: (s, i, r = {}) => t.match(s, i, N(n5, r)), sep: t.sep, GLOBSTAR: A });
+  }, unescape: (s, i2 = {}) => t2.unescape(s, N(n5, i2)), escape: (s, i2 = {}) => t2.escape(s, N(n5, i2)), filter: (s, i2 = {}) => t2.filter(s, N(n5, i2)), defaults: (s) => t2.defaults(N(n5, s)), makeRe: (s, i2 = {}) => t2.makeRe(s, N(n5, i2)), braceExpand: (s, i2 = {}) => t2.braceExpand(s, N(n5, i2)), match: (s, i2, r2 = {}) => t2.match(s, i2, N(n5, r2)), sep: t2.sep, GLOBSTAR: A });
 };
 O.defaults = Zs;
-var ke = (n5, t = {}) => (at(n5), t.nobrace || !/\{(?:(?!\{).)*\}/.test(n5) ? [n5] : ge(n5, { max: t.braceExpandMax }));
+var ke = (n5, t2 = {}) => (at(n5), t2.nobrace || !/\{(?:(?!\{).)*\}/.test(n5) ? [n5] : ge(n5, { max: t2.braceExpandMax }));
 O.braceExpand = ke;
-var Qs = (n5, t = {}) => new D(n5, t).makeRe();
+var Qs = (n5, t2 = {}) => new D(n5, t2).makeRe();
 O.makeRe = Qs;
-var ti = (n5, t, e = {}) => {
-  let s = new D(t, e);
-  return n5 = n5.filter((i) => s.match(i)), s.options.nonull && !n5.length && n5.push(t), n5;
+var ti = (n5, t2, e = {}) => {
+  let s = new D(t2, e);
+  return n5 = n5.filter((i2) => s.match(i2)), s.options.nonull && !n5.length && n5.push(t2), n5;
 };
 O.match = ti;
 var ve = /[?*]|[+@!]\(.*?\)|\[|\]/;
 var ei = (n5) => n5.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 var D = class {
-  constructor(t, e = {}) {
+  constructor(t2, e = {}) {
     __publicField(this, "options");
     __publicField(this, "set");
     __publicField(this, "pattern");
@@ -1744,259 +1669,259 @@ var D = class {
     __publicField(this, "platform");
     __publicField(this, "windowsNoMagicRoot");
     __publicField(this, "regexp");
-    at(t), e = e || {}, this.options = e, this.pattern = t, this.platform = e.platform || Ae, this.isWindows = this.platform === "win32";
+    at(t2), e = e || {}, this.options = e, this.pattern = t2, this.platform = e.platform || Ae, this.isWindows = this.platform === "win32";
     let s = "allowWindowsEscape";
     this.windowsPathsNoEscape = !!e.windowsPathsNoEscape || e[s] === false, this.windowsPathsNoEscape && (this.pattern = this.pattern.replace(/\\/g, "/")), this.preserveMultipleSlashes = !!e.preserveMultipleSlashes, this.regexp = null, this.negate = false, this.nonegate = !!e.nonegate, this.comment = false, this.empty = false, this.partial = !!e.partial, this.nocase = !!this.options.nocase, this.windowsNoMagicRoot = e.windowsNoMagicRoot !== void 0 ? e.windowsNoMagicRoot : !!(this.isWindows && this.nocase), this.globSet = [], this.globParts = [], this.set = [], this.make();
   }
   hasMagic() {
     if (this.options.magicalBraces && this.set.length > 1) return true;
-    for (let t of this.set) for (let e of t) if (typeof e != "string") return true;
+    for (let t2 of this.set) for (let e of t2) if (typeof e != "string") return true;
     return false;
   }
-  debug(...t) {
+  debug(...t2) {
   }
   make() {
-    let t = this.pattern, e = this.options;
-    if (!e.nocomment && t.charAt(0) === "#") {
+    let t2 = this.pattern, e = this.options;
+    if (!e.nocomment && t2.charAt(0) === "#") {
       this.comment = true;
       return;
     }
-    if (!t) {
+    if (!t2) {
       this.empty = true;
       return;
     }
-    this.parseNegate(), this.globSet = [...new Set(this.braceExpand())], e.debug && (this.debug = (...r) => console.error(...r)), this.debug(this.pattern, this.globSet);
-    let s = this.globSet.map((r) => this.slashSplit(r));
+    this.parseNegate(), this.globSet = [...new Set(this.braceExpand())], e.debug && (this.debug = (...r2) => console.error(...r2)), this.debug(this.pattern, this.globSet);
+    let s = this.globSet.map((r2) => this.slashSplit(r2));
     this.globParts = this.preprocess(s), this.debug(this.pattern, this.globParts);
-    let i = this.globParts.map((r, o, h) => {
+    let i2 = this.globParts.map((r2, o2, h2) => {
       if (this.isWindows && this.windowsNoMagicRoot) {
-        let a = r[0] === "" && r[1] === "" && (r[2] === "?" || !ve.test(r[2])) && !ve.test(r[3]), l = /^[a-z]:/i.test(r[0]);
-        if (a) return [...r.slice(0, 4), ...r.slice(4).map((u) => this.parse(u))];
-        if (l) return [r[0], ...r.slice(1).map((u) => this.parse(u))];
+        let a = r2[0] === "" && r2[1] === "" && (r2[2] === "?" || !ve.test(r2[2])) && !ve.test(r2[3]), l = /^[a-z]:/i.test(r2[0]);
+        if (a) return [...r2.slice(0, 4), ...r2.slice(4).map((u) => this.parse(u))];
+        if (l) return [r2[0], ...r2.slice(1).map((u) => this.parse(u))];
       }
-      return r.map((a) => this.parse(a));
+      return r2.map((a) => this.parse(a));
     });
-    if (this.debug(this.pattern, i), this.set = i.filter((r) => r.indexOf(false) === -1), this.isWindows) for (let r = 0; r < this.set.length; r++) {
-      let o = this.set[r];
-      o[0] === "" && o[1] === "" && this.globParts[r][2] === "?" && typeof o[3] == "string" && /^[a-z]:$/i.test(o[3]) && (o[2] = "?");
+    if (this.debug(this.pattern, i2), this.set = i2.filter((r2) => r2.indexOf(false) === -1), this.isWindows) for (let r2 = 0; r2 < this.set.length; r2++) {
+      let o2 = this.set[r2];
+      o2[0] === "" && o2[1] === "" && this.globParts[r2][2] === "?" && typeof o2[3] == "string" && /^[a-z]:$/i.test(o2[3]) && (o2[2] = "?");
     }
     this.debug(this.pattern, this.set);
   }
-  preprocess(t) {
-    if (this.options.noglobstar) for (let s = 0; s < t.length; s++) for (let i = 0; i < t[s].length; i++) t[s][i] === "**" && (t[s][i] = "*");
+  preprocess(t2) {
+    if (this.options.noglobstar) for (let s = 0; s < t2.length; s++) for (let i2 = 0; i2 < t2[s].length; i2++) t2[s][i2] === "**" && (t2[s][i2] = "*");
     let { optimizationLevel: e = 1 } = this.options;
-    return e >= 2 ? (t = this.firstPhasePreProcess(t), t = this.secondPhasePreProcess(t)) : e >= 1 ? t = this.levelOneOptimize(t) : t = this.adjascentGlobstarOptimize(t), t;
+    return e >= 2 ? (t2 = this.firstPhasePreProcess(t2), t2 = this.secondPhasePreProcess(t2)) : e >= 1 ? t2 = this.levelOneOptimize(t2) : t2 = this.adjascentGlobstarOptimize(t2), t2;
   }
-  adjascentGlobstarOptimize(t) {
-    return t.map((e) => {
+  adjascentGlobstarOptimize(t2) {
+    return t2.map((e) => {
       let s = -1;
       for (; (s = e.indexOf("**", s + 1)) !== -1; ) {
-        let i = s;
-        for (; e[i + 1] === "**"; ) i++;
-        i !== s && e.splice(s, i - s);
+        let i2 = s;
+        for (; e[i2 + 1] === "**"; ) i2++;
+        i2 !== s && e.splice(s, i2 - s);
       }
       return e;
     });
   }
-  levelOneOptimize(t) {
-    return t.map((e) => (e = e.reduce((s, i) => {
-      let r = s[s.length - 1];
-      return i === "**" && r === "**" ? s : i === ".." && r && r !== ".." && r !== "." && r !== "**" ? (s.pop(), s) : (s.push(i), s);
+  levelOneOptimize(t2) {
+    return t2.map((e) => (e = e.reduce((s, i2) => {
+      let r2 = s[s.length - 1];
+      return i2 === "**" && r2 === "**" ? s : i2 === ".." && r2 && r2 !== ".." && r2 !== "." && r2 !== "**" ? (s.pop(), s) : (s.push(i2), s);
     }, []), e.length === 0 ? [""] : e));
   }
-  levelTwoFileOptimize(t) {
-    Array.isArray(t) || (t = this.slashSplit(t));
+  levelTwoFileOptimize(t2) {
+    Array.isArray(t2) || (t2 = this.slashSplit(t2));
     let e = false;
     do {
       if (e = false, !this.preserveMultipleSlashes) {
-        for (let i = 1; i < t.length - 1; i++) {
-          let r = t[i];
-          i === 1 && r === "" && t[0] === "" || (r === "." || r === "") && (e = true, t.splice(i, 1), i--);
+        for (let i2 = 1; i2 < t2.length - 1; i2++) {
+          let r2 = t2[i2];
+          i2 === 1 && r2 === "" && t2[0] === "" || (r2 === "." || r2 === "") && (e = true, t2.splice(i2, 1), i2--);
         }
-        t[0] === "." && t.length === 2 && (t[1] === "." || t[1] === "") && (e = true, t.pop());
+        t2[0] === "." && t2.length === 2 && (t2[1] === "." || t2[1] === "") && (e = true, t2.pop());
       }
       let s = 0;
-      for (; (s = t.indexOf("..", s + 1)) !== -1; ) {
-        let i = t[s - 1];
-        i && i !== "." && i !== ".." && i !== "**" && (e = true, t.splice(s - 1, 2), s -= 2);
+      for (; (s = t2.indexOf("..", s + 1)) !== -1; ) {
+        let i2 = t2[s - 1];
+        i2 && i2 !== "." && i2 !== ".." && i2 !== "**" && (e = true, t2.splice(s - 1, 2), s -= 2);
       }
     } while (e);
-    return t.length === 0 ? [""] : t;
+    return t2.length === 0 ? [""] : t2;
   }
-  firstPhasePreProcess(t) {
+  firstPhasePreProcess(t2) {
     let e = false;
     do {
       e = false;
-      for (let s of t) {
-        let i = -1;
-        for (; (i = s.indexOf("**", i + 1)) !== -1; ) {
-          let o = i;
-          for (; s[o + 1] === "**"; ) o++;
-          o > i && s.splice(i + 1, o - i);
-          let h = s[i + 1], a = s[i + 2], l = s[i + 3];
-          if (h !== ".." || !a || a === "." || a === ".." || !l || l === "." || l === "..") continue;
-          e = true, s.splice(i, 1);
+      for (let s of t2) {
+        let i2 = -1;
+        for (; (i2 = s.indexOf("**", i2 + 1)) !== -1; ) {
+          let o2 = i2;
+          for (; s[o2 + 1] === "**"; ) o2++;
+          o2 > i2 && s.splice(i2 + 1, o2 - i2);
+          let h2 = s[i2 + 1], a = s[i2 + 2], l = s[i2 + 3];
+          if (h2 !== ".." || !a || a === "." || a === ".." || !l || l === "." || l === "..") continue;
+          e = true, s.splice(i2, 1);
           let u = s.slice(0);
-          u[i] = "**", t.push(u), i--;
+          u[i2] = "**", t2.push(u), i2--;
         }
         if (!this.preserveMultipleSlashes) {
-          for (let o = 1; o < s.length - 1; o++) {
-            let h = s[o];
-            o === 1 && h === "" && s[0] === "" || (h === "." || h === "") && (e = true, s.splice(o, 1), o--);
+          for (let o2 = 1; o2 < s.length - 1; o2++) {
+            let h2 = s[o2];
+            o2 === 1 && h2 === "" && s[0] === "" || (h2 === "." || h2 === "") && (e = true, s.splice(o2, 1), o2--);
           }
           s[0] === "." && s.length === 2 && (s[1] === "." || s[1] === "") && (e = true, s.pop());
         }
-        let r = 0;
-        for (; (r = s.indexOf("..", r + 1)) !== -1; ) {
-          let o = s[r - 1];
-          if (o && o !== "." && o !== ".." && o !== "**") {
+        let r2 = 0;
+        for (; (r2 = s.indexOf("..", r2 + 1)) !== -1; ) {
+          let o2 = s[r2 - 1];
+          if (o2 && o2 !== "." && o2 !== ".." && o2 !== "**") {
             e = true;
-            let a = r === 1 && s[r + 1] === "**" ? ["."] : [];
-            s.splice(r - 1, 2, ...a), s.length === 0 && s.push(""), r -= 2;
+            let a = r2 === 1 && s[r2 + 1] === "**" ? ["."] : [];
+            s.splice(r2 - 1, 2, ...a), s.length === 0 && s.push(""), r2 -= 2;
           }
         }
       }
     } while (e);
-    return t;
+    return t2;
   }
-  secondPhasePreProcess(t) {
-    for (let e = 0; e < t.length - 1; e++) for (let s = e + 1; s < t.length; s++) {
-      let i = this.partsMatch(t[e], t[s], !this.preserveMultipleSlashes);
-      if (i) {
-        t[e] = [], t[s] = i;
+  secondPhasePreProcess(t2) {
+    for (let e = 0; e < t2.length - 1; e++) for (let s = e + 1; s < t2.length; s++) {
+      let i2 = this.partsMatch(t2[e], t2[s], !this.preserveMultipleSlashes);
+      if (i2) {
+        t2[e] = [], t2[s] = i2;
         break;
       }
     }
-    return t.filter((e) => e.length);
+    return t2.filter((e) => e.length);
   }
-  partsMatch(t, e, s = false) {
-    let i = 0, r = 0, o = [], h = "";
-    for (; i < t.length && r < e.length; ) if (t[i] === e[r]) o.push(h === "b" ? e[r] : t[i]), i++, r++;
-    else if (s && t[i] === "**" && e[r] === t[i + 1]) o.push(t[i]), i++;
-    else if (s && e[r] === "**" && t[i] === e[r + 1]) o.push(e[r]), r++;
-    else if (t[i] === "*" && e[r] && (this.options.dot || !e[r].startsWith(".")) && e[r] !== "**") {
-      if (h === "b") return false;
-      h = "a", o.push(t[i]), i++, r++;
-    } else if (e[r] === "*" && t[i] && (this.options.dot || !t[i].startsWith(".")) && t[i] !== "**") {
-      if (h === "a") return false;
-      h = "b", o.push(e[r]), i++, r++;
+  partsMatch(t2, e, s = false) {
+    let i2 = 0, r2 = 0, o2 = [], h2 = "";
+    for (; i2 < t2.length && r2 < e.length; ) if (t2[i2] === e[r2]) o2.push(h2 === "b" ? e[r2] : t2[i2]), i2++, r2++;
+    else if (s && t2[i2] === "**" && e[r2] === t2[i2 + 1]) o2.push(t2[i2]), i2++;
+    else if (s && e[r2] === "**" && t2[i2] === e[r2 + 1]) o2.push(e[r2]), r2++;
+    else if (t2[i2] === "*" && e[r2] && (this.options.dot || !e[r2].startsWith(".")) && e[r2] !== "**") {
+      if (h2 === "b") return false;
+      h2 = "a", o2.push(t2[i2]), i2++, r2++;
+    } else if (e[r2] === "*" && t2[i2] && (this.options.dot || !t2[i2].startsWith(".")) && t2[i2] !== "**") {
+      if (h2 === "a") return false;
+      h2 = "b", o2.push(e[r2]), i2++, r2++;
     } else return false;
-    return t.length === e.length && o;
+    return t2.length === e.length && o2;
   }
   parseNegate() {
     if (this.nonegate) return;
-    let t = this.pattern, e = false, s = 0;
-    for (let i = 0; i < t.length && t.charAt(i) === "!"; i++) e = !e, s++;
-    s && (this.pattern = t.slice(s)), this.negate = e;
+    let t2 = this.pattern, e = false, s = 0;
+    for (let i2 = 0; i2 < t2.length && t2.charAt(i2) === "!"; i2++) e = !e, s++;
+    s && (this.pattern = t2.slice(s)), this.negate = e;
   }
-  matchOne(t, e, s = false) {
-    let i = this.options;
+  matchOne(t2, e, s = false) {
+    let i2 = this.options;
     if (this.isWindows) {
-      let p = typeof t[0] == "string" && /^[a-z]:$/i.test(t[0]), w = !p && t[0] === "" && t[1] === "" && t[2] === "?" && /^[a-z]:$/i.test(t[3]), g = typeof e[0] == "string" && /^[a-z]:$/i.test(e[0]), S = !g && e[0] === "" && e[1] === "" && e[2] === "?" && typeof e[3] == "string" && /^[a-z]:$/i.test(e[3]), E = w ? 3 : p ? 0 : void 0, y = S ? 3 : g ? 0 : void 0;
-      if (typeof E == "number" && typeof y == "number") {
-        let [b, z] = [t[E], e[y]];
-        b.toLowerCase() === z.toLowerCase() && (e[y] = b, y > E ? e = e.slice(y) : E > y && (t = t.slice(E)));
+      let p2 = typeof t2[0] == "string" && /^[a-z]:$/i.test(t2[0]), w = !p2 && t2[0] === "" && t2[1] === "" && t2[2] === "?" && /^[a-z]:$/i.test(t2[3]), g = typeof e[0] == "string" && /^[a-z]:$/i.test(e[0]), S2 = !g && e[0] === "" && e[1] === "" && e[2] === "?" && typeof e[3] == "string" && /^[a-z]:$/i.test(e[3]), E2 = w ? 3 : p2 ? 0 : void 0, y2 = S2 ? 3 : g ? 0 : void 0;
+      if (typeof E2 == "number" && typeof y2 == "number") {
+        let [b2, z2] = [t2[E2], e[y2]];
+        b2.toLowerCase() === z2.toLowerCase() && (e[y2] = b2, y2 > E2 ? e = e.slice(y2) : E2 > y2 && (t2 = t2.slice(E2)));
       }
     }
-    let { optimizationLevel: r = 1 } = this.options;
-    r >= 2 && (t = this.levelTwoFileOptimize(t)), this.debug("matchOne", this, { file: t, pattern: e }), this.debug("matchOne", t.length, e.length);
-    for (var o = 0, h = 0, a = t.length, l = e.length; o < a && h < l; o++, h++) {
+    let { optimizationLevel: r2 = 1 } = this.options;
+    r2 >= 2 && (t2 = this.levelTwoFileOptimize(t2)), this.debug("matchOne", this, { file: t2, pattern: e }), this.debug("matchOne", t2.length, e.length);
+    for (var o2 = 0, h2 = 0, a = t2.length, l = e.length; o2 < a && h2 < l; o2++, h2++) {
       this.debug("matchOne loop");
-      var u = e[h], c = t[o];
-      if (this.debug(e, u, c), u === false) return false;
+      var u = e[h2], c3 = t2[o2];
+      if (this.debug(e, u, c3), u === false) return false;
       if (u === A) {
-        this.debug("GLOBSTAR", [e, u, c]);
-        var d = o, f = h + 1;
+        this.debug("GLOBSTAR", [e, u, c3]);
+        var d = o2, f = h2 + 1;
         if (f === l) {
-          for (this.debug("** at the end"); o < a; o++) if (t[o] === "." || t[o] === ".." || !i.dot && t[o].charAt(0) === ".") return false;
+          for (this.debug("** at the end"); o2 < a; o2++) if (t2[o2] === "." || t2[o2] === ".." || !i2.dot && t2[o2].charAt(0) === ".") return false;
           return true;
         }
         for (; d < a; ) {
-          var m = t[d];
+          var m = t2[d];
           if (this.debug(`
-globstar while`, t, d, e, f, m), this.matchOne(t.slice(d), e.slice(f), s)) return this.debug("globstar found match!", d, a, m), true;
-          if (m === "." || m === ".." || !i.dot && m.charAt(0) === ".") {
-            this.debug("dot detected!", t, d, e, f);
+globstar while`, t2, d, e, f, m), this.matchOne(t2.slice(d), e.slice(f), s)) return this.debug("globstar found match!", d, a, m), true;
+          if (m === "." || m === ".." || !i2.dot && m.charAt(0) === ".") {
+            this.debug("dot detected!", t2, d, e, f);
             break;
           }
           this.debug("globstar swallow a segment, and continue"), d++;
         }
         return !!(s && (this.debug(`
->>> no match, partial?`, t, d, e, f), d === a));
+>>> no match, partial?`, t2, d, e, f), d === a));
       }
-      let p;
-      if (typeof u == "string" ? (p = c === u, this.debug("string match", u, c, p)) : (p = u.test(c), this.debug("pattern match", u, c, p)), !p) return false;
+      let p2;
+      if (typeof u == "string" ? (p2 = c3 === u, this.debug("string match", u, c3, p2)) : (p2 = u.test(c3), this.debug("pattern match", u, c3, p2)), !p2) return false;
     }
-    if (o === a && h === l) return true;
-    if (o === a) return s;
-    if (h === l) return o === a - 1 && t[o] === "";
+    if (o2 === a && h2 === l) return true;
+    if (o2 === a) return s;
+    if (h2 === l) return o2 === a - 1 && t2[o2] === "";
     throw new Error("wtf?");
   }
   braceExpand() {
     return ke(this.pattern, this.options);
   }
-  parse(t) {
-    at(t);
+  parse(t2) {
+    at(t2);
     let e = this.options;
-    if (t === "**") return A;
-    if (t === "") return "";
-    let s, i = null;
-    (s = t.match(js)) ? i = e.dot ? zs : Is : (s = t.match(Rs)) ? i = (e.nocase ? e.dot ? Ms : Ds : e.dot ? Fs : Os)(s[1]) : (s = t.match(Bs)) ? i = (e.nocase ? e.dot ? $s : Us : e.dot ? Gs : Hs)(s) : (s = t.match(Ns)) ? i = e.dot ? Ls : _s2 : (s = t.match(Ws)) && (i = Ps);
-    let r = Q.fromGlob(t, this.options).toMMPattern();
-    return i && typeof r == "object" && Reflect.defineProperty(r, "test", { value: i }), r;
+    if (t2 === "**") return A;
+    if (t2 === "") return "";
+    let s, i2 = null;
+    (s = t2.match(js)) ? i2 = e.dot ? zs : Is : (s = t2.match(Rs)) ? i2 = (e.nocase ? e.dot ? Ms : Ds : e.dot ? Fs : Os)(s[1]) : (s = t2.match(Bs)) ? i2 = (e.nocase ? e.dot ? $s : Us : e.dot ? Gs : Hs)(s) : (s = t2.match(Ns)) ? i2 = e.dot ? Ls : _s2 : (s = t2.match(Ws)) && (i2 = Ps);
+    let r2 = Q.fromGlob(t2, this.options).toMMPattern();
+    return i2 && typeof r2 == "object" && Reflect.defineProperty(r2, "test", { value: i2 }), r2;
   }
   makeRe() {
     if (this.regexp || this.regexp === false) return this.regexp;
-    let t = this.set;
-    if (!t.length) return this.regexp = false, this.regexp;
-    let e = this.options, s = e.noglobstar ? Vs : e.dot ? Ys : Xs, i = new Set(e.nocase ? ["i"] : []), r = t.map((a) => {
-      let l = a.map((c) => {
-        if (c instanceof RegExp) for (let d of c.flags.split("")) i.add(d);
-        return typeof c == "string" ? ei(c) : c === A ? A : c._src;
+    let t2 = this.set;
+    if (!t2.length) return this.regexp = false, this.regexp;
+    let e = this.options, s = e.noglobstar ? Vs : e.dot ? Ys : Xs, i2 = new Set(e.nocase ? ["i"] : []), r2 = t2.map((a) => {
+      let l = a.map((c3) => {
+        if (c3 instanceof RegExp) for (let d of c3.flags.split("")) i2.add(d);
+        return typeof c3 == "string" ? ei(c3) : c3 === A ? A : c3._src;
       });
-      l.forEach((c, d) => {
+      l.forEach((c3, d) => {
         let f = l[d + 1], m = l[d - 1];
-        c !== A || m === A || (m === void 0 ? f !== void 0 && f !== A ? l[d + 1] = "(?:\\/|" + s + "\\/)?" + f : l[d] = s : f === void 0 ? l[d - 1] = m + "(?:\\/|\\/" + s + ")?" : f !== A && (l[d - 1] = m + "(?:\\/|\\/" + s + "\\/)" + f, l[d + 1] = A));
+        c3 !== A || m === A || (m === void 0 ? f !== void 0 && f !== A ? l[d + 1] = "(?:\\/|" + s + "\\/)?" + f : l[d] = s : f === void 0 ? l[d - 1] = m + "(?:\\/|\\/" + s + ")?" : f !== A && (l[d - 1] = m + "(?:\\/|\\/" + s + "\\/)" + f, l[d + 1] = A));
       });
-      let u = l.filter((c) => c !== A);
+      let u = l.filter((c3) => c3 !== A);
       if (this.partial && u.length >= 1) {
-        let c = [];
-        for (let d = 1; d <= u.length; d++) c.push(u.slice(0, d).join("/"));
-        return "(?:" + c.join("|") + ")";
+        let c3 = [];
+        for (let d = 1; d <= u.length; d++) c3.push(u.slice(0, d).join("/"));
+        return "(?:" + c3.join("|") + ")";
       }
       return u.join("/");
-    }).join("|"), [o, h] = t.length > 1 ? ["(?:", ")"] : ["", ""];
-    r = "^" + o + r + h + "$", this.partial && (r = "^(?:\\/|" + o + r.slice(1, -1) + h + ")$"), this.negate && (r = "^(?!" + r + ").+$");
+    }).join("|"), [o2, h2] = t2.length > 1 ? ["(?:", ")"] : ["", ""];
+    r2 = "^" + o2 + r2 + h2 + "$", this.partial && (r2 = "^(?:\\/|" + o2 + r2.slice(1, -1) + h2 + ")$"), this.negate && (r2 = "^(?!" + r2 + ").+$");
     try {
-      this.regexp = new RegExp(r, [...i].join(""));
+      this.regexp = new RegExp(r2, [...i2].join(""));
     } catch {
       this.regexp = false;
     }
     return this.regexp;
   }
-  slashSplit(t) {
-    return this.preserveMultipleSlashes ? t.split("/") : this.isWindows && /^\/\/[^\/]+/.test(t) ? ["", ...t.split(/\/+/)] : t.split(/\/+/);
+  slashSplit(t2) {
+    return this.preserveMultipleSlashes ? t2.split("/") : this.isWindows && /^\/\/[^\/]+/.test(t2) ? ["", ...t2.split(/\/+/)] : t2.split(/\/+/);
   }
-  match(t, e = this.partial) {
-    if (this.debug("match", t, this.pattern), this.comment) return false;
-    if (this.empty) return t === "";
-    if (t === "/" && e) return true;
+  match(t2, e = this.partial) {
+    if (this.debug("match", t2, this.pattern), this.comment) return false;
+    if (this.empty) return t2 === "";
+    if (t2 === "/" && e) return true;
     let s = this.options;
-    this.isWindows && (t = t.split("\\").join("/"));
-    let i = this.slashSplit(t);
-    this.debug(this.pattern, "split", i);
-    let r = this.set;
-    this.debug(this.pattern, "set", r);
-    let o = i[i.length - 1];
-    if (!o) for (let h = i.length - 2; !o && h >= 0; h--) o = i[h];
-    for (let h = 0; h < r.length; h++) {
-      let a = r[h], l = i;
-      if (s.matchBase && a.length === 1 && (l = [o]), this.matchOne(l, a, e)) return s.flipNegate ? true : !this.negate;
+    this.isWindows && (t2 = t2.split("\\").join("/"));
+    let i2 = this.slashSplit(t2);
+    this.debug(this.pattern, "split", i2);
+    let r2 = this.set;
+    this.debug(this.pattern, "set", r2);
+    let o2 = i2[i2.length - 1];
+    if (!o2) for (let h2 = i2.length - 2; !o2 && h2 >= 0; h2--) o2 = i2[h2];
+    for (let h2 = 0; h2 < r2.length; h2++) {
+      let a = r2[h2], l = i2;
+      if (s.matchBase && a.length === 1 && (l = [o2]), this.matchOne(l, a, e)) return s.flipNegate ? true : !this.negate;
     }
     return s.flipNegate ? false : this.negate;
   }
-  static defaults(t) {
-    return O.defaults(t).Minimatch;
+  static defaults(t2) {
+    return O.defaults(t2).Minimatch;
   }
 };
 O.AST = Q;
@@ -2006,8 +1931,8 @@ O.unescape = W;
 var si = typeof performance == "object" && performance && typeof performance.now == "function" ? performance : Date;
 var Oe = /* @__PURE__ */ new Set();
 var Vt = typeof process == "object" && process ? process : {};
-var Fe = (n5, t, e, s) => {
-  typeof Vt.emitWarning == "function" ? Vt.emitWarning(n5, t, e, s) : console.error(`[${e}] ${t}: ${n5}`);
+var Fe = (n5, t2, e, s) => {
+  typeof Vt.emitWarning == "function" ? Vt.emitWarning(n5, t2, e, s) : console.error(`[${e}] ${t2}: ${n5}`);
 };
 var At = globalThis.AbortController;
 var Re = globalThis.AbortSignal;
@@ -2025,7 +1950,7 @@ if (typeof At > "u") {
   }, At = class {
     constructor() {
       __publicField(this, "signal", new Re());
-      t();
+      t2();
     }
     abort(e) {
       if (!this.signal.aborted) {
@@ -2035,8 +1960,8 @@ if (typeof At > "u") {
       }
     }
   };
-  let n5 = Vt.env?.LRU_CACHE_IGNORE_AC_WARNING !== "1", t = () => {
-    n5 && (n5 = false, Fe("AbortController is not defined. If using lru-cache in node 14, load an AbortController polyfill from the `node-abort-controller` package. A minimal polyfill is provided for use by LRUCache.fetch(), but it should not be relied upon in other contexts (eg, passing it to other APIs that use AbortController/AbortSignal might have undesirable effects). You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.", "NO_ABORT_CONTROLLER", "ENOTSUP", t));
+  let n5 = Vt.env?.LRU_CACHE_IGNORE_AC_WARNING !== "1", t2 = () => {
+    n5 && (n5 = false, Fe("AbortController is not defined. If using lru-cache in node 14, load an AbortController polyfill from the `node-abort-controller` package. A minimal polyfill is provided for use by LRUCache.fetch(), but it should not be relied upon in other contexts (eg, passing it to other APIs that use AbortController/AbortSignal might have undesirable effects). You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.", "NO_ABORT_CONTROLLER", "ENOTSUP", t2));
   };
 }
 var ii = (n5) => !Oe.has(n5);
@@ -2049,21 +1974,21 @@ var Tt = class extends Array {
 };
 var _a2, _t2;
 var ri = (_a2 = class {
-  constructor(t, e) {
+  constructor(t2, e) {
     __publicField(this, "heap");
     __publicField(this, "length");
     if (!__privateGet(_a2, _t2)) throw new TypeError("instantiate Stack using Stack.create(n)");
-    this.heap = new e(t), this.length = 0;
+    this.heap = new e(t2), this.length = 0;
   }
-  static create(t) {
-    let e = De(t);
+  static create(t2) {
+    let e = De(t2);
     if (!e) return [];
     __privateSet(_a2, _t2, true);
-    let s = new _a2(t, e);
+    let s = new _a2(t2, e);
     return __privateSet(_a2, _t2, false), s;
   }
-  push(t) {
-    this.heap[this.length++] = t;
+  push(t2) {
+    this.heap[this.length++] = t2;
   }
   pop() {
     return this.heap[--this.length];
@@ -2071,7 +1996,7 @@ var ri = (_a2 = class {
 }, _t2 = new WeakMap(), __privateAdd(_a2, _t2, false), _a2);
 var _a3, _b, _t3, _s3, _n2, _r2, _o2, _S2, _w2, _c3, _h2, _u2, _f2, _a4, _i, _d, _E, _b2, _p, _R, _m, _C, _T, _g, _y, _x, _A, _e, __, _Me_instances, M_fn, _k, _N, _j, _v, G_fn, _P, _L, _I, F_fn, D_fn, z_fn, B_fn, U_fn, l_fn, $_fn, W_fn, O_fn, H_fn, _c2;
 var ft = (_c2 = class {
-  constructor(t) {
+  constructor(t2) {
     __privateAdd(this, _Me_instances);
     __privateAdd(this, _t3);
     __privateAdd(this, _s3);
@@ -2122,32 +2047,32 @@ var ft = (_c2 = class {
     __privateAdd(this, _j, () => {
     });
     __privateAdd(this, _v, () => false);
-    __privateAdd(this, _P, (t) => {
+    __privateAdd(this, _P, (t2) => {
     });
-    __privateAdd(this, _L, (t, e, s) => {
+    __privateAdd(this, _L, (t2, e, s) => {
     });
-    __privateAdd(this, _I, (t, e, s, i) => {
-      if (s || i) throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");
+    __privateAdd(this, _I, (t2, e, s, i2) => {
+      if (s || i2) throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");
       return 0;
     });
     __publicField(this, _a3, "LRUCache");
-    let { max: e = 0, ttl: s, ttlResolution: i = 1, ttlAutopurge: r, updateAgeOnGet: o, updateAgeOnHas: h, allowStale: a, dispose: l, onInsert: u, disposeAfter: c, noDisposeOnSet: d, noUpdateTTL: f, maxSize: m = 0, maxEntrySize: p = 0, sizeCalculation: w, fetchMethod: g, memoMethod: S, noDeleteOnFetchRejection: E, noDeleteOnStaleGet: y, allowStaleOnFetchRejection: b, allowStaleOnFetchAbort: z, ignoreFetchAbort: $, perf: J } = t;
-    if (J !== void 0 && typeof J?.now != "function") throw new TypeError("perf option must have a now() method if specified");
-    if (__privateSet(this, _c3, J ?? si), e !== 0 && !q(e)) throw new TypeError("max option must be a nonnegative integer");
-    let Z = e ? De(e) : Array;
-    if (!Z) throw new Error("invalid max value: " + e);
-    if (__privateSet(this, _t3, e), __privateSet(this, _s3, m), this.maxEntrySize = p || __privateGet(this, _s3), this.sizeCalculation = w, this.sizeCalculation) {
+    let { max: e = 0, ttl: s, ttlResolution: i2 = 1, ttlAutopurge: r2, updateAgeOnGet: o2, updateAgeOnHas: h2, allowStale: a, dispose: l, onInsert: u, disposeAfter: c3, noDisposeOnSet: d, noUpdateTTL: f, maxSize: m = 0, maxEntrySize: p2 = 0, sizeCalculation: w, fetchMethod: g, memoMethod: S2, noDeleteOnFetchRejection: E2, noDeleteOnStaleGet: y2, allowStaleOnFetchRejection: b2, allowStaleOnFetchAbort: z2, ignoreFetchAbort: $2, perf: J2 } = t2;
+    if (J2 !== void 0 && typeof J2?.now != "function") throw new TypeError("perf option must have a now() method if specified");
+    if (__privateSet(this, _c3, J2 ?? si), e !== 0 && !q(e)) throw new TypeError("max option must be a nonnegative integer");
+    let Z2 = e ? De(e) : Array;
+    if (!Z2) throw new Error("invalid max value: " + e);
+    if (__privateSet(this, _t3, e), __privateSet(this, _s3, m), this.maxEntrySize = p2 || __privateGet(this, _s3), this.sizeCalculation = w, this.sizeCalculation) {
       if (!__privateGet(this, _s3) && !this.maxEntrySize) throw new TypeError("cannot set sizeCalculation without setting maxSize or maxEntrySize");
       if (typeof this.sizeCalculation != "function") throw new TypeError("sizeCalculation set to non-function");
     }
-    if (S !== void 0 && typeof S != "function") throw new TypeError("memoMethod must be a function if defined");
-    if (__privateSet(this, _w2, S), g !== void 0 && typeof g != "function") throw new TypeError("fetchMethod must be a function if specified");
-    if (__privateSet(this, _S2, g), __privateSet(this, _A, !!g), __privateSet(this, _f2, /* @__PURE__ */ new Map()), __privateSet(this, _a4, new Array(e).fill(void 0)), __privateSet(this, _i, new Array(e).fill(void 0)), __privateSet(this, _d, new Z(e)), __privateSet(this, _E, new Z(e)), __privateSet(this, _b2, 0), __privateSet(this, _p, 0), __privateSet(this, _R, ri.create(e)), __privateSet(this, _h2, 0), __privateSet(this, _u2, 0), typeof l == "function" && __privateSet(this, _n2, l), typeof u == "function" && __privateSet(this, _r2, u), typeof c == "function" ? (__privateSet(this, _o2, c), __privateSet(this, _m, [])) : (__privateSet(this, _o2, void 0), __privateSet(this, _m, void 0)), __privateSet(this, _x, !!__privateGet(this, _n2)), __privateSet(this, __, !!__privateGet(this, _r2)), __privateSet(this, _e, !!__privateGet(this, _o2)), this.noDisposeOnSet = !!d, this.noUpdateTTL = !!f, this.noDeleteOnFetchRejection = !!E, this.allowStaleOnFetchRejection = !!b, this.allowStaleOnFetchAbort = !!z, this.ignoreFetchAbort = !!$, this.maxEntrySize !== 0) {
+    if (S2 !== void 0 && typeof S2 != "function") throw new TypeError("memoMethod must be a function if defined");
+    if (__privateSet(this, _w2, S2), g !== void 0 && typeof g != "function") throw new TypeError("fetchMethod must be a function if specified");
+    if (__privateSet(this, _S2, g), __privateSet(this, _A, !!g), __privateSet(this, _f2, /* @__PURE__ */ new Map()), __privateSet(this, _a4, new Array(e).fill(void 0)), __privateSet(this, _i, new Array(e).fill(void 0)), __privateSet(this, _d, new Z2(e)), __privateSet(this, _E, new Z2(e)), __privateSet(this, _b2, 0), __privateSet(this, _p, 0), __privateSet(this, _R, ri.create(e)), __privateSet(this, _h2, 0), __privateSet(this, _u2, 0), typeof l == "function" && __privateSet(this, _n2, l), typeof u == "function" && __privateSet(this, _r2, u), typeof c3 == "function" ? (__privateSet(this, _o2, c3), __privateSet(this, _m, [])) : (__privateSet(this, _o2, void 0), __privateSet(this, _m, void 0)), __privateSet(this, _x, !!__privateGet(this, _n2)), __privateSet(this, __, !!__privateGet(this, _r2)), __privateSet(this, _e, !!__privateGet(this, _o2)), this.noDisposeOnSet = !!d, this.noUpdateTTL = !!f, this.noDeleteOnFetchRejection = !!E2, this.allowStaleOnFetchRejection = !!b2, this.allowStaleOnFetchAbort = !!z2, this.ignoreFetchAbort = !!$2, this.maxEntrySize !== 0) {
       if (__privateGet(this, _s3) !== 0 && !q(__privateGet(this, _s3))) throw new TypeError("maxSize must be a positive integer if specified");
       if (!q(this.maxEntrySize)) throw new TypeError("maxEntrySize must be a positive integer if specified");
       __privateMethod(this, _Me_instances, G_fn).call(this);
     }
-    if (this.allowStale = !!a, this.noDeleteOnStaleGet = !!y, this.updateAgeOnGet = !!o, this.updateAgeOnHas = !!h, this.ttlResolution = q(i) || i === 0 ? i : 1, this.ttlAutopurge = !!r, this.ttl = s || 0, this.ttl) {
+    if (this.allowStale = !!a, this.noDeleteOnStaleGet = !!y2, this.updateAgeOnGet = !!o2, this.updateAgeOnHas = !!h2, this.ttlResolution = q(i2) || i2 === 0 ? i2 : 1, this.ttlAutopurge = !!r2, this.ttl = s || 0, this.ttl) {
       if (!q(this.ttl)) throw new TypeError("ttl must be a positive integer if specified");
       __privateMethod(this, _Me_instances, M_fn).call(this);
     }
@@ -2160,29 +2085,29 @@ var ft = (_c2 = class {
   get perf() {
     return __privateGet(this, _c3);
   }
-  static unsafeExposeInternals(t) {
-    return { starts: __privateGet(t, _T), ttls: __privateGet(t, _g), autopurgeTimers: __privateGet(t, _y), sizes: __privateGet(t, _C), keyMap: __privateGet(t, _f2), keyList: __privateGet(t, _a4), valList: __privateGet(t, _i), next: __privateGet(t, _d), prev: __privateGet(t, _E), get head() {
-      return __privateGet(t, _b2);
+  static unsafeExposeInternals(t2) {
+    return { starts: __privateGet(t2, _T), ttls: __privateGet(t2, _g), autopurgeTimers: __privateGet(t2, _y), sizes: __privateGet(t2, _C), keyMap: __privateGet(t2, _f2), keyList: __privateGet(t2, _a4), valList: __privateGet(t2, _i), next: __privateGet(t2, _d), prev: __privateGet(t2, _E), get head() {
+      return __privateGet(t2, _b2);
     }, get tail() {
-      return __privateGet(t, _p);
-    }, free: __privateGet(t, _R), isBackgroundFetch: (e) => {
+      return __privateGet(t2, _p);
+    }, free: __privateGet(t2, _R), isBackgroundFetch: (e) => {
       var _a13;
-      return __privateMethod(_a13 = t, _Me_instances, l_fn).call(_a13, e);
-    }, backgroundFetch: (e, s, i, r) => {
+      return __privateMethod(_a13 = t2, _Me_instances, l_fn).call(_a13, e);
+    }, backgroundFetch: (e, s, i2, r2) => {
       var _a13;
-      return __privateMethod(_a13 = t, _Me_instances, U_fn).call(_a13, e, s, i, r);
+      return __privateMethod(_a13 = t2, _Me_instances, U_fn).call(_a13, e, s, i2, r2);
     }, moveToTail: (e) => {
       var _a13;
-      return __privateMethod(_a13 = t, _Me_instances, W_fn).call(_a13, e);
+      return __privateMethod(_a13 = t2, _Me_instances, W_fn).call(_a13, e);
     }, indexes: (e) => {
       var _a13;
-      return __privateMethod(_a13 = t, _Me_instances, F_fn).call(_a13, e);
+      return __privateMethod(_a13 = t2, _Me_instances, F_fn).call(_a13, e);
     }, rindexes: (e) => {
       var _a13;
-      return __privateMethod(_a13 = t, _Me_instances, D_fn).call(_a13, e);
+      return __privateMethod(_a13 = t2, _Me_instances, D_fn).call(_a13, e);
     }, isStale: (e) => {
       var _a13;
-      return __privateGet(_a13 = t, _v).call(_a13, e);
+      return __privateGet(_a13 = t2, _v).call(_a13, e);
     } };
   }
   get max() {
@@ -2212,124 +2137,124 @@ var ft = (_c2 = class {
   get disposeAfter() {
     return __privateGet(this, _o2);
   }
-  getRemainingTTL(t) {
-    return __privateGet(this, _f2).has(t) ? 1 / 0 : 0;
+  getRemainingTTL(t2) {
+    return __privateGet(this, _f2).has(t2) ? 1 / 0 : 0;
   }
   *entries() {
-    for (let t of __privateMethod(this, _Me_instances, F_fn).call(this)) __privateGet(this, _i)[t] !== void 0 && __privateGet(this, _a4)[t] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t]) && (yield [__privateGet(this, _a4)[t], __privateGet(this, _i)[t]]);
+    for (let t2 of __privateMethod(this, _Me_instances, F_fn).call(this)) __privateGet(this, _i)[t2] !== void 0 && __privateGet(this, _a4)[t2] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t2]) && (yield [__privateGet(this, _a4)[t2], __privateGet(this, _i)[t2]]);
   }
   *rentries() {
-    for (let t of __privateMethod(this, _Me_instances, D_fn).call(this)) __privateGet(this, _i)[t] !== void 0 && __privateGet(this, _a4)[t] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t]) && (yield [__privateGet(this, _a4)[t], __privateGet(this, _i)[t]]);
+    for (let t2 of __privateMethod(this, _Me_instances, D_fn).call(this)) __privateGet(this, _i)[t2] !== void 0 && __privateGet(this, _a4)[t2] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t2]) && (yield [__privateGet(this, _a4)[t2], __privateGet(this, _i)[t2]]);
   }
   *keys() {
-    for (let t of __privateMethod(this, _Me_instances, F_fn).call(this)) {
-      let e = __privateGet(this, _a4)[t];
-      e !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t]) && (yield e);
+    for (let t2 of __privateMethod(this, _Me_instances, F_fn).call(this)) {
+      let e = __privateGet(this, _a4)[t2];
+      e !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t2]) && (yield e);
     }
   }
   *rkeys() {
-    for (let t of __privateMethod(this, _Me_instances, D_fn).call(this)) {
-      let e = __privateGet(this, _a4)[t];
-      e !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t]) && (yield e);
+    for (let t2 of __privateMethod(this, _Me_instances, D_fn).call(this)) {
+      let e = __privateGet(this, _a4)[t2];
+      e !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t2]) && (yield e);
     }
   }
   *values() {
-    for (let t of __privateMethod(this, _Me_instances, F_fn).call(this)) __privateGet(this, _i)[t] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t]) && (yield __privateGet(this, _i)[t]);
+    for (let t2 of __privateMethod(this, _Me_instances, F_fn).call(this)) __privateGet(this, _i)[t2] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t2]) && (yield __privateGet(this, _i)[t2]);
   }
   *rvalues() {
-    for (let t of __privateMethod(this, _Me_instances, D_fn).call(this)) __privateGet(this, _i)[t] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t]) && (yield __privateGet(this, _i)[t]);
+    for (let t2 of __privateMethod(this, _Me_instances, D_fn).call(this)) __privateGet(this, _i)[t2] !== void 0 && !__privateMethod(this, _Me_instances, l_fn).call(this, __privateGet(this, _i)[t2]) && (yield __privateGet(this, _i)[t2]);
   }
   [(_b = Symbol.iterator, _a3 = Symbol.toStringTag, _b)]() {
     return this.entries();
   }
-  find(t, e = {}) {
+  find(t2, e = {}) {
     for (let s of __privateMethod(this, _Me_instances, F_fn).call(this)) {
-      let i = __privateGet(this, _i)[s], r = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
-      if (r !== void 0 && t(r, __privateGet(this, _a4)[s], this)) return this.get(__privateGet(this, _a4)[s], e);
+      let i2 = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      if (r2 !== void 0 && t2(r2, __privateGet(this, _a4)[s], this)) return this.get(__privateGet(this, _a4)[s], e);
     }
   }
-  forEach(t, e = this) {
+  forEach(t2, e = this) {
     for (let s of __privateMethod(this, _Me_instances, F_fn).call(this)) {
-      let i = __privateGet(this, _i)[s], r = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
-      r !== void 0 && t.call(e, r, __privateGet(this, _a4)[s], this);
+      let i2 = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      r2 !== void 0 && t2.call(e, r2, __privateGet(this, _a4)[s], this);
     }
   }
-  rforEach(t, e = this) {
+  rforEach(t2, e = this) {
     for (let s of __privateMethod(this, _Me_instances, D_fn).call(this)) {
-      let i = __privateGet(this, _i)[s], r = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
-      r !== void 0 && t.call(e, r, __privateGet(this, _a4)[s], this);
+      let i2 = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      r2 !== void 0 && t2.call(e, r2, __privateGet(this, _a4)[s], this);
     }
   }
   purgeStale() {
-    let t = false;
-    for (let e of __privateMethod(this, _Me_instances, D_fn).call(this, { allowStale: true })) __privateGet(this, _v).call(this, e) && (__privateMethod(this, _Me_instances, O_fn).call(this, __privateGet(this, _a4)[e], "expire"), t = true);
-    return t;
+    let t2 = false;
+    for (let e of __privateMethod(this, _Me_instances, D_fn).call(this, { allowStale: true })) __privateGet(this, _v).call(this, e) && (__privateMethod(this, _Me_instances, O_fn).call(this, __privateGet(this, _a4)[e], "expire"), t2 = true);
+    return t2;
   }
-  info(t) {
-    let e = __privateGet(this, _f2).get(t);
+  info(t2) {
+    let e = __privateGet(this, _f2).get(t2);
     if (e === void 0) return;
-    let s = __privateGet(this, _i)[e], i = __privateMethod(this, _Me_instances, l_fn).call(this, s) ? s.__staleWhileFetching : s;
-    if (i === void 0) return;
-    let r = { value: i };
+    let s = __privateGet(this, _i)[e], i2 = __privateMethod(this, _Me_instances, l_fn).call(this, s) ? s.__staleWhileFetching : s;
+    if (i2 === void 0) return;
+    let r2 = { value: i2 };
     if (__privateGet(this, _g) && __privateGet(this, _T)) {
-      let o = __privateGet(this, _g)[e], h = __privateGet(this, _T)[e];
-      if (o && h) {
-        let a = o - (__privateGet(this, _c3).now() - h);
-        r.ttl = a, r.start = Date.now();
+      let o2 = __privateGet(this, _g)[e], h2 = __privateGet(this, _T)[e];
+      if (o2 && h2) {
+        let a = o2 - (__privateGet(this, _c3).now() - h2);
+        r2.ttl = a, r2.start = Date.now();
       }
     }
-    return __privateGet(this, _C) && (r.size = __privateGet(this, _C)[e]), r;
+    return __privateGet(this, _C) && (r2.size = __privateGet(this, _C)[e]), r2;
   }
   dump() {
-    let t = [];
+    let t2 = [];
     for (let e of __privateMethod(this, _Me_instances, F_fn).call(this, { allowStale: true })) {
-      let s = __privateGet(this, _a4)[e], i = __privateGet(this, _i)[e], r = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
-      if (r === void 0 || s === void 0) continue;
-      let o = { value: r };
+      let s = __privateGet(this, _a4)[e], i2 = __privateGet(this, _i)[e], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      if (r2 === void 0 || s === void 0) continue;
+      let o2 = { value: r2 };
       if (__privateGet(this, _g) && __privateGet(this, _T)) {
-        o.ttl = __privateGet(this, _g)[e];
-        let h = __privateGet(this, _c3).now() - __privateGet(this, _T)[e];
-        o.start = Math.floor(Date.now() - h);
+        o2.ttl = __privateGet(this, _g)[e];
+        let h2 = __privateGet(this, _c3).now() - __privateGet(this, _T)[e];
+        o2.start = Math.floor(Date.now() - h2);
       }
-      __privateGet(this, _C) && (o.size = __privateGet(this, _C)[e]), t.unshift([s, o]);
+      __privateGet(this, _C) && (o2.size = __privateGet(this, _C)[e]), t2.unshift([s, o2]);
     }
-    return t;
+    return t2;
   }
-  load(t) {
+  load(t2) {
     this.clear();
-    for (let [e, s] of t) {
+    for (let [e, s] of t2) {
       if (s.start) {
-        let i = Date.now() - s.start;
-        s.start = __privateGet(this, _c3).now() - i;
+        let i2 = Date.now() - s.start;
+        s.start = __privateGet(this, _c3).now() - i2;
       }
       this.set(e, s.value, s);
     }
   }
-  set(t, e, s = {}) {
+  set(t2, e, s = {}) {
     var _a13, _b5, _c7, _d4;
-    if (e === void 0) return this.delete(t), this;
-    let { ttl: i = this.ttl, start: r, noDisposeOnSet: o = this.noDisposeOnSet, sizeCalculation: h = this.sizeCalculation, status: a } = s, { noUpdateTTL: l = this.noUpdateTTL } = s, u = __privateGet(this, _I).call(this, t, e, s.size || 0, h);
-    if (this.maxEntrySize && u > this.maxEntrySize) return a && (a.set = "miss", a.maxEntrySizeExceeded = true), __privateMethod(this, _Me_instances, O_fn).call(this, t, "set"), this;
-    let c = __privateGet(this, _h2) === 0 ? void 0 : __privateGet(this, _f2).get(t);
-    if (c === void 0) c = __privateGet(this, _h2) === 0 ? __privateGet(this, _p) : __privateGet(this, _R).length !== 0 ? __privateGet(this, _R).pop() : __privateGet(this, _h2) === __privateGet(this, _t3) ? __privateMethod(this, _Me_instances, B_fn).call(this, false) : __privateGet(this, _h2), __privateGet(this, _a4)[c] = t, __privateGet(this, _i)[c] = e, __privateGet(this, _f2).set(t, c), __privateGet(this, _d)[__privateGet(this, _p)] = c, __privateGet(this, _E)[c] = __privateGet(this, _p), __privateSet(this, _p, c), __privateWrapper(this, _h2)._++, __privateGet(this, _L).call(this, c, u, a), a && (a.set = "add"), l = false, __privateGet(this, __) && ((_a13 = __privateGet(this, _r2)) == null ? void 0 : _a13.call(this, e, t, "add"));
+    if (e === void 0) return this.delete(t2), this;
+    let { ttl: i2 = this.ttl, start: r2, noDisposeOnSet: o2 = this.noDisposeOnSet, sizeCalculation: h2 = this.sizeCalculation, status: a } = s, { noUpdateTTL: l = this.noUpdateTTL } = s, u = __privateGet(this, _I).call(this, t2, e, s.size || 0, h2);
+    if (this.maxEntrySize && u > this.maxEntrySize) return a && (a.set = "miss", a.maxEntrySizeExceeded = true), __privateMethod(this, _Me_instances, O_fn).call(this, t2, "set"), this;
+    let c3 = __privateGet(this, _h2) === 0 ? void 0 : __privateGet(this, _f2).get(t2);
+    if (c3 === void 0) c3 = __privateGet(this, _h2) === 0 ? __privateGet(this, _p) : __privateGet(this, _R).length !== 0 ? __privateGet(this, _R).pop() : __privateGet(this, _h2) === __privateGet(this, _t3) ? __privateMethod(this, _Me_instances, B_fn).call(this, false) : __privateGet(this, _h2), __privateGet(this, _a4)[c3] = t2, __privateGet(this, _i)[c3] = e, __privateGet(this, _f2).set(t2, c3), __privateGet(this, _d)[__privateGet(this, _p)] = c3, __privateGet(this, _E)[c3] = __privateGet(this, _p), __privateSet(this, _p, c3), __privateWrapper(this, _h2)._++, __privateGet(this, _L).call(this, c3, u, a), a && (a.set = "add"), l = false, __privateGet(this, __) && ((_a13 = __privateGet(this, _r2)) == null ? void 0 : _a13.call(this, e, t2, "add"));
     else {
-      __privateMethod(this, _Me_instances, W_fn).call(this, c);
-      let d = __privateGet(this, _i)[c];
+      __privateMethod(this, _Me_instances, W_fn).call(this, c3);
+      let d = __privateGet(this, _i)[c3];
       if (e !== d) {
         if (__privateGet(this, _A) && __privateMethod(this, _Me_instances, l_fn).call(this, d)) {
           d.__abortController.abort(new Error("replaced"));
           let { __staleWhileFetching: f } = d;
-          f !== void 0 && !o && (__privateGet(this, _x) && ((_b5 = __privateGet(this, _n2)) == null ? void 0 : _b5.call(this, f, t, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([f, t, "set"]));
-        } else o || (__privateGet(this, _x) && ((_c7 = __privateGet(this, _n2)) == null ? void 0 : _c7.call(this, d, t, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([d, t, "set"]));
-        if (__privateGet(this, _P).call(this, c), __privateGet(this, _L).call(this, c, u, a), __privateGet(this, _i)[c] = e, a) {
+          f !== void 0 && !o2 && (__privateGet(this, _x) && ((_b5 = __privateGet(this, _n2)) == null ? void 0 : _b5.call(this, f, t2, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([f, t2, "set"]));
+        } else o2 || (__privateGet(this, _x) && ((_c7 = __privateGet(this, _n2)) == null ? void 0 : _c7.call(this, d, t2, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([d, t2, "set"]));
+        if (__privateGet(this, _P).call(this, c3), __privateGet(this, _L).call(this, c3, u, a), __privateGet(this, _i)[c3] = e, a) {
           a.set = "replace";
           let f = d && __privateMethod(this, _Me_instances, l_fn).call(this, d) ? d.__staleWhileFetching : d;
           f !== void 0 && (a.oldValue = f);
         }
       } else a && (a.set = "update");
-      __privateGet(this, __) && this.onInsert?.(e, t, e === d ? "update" : "replace");
+      __privateGet(this, __) && this.onInsert?.(e, t2, e === d ? "update" : "replace");
     }
-    if (i !== 0 && !__privateGet(this, _g) && __privateMethod(this, _Me_instances, M_fn).call(this), __privateGet(this, _g) && (l || __privateGet(this, _j).call(this, c, i, r), a && __privateGet(this, _N).call(this, a, c)), !o && __privateGet(this, _e) && __privateGet(this, _m)) {
+    if (i2 !== 0 && !__privateGet(this, _g) && __privateMethod(this, _Me_instances, M_fn).call(this), __privateGet(this, _g) && (l || __privateGet(this, _j).call(this, c3, i2, r2), a && __privateGet(this, _N).call(this, a, c3)), !o2 && __privateGet(this, _e) && __privateGet(this, _m)) {
       let d = __privateGet(this, _m), f;
       for (; f = d?.shift(); ) (_d4 = __privateGet(this, _o2)) == null ? void 0 : _d4.call(this, ...f);
     }
@@ -2339,215 +2264,215 @@ var ft = (_c2 = class {
     var _a13;
     try {
       for (; __privateGet(this, _h2); ) {
-        let t = __privateGet(this, _i)[__privateGet(this, _b2)];
-        if (__privateMethod(this, _Me_instances, B_fn).call(this, true), __privateMethod(this, _Me_instances, l_fn).call(this, t)) {
-          if (t.__staleWhileFetching) return t.__staleWhileFetching;
-        } else if (t !== void 0) return t;
+        let t2 = __privateGet(this, _i)[__privateGet(this, _b2)];
+        if (__privateMethod(this, _Me_instances, B_fn).call(this, true), __privateMethod(this, _Me_instances, l_fn).call(this, t2)) {
+          if (t2.__staleWhileFetching) return t2.__staleWhileFetching;
+        } else if (t2 !== void 0) return t2;
       }
     } finally {
       if (__privateGet(this, _e) && __privateGet(this, _m)) {
-        let t = __privateGet(this, _m), e;
-        for (; e = t?.shift(); ) (_a13 = __privateGet(this, _o2)) == null ? void 0 : _a13.call(this, ...e);
+        let t2 = __privateGet(this, _m), e;
+        for (; e = t2?.shift(); ) (_a13 = __privateGet(this, _o2)) == null ? void 0 : _a13.call(this, ...e);
       }
     }
   }
-  has(t, e = {}) {
-    let { updateAgeOnHas: s = this.updateAgeOnHas, status: i } = e, r = __privateGet(this, _f2).get(t);
-    if (r !== void 0) {
-      let o = __privateGet(this, _i)[r];
-      if (__privateMethod(this, _Me_instances, l_fn).call(this, o) && o.__staleWhileFetching === void 0) return false;
-      if (__privateGet(this, _v).call(this, r)) i && (i.has = "stale", __privateGet(this, _N).call(this, i, r));
-      else return s && __privateGet(this, _k).call(this, r), i && (i.has = "hit", __privateGet(this, _N).call(this, i, r)), true;
-    } else i && (i.has = "miss");
+  has(t2, e = {}) {
+    let { updateAgeOnHas: s = this.updateAgeOnHas, status: i2 } = e, r2 = __privateGet(this, _f2).get(t2);
+    if (r2 !== void 0) {
+      let o2 = __privateGet(this, _i)[r2];
+      if (__privateMethod(this, _Me_instances, l_fn).call(this, o2) && o2.__staleWhileFetching === void 0) return false;
+      if (__privateGet(this, _v).call(this, r2)) i2 && (i2.has = "stale", __privateGet(this, _N).call(this, i2, r2));
+      else return s && __privateGet(this, _k).call(this, r2), i2 && (i2.has = "hit", __privateGet(this, _N).call(this, i2, r2)), true;
+    } else i2 && (i2.has = "miss");
     return false;
   }
-  peek(t, e = {}) {
-    let { allowStale: s = this.allowStale } = e, i = __privateGet(this, _f2).get(t);
-    if (i === void 0 || !s && __privateGet(this, _v).call(this, i)) return;
-    let r = __privateGet(this, _i)[i];
-    return __privateMethod(this, _Me_instances, l_fn).call(this, r) ? r.__staleWhileFetching : r;
+  peek(t2, e = {}) {
+    let { allowStale: s = this.allowStale } = e, i2 = __privateGet(this, _f2).get(t2);
+    if (i2 === void 0 || !s && __privateGet(this, _v).call(this, i2)) return;
+    let r2 = __privateGet(this, _i)[i2];
+    return __privateMethod(this, _Me_instances, l_fn).call(this, r2) ? r2.__staleWhileFetching : r2;
   }
-  async fetch(t, e = {}) {
-    let { allowStale: s = this.allowStale, updateAgeOnGet: i = this.updateAgeOnGet, noDeleteOnStaleGet: r = this.noDeleteOnStaleGet, ttl: o = this.ttl, noDisposeOnSet: h = this.noDisposeOnSet, size: a = 0, sizeCalculation: l = this.sizeCalculation, noUpdateTTL: u = this.noUpdateTTL, noDeleteOnFetchRejection: c = this.noDeleteOnFetchRejection, allowStaleOnFetchRejection: d = this.allowStaleOnFetchRejection, ignoreFetchAbort: f = this.ignoreFetchAbort, allowStaleOnFetchAbort: m = this.allowStaleOnFetchAbort, context: p, forceRefresh: w = false, status: g, signal: S } = e;
-    if (!__privateGet(this, _A)) return g && (g.fetch = "get"), this.get(t, { allowStale: s, updateAgeOnGet: i, noDeleteOnStaleGet: r, status: g });
-    let E = { allowStale: s, updateAgeOnGet: i, noDeleteOnStaleGet: r, ttl: o, noDisposeOnSet: h, size: a, sizeCalculation: l, noUpdateTTL: u, noDeleteOnFetchRejection: c, allowStaleOnFetchRejection: d, allowStaleOnFetchAbort: m, ignoreFetchAbort: f, status: g, signal: S }, y = __privateGet(this, _f2).get(t);
-    if (y === void 0) {
+  async fetch(t2, e = {}) {
+    let { allowStale: s = this.allowStale, updateAgeOnGet: i2 = this.updateAgeOnGet, noDeleteOnStaleGet: r2 = this.noDeleteOnStaleGet, ttl: o2 = this.ttl, noDisposeOnSet: h2 = this.noDisposeOnSet, size: a = 0, sizeCalculation: l = this.sizeCalculation, noUpdateTTL: u = this.noUpdateTTL, noDeleteOnFetchRejection: c3 = this.noDeleteOnFetchRejection, allowStaleOnFetchRejection: d = this.allowStaleOnFetchRejection, ignoreFetchAbort: f = this.ignoreFetchAbort, allowStaleOnFetchAbort: m = this.allowStaleOnFetchAbort, context: p2, forceRefresh: w = false, status: g, signal: S2 } = e;
+    if (!__privateGet(this, _A)) return g && (g.fetch = "get"), this.get(t2, { allowStale: s, updateAgeOnGet: i2, noDeleteOnStaleGet: r2, status: g });
+    let E2 = { allowStale: s, updateAgeOnGet: i2, noDeleteOnStaleGet: r2, ttl: o2, noDisposeOnSet: h2, size: a, sizeCalculation: l, noUpdateTTL: u, noDeleteOnFetchRejection: c3, allowStaleOnFetchRejection: d, allowStaleOnFetchAbort: m, ignoreFetchAbort: f, status: g, signal: S2 }, y2 = __privateGet(this, _f2).get(t2);
+    if (y2 === void 0) {
       g && (g.fetch = "miss");
-      let b = __privateMethod(this, _Me_instances, U_fn).call(this, t, y, E, p);
-      return b.__returned = b;
+      let b2 = __privateMethod(this, _Me_instances, U_fn).call(this, t2, y2, E2, p2);
+      return b2.__returned = b2;
     } else {
-      let b = __privateGet(this, _i)[y];
-      if (__privateMethod(this, _Me_instances, l_fn).call(this, b)) {
-        let Z = s && b.__staleWhileFetching !== void 0;
-        return g && (g.fetch = "inflight", Z && (g.returnedStale = true)), Z ? b.__staleWhileFetching : b.__returned = b;
+      let b2 = __privateGet(this, _i)[y2];
+      if (__privateMethod(this, _Me_instances, l_fn).call(this, b2)) {
+        let Z2 = s && b2.__staleWhileFetching !== void 0;
+        return g && (g.fetch = "inflight", Z2 && (g.returnedStale = true)), Z2 ? b2.__staleWhileFetching : b2.__returned = b2;
       }
-      let z = __privateGet(this, _v).call(this, y);
-      if (!w && !z) return g && (g.fetch = "hit"), __privateMethod(this, _Me_instances, W_fn).call(this, y), i && __privateGet(this, _k).call(this, y), g && __privateGet(this, _N).call(this, g, y), b;
-      let $ = __privateMethod(this, _Me_instances, U_fn).call(this, t, y, E, p), J = $.__staleWhileFetching !== void 0 && s;
-      return g && (g.fetch = z ? "stale" : "refresh", J && z && (g.returnedStale = true)), J ? $.__staleWhileFetching : $.__returned = $;
+      let z2 = __privateGet(this, _v).call(this, y2);
+      if (!w && !z2) return g && (g.fetch = "hit"), __privateMethod(this, _Me_instances, W_fn).call(this, y2), i2 && __privateGet(this, _k).call(this, y2), g && __privateGet(this, _N).call(this, g, y2), b2;
+      let $2 = __privateMethod(this, _Me_instances, U_fn).call(this, t2, y2, E2, p2), J2 = $2.__staleWhileFetching !== void 0 && s;
+      return g && (g.fetch = z2 ? "stale" : "refresh", J2 && z2 && (g.returnedStale = true)), J2 ? $2.__staleWhileFetching : $2.__returned = $2;
     }
   }
-  async forceFetch(t, e = {}) {
-    let s = await this.fetch(t, e);
+  async forceFetch(t2, e = {}) {
+    let s = await this.fetch(t2, e);
     if (s === void 0) throw new Error("fetch() returned undefined");
     return s;
   }
-  memo(t, e = {}) {
+  memo(t2, e = {}) {
     let s = __privateGet(this, _w2);
     if (!s) throw new Error("no memoMethod provided to constructor");
-    let { context: i, forceRefresh: r, ...o } = e, h = this.get(t, o);
-    if (!r && h !== void 0) return h;
-    let a = s(t, h, { options: o, context: i });
-    return this.set(t, a, o), a;
+    let { context: i2, forceRefresh: r2, ...o2 } = e, h2 = this.get(t2, o2);
+    if (!r2 && h2 !== void 0) return h2;
+    let a = s(t2, h2, { options: o2, context: i2 });
+    return this.set(t2, a, o2), a;
   }
-  get(t, e = {}) {
-    let { allowStale: s = this.allowStale, updateAgeOnGet: i = this.updateAgeOnGet, noDeleteOnStaleGet: r = this.noDeleteOnStaleGet, status: o } = e, h = __privateGet(this, _f2).get(t);
-    if (h !== void 0) {
-      let a = __privateGet(this, _i)[h], l = __privateMethod(this, _Me_instances, l_fn).call(this, a);
-      return o && __privateGet(this, _N).call(this, o, h), __privateGet(this, _v).call(this, h) ? (o && (o.get = "stale"), l ? (o && s && a.__staleWhileFetching !== void 0 && (o.returnedStale = true), s ? a.__staleWhileFetching : void 0) : (r || __privateMethod(this, _Me_instances, O_fn).call(this, t, "expire"), o && s && (o.returnedStale = true), s ? a : void 0)) : (o && (o.get = "hit"), l ? a.__staleWhileFetching : (__privateMethod(this, _Me_instances, W_fn).call(this, h), i && __privateGet(this, _k).call(this, h), a));
-    } else o && (o.get = "miss");
+  get(t2, e = {}) {
+    let { allowStale: s = this.allowStale, updateAgeOnGet: i2 = this.updateAgeOnGet, noDeleteOnStaleGet: r2 = this.noDeleteOnStaleGet, status: o2 } = e, h2 = __privateGet(this, _f2).get(t2);
+    if (h2 !== void 0) {
+      let a = __privateGet(this, _i)[h2], l = __privateMethod(this, _Me_instances, l_fn).call(this, a);
+      return o2 && __privateGet(this, _N).call(this, o2, h2), __privateGet(this, _v).call(this, h2) ? (o2 && (o2.get = "stale"), l ? (o2 && s && a.__staleWhileFetching !== void 0 && (o2.returnedStale = true), s ? a.__staleWhileFetching : void 0) : (r2 || __privateMethod(this, _Me_instances, O_fn).call(this, t2, "expire"), o2 && s && (o2.returnedStale = true), s ? a : void 0)) : (o2 && (o2.get = "hit"), l ? a.__staleWhileFetching : (__privateMethod(this, _Me_instances, W_fn).call(this, h2), i2 && __privateGet(this, _k).call(this, h2), a));
+    } else o2 && (o2.get = "miss");
   }
-  delete(t) {
-    return __privateMethod(this, _Me_instances, O_fn).call(this, t, "delete");
+  delete(t2) {
+    return __privateMethod(this, _Me_instances, O_fn).call(this, t2, "delete");
   }
   clear() {
     return __privateMethod(this, _Me_instances, H_fn).call(this, "delete");
   }
 }, _t3 = new WeakMap(), _s3 = new WeakMap(), _n2 = new WeakMap(), _r2 = new WeakMap(), _o2 = new WeakMap(), _S2 = new WeakMap(), _w2 = new WeakMap(), _c3 = new WeakMap(), _h2 = new WeakMap(), _u2 = new WeakMap(), _f2 = new WeakMap(), _a4 = new WeakMap(), _i = new WeakMap(), _d = new WeakMap(), _E = new WeakMap(), _b2 = new WeakMap(), _p = new WeakMap(), _R = new WeakMap(), _m = new WeakMap(), _C = new WeakMap(), _T = new WeakMap(), _g = new WeakMap(), _y = new WeakMap(), _x = new WeakMap(), _A = new WeakMap(), _e = new WeakMap(), __ = new WeakMap(), _Me_instances = new WeakSet(), M_fn = function() {
-  let t = new Tt(__privateGet(this, _t3)), e = new Tt(__privateGet(this, _t3));
-  __privateSet(this, _g, t), __privateSet(this, _T, e);
+  let t2 = new Tt(__privateGet(this, _t3)), e = new Tt(__privateGet(this, _t3));
+  __privateSet(this, _g, t2), __privateSet(this, _T, e);
   let s = this.ttlAutopurge ? new Array(__privateGet(this, _t3)) : void 0;
-  __privateSet(this, _y, s), __privateSet(this, _j, (o, h, a = __privateGet(this, _c3).now()) => {
-    if (e[o] = h !== 0 ? a : 0, t[o] = h, s?.[o] && (clearTimeout(s[o]), s[o] = void 0), h !== 0 && s) {
+  __privateSet(this, _y, s), __privateSet(this, _j, (o2, h2, a = __privateGet(this, _c3).now()) => {
+    if (e[o2] = h2 !== 0 ? a : 0, t2[o2] = h2, s?.[o2] && (clearTimeout(s[o2]), s[o2] = void 0), h2 !== 0 && s) {
       let l = setTimeout(() => {
-        __privateGet(this, _v).call(this, o) && __privateMethod(this, _Me_instances, O_fn).call(this, __privateGet(this, _a4)[o], "expire");
-      }, h + 1);
-      l.unref && l.unref(), s[o] = l;
+        __privateGet(this, _v).call(this, o2) && __privateMethod(this, _Me_instances, O_fn).call(this, __privateGet(this, _a4)[o2], "expire");
+      }, h2 + 1);
+      l.unref && l.unref(), s[o2] = l;
     }
-  }), __privateSet(this, _k, (o) => {
-    e[o] = t[o] !== 0 ? __privateGet(this, _c3).now() : 0;
-  }), __privateSet(this, _N, (o, h) => {
-    if (t[h]) {
-      let a = t[h], l = e[h];
+  }), __privateSet(this, _k, (o2) => {
+    e[o2] = t2[o2] !== 0 ? __privateGet(this, _c3).now() : 0;
+  }), __privateSet(this, _N, (o2, h2) => {
+    if (t2[h2]) {
+      let a = t2[h2], l = e[h2];
       if (!a || !l) return;
-      o.ttl = a, o.start = l, o.now = i || r();
-      let u = o.now - l;
-      o.remainingTTL = a - u;
+      o2.ttl = a, o2.start = l, o2.now = i2 || r2();
+      let u = o2.now - l;
+      o2.remainingTTL = a - u;
     }
   });
-  let i = 0, r = () => {
-    let o = __privateGet(this, _c3).now();
+  let i2 = 0, r2 = () => {
+    let o2 = __privateGet(this, _c3).now();
     if (this.ttlResolution > 0) {
-      i = o;
-      let h = setTimeout(() => i = 0, this.ttlResolution);
-      h.unref && h.unref();
+      i2 = o2;
+      let h2 = setTimeout(() => i2 = 0, this.ttlResolution);
+      h2.unref && h2.unref();
     }
-    return o;
+    return o2;
   };
-  this.getRemainingTTL = (o) => {
-    let h = __privateGet(this, _f2).get(o);
-    if (h === void 0) return 0;
-    let a = t[h], l = e[h];
+  this.getRemainingTTL = (o2) => {
+    let h2 = __privateGet(this, _f2).get(o2);
+    if (h2 === void 0) return 0;
+    let a = t2[h2], l = e[h2];
     if (!a || !l) return 1 / 0;
-    let u = (i || r()) - l;
+    let u = (i2 || r2()) - l;
     return a - u;
-  }, __privateSet(this, _v, (o) => {
-    let h = e[o], a = t[o];
-    return !!a && !!h && (i || r()) - h > a;
+  }, __privateSet(this, _v, (o2) => {
+    let h2 = e[o2], a = t2[o2];
+    return !!a && !!h2 && (i2 || r2()) - h2 > a;
   });
 }, _k = new WeakMap(), _N = new WeakMap(), _j = new WeakMap(), _v = new WeakMap(), G_fn = function() {
-  let t = new Tt(__privateGet(this, _t3));
-  __privateSet(this, _u2, 0), __privateSet(this, _C, t), __privateSet(this, _P, (e) => {
-    __privateSet(this, _u2, __privateGet(this, _u2) - t[e]), t[e] = 0;
-  }), __privateSet(this, _I, (e, s, i, r) => {
+  let t2 = new Tt(__privateGet(this, _t3));
+  __privateSet(this, _u2, 0), __privateSet(this, _C, t2), __privateSet(this, _P, (e) => {
+    __privateSet(this, _u2, __privateGet(this, _u2) - t2[e]), t2[e] = 0;
+  }), __privateSet(this, _I, (e, s, i2, r2) => {
     if (__privateMethod(this, _Me_instances, l_fn).call(this, s)) return 0;
-    if (!q(i)) if (r) {
-      if (typeof r != "function") throw new TypeError("sizeCalculation must be a function");
-      if (i = r(s, e), !q(i)) throw new TypeError("sizeCalculation return invalid (expect positive integer)");
+    if (!q(i2)) if (r2) {
+      if (typeof r2 != "function") throw new TypeError("sizeCalculation must be a function");
+      if (i2 = r2(s, e), !q(i2)) throw new TypeError("sizeCalculation return invalid (expect positive integer)");
     } else throw new TypeError("invalid size value (must be positive integer). When maxSize or maxEntrySize is used, sizeCalculation or size must be set.");
-    return i;
-  }), __privateSet(this, _L, (e, s, i) => {
-    if (t[e] = s, __privateGet(this, _s3)) {
-      let r = __privateGet(this, _s3) - t[e];
-      for (; __privateGet(this, _u2) > r; ) __privateMethod(this, _Me_instances, B_fn).call(this, true);
+    return i2;
+  }), __privateSet(this, _L, (e, s, i2) => {
+    if (t2[e] = s, __privateGet(this, _s3)) {
+      let r2 = __privateGet(this, _s3) - t2[e];
+      for (; __privateGet(this, _u2) > r2; ) __privateMethod(this, _Me_instances, B_fn).call(this, true);
     }
-    __privateSet(this, _u2, __privateGet(this, _u2) + t[e]), i && (i.entrySize = s, i.totalCalculatedSize = __privateGet(this, _u2));
+    __privateSet(this, _u2, __privateGet(this, _u2) + t2[e]), i2 && (i2.entrySize = s, i2.totalCalculatedSize = __privateGet(this, _u2));
   });
-}, _P = new WeakMap(), _L = new WeakMap(), _I = new WeakMap(), F_fn = function* ({ allowStale: t = this.allowStale } = {}) {
-  if (__privateGet(this, _h2)) for (let e = __privateGet(this, _p); !(!__privateMethod(this, _Me_instances, z_fn).call(this, e) || ((t || !__privateGet(this, _v).call(this, e)) && (yield e), e === __privateGet(this, _b2))); ) e = __privateGet(this, _E)[e];
-}, D_fn = function* ({ allowStale: t = this.allowStale } = {}) {
-  if (__privateGet(this, _h2)) for (let e = __privateGet(this, _b2); !(!__privateMethod(this, _Me_instances, z_fn).call(this, e) || ((t || !__privateGet(this, _v).call(this, e)) && (yield e), e === __privateGet(this, _p))); ) e = __privateGet(this, _d)[e];
-}, z_fn = function(t) {
-  return t !== void 0 && __privateGet(this, _f2).get(__privateGet(this, _a4)[t]) === t;
-}, B_fn = function(t) {
+}, _P = new WeakMap(), _L = new WeakMap(), _I = new WeakMap(), F_fn = function* ({ allowStale: t2 = this.allowStale } = {}) {
+  if (__privateGet(this, _h2)) for (let e = __privateGet(this, _p); !(!__privateMethod(this, _Me_instances, z_fn).call(this, e) || ((t2 || !__privateGet(this, _v).call(this, e)) && (yield e), e === __privateGet(this, _b2))); ) e = __privateGet(this, _E)[e];
+}, D_fn = function* ({ allowStale: t2 = this.allowStale } = {}) {
+  if (__privateGet(this, _h2)) for (let e = __privateGet(this, _b2); !(!__privateMethod(this, _Me_instances, z_fn).call(this, e) || ((t2 || !__privateGet(this, _v).call(this, e)) && (yield e), e === __privateGet(this, _p))); ) e = __privateGet(this, _d)[e];
+}, z_fn = function(t2) {
+  return t2 !== void 0 && __privateGet(this, _f2).get(__privateGet(this, _a4)[t2]) === t2;
+}, B_fn = function(t2) {
   var _a13;
-  let e = __privateGet(this, _b2), s = __privateGet(this, _a4)[e], i = __privateGet(this, _i)[e];
-  return __privateGet(this, _A) && __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__abortController.abort(new Error("evicted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, i, s, "evict")), __privateGet(this, _e) && __privateGet(this, _m)?.push([i, s, "evict"])), __privateGet(this, _P).call(this, e), __privateGet(this, _y)?.[e] && (clearTimeout(__privateGet(this, _y)[e]), __privateGet(this, _y)[e] = void 0), t && (__privateGet(this, _a4)[e] = void 0, __privateGet(this, _i)[e] = void 0, __privateGet(this, _R).push(e)), __privateGet(this, _h2) === 1 ? (__privateSet(this, _b2, __privateSet(this, _p, 0)), __privateGet(this, _R).length = 0) : __privateSet(this, _b2, __privateGet(this, _d)[e]), __privateGet(this, _f2).delete(s), __privateWrapper(this, _h2)._--, e;
-}, U_fn = function(t, e, s, i) {
-  let r = e === void 0 ? void 0 : __privateGet(this, _i)[e];
-  if (__privateMethod(this, _Me_instances, l_fn).call(this, r)) return r;
-  let o = new At(), { signal: h } = s;
-  h?.addEventListener("abort", () => o.abort(h.reason), { signal: o.signal });
-  let a = { signal: o.signal, options: s, context: i }, l = (p, w = false) => {
-    let { aborted: g } = o.signal, S = s.ignoreFetchAbort && p !== void 0, E = s.ignoreFetchAbort || !!(s.allowStaleOnFetchAbort && p !== void 0);
-    if (s.status && (g && !w ? (s.status.fetchAborted = true, s.status.fetchError = o.signal.reason, S && (s.status.fetchAbortIgnored = true)) : s.status.fetchResolved = true), g && !S && !w) return c(o.signal.reason, E);
-    let y = f, b = __privateGet(this, _i)[e];
-    return (b === f || S && w && b === void 0) && (p === void 0 ? y.__staleWhileFetching !== void 0 ? __privateGet(this, _i)[e] = y.__staleWhileFetching : __privateMethod(this, _Me_instances, O_fn).call(this, t, "fetch") : (s.status && (s.status.fetchUpdated = true), this.set(t, p, a.options))), p;
-  }, u = (p) => (s.status && (s.status.fetchRejected = true, s.status.fetchError = p), c(p, false)), c = (p, w) => {
-    let { aborted: g } = o.signal, S = g && s.allowStaleOnFetchAbort, E = S || s.allowStaleOnFetchRejection, y = E || s.noDeleteOnFetchRejection, b = f;
-    if (__privateGet(this, _i)[e] === f && (!y || !w && b.__staleWhileFetching === void 0 ? __privateMethod(this, _Me_instances, O_fn).call(this, t, "fetch") : S || (__privateGet(this, _i)[e] = b.__staleWhileFetching)), E) return s.status && b.__staleWhileFetching !== void 0 && (s.status.returnedStale = true), b.__staleWhileFetching;
-    if (b.__returned === b) throw p;
-  }, d = (p, w) => {
+  let e = __privateGet(this, _b2), s = __privateGet(this, _a4)[e], i2 = __privateGet(this, _i)[e];
+  return __privateGet(this, _A) && __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__abortController.abort(new Error("evicted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, i2, s, "evict")), __privateGet(this, _e) && __privateGet(this, _m)?.push([i2, s, "evict"])), __privateGet(this, _P).call(this, e), __privateGet(this, _y)?.[e] && (clearTimeout(__privateGet(this, _y)[e]), __privateGet(this, _y)[e] = void 0), t2 && (__privateGet(this, _a4)[e] = void 0, __privateGet(this, _i)[e] = void 0, __privateGet(this, _R).push(e)), __privateGet(this, _h2) === 1 ? (__privateSet(this, _b2, __privateSet(this, _p, 0)), __privateGet(this, _R).length = 0) : __privateSet(this, _b2, __privateGet(this, _d)[e]), __privateGet(this, _f2).delete(s), __privateWrapper(this, _h2)._--, e;
+}, U_fn = function(t2, e, s, i2) {
+  let r2 = e === void 0 ? void 0 : __privateGet(this, _i)[e];
+  if (__privateMethod(this, _Me_instances, l_fn).call(this, r2)) return r2;
+  let o2 = new At(), { signal: h2 } = s;
+  h2?.addEventListener("abort", () => o2.abort(h2.reason), { signal: o2.signal });
+  let a = { signal: o2.signal, options: s, context: i2 }, l = (p2, w = false) => {
+    let { aborted: g } = o2.signal, S2 = s.ignoreFetchAbort && p2 !== void 0, E2 = s.ignoreFetchAbort || !!(s.allowStaleOnFetchAbort && p2 !== void 0);
+    if (s.status && (g && !w ? (s.status.fetchAborted = true, s.status.fetchError = o2.signal.reason, S2 && (s.status.fetchAbortIgnored = true)) : s.status.fetchResolved = true), g && !S2 && !w) return c3(o2.signal.reason, E2);
+    let y2 = f, b2 = __privateGet(this, _i)[e];
+    return (b2 === f || S2 && w && b2 === void 0) && (p2 === void 0 ? y2.__staleWhileFetching !== void 0 ? __privateGet(this, _i)[e] = y2.__staleWhileFetching : __privateMethod(this, _Me_instances, O_fn).call(this, t2, "fetch") : (s.status && (s.status.fetchUpdated = true), this.set(t2, p2, a.options))), p2;
+  }, u = (p2) => (s.status && (s.status.fetchRejected = true, s.status.fetchError = p2), c3(p2, false)), c3 = (p2, w) => {
+    let { aborted: g } = o2.signal, S2 = g && s.allowStaleOnFetchAbort, E2 = S2 || s.allowStaleOnFetchRejection, y2 = E2 || s.noDeleteOnFetchRejection, b2 = f;
+    if (__privateGet(this, _i)[e] === f && (!y2 || !w && b2.__staleWhileFetching === void 0 ? __privateMethod(this, _Me_instances, O_fn).call(this, t2, "fetch") : S2 || (__privateGet(this, _i)[e] = b2.__staleWhileFetching)), E2) return s.status && b2.__staleWhileFetching !== void 0 && (s.status.returnedStale = true), b2.__staleWhileFetching;
+    if (b2.__returned === b2) throw p2;
+  }, d = (p2, w) => {
     var _a13;
-    let g = (_a13 = __privateGet(this, _S2)) == null ? void 0 : _a13.call(this, t, r, a);
-    g && g instanceof Promise && g.then((S) => p(S === void 0 ? void 0 : S), w), o.signal.addEventListener("abort", () => {
-      (!s.ignoreFetchAbort || s.allowStaleOnFetchAbort) && (p(void 0), s.allowStaleOnFetchAbort && (p = (S) => l(S, true)));
+    let g = (_a13 = __privateGet(this, _S2)) == null ? void 0 : _a13.call(this, t2, r2, a);
+    g && g instanceof Promise && g.then((S2) => p2(S2 === void 0 ? void 0 : S2), w), o2.signal.addEventListener("abort", () => {
+      (!s.ignoreFetchAbort || s.allowStaleOnFetchAbort) && (p2(void 0), s.allowStaleOnFetchAbort && (p2 = (S2) => l(S2, true)));
     });
   };
   s.status && (s.status.fetchDispatched = true);
-  let f = new Promise(d).then(l, u), m = Object.assign(f, { __abortController: o, __staleWhileFetching: r, __returned: void 0 });
-  return e === void 0 ? (this.set(t, m, { ...a.options, status: void 0 }), e = __privateGet(this, _f2).get(t)) : __privateGet(this, _i)[e] = m, m;
-}, l_fn = function(t) {
+  let f = new Promise(d).then(l, u), m = Object.assign(f, { __abortController: o2, __staleWhileFetching: r2, __returned: void 0 });
+  return e === void 0 ? (this.set(t2, m, { ...a.options, status: void 0 }), e = __privateGet(this, _f2).get(t2)) : __privateGet(this, _i)[e] = m, m;
+}, l_fn = function(t2) {
   if (!__privateGet(this, _A)) return false;
-  let e = t;
+  let e = t2;
   return !!e && e instanceof Promise && e.hasOwnProperty("__staleWhileFetching") && e.__abortController instanceof At;
-}, $_fn = function(t, e) {
-  __privateGet(this, _E)[e] = t, __privateGet(this, _d)[t] = e;
-}, W_fn = function(t) {
-  t !== __privateGet(this, _p) && (t === __privateGet(this, _b2) ? __privateSet(this, _b2, __privateGet(this, _d)[t]) : __privateMethod(this, _Me_instances, $_fn).call(this, __privateGet(this, _E)[t], __privateGet(this, _d)[t]), __privateMethod(this, _Me_instances, $_fn).call(this, __privateGet(this, _p), t), __privateSet(this, _p, t));
-}, O_fn = function(t, e) {
+}, $_fn = function(t2, e) {
+  __privateGet(this, _E)[e] = t2, __privateGet(this, _d)[t2] = e;
+}, W_fn = function(t2) {
+  t2 !== __privateGet(this, _p) && (t2 === __privateGet(this, _b2) ? __privateSet(this, _b2, __privateGet(this, _d)[t2]) : __privateMethod(this, _Me_instances, $_fn).call(this, __privateGet(this, _E)[t2], __privateGet(this, _d)[t2]), __privateMethod(this, _Me_instances, $_fn).call(this, __privateGet(this, _p), t2), __privateSet(this, _p, t2));
+}, O_fn = function(t2, e) {
   var _a13, _b5;
   let s = false;
   if (__privateGet(this, _h2) !== 0) {
-    let i = __privateGet(this, _f2).get(t);
-    if (i !== void 0) if (__privateGet(this, _y)?.[i] && (clearTimeout(__privateGet(this, _y)?.[i]), __privateGet(this, _y)[i] = void 0), s = true, __privateGet(this, _h2) === 1) __privateMethod(this, _Me_instances, H_fn).call(this, e);
+    let i2 = __privateGet(this, _f2).get(t2);
+    if (i2 !== void 0) if (__privateGet(this, _y)?.[i2] && (clearTimeout(__privateGet(this, _y)?.[i2]), __privateGet(this, _y)[i2] = void 0), s = true, __privateGet(this, _h2) === 1) __privateMethod(this, _Me_instances, H_fn).call(this, e);
     else {
-      __privateGet(this, _P).call(this, i);
-      let r = __privateGet(this, _i)[i];
-      if (__privateMethod(this, _Me_instances, l_fn).call(this, r) ? r.__abortController.abort(new Error("deleted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, r, t, e)), __privateGet(this, _e) && __privateGet(this, _m)?.push([r, t, e])), __privateGet(this, _f2).delete(t), __privateGet(this, _a4)[i] = void 0, __privateGet(this, _i)[i] = void 0, i === __privateGet(this, _p)) __privateSet(this, _p, __privateGet(this, _E)[i]);
-      else if (i === __privateGet(this, _b2)) __privateSet(this, _b2, __privateGet(this, _d)[i]);
+      __privateGet(this, _P).call(this, i2);
+      let r2 = __privateGet(this, _i)[i2];
+      if (__privateMethod(this, _Me_instances, l_fn).call(this, r2) ? r2.__abortController.abort(new Error("deleted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, r2, t2, e)), __privateGet(this, _e) && __privateGet(this, _m)?.push([r2, t2, e])), __privateGet(this, _f2).delete(t2), __privateGet(this, _a4)[i2] = void 0, __privateGet(this, _i)[i2] = void 0, i2 === __privateGet(this, _p)) __privateSet(this, _p, __privateGet(this, _E)[i2]);
+      else if (i2 === __privateGet(this, _b2)) __privateSet(this, _b2, __privateGet(this, _d)[i2]);
       else {
-        let o = __privateGet(this, _E)[i];
-        __privateGet(this, _d)[o] = __privateGet(this, _d)[i];
-        let h = __privateGet(this, _d)[i];
-        __privateGet(this, _E)[h] = __privateGet(this, _E)[i];
+        let o2 = __privateGet(this, _E)[i2];
+        __privateGet(this, _d)[o2] = __privateGet(this, _d)[i2];
+        let h2 = __privateGet(this, _d)[i2];
+        __privateGet(this, _E)[h2] = __privateGet(this, _E)[i2];
       }
-      __privateWrapper(this, _h2)._--, __privateGet(this, _R).push(i);
+      __privateWrapper(this, _h2)._--, __privateGet(this, _R).push(i2);
     }
   }
   if (__privateGet(this, _e) && __privateGet(this, _m)?.length) {
-    let i = __privateGet(this, _m), r;
-    for (; r = i?.shift(); ) (_b5 = __privateGet(this, _o2)) == null ? void 0 : _b5.call(this, ...r);
+    let i2 = __privateGet(this, _m), r2;
+    for (; r2 = i2?.shift(); ) (_b5 = __privateGet(this, _o2)) == null ? void 0 : _b5.call(this, ...r2);
   }
   return s;
-}, H_fn = function(t) {
+}, H_fn = function(t2) {
   var _a13, _b5;
   for (let e of __privateMethod(this, _Me_instances, D_fn).call(this, { allowStale: true })) {
     let s = __privateGet(this, _i)[e];
     if (__privateMethod(this, _Me_instances, l_fn).call(this, s)) s.__abortController.abort(new Error("deleted"));
     else {
-      let i = __privateGet(this, _a4)[e];
-      __privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, s, i, t)), __privateGet(this, _e) && __privateGet(this, _m)?.push([s, i, t]);
+      let i2 = __privateGet(this, _a4)[e];
+      __privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, s, i2, t2)), __privateGet(this, _e) && __privateGet(this, _m)?.push([s, i2, t2]);
     }
   }
   if (__privateGet(this, _f2).clear(), __privateGet(this, _i).fill(void 0), __privateGet(this, _a4).fill(void 0), __privateGet(this, _g) && __privateGet(this, _T)) {
@@ -2601,17 +2526,17 @@ var ci = (n5) => n5 === "end" || n5 === "finish" || n5 === "prefinish";
 var fi = (n5) => n5 instanceof ArrayBuffer || !!n5 && typeof n5 == "object" && n5.constructor && n5.constructor.name === "ArrayBuffer" && n5.byteLength >= 0;
 var ui = (n5) => !Buffer.isBuffer(n5) && ArrayBuffer.isView(n5);
 var Mt = class {
-  constructor(t, e, s) {
+  constructor(t2, e, s) {
     __publicField(this, "src");
     __publicField(this, "dest");
     __publicField(this, "opts");
     __publicField(this, "ondrain");
-    this.src = t, this.dest = e, this.opts = s, this.ondrain = () => t[st](), this.dest.on("drain", this.ondrain);
+    this.src = t2, this.dest = e, this.opts = s, this.ondrain = () => t2[st](), this.dest.on("drain", this.ondrain);
   }
   unpipe() {
     this.dest.removeListener("drain", this.ondrain);
   }
-  proxyErrors(t) {
+  proxyErrors(t2) {
   }
   end() {
     this.unpipe(), this.opts.end && this.dest.end();
@@ -2621,16 +2546,16 @@ var te = class extends Mt {
   unpipe() {
     this.src.removeListener("error", this.proxyErrors), super.unpipe();
   }
-  constructor(t, e, s) {
-    super(t, e, s), this.proxyErrors = (i) => this.dest.emit("error", i), t.on("error", this.proxyErrors);
+  constructor(t2, e, s) {
+    super(t2, e, s), this.proxyErrors = (i2) => this.dest.emit("error", i2), t2.on("error", this.proxyErrors);
   }
 };
 var di = (n5) => !!n5.objectMode;
 var pi = (n5) => !n5.objectMode && !!n5.encoding && n5.encoding !== "buffer";
 var _a5, _b3, _c4, _d2, _e3, _f3, _g2, _h3, _i2, _j2, _k2, _l, _m2, _n3, _o3, _p2, _q, _r3, _s4;
 var V = class extends import_node_events.EventEmitter {
-  constructor(...t) {
-    let e = t[0] || {};
+  constructor(...t2) {
+    let e = t2[0] || {};
     super();
     __publicField(this, _s4, false);
     __publicField(this, _r3, false);
@@ -2664,23 +2589,23 @@ var V = class extends import_node_events.EventEmitter {
   get encoding() {
     return this[P];
   }
-  set encoding(t) {
+  set encoding(t2) {
     throw new Error("Encoding must be set at instantiation time");
   }
-  setEncoding(t) {
+  setEncoding(t2) {
     throw new Error("Encoding must be set at instantiation time");
   }
   get objectMode() {
     return this[k];
   }
-  set objectMode(t) {
+  set objectMode(t2) {
     throw new Error("objectMode must be set at instantiation time");
   }
   get async() {
     return this[B];
   }
-  set async(t) {
-    this[B] = this[B] || !!t;
+  set async(t2) {
+    this[B] = this[B] || !!t2;
   }
   [(_s4 = v, _r3 = dt, _q = F, _p2 = C, _o3 = k, _n3 = P, _m2 = B, _l = et, _k2 = G, _j2 = K, _i2 = kt, _h3 = Rt, _g2 = ut, _f3 = T, _e3 = x, _d2 = pt, _c4 = Dt, _b3 = Y, _a5 = M, Qt)]() {
     this[Dt] = true, this.emit("abort", this[pt]?.reason), this.destroy(this[pt]?.reason);
@@ -2688,38 +2613,38 @@ var V = class extends import_node_events.EventEmitter {
   get aborted() {
     return this[Dt];
   }
-  set aborted(t) {
+  set aborted(t2) {
   }
-  write(t, e, s) {
+  write(t2, e, s) {
     if (this[Dt]) return false;
     if (this[G]) throw new Error("write after end");
     if (this[x]) return this.emit("error", Object.assign(new Error("Cannot call write after a stream was destroyed"), { code: "ERR_STREAM_DESTROYED" })), true;
     typeof e == "function" && (s = e, e = "utf8"), e || (e = "utf8");
-    let i = this[B] ? mt : li;
-    if (!this[k] && !Buffer.isBuffer(t)) {
-      if (ui(t)) t = Buffer.from(t.buffer, t.byteOffset, t.byteLength);
-      else if (fi(t)) t = Buffer.from(t);
-      else if (typeof t != "string") throw new Error("Non-contiguous data written to non-objectMode stream");
+    let i2 = this[B] ? mt : li;
+    if (!this[k] && !Buffer.isBuffer(t2)) {
+      if (ui(t2)) t2 = Buffer.from(t2.buffer, t2.byteOffset, t2.byteLength);
+      else if (fi(t2)) t2 = Buffer.from(t2);
+      else if (typeof t2 != "string") throw new Error("Non-contiguous data written to non-objectMode stream");
     }
-    return this[k] ? (this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t) : this[Yt](t), this[T] !== 0 && this.emit("readable"), s && i(s), this[v]) : t.length ? (typeof t == "string" && !(e === this[P] && !this[et]?.lastNeed) && (t = Buffer.from(t, e)), Buffer.isBuffer(t) && this[P] && (t = this[et].write(t)), this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t) : this[Yt](t), this[T] !== 0 && this.emit("readable"), s && i(s), this[v]) : (this[T] !== 0 && this.emit("readable"), s && i(s), this[v]);
+    return this[k] ? (this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t2) : this[Yt](t2), this[T] !== 0 && this.emit("readable"), s && i2(s), this[v]) : t2.length ? (typeof t2 == "string" && !(e === this[P] && !this[et]?.lastNeed) && (t2 = Buffer.from(t2, e)), Buffer.isBuffer(t2) && this[P] && (t2 = this[et].write(t2)), this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t2) : this[Yt](t2), this[T] !== 0 && this.emit("readable"), s && i2(s), this[v]) : (this[T] !== 0 && this.emit("readable"), s && i2(s), this[v]);
   }
-  read(t) {
+  read(t2) {
     if (this[x]) return null;
-    if (this[M] = false, this[T] === 0 || t === 0 || t && t > this[T]) return this[H](), null;
-    this[k] && (t = null), this[C].length > 1 && !this[k] && (this[C] = [this[P] ? this[C].join("") : Buffer.concat(this[C], this[T])]);
-    let e = this[_e2](t || null, this[C][0]);
+    if (this[M] = false, this[T] === 0 || t2 === 0 || t2 && t2 > this[T]) return this[H](), null;
+    this[k] && (t2 = null), this[C].length > 1 && !this[k] && (this[C] = [this[P] ? this[C].join("") : Buffer.concat(this[C], this[T])]);
+    let e = this[_e2](t2 || null, this[C][0]);
     return this[H](), e;
   }
-  [_e2](t, e) {
+  [_e2](t2, e) {
     if (this[k]) this[Ft]();
     else {
       let s = e;
-      t === s.length || t === null ? this[Ft]() : typeof s == "string" ? (this[C][0] = s.slice(t), e = s.slice(0, t), this[T] -= t) : (this[C][0] = s.subarray(t), e = s.subarray(0, t), this[T] -= t);
+      t2 === s.length || t2 === null ? this[Ft]() : typeof s == "string" ? (this[C][0] = s.slice(t2), e = s.slice(0, t2), this[T] -= t2) : (this[C][0] = s.subarray(t2), e = s.subarray(0, t2), this[T] -= t2);
     }
     return this.emit("data", e), !this[C].length && !this[G] && this.emit("drain"), e;
   }
-  end(t, e, s) {
-    return typeof t == "function" && (s = t, t = void 0), typeof e == "function" && (s = e, e = "utf8"), t !== void 0 && this.write(t, e), s && this.once("end", s), this[G] = true, this.writable = false, (this[v] || !this[dt]) && this[H](), this;
+  end(t2, e, s) {
+    return typeof t2 == "function" && (s = t2, t2 = void 0), typeof e == "function" && (s = e, e = "utf8"), t2 !== void 0 && this.write(t2, e), s && this.once("end", s), this[G] = true, this.writable = false, (this[v] || !this[dt]) && this[H](), this;
   }
   [st]() {
     this[x] || (!this[Y] && !this[F].length && (this[M] = true), this[dt] = false, this[v] = true, this.emit("resume"), this[C].length ? this[Ot]() : this[G] ? this[H]() : this.emit("drain"));
@@ -2739,55 +2664,55 @@ var V = class extends import_node_events.EventEmitter {
   get paused() {
     return this[dt];
   }
-  [Yt](t) {
-    this[k] ? this[T] += 1 : this[T] += t.length, this[C].push(t);
+  [Yt](t2) {
+    this[k] ? this[T] += 1 : this[T] += t2.length, this[C].push(t2);
   }
   [Ft]() {
     return this[k] ? this[T] -= 1 : this[T] -= this[C][0].length, this[C].shift();
   }
-  [Ot](t = false) {
+  [Ot](t2 = false) {
     do
       ;
     while (this[Le](this[Ft]()) && this[C].length);
-    !t && !this[C].length && !this[G] && this.emit("drain");
+    !t2 && !this[C].length && !this[G] && this.emit("drain");
   }
-  [Le](t) {
-    return this.emit("data", t), this[v];
+  [Le](t2) {
+    return this.emit("data", t2), this[v];
   }
-  pipe(t, e) {
-    if (this[x]) return t;
+  pipe(t2, e) {
+    if (this[x]) return t2;
     this[M] = false;
     let s = this[K];
-    return e = e || {}, t === Ne.stdout || t === Ne.stderr ? e.end = false : e.end = e.end !== false, e.proxyErrors = !!e.proxyErrors, s ? e.end && t.end() : (this[F].push(e.proxyErrors ? new te(this, t, e) : new Mt(this, t, e)), this[B] ? mt(() => this[st]()) : this[st]()), t;
+    return e = e || {}, t2 === Ne.stdout || t2 === Ne.stderr ? e.end = false : e.end = e.end !== false, e.proxyErrors = !!e.proxyErrors, s ? e.end && t2.end() : (this[F].push(e.proxyErrors ? new te(this, t2, e) : new Mt(this, t2, e)), this[B] ? mt(() => this[st]()) : this[st]()), t2;
   }
-  unpipe(t) {
-    let e = this[F].find((s) => s.dest === t);
+  unpipe(t2) {
+    let e = this[F].find((s) => s.dest === t2);
     e && (this[F].length === 1 ? (this[v] && this[Y] === 0 && (this[v] = false), this[F] = []) : this[F].splice(this[F].indexOf(e), 1), e.unpipe());
   }
-  addListener(t, e) {
-    return this.on(t, e);
+  addListener(t2, e) {
+    return this.on(t2, e);
   }
-  on(t, e) {
-    let s = super.on(t, e);
-    if (t === "data") this[M] = false, this[Y]++, !this[F].length && !this[v] && this[st]();
-    else if (t === "readable" && this[T] !== 0) super.emit("readable");
-    else if (ci(t) && this[K]) super.emit(t), this.removeAllListeners(t);
-    else if (t === "error" && this[ut]) {
-      let i = e;
-      this[B] ? mt(() => i.call(this, this[ut])) : i.call(this, this[ut]);
+  on(t2, e) {
+    let s = super.on(t2, e);
+    if (t2 === "data") this[M] = false, this[Y]++, !this[F].length && !this[v] && this[st]();
+    else if (t2 === "readable" && this[T] !== 0) super.emit("readable");
+    else if (ci(t2) && this[K]) super.emit(t2), this.removeAllListeners(t2);
+    else if (t2 === "error" && this[ut]) {
+      let i2 = e;
+      this[B] ? mt(() => i2.call(this, this[ut])) : i2.call(this, this[ut]);
     }
     return s;
   }
-  removeListener(t, e) {
-    return this.off(t, e);
+  removeListener(t2, e) {
+    return this.off(t2, e);
   }
-  off(t, e) {
-    let s = super.off(t, e);
-    return t === "data" && (this[Y] = this.listeners("data").length, this[Y] === 0 && !this[M] && !this[F].length && (this[v] = false)), s;
+  off(t2, e) {
+    let s = super.off(t2, e);
+    return t2 === "data" && (this[Y] = this.listeners("data").length, this[Y] === 0 && !this[M] && !this[F].length && (this[v] = false)), s;
   }
-  removeAllListeners(t) {
-    let e = super.removeAllListeners(t);
-    return (t === "data" || t === void 0) && (this[Y] = 0, !this[M] && !this[F].length && (this[v] = false)), e;
+  removeAllListeners(t2) {
+    let e = super.removeAllListeners(t2);
+    return (t2 === "data" || t2 === void 0) && (this[Y] = 0, !this[M] && !this[F].length && (this[v] = false)), e;
   }
   get emittedEnd() {
     return this[K];
@@ -2795,32 +2720,32 @@ var V = class extends import_node_events.EventEmitter {
   [H]() {
     !this[kt] && !this[K] && !this[x] && this[C].length === 0 && this[G] && (this[kt] = true, this.emit("end"), this.emit("prefinish"), this.emit("finish"), this[Rt] && this.emit("close"), this[kt] = false);
   }
-  emit(t, ...e) {
+  emit(t2, ...e) {
     let s = e[0];
-    if (t !== "error" && t !== "close" && t !== x && this[x]) return false;
-    if (t === "data") return !this[k] && !s ? false : this[B] ? (mt(() => this[Jt](s)), true) : this[Jt](s);
-    if (t === "end") return this[We]();
-    if (t === "close") {
+    if (t2 !== "error" && t2 !== "close" && t2 !== x && this[x]) return false;
+    if (t2 === "data") return !this[k] && !s ? false : this[B] ? (mt(() => this[Jt](s)), true) : this[Jt](s);
+    if (t2 === "end") return this[We]();
+    if (t2 === "close") {
       if (this[Rt] = true, !this[K] && !this[x]) return false;
-      let r = super.emit("close");
-      return this.removeAllListeners("close"), r;
-    } else if (t === "error") {
+      let r2 = super.emit("close");
+      return this.removeAllListeners("close"), r2;
+    } else if (t2 === "error") {
       this[ut] = s, super.emit(Xt, s);
-      let r = !this[pt] || this.listeners("error").length ? super.emit("error", s) : false;
-      return this[H](), r;
-    } else if (t === "resume") {
-      let r = super.emit("resume");
-      return this[H](), r;
-    } else if (t === "finish" || t === "prefinish") {
-      let r = super.emit(t);
-      return this.removeAllListeners(t), r;
+      let r2 = !this[pt] || this.listeners("error").length ? super.emit("error", s) : false;
+      return this[H](), r2;
+    } else if (t2 === "resume") {
+      let r2 = super.emit("resume");
+      return this[H](), r2;
+    } else if (t2 === "finish" || t2 === "prefinish") {
+      let r2 = super.emit(t2);
+      return this.removeAllListeners(t2), r2;
     }
-    let i = super.emit(t, ...e);
-    return this[H](), i;
+    let i2 = super.emit(t2, ...e);
+    return this[H](), i2;
   }
-  [Jt](t) {
-    for (let s of this[F]) s.dest.write(t) === false && this.pause();
-    let e = this[M] ? false : super.emit("data", t);
+  [Jt](t2) {
+    for (let s of this[F]) s.dest.write(t2) === false && this.pause();
+    let e = this[M] ? false : super.emit("data", t2);
     return this[H](), e;
   }
   [We]() {
@@ -2835,44 +2760,44 @@ var V = class extends import_node_events.EventEmitter {
       }
     }
     for (let e of this[F]) e.end();
-    let t = super.emit("end");
-    return this.removeAllListeners("end"), t;
+    let t2 = super.emit("end");
+    return this.removeAllListeners("end"), t2;
   }
   async collect() {
-    let t = Object.assign([], { dataLength: 0 });
-    this[k] || (t.dataLength = 0);
+    let t2 = Object.assign([], { dataLength: 0 });
+    this[k] || (t2.dataLength = 0);
     let e = this.promise();
     return this.on("data", (s) => {
-      t.push(s), this[k] || (t.dataLength += s.length);
-    }), await e, t;
+      t2.push(s), this[k] || (t2.dataLength += s.length);
+    }), await e, t2;
   }
   async concat() {
     if (this[k]) throw new Error("cannot concat in objectMode");
-    let t = await this.collect();
-    return this[P] ? t.join("") : Buffer.concat(t, t.dataLength);
+    let t2 = await this.collect();
+    return this[P] ? t2.join("") : Buffer.concat(t2, t2.dataLength);
   }
   async promise() {
-    return new Promise((t, e) => {
-      this.on(x, () => e(new Error("stream destroyed"))), this.on("error", (s) => e(s)), this.on("end", () => t());
+    return new Promise((t2, e) => {
+      this.on(x, () => e(new Error("stream destroyed"))), this.on("error", (s) => e(s)), this.on("end", () => t2());
     });
   }
   [Symbol.asyncIterator]() {
     this[M] = false;
-    let t = false, e = async () => (this.pause(), t = true, { value: void 0, done: true });
+    let t2 = false, e = async () => (this.pause(), t2 = true, { value: void 0, done: true });
     return { next: () => {
-      if (t) return e();
-      let i = this.read();
-      if (i !== null) return Promise.resolve({ done: false, value: i });
+      if (t2) return e();
+      let i2 = this.read();
+      if (i2 !== null) return Promise.resolve({ done: false, value: i2 });
       if (this[G]) return e();
-      let r, o, h = (c) => {
-        this.off("data", a), this.off("end", l), this.off(x, u), e(), o(c);
-      }, a = (c) => {
-        this.off("error", h), this.off("end", l), this.off(x, u), this.pause(), r({ value: c, done: !!this[G] });
+      let r2, o2, h2 = (c3) => {
+        this.off("data", a), this.off("end", l), this.off(x, u), e(), o2(c3);
+      }, a = (c3) => {
+        this.off("error", h2), this.off("end", l), this.off(x, u), this.pause(), r2({ value: c3, done: !!this[G] });
       }, l = () => {
-        this.off("error", h), this.off("data", a), this.off(x, u), e(), r({ done: true, value: void 0 });
-      }, u = () => h(new Error("stream destroyed"));
-      return new Promise((c, d) => {
-        o = d, r = c, this.once(x, u), this.once("error", h), this.once("end", l), this.once("data", a);
+        this.off("error", h2), this.off("data", a), this.off(x, u), e(), r2({ done: true, value: void 0 });
+      }, u = () => h2(new Error("stream destroyed"));
+      return new Promise((c3, d) => {
+        o2 = d, r2 = c3, this.once(x, u), this.once("error", h2), this.once("end", l), this.once("data", a);
       });
     }, throw: e, return: e, [Symbol.asyncIterator]() {
       return this;
@@ -2881,21 +2806,21 @@ var V = class extends import_node_events.EventEmitter {
   }
   [Symbol.iterator]() {
     this[M] = false;
-    let t = false, e = () => (this.pause(), this.off(Xt, e), this.off(x, e), this.off("end", e), t = true, { done: true, value: void 0 }), s = () => {
-      if (t) return e();
-      let i = this.read();
-      return i === null ? e() : { done: false, value: i };
+    let t2 = false, e = () => (this.pause(), this.off(Xt, e), this.off(x, e), this.off("end", e), t2 = true, { done: true, value: void 0 }), s = () => {
+      if (t2) return e();
+      let i2 = this.read();
+      return i2 === null ? e() : { done: false, value: i2 };
     };
     return this.once("end", e), this.once(Xt, e), this.once(x, e), { next: s, throw: e, return: e, [Symbol.iterator]() {
       return this;
     }, [Symbol.dispose]: () => {
     } };
   }
-  destroy(t) {
-    if (this[x]) return t ? this.emit("error", t) : this.emit(x), this;
+  destroy(t2) {
+    if (this[x]) return t2 ? this.emit("error", t2) : this.emit(x), this;
     this[x] = true, this[M] = true, this[C].length = 0, this[T] = 0;
     let e = this;
-    return typeof e.close == "function" && !this[Rt] && e.close(), t ? this.emit("error", t) : this.emit(x), this;
+    return typeof e.close == "function" && !this[Rt] && e.close(), t2 ? this.emit("error", t2) : this.emit(x), this;
   }
   static get isStream() {
     return oi;
@@ -2928,15 +2853,15 @@ var Fi = 1023;
 var ie = (n5) => n5.isFile() ? Ke : n5.isDirectory() ? U : n5.isSymbolicLink() ? X : n5.isCharacterDevice() ? He : n5.isBlockDevice() ? qe : n5.isSocket() ? Ve : n5.isFIFO() ? Ge : L;
 var ze = new ft({ max: 2 ** 12 });
 var bt = (n5) => {
-  let t = ze.get(n5);
-  if (t) return t;
+  let t2 = ze.get(n5);
+  if (t2) return t2;
   let e = n5.normalize("NFKD");
   return ze.set(n5, e), e;
 };
 var Be = new ft({ max: 2 ** 12 });
 var _t4 = (n5) => {
-  let t = Be.get(n5);
-  if (t) return t;
+  let t2 = Be.get(n5);
+  if (t2) return t2;
   let e = bt(n5.toLowerCase());
   return Be.set(n5, e), e;
 };
@@ -2946,14 +2871,14 @@ var Wt = class extends ft {
   }
 };
 var ne = class extends ft {
-  constructor(t = 16 * 1024) {
-    super({ maxSize: t, sizeCalculation: (e) => e.length + 1 });
+  constructor(t2 = 16 * 1024) {
+    super({ maxSize: t2, sizeCalculation: (e) => e.length + 1 });
   }
 };
 var Ye = /* @__PURE__ */ Symbol("PathScurry setAsCwd");
 var _t5, _s5, _n4, _r4, _o4, _S3, _w3, _c5, _h4, _u3, _f4, _a6, _i3, _d3, _E2, _b4, _p3, _R2, _m3, _C2, _T2, _g3, _y2, _x2, _A2, _e4, __2, _M, _k3, _R_instances, N_fn, j_fn, v_fn, G_fn2, P_fn, L_fn, I_fn, F_fn2, D_fn2, z_fn2, B_fn2, U_fn2, l_fn2, $_fn2, _W, _O, H_fn2, _q2, _a7;
 var R = (_a7 = class {
-  constructor(t, e = L, s, i, r, o, h) {
+  constructor(t2, e = L, s, i2, r2, o2, h2) {
     __privateAdd(this, _R_instances);
     __publicField(this, "name");
     __publicField(this, "root");
@@ -2993,7 +2918,7 @@ var R = (_a7 = class {
     __privateAdd(this, _W, []);
     __privateAdd(this, _O, false);
     __privateAdd(this, _q2);
-    this.name = t, __privateSet(this, _C2, r ? _t4(t) : bt(t)), __privateSet(this, _e4, e & Fi), this.nocase = r, this.roots = i, this.root = s || this, __privateSet(this, __2, o), __privateSet(this, _g3, h.fullpath), __privateSet(this, _x2, h.relative), __privateSet(this, _A2, h.relativePosix), this.parent = h.parent, this.parent ? __privateSet(this, _t5, __privateGet(this.parent, _t5)) : __privateSet(this, _t5, Ue(h.fs));
+    this.name = t2, __privateSet(this, _C2, r2 ? _t4(t2) : bt(t2)), __privateSet(this, _e4, e & Fi), this.nocase = r2, this.roots = i2, this.root = s || this, __privateSet(this, __2, o2), __privateSet(this, _g3, h2.fullpath), __privateSet(this, _x2, h2.relative), __privateSet(this, _A2, h2.relativePosix), this.parent = h2.parent, this.parent ? __privateSet(this, _t5, __privateGet(this.parent, _t5)) : __privateSet(this, _t5, Ue(h2.fs));
   }
   get dev() {
     return __privateGet(this, _s5);
@@ -3061,65 +2986,65 @@ var R = (_a7 = class {
   childrenCache() {
     return __privateGet(this, __2);
   }
-  resolve(t) {
+  resolve(t2) {
     var _a13;
-    if (!t) return this;
-    let e = this.getRootString(t), i = t.substring(e.length).split(this.splitSep);
-    return e ? __privateMethod(_a13 = this.getRoot(e), _R_instances, N_fn).call(_a13, i) : __privateMethod(this, _R_instances, N_fn).call(this, i);
+    if (!t2) return this;
+    let e = this.getRootString(t2), i2 = t2.substring(e.length).split(this.splitSep);
+    return e ? __privateMethod(_a13 = this.getRoot(e), _R_instances, N_fn).call(_a13, i2) : __privateMethod(this, _R_instances, N_fn).call(this, i2);
   }
   children() {
-    let t = __privateGet(this, __2).get(this);
-    if (t) return t;
+    let t2 = __privateGet(this, __2).get(this);
+    if (t2) return t2;
     let e = Object.assign([], { provisional: 0 });
     return __privateGet(this, __2).set(this, e), __privateSet(this, _e4, __privateGet(this, _e4) & ~se), e;
   }
-  child(t, e) {
-    if (t === "" || t === ".") return this;
-    if (t === "..") return this.parent || this;
-    let s = this.children(), i = this.nocase ? _t4(t) : bt(t);
-    for (let a of s) if (__privateGet(a, _C2) === i) return a;
-    let r = this.parent ? this.sep : "", o = __privateGet(this, _g3) ? __privateGet(this, _g3) + r + t : void 0, h = this.newChild(t, L, { ...e, parent: this, fullpath: o });
-    return this.canReaddir() || __privateSet(h, _e4, __privateGet(h, _e4) | j), s.push(h), h;
+  child(t2, e) {
+    if (t2 === "" || t2 === ".") return this;
+    if (t2 === "..") return this.parent || this;
+    let s = this.children(), i2 = this.nocase ? _t4(t2) : bt(t2);
+    for (let a of s) if (__privateGet(a, _C2) === i2) return a;
+    let r2 = this.parent ? this.sep : "", o2 = __privateGet(this, _g3) ? __privateGet(this, _g3) + r2 + t2 : void 0, h2 = this.newChild(t2, L, { ...e, parent: this, fullpath: o2 });
+    return this.canReaddir() || __privateSet(h2, _e4, __privateGet(h2, _e4) | j), s.push(h2), h2;
   }
   relative() {
     if (this.isCWD) return "";
     if (__privateGet(this, _x2) !== void 0) return __privateGet(this, _x2);
-    let t = this.name, e = this.parent;
+    let t2 = this.name, e = this.parent;
     if (!e) return __privateSet(this, _x2, this.name);
     let s = e.relative();
-    return s + (!s || !e.parent ? "" : this.sep) + t;
+    return s + (!s || !e.parent ? "" : this.sep) + t2;
   }
   relativePosix() {
     if (this.sep === "/") return this.relative();
     if (this.isCWD) return "";
     if (__privateGet(this, _A2) !== void 0) return __privateGet(this, _A2);
-    let t = this.name, e = this.parent;
+    let t2 = this.name, e = this.parent;
     if (!e) return __privateSet(this, _A2, this.fullpathPosix());
     let s = e.relativePosix();
-    return s + (!s || !e.parent ? "" : "/") + t;
+    return s + (!s || !e.parent ? "" : "/") + t2;
   }
   fullpath() {
     if (__privateGet(this, _g3) !== void 0) return __privateGet(this, _g3);
-    let t = this.name, e = this.parent;
+    let t2 = this.name, e = this.parent;
     if (!e) return __privateSet(this, _g3, this.name);
-    let i = e.fullpath() + (e.parent ? this.sep : "") + t;
-    return __privateSet(this, _g3, i);
+    let i2 = e.fullpath() + (e.parent ? this.sep : "") + t2;
+    return __privateSet(this, _g3, i2);
   }
   fullpathPosix() {
     if (__privateGet(this, _y2) !== void 0) return __privateGet(this, _y2);
     if (this.sep === "/") return __privateSet(this, _y2, this.fullpath());
     if (!this.parent) {
-      let i = this.fullpath().replace(/\\/g, "/");
-      return /^[a-z]:\//i.test(i) ? __privateSet(this, _y2, `//?/${i}`) : __privateSet(this, _y2, i);
+      let i2 = this.fullpath().replace(/\\/g, "/");
+      return /^[a-z]:\//i.test(i2) ? __privateSet(this, _y2, `//?/${i2}`) : __privateSet(this, _y2, i2);
     }
-    let t = this.parent, e = t.fullpathPosix(), s = e + (!e || !t.parent ? "" : "/") + this.name;
+    let t2 = this.parent, e = t2.fullpathPosix(), s = e + (!e || !t2.parent ? "" : "/") + this.name;
     return __privateSet(this, _y2, s);
   }
   isUnknown() {
     return (__privateGet(this, _e4) & _) === L;
   }
-  isType(t) {
-    return this[`is${t}`]();
+  isType(t2) {
+    return this[`is${t2}`]();
   }
   getType() {
     return this.isUnknown() ? "Unknown" : this.isDirectory() ? "Directory" : this.isFile() ? "File" : this.isSymbolicLink() ? "SymbolicLink" : this.isFIFO() ? "FIFO" : this.isCharacterDevice() ? "CharacterDevice" : this.isBlockDevice() ? "BlockDevice" : this.isSocket() ? "Socket" : "Unknown";
@@ -3155,14 +3080,14 @@ var R = (_a7 = class {
     return __privateGet(this, _k3);
   }
   readdirCached() {
-    let t = this.children();
-    return t.slice(0, t.provisional);
+    let t2 = this.children();
+    return t2.slice(0, t2.provisional);
   }
   canReadlink() {
     if (__privateGet(this, _M)) return true;
     if (!this.parent) return false;
-    let t = __privateGet(this, _e4) & _;
-    return !(t !== L && t !== X || __privateGet(this, _e4) & Nt || __privateGet(this, _e4) & j);
+    let t2 = __privateGet(this, _e4) & _;
+    return !(t2 !== L && t2 !== X || __privateGet(this, _e4) & Nt || __privateGet(this, _e4) & j);
   }
   calledReaddir() {
     return !!(__privateGet(this, _e4) & se);
@@ -3170,12 +3095,12 @@ var R = (_a7 = class {
   isENOENT() {
     return !!(__privateGet(this, _e4) & j);
   }
-  isNamed(t) {
-    return this.nocase ? __privateGet(this, _C2) === _t4(t) : __privateGet(this, _C2) === bt(t);
+  isNamed(t2) {
+    return this.nocase ? __privateGet(this, _C2) === _t4(t2) : __privateGet(this, _C2) === bt(t2);
   }
   async readlink() {
-    let t = __privateGet(this, _M);
-    if (t) return t;
+    let t2 = __privateGet(this, _M);
+    if (t2) return t2;
     if (this.canReadlink() && this.parent) try {
       let e = await __privateGet(this, _t5).promises.readlink(this.fullpath()), s = (await this.parent.realpath())?.resolve(e);
       if (s) return __privateSet(this, _M, s);
@@ -3185,8 +3110,8 @@ var R = (_a7 = class {
     }
   }
   readlinkSync() {
-    let t = __privateGet(this, _M);
-    if (t) return t;
+    let t2 = __privateGet(this, _M);
+    if (t2) return t2;
     if (this.canReadlink() && this.parent) try {
       let e = __privateGet(this, _t5).readlinkSync(this.fullpath()), s = this.parent.realpathSync()?.resolve(e);
       if (s) return __privateSet(this, _M, s);
@@ -3198,35 +3123,35 @@ var R = (_a7 = class {
   async lstat() {
     if ((__privateGet(this, _e4) & j) === 0) try {
       return __privateMethod(this, _R_instances, $_fn2).call(this, await __privateGet(this, _t5).promises.lstat(this.fullpath())), this;
-    } catch (t) {
-      __privateMethod(this, _R_instances, F_fn2).call(this, t.code);
+    } catch (t2) {
+      __privateMethod(this, _R_instances, F_fn2).call(this, t2.code);
     }
   }
   lstatSync() {
     if ((__privateGet(this, _e4) & j) === 0) try {
       return __privateMethod(this, _R_instances, $_fn2).call(this, __privateGet(this, _t5).lstatSync(this.fullpath())), this;
-    } catch (t) {
-      __privateMethod(this, _R_instances, F_fn2).call(this, t.code);
+    } catch (t2) {
+      __privateMethod(this, _R_instances, F_fn2).call(this, t2.code);
     }
   }
-  readdirCB(t, e = false) {
+  readdirCB(t2, e = false) {
     if (!this.canReaddir()) {
-      e ? t(null, []) : queueMicrotask(() => t(null, []));
+      e ? t2(null, []) : queueMicrotask(() => t2(null, []));
       return;
     }
     let s = this.children();
     if (this.calledReaddir()) {
-      let r = s.slice(0, s.provisional);
-      e ? t(null, r) : queueMicrotask(() => t(null, r));
+      let r2 = s.slice(0, s.provisional);
+      e ? t2(null, r2) : queueMicrotask(() => t2(null, r2));
       return;
     }
-    if (__privateGet(this, _W).push(t), __privateGet(this, _O)) return;
+    if (__privateGet(this, _W).push(t2), __privateGet(this, _O)) return;
     __privateSet(this, _O, true);
-    let i = this.fullpath();
-    __privateGet(this, _t5).readdir(i, { withFileTypes: true }, (r, o) => {
-      if (r) __privateMethod(this, _R_instances, I_fn).call(this, r.code), s.provisional = 0;
+    let i2 = this.fullpath();
+    __privateGet(this, _t5).readdir(i2, { withFileTypes: true }, (r2, o2) => {
+      if (r2) __privateMethod(this, _R_instances, I_fn).call(this, r2.code), s.provisional = 0;
       else {
-        for (let h of o) __privateMethod(this, _R_instances, z_fn2).call(this, h, s);
+        for (let h2 of o2) __privateMethod(this, _R_instances, z_fn2).call(this, h2, s);
         __privateMethod(this, _R_instances, j_fn).call(this, s);
       }
       __privateMethod(this, _R_instances, H_fn2).call(this, s.slice(0, s.provisional));
@@ -3234,50 +3159,50 @@ var R = (_a7 = class {
   }
   async readdir() {
     if (!this.canReaddir()) return [];
-    let t = this.children();
-    if (this.calledReaddir()) return t.slice(0, t.provisional);
+    let t2 = this.children();
+    if (this.calledReaddir()) return t2.slice(0, t2.provisional);
     let e = this.fullpath();
     if (__privateGet(this, _q2)) await __privateGet(this, _q2);
     else {
       let s = () => {
       };
-      __privateSet(this, _q2, new Promise((i) => s = i));
+      __privateSet(this, _q2, new Promise((i2) => s = i2));
       try {
-        for (let i of await __privateGet(this, _t5).promises.readdir(e, { withFileTypes: true })) __privateMethod(this, _R_instances, z_fn2).call(this, i, t);
-        __privateMethod(this, _R_instances, j_fn).call(this, t);
-      } catch (i) {
-        __privateMethod(this, _R_instances, I_fn).call(this, i.code), t.provisional = 0;
+        for (let i2 of await __privateGet(this, _t5).promises.readdir(e, { withFileTypes: true })) __privateMethod(this, _R_instances, z_fn2).call(this, i2, t2);
+        __privateMethod(this, _R_instances, j_fn).call(this, t2);
+      } catch (i2) {
+        __privateMethod(this, _R_instances, I_fn).call(this, i2.code), t2.provisional = 0;
       }
       __privateSet(this, _q2, void 0), s();
     }
-    return t.slice(0, t.provisional);
+    return t2.slice(0, t2.provisional);
   }
   readdirSync() {
     if (!this.canReaddir()) return [];
-    let t = this.children();
-    if (this.calledReaddir()) return t.slice(0, t.provisional);
+    let t2 = this.children();
+    if (this.calledReaddir()) return t2.slice(0, t2.provisional);
     let e = this.fullpath();
     try {
-      for (let s of __privateGet(this, _t5).readdirSync(e, { withFileTypes: true })) __privateMethod(this, _R_instances, z_fn2).call(this, s, t);
-      __privateMethod(this, _R_instances, j_fn).call(this, t);
+      for (let s of __privateGet(this, _t5).readdirSync(e, { withFileTypes: true })) __privateMethod(this, _R_instances, z_fn2).call(this, s, t2);
+      __privateMethod(this, _R_instances, j_fn).call(this, t2);
     } catch (s) {
-      __privateMethod(this, _R_instances, I_fn).call(this, s.code), t.provisional = 0;
+      __privateMethod(this, _R_instances, I_fn).call(this, s.code), t2.provisional = 0;
     }
-    return t.slice(0, t.provisional);
+    return t2.slice(0, t2.provisional);
   }
   canReaddir() {
     if (__privateGet(this, _e4) & Ie) return false;
-    let t = _ & __privateGet(this, _e4);
-    return t === L || t === U || t === X;
+    let t2 = _ & __privateGet(this, _e4);
+    return t2 === L || t2 === U || t2 === X;
   }
-  shouldWalk(t, e) {
-    return (__privateGet(this, _e4) & U) === U && !(__privateGet(this, _e4) & Ie) && !t.has(this) && (!e || e(this));
+  shouldWalk(t2, e) {
+    return (__privateGet(this, _e4) & U) === U && !(__privateGet(this, _e4) & Ie) && !t2.has(this) && (!e || e(this));
   }
   async realpath() {
     if (__privateGet(this, _k3)) return __privateGet(this, _k3);
     if (!((Lt | Nt | j) & __privateGet(this, _e4))) try {
-      let t = await __privateGet(this, _t5).promises.realpath(this.fullpath());
-      return __privateSet(this, _k3, this.resolve(t));
+      let t2 = await __privateGet(this, _t5).promises.realpath(this.fullpath());
+      return __privateSet(this, _k3, this.resolve(t2));
     } catch {
       __privateMethod(this, _R_instances, P_fn).call(this);
     }
@@ -3285,115 +3210,115 @@ var R = (_a7 = class {
   realpathSync() {
     if (__privateGet(this, _k3)) return __privateGet(this, _k3);
     if (!((Lt | Nt | j) & __privateGet(this, _e4))) try {
-      let t = __privateGet(this, _t5).realpathSync(this.fullpath());
-      return __privateSet(this, _k3, this.resolve(t));
+      let t2 = __privateGet(this, _t5).realpathSync(this.fullpath());
+      return __privateSet(this, _k3, this.resolve(t2));
     } catch {
       __privateMethod(this, _R_instances, P_fn).call(this);
     }
   }
-  [Ye](t) {
-    if (t === this) return;
-    t.isCWD = false, this.isCWD = true;
-    let e = /* @__PURE__ */ new Set([]), s = [], i = this;
-    for (; i && i.parent; ) e.add(i), __privateSet(i, _x2, s.join(this.sep)), __privateSet(i, _A2, s.join("/")), i = i.parent, s.push("..");
-    for (i = t; i && i.parent && !e.has(i); ) __privateSet(i, _x2, void 0), __privateSet(i, _A2, void 0), i = i.parent;
+  [Ye](t2) {
+    if (t2 === this) return;
+    t2.isCWD = false, this.isCWD = true;
+    let e = /* @__PURE__ */ new Set([]), s = [], i2 = this;
+    for (; i2 && i2.parent; ) e.add(i2), __privateSet(i2, _x2, s.join(this.sep)), __privateSet(i2, _A2, s.join("/")), i2 = i2.parent, s.push("..");
+    for (i2 = t2; i2 && i2.parent && !e.has(i2); ) __privateSet(i2, _x2, void 0), __privateSet(i2, _A2, void 0), i2 = i2.parent;
   }
-}, _t5 = new WeakMap(), _s5 = new WeakMap(), _n4 = new WeakMap(), _r4 = new WeakMap(), _o4 = new WeakMap(), _S3 = new WeakMap(), _w3 = new WeakMap(), _c5 = new WeakMap(), _h4 = new WeakMap(), _u3 = new WeakMap(), _f4 = new WeakMap(), _a6 = new WeakMap(), _i3 = new WeakMap(), _d3 = new WeakMap(), _E2 = new WeakMap(), _b4 = new WeakMap(), _p3 = new WeakMap(), _R2 = new WeakMap(), _m3 = new WeakMap(), _C2 = new WeakMap(), _T2 = new WeakMap(), _g3 = new WeakMap(), _y2 = new WeakMap(), _x2 = new WeakMap(), _A2 = new WeakMap(), _e4 = new WeakMap(), __2 = new WeakMap(), _M = new WeakMap(), _k3 = new WeakMap(), _R_instances = new WeakSet(), N_fn = function(t) {
+}, _t5 = new WeakMap(), _s5 = new WeakMap(), _n4 = new WeakMap(), _r4 = new WeakMap(), _o4 = new WeakMap(), _S3 = new WeakMap(), _w3 = new WeakMap(), _c5 = new WeakMap(), _h4 = new WeakMap(), _u3 = new WeakMap(), _f4 = new WeakMap(), _a6 = new WeakMap(), _i3 = new WeakMap(), _d3 = new WeakMap(), _E2 = new WeakMap(), _b4 = new WeakMap(), _p3 = new WeakMap(), _R2 = new WeakMap(), _m3 = new WeakMap(), _C2 = new WeakMap(), _T2 = new WeakMap(), _g3 = new WeakMap(), _y2 = new WeakMap(), _x2 = new WeakMap(), _A2 = new WeakMap(), _e4 = new WeakMap(), __2 = new WeakMap(), _M = new WeakMap(), _k3 = new WeakMap(), _R_instances = new WeakSet(), N_fn = function(t2) {
   let e = this;
-  for (let s of t) e = e.child(s);
+  for (let s of t2) e = e.child(s);
   return e;
-}, j_fn = function(t) {
+}, j_fn = function(t2) {
   var _a13;
   __privateSet(this, _e4, __privateGet(this, _e4) | se);
-  for (let e = t.provisional; e < t.length; e++) {
-    let s = t[e];
+  for (let e = t2.provisional; e < t2.length; e++) {
+    let s = t2[e];
     s && __privateMethod(_a13 = s, _R_instances, v_fn).call(_a13);
   }
 }, v_fn = function() {
   __privateGet(this, _e4) & j || (__privateSet(this, _e4, (__privateGet(this, _e4) | j) & gt), __privateMethod(this, _R_instances, G_fn2).call(this));
 }, G_fn2 = function() {
   var _a13;
-  let t = this.children();
-  t.provisional = 0;
-  for (let e of t) __privateMethod(_a13 = e, _R_instances, v_fn).call(_a13);
+  let t2 = this.children();
+  t2.provisional = 0;
+  for (let e of t2) __privateMethod(_a13 = e, _R_instances, v_fn).call(_a13);
 }, P_fn = function() {
   __privateSet(this, _e4, __privateGet(this, _e4) | Lt), __privateMethod(this, _R_instances, L_fn).call(this);
 }, L_fn = function() {
   if (__privateGet(this, _e4) & yt) return;
-  let t = __privateGet(this, _e4);
-  (t & _) === U && (t &= gt), __privateSet(this, _e4, t | yt), __privateMethod(this, _R_instances, G_fn2).call(this);
-}, I_fn = function(t = "") {
-  t === "ENOTDIR" || t === "EPERM" ? __privateMethod(this, _R_instances, L_fn).call(this) : t === "ENOENT" ? __privateMethod(this, _R_instances, v_fn).call(this) : this.children().provisional = 0;
-}, F_fn2 = function(t = "") {
+  let t2 = __privateGet(this, _e4);
+  (t2 & _) === U && (t2 &= gt), __privateSet(this, _e4, t2 | yt), __privateMethod(this, _R_instances, G_fn2).call(this);
+}, I_fn = function(t2 = "") {
+  t2 === "ENOTDIR" || t2 === "EPERM" ? __privateMethod(this, _R_instances, L_fn).call(this) : t2 === "ENOENT" ? __privateMethod(this, _R_instances, v_fn).call(this) : this.children().provisional = 0;
+}, F_fn2 = function(t2 = "") {
   var _a13;
-  t === "ENOTDIR" ? __privateMethod(_a13 = this.parent, _R_instances, L_fn).call(_a13) : t === "ENOENT" && __privateMethod(this, _R_instances, v_fn).call(this);
-}, D_fn2 = function(t = "") {
+  t2 === "ENOTDIR" ? __privateMethod(_a13 = this.parent, _R_instances, L_fn).call(_a13) : t2 === "ENOENT" && __privateMethod(this, _R_instances, v_fn).call(this);
+}, D_fn2 = function(t2 = "") {
   var _a13;
   let e = __privateGet(this, _e4);
-  e |= Nt, t === "ENOENT" && (e |= j), (t === "EINVAL" || t === "UNKNOWN") && (e &= gt), __privateSet(this, _e4, e), t === "ENOTDIR" && this.parent && __privateMethod(_a13 = this.parent, _R_instances, L_fn).call(_a13);
-}, z_fn2 = function(t, e) {
-  return __privateMethod(this, _R_instances, U_fn2).call(this, t, e) || __privateMethod(this, _R_instances, B_fn2).call(this, t, e);
-}, B_fn2 = function(t, e) {
-  let s = ie(t), i = this.newChild(t.name, s, { parent: this }), r = __privateGet(i, _e4) & _;
-  return r !== U && r !== X && r !== L && __privateSet(i, _e4, __privateGet(i, _e4) | yt), e.unshift(i), e.provisional++, i;
-}, U_fn2 = function(t, e) {
+  e |= Nt, t2 === "ENOENT" && (e |= j), (t2 === "EINVAL" || t2 === "UNKNOWN") && (e &= gt), __privateSet(this, _e4, e), t2 === "ENOTDIR" && this.parent && __privateMethod(_a13 = this.parent, _R_instances, L_fn).call(_a13);
+}, z_fn2 = function(t2, e) {
+  return __privateMethod(this, _R_instances, U_fn2).call(this, t2, e) || __privateMethod(this, _R_instances, B_fn2).call(this, t2, e);
+}, B_fn2 = function(t2, e) {
+  let s = ie(t2), i2 = this.newChild(t2.name, s, { parent: this }), r2 = __privateGet(i2, _e4) & _;
+  return r2 !== U && r2 !== X && r2 !== L && __privateSet(i2, _e4, __privateGet(i2, _e4) | yt), e.unshift(i2), e.provisional++, i2;
+}, U_fn2 = function(t2, e) {
   for (let s = e.provisional; s < e.length; s++) {
-    let i = e[s];
-    if ((this.nocase ? _t4(t.name) : bt(t.name)) === __privateGet(i, _C2)) return __privateMethod(this, _R_instances, l_fn2).call(this, t, i, s, e);
+    let i2 = e[s];
+    if ((this.nocase ? _t4(t2.name) : bt(t2.name)) === __privateGet(i2, _C2)) return __privateMethod(this, _R_instances, l_fn2).call(this, t2, i2, s, e);
   }
-}, l_fn2 = function(t, e, s, i) {
-  let r = e.name;
-  return __privateSet(e, _e4, __privateGet(e, _e4) & gt | ie(t)), r !== t.name && (e.name = t.name), s !== i.provisional && (s === i.length - 1 ? i.pop() : i.splice(s, 1), i.unshift(e)), i.provisional++, e;
-}, $_fn2 = function(t) {
-  let { atime: e, atimeMs: s, birthtime: i, birthtimeMs: r, blksize: o, blocks: h, ctime: a, ctimeMs: l, dev: u, gid: c, ino: d, mode: f, mtime: m, mtimeMs: p, nlink: w, rdev: g, size: S, uid: E } = t;
-  __privateSet(this, _b4, e), __privateSet(this, _a6, s), __privateSet(this, _m3, i), __privateSet(this, _E2, r), __privateSet(this, _c5, o), __privateSet(this, _f4, h), __privateSet(this, _R2, a), __privateSet(this, _d3, l), __privateSet(this, _s5, u), __privateSet(this, _S3, c), __privateSet(this, _h4, d), __privateSet(this, _n4, f), __privateSet(this, _p3, m), __privateSet(this, _i3, p), __privateSet(this, _r4, w), __privateSet(this, _w3, g), __privateSet(this, _u3, S), __privateSet(this, _o4, E);
-  let y = ie(t);
-  __privateSet(this, _e4, __privateGet(this, _e4) & gt | y | je), y !== L && y !== U && y !== X && __privateSet(this, _e4, __privateGet(this, _e4) | yt);
-}, _W = new WeakMap(), _O = new WeakMap(), H_fn2 = function(t) {
+}, l_fn2 = function(t2, e, s, i2) {
+  let r2 = e.name;
+  return __privateSet(e, _e4, __privateGet(e, _e4) & gt | ie(t2)), r2 !== t2.name && (e.name = t2.name), s !== i2.provisional && (s === i2.length - 1 ? i2.pop() : i2.splice(s, 1), i2.unshift(e)), i2.provisional++, e;
+}, $_fn2 = function(t2) {
+  let { atime: e, atimeMs: s, birthtime: i2, birthtimeMs: r2, blksize: o2, blocks: h2, ctime: a, ctimeMs: l, dev: u, gid: c3, ino: d, mode: f, mtime: m, mtimeMs: p2, nlink: w, rdev: g, size: S2, uid: E2 } = t2;
+  __privateSet(this, _b4, e), __privateSet(this, _a6, s), __privateSet(this, _m3, i2), __privateSet(this, _E2, r2), __privateSet(this, _c5, o2), __privateSet(this, _f4, h2), __privateSet(this, _R2, a), __privateSet(this, _d3, l), __privateSet(this, _s5, u), __privateSet(this, _S3, c3), __privateSet(this, _h4, d), __privateSet(this, _n4, f), __privateSet(this, _p3, m), __privateSet(this, _i3, p2), __privateSet(this, _r4, w), __privateSet(this, _w3, g), __privateSet(this, _u3, S2), __privateSet(this, _o4, E2);
+  let y2 = ie(t2);
+  __privateSet(this, _e4, __privateGet(this, _e4) & gt | y2 | je), y2 !== L && y2 !== U && y2 !== X && __privateSet(this, _e4, __privateGet(this, _e4) | yt);
+}, _W = new WeakMap(), _O = new WeakMap(), H_fn2 = function(t2) {
   __privateSet(this, _O, false);
   let e = __privateGet(this, _W).slice();
-  __privateGet(this, _W).length = 0, e.forEach((s) => s(null, t));
+  __privateGet(this, _W).length = 0, e.forEach((s) => s(null, t2));
 }, _q2 = new WeakMap(), _a7);
 var Pt = class n extends R {
-  constructor(t, e = L, s, i, r, o, h) {
-    super(t, e, s, i, r, o, h);
+  constructor(t2, e = L, s, i2, r2, o2, h2) {
+    super(t2, e, s, i2, r2, o2, h2);
     __publicField(this, "sep", "\\");
     __publicField(this, "splitSep", Oi);
   }
-  newChild(t, e = L, s = {}) {
-    return new n(t, e, this.root, this.roots, this.nocase, this.childrenCache(), s);
+  newChild(t2, e = L, s = {}) {
+    return new n(t2, e, this.root, this.roots, this.nocase, this.childrenCache(), s);
   }
-  getRootString(t) {
-    return import_node_path.win32.parse(t).root;
+  getRootString(t2) {
+    return import_node_path.win32.parse(t2).root;
   }
-  getRoot(t) {
-    if (t = Ri(t.toUpperCase()), t === this.root.name) return this.root;
-    for (let [e, s] of Object.entries(this.roots)) if (this.sameRoot(t, e)) return this.roots[t] = s;
-    return this.roots[t] = new it(t, this).root;
+  getRoot(t2) {
+    if (t2 = Ri(t2.toUpperCase()), t2 === this.root.name) return this.root;
+    for (let [e, s] of Object.entries(this.roots)) if (this.sameRoot(t2, e)) return this.roots[t2] = s;
+    return this.roots[t2] = new it(t2, this).root;
   }
-  sameRoot(t, e = this.root.name) {
-    return t = t.toUpperCase().replace(/\//g, "\\").replace($e, "$1\\"), t === e;
+  sameRoot(t2, e = this.root.name) {
+    return t2 = t2.toUpperCase().replace(/\//g, "\\").replace($e, "$1\\"), t2 === e;
   }
 };
 var jt = class n2 extends R {
-  constructor(t, e = L, s, i, r, o, h) {
-    super(t, e, s, i, r, o, h);
+  constructor(t2, e = L, s, i2, r2, o2, h2) {
+    super(t2, e, s, i2, r2, o2, h2);
     __publicField(this, "splitSep", "/");
     __publicField(this, "sep", "/");
   }
-  getRootString(t) {
-    return t.startsWith("/") ? "/" : "";
+  getRootString(t2) {
+    return t2.startsWith("/") ? "/" : "";
   }
-  getRoot(t) {
+  getRoot(t2) {
     return this.root;
   }
-  newChild(t, e = L, s = {}) {
-    return new n2(t, e, this.root, this.roots, this.nocase, this.childrenCache(), s);
+  newChild(t2, e = L, s = {}) {
+    return new n2(t2, e, this.root, this.roots, this.nocase, this.childrenCache(), s);
   }
 };
 var _t6, _s6, _n5, _r5, _a8;
 var It = (_a8 = class {
-  constructor(t = process.cwd(), e, s, { nocase: i, childrenCacheSize: r = 16 * 1024, fs: o = wt } = {}) {
+  constructor(t2 = process.cwd(), e, s, { nocase: i2, childrenCacheSize: r2 = 16 * 1024, fs: o2 = wt } = {}) {
     __publicField(this, "root");
     __publicField(this, "rootPath");
     __publicField(this, "roots");
@@ -3403,275 +3328,275 @@ var It = (_a8 = class {
     __privateAdd(this, _n5);
     __publicField(this, "nocase");
     __privateAdd(this, _r5);
-    __privateSet(this, _r5, Ue(o)), (t instanceof URL || t.startsWith("file://")) && (t = (0, import_node_url2.fileURLToPath)(t));
-    let h = e.resolve(t);
-    this.roots = /* @__PURE__ */ Object.create(null), this.rootPath = this.parseRootPath(h), __privateSet(this, _t6, new Wt()), __privateSet(this, _s6, new Wt()), __privateSet(this, _n5, new ne(r));
-    let a = h.substring(this.rootPath.length).split(s);
-    if (a.length === 1 && !a[0] && a.pop(), i === void 0) throw new TypeError("must provide nocase setting to PathScurryBase ctor");
-    this.nocase = i, this.root = this.newRoot(__privateGet(this, _r5)), this.roots[this.rootPath] = this.root;
-    let l = this.root, u = a.length - 1, c = e.sep, d = this.rootPath, f = false;
+    __privateSet(this, _r5, Ue(o2)), (t2 instanceof URL || t2.startsWith("file://")) && (t2 = (0, import_node_url2.fileURLToPath)(t2));
+    let h2 = e.resolve(t2);
+    this.roots = /* @__PURE__ */ Object.create(null), this.rootPath = this.parseRootPath(h2), __privateSet(this, _t6, new Wt()), __privateSet(this, _s6, new Wt()), __privateSet(this, _n5, new ne(r2));
+    let a = h2.substring(this.rootPath.length).split(s);
+    if (a.length === 1 && !a[0] && a.pop(), i2 === void 0) throw new TypeError("must provide nocase setting to PathScurryBase ctor");
+    this.nocase = i2, this.root = this.newRoot(__privateGet(this, _r5)), this.roots[this.rootPath] = this.root;
+    let l = this.root, u = a.length - 1, c3 = e.sep, d = this.rootPath, f = false;
     for (let m of a) {
-      let p = u--;
-      l = l.child(m, { relative: new Array(p).fill("..").join(c), relativePosix: new Array(p).fill("..").join("/"), fullpath: d += (f ? "" : c) + m }), f = true;
+      let p2 = u--;
+      l = l.child(m, { relative: new Array(p2).fill("..").join(c3), relativePosix: new Array(p2).fill("..").join("/"), fullpath: d += (f ? "" : c3) + m }), f = true;
     }
     this.cwd = l;
   }
-  depth(t = this.cwd) {
-    return typeof t == "string" && (t = this.cwd.resolve(t)), t.depth();
+  depth(t2 = this.cwd) {
+    return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.depth();
   }
   childrenCache() {
     return __privateGet(this, _n5);
   }
-  resolve(...t) {
+  resolve(...t2) {
     let e = "";
-    for (let r = t.length - 1; r >= 0; r--) {
-      let o = t[r];
-      if (!(!o || o === ".") && (e = e ? `${o}/${e}` : o, this.isAbsolute(o))) break;
+    for (let r2 = t2.length - 1; r2 >= 0; r2--) {
+      let o2 = t2[r2];
+      if (!(!o2 || o2 === ".") && (e = e ? `${o2}/${e}` : o2, this.isAbsolute(o2))) break;
     }
     let s = __privateGet(this, _t6).get(e);
     if (s !== void 0) return s;
-    let i = this.cwd.resolve(e).fullpath();
-    return __privateGet(this, _t6).set(e, i), i;
+    let i2 = this.cwd.resolve(e).fullpath();
+    return __privateGet(this, _t6).set(e, i2), i2;
   }
-  resolvePosix(...t) {
+  resolvePosix(...t2) {
     let e = "";
-    for (let r = t.length - 1; r >= 0; r--) {
-      let o = t[r];
-      if (!(!o || o === ".") && (e = e ? `${o}/${e}` : o, this.isAbsolute(o))) break;
+    for (let r2 = t2.length - 1; r2 >= 0; r2--) {
+      let o2 = t2[r2];
+      if (!(!o2 || o2 === ".") && (e = e ? `${o2}/${e}` : o2, this.isAbsolute(o2))) break;
     }
     let s = __privateGet(this, _s6).get(e);
     if (s !== void 0) return s;
-    let i = this.cwd.resolve(e).fullpathPosix();
-    return __privateGet(this, _s6).set(e, i), i;
+    let i2 = this.cwd.resolve(e).fullpathPosix();
+    return __privateGet(this, _s6).set(e, i2), i2;
   }
-  relative(t = this.cwd) {
-    return typeof t == "string" && (t = this.cwd.resolve(t)), t.relative();
+  relative(t2 = this.cwd) {
+    return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.relative();
   }
-  relativePosix(t = this.cwd) {
-    return typeof t == "string" && (t = this.cwd.resolve(t)), t.relativePosix();
+  relativePosix(t2 = this.cwd) {
+    return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.relativePosix();
   }
-  basename(t = this.cwd) {
-    return typeof t == "string" && (t = this.cwd.resolve(t)), t.name;
+  basename(t2 = this.cwd) {
+    return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.name;
   }
-  dirname(t = this.cwd) {
-    return typeof t == "string" && (t = this.cwd.resolve(t)), (t.parent || t).fullpath();
+  dirname(t2 = this.cwd) {
+    return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), (t2.parent || t2).fullpath();
   }
-  async readdir(t = this.cwd, e = { withFileTypes: true }) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd);
+  async readdir(t2 = this.cwd, e = { withFileTypes: true }) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
     let { withFileTypes: s } = e;
-    if (t.canReaddir()) {
-      let i = await t.readdir();
-      return s ? i : i.map((r) => r.name);
+    if (t2.canReaddir()) {
+      let i2 = await t2.readdir();
+      return s ? i2 : i2.map((r2) => r2.name);
     } else return [];
   }
-  readdirSync(t = this.cwd, e = { withFileTypes: true }) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd);
+  readdirSync(t2 = this.cwd, e = { withFileTypes: true }) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
     let { withFileTypes: s = true } = e;
-    return t.canReaddir() ? s ? t.readdirSync() : t.readdirSync().map((i) => i.name) : [];
+    return t2.canReaddir() ? s ? t2.readdirSync() : t2.readdirSync().map((i2) => i2.name) : [];
   }
-  async lstat(t = this.cwd) {
-    return typeof t == "string" && (t = this.cwd.resolve(t)), t.lstat();
+  async lstat(t2 = this.cwd) {
+    return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.lstat();
   }
-  lstatSync(t = this.cwd) {
-    return typeof t == "string" && (t = this.cwd.resolve(t)), t.lstatSync();
+  lstatSync(t2 = this.cwd) {
+    return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.lstatSync();
   }
-  async readlink(t = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t.withFileTypes, t = this.cwd);
-    let s = await t.readlink();
+  async readlink(t2 = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2.withFileTypes, t2 = this.cwd);
+    let s = await t2.readlink();
     return e ? s : s?.fullpath();
   }
-  readlinkSync(t = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t.withFileTypes, t = this.cwd);
-    let s = t.readlinkSync();
+  readlinkSync(t2 = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2.withFileTypes, t2 = this.cwd);
+    let s = t2.readlinkSync();
     return e ? s : s?.fullpath();
   }
-  async realpath(t = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t.withFileTypes, t = this.cwd);
-    let s = await t.realpath();
+  async realpath(t2 = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2.withFileTypes, t2 = this.cwd);
+    let s = await t2.realpath();
     return e ? s : s?.fullpath();
   }
-  realpathSync(t = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t.withFileTypes, t = this.cwd);
-    let s = t.realpathSync();
+  realpathSync(t2 = this.cwd, { withFileTypes: e } = { withFileTypes: false }) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2.withFileTypes, t2 = this.cwd);
+    let s = t2.realpathSync();
     return e ? s : s?.fullpath();
   }
-  async walk(t = this.cwd, e = {}) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd);
-    let { withFileTypes: s = true, follow: i = false, filter: r, walkFilter: o } = e, h = [];
-    (!r || r(t)) && h.push(s ? t : t.fullpath());
-    let a = /* @__PURE__ */ new Set(), l = (c, d) => {
-      a.add(c), c.readdirCB((f, m) => {
+  async walk(t2 = this.cwd, e = {}) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
+    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = [];
+    (!r2 || r2(t2)) && h2.push(s ? t2 : t2.fullpath());
+    let a = /* @__PURE__ */ new Set(), l = (c3, d) => {
+      a.add(c3), c3.readdirCB((f, m) => {
         if (f) return d(f);
-        let p = m.length;
-        if (!p) return d();
+        let p2 = m.length;
+        if (!p2) return d();
         let w = () => {
-          --p === 0 && d();
+          --p2 === 0 && d();
         };
-        for (let g of m) (!r || r(g)) && h.push(s ? g : g.fullpath()), i && g.isSymbolicLink() ? g.realpath().then((S) => S?.isUnknown() ? S.lstat() : S).then((S) => S?.shouldWalk(a, o) ? l(S, w) : w()) : g.shouldWalk(a, o) ? l(g, w) : w();
+        for (let g of m) (!r2 || r2(g)) && h2.push(s ? g : g.fullpath()), i2 && g.isSymbolicLink() ? g.realpath().then((S2) => S2?.isUnknown() ? S2.lstat() : S2).then((S2) => S2?.shouldWalk(a, o2) ? l(S2, w) : w()) : g.shouldWalk(a, o2) ? l(g, w) : w();
       }, true);
-    }, u = t;
-    return new Promise((c, d) => {
+    }, u = t2;
+    return new Promise((c3, d) => {
       l(u, (f) => {
         if (f) return d(f);
-        c(h);
+        c3(h2);
       });
     });
   }
-  walkSync(t = this.cwd, e = {}) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd);
-    let { withFileTypes: s = true, follow: i = false, filter: r, walkFilter: o } = e, h = [];
-    (!r || r(t)) && h.push(s ? t : t.fullpath());
-    let a = /* @__PURE__ */ new Set([t]);
+  walkSync(t2 = this.cwd, e = {}) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
+    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = [];
+    (!r2 || r2(t2)) && h2.push(s ? t2 : t2.fullpath());
+    let a = /* @__PURE__ */ new Set([t2]);
     for (let l of a) {
       let u = l.readdirSync();
-      for (let c of u) {
-        (!r || r(c)) && h.push(s ? c : c.fullpath());
-        let d = c;
-        if (c.isSymbolicLink()) {
-          if (!(i && (d = c.realpathSync()))) continue;
+      for (let c3 of u) {
+        (!r2 || r2(c3)) && h2.push(s ? c3 : c3.fullpath());
+        let d = c3;
+        if (c3.isSymbolicLink()) {
+          if (!(i2 && (d = c3.realpathSync()))) continue;
           d.isUnknown() && d.lstatSync();
         }
-        d.shouldWalk(a, o) && a.add(d);
+        d.shouldWalk(a, o2) && a.add(d);
       }
     }
-    return h;
+    return h2;
   }
   [Symbol.asyncIterator]() {
     return this.iterate();
   }
-  iterate(t = this.cwd, e = {}) {
-    return typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd), this.stream(t, e)[Symbol.asyncIterator]();
+  iterate(t2 = this.cwd, e = {}) {
+    return typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd), this.stream(t2, e)[Symbol.asyncIterator]();
   }
   [Symbol.iterator]() {
     return this.iterateSync();
   }
-  *iterateSync(t = this.cwd, e = {}) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd);
-    let { withFileTypes: s = true, follow: i = false, filter: r, walkFilter: o } = e;
-    (!r || r(t)) && (yield s ? t : t.fullpath());
-    let h = /* @__PURE__ */ new Set([t]);
-    for (let a of h) {
+  *iterateSync(t2 = this.cwd, e = {}) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
+    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e;
+    (!r2 || r2(t2)) && (yield s ? t2 : t2.fullpath());
+    let h2 = /* @__PURE__ */ new Set([t2]);
+    for (let a of h2) {
       let l = a.readdirSync();
       for (let u of l) {
-        (!r || r(u)) && (yield s ? u : u.fullpath());
-        let c = u;
+        (!r2 || r2(u)) && (yield s ? u : u.fullpath());
+        let c3 = u;
         if (u.isSymbolicLink()) {
-          if (!(i && (c = u.realpathSync()))) continue;
-          c.isUnknown() && c.lstatSync();
+          if (!(i2 && (c3 = u.realpathSync()))) continue;
+          c3.isUnknown() && c3.lstatSync();
         }
-        c.shouldWalk(h, o) && h.add(c);
+        c3.shouldWalk(h2, o2) && h2.add(c3);
       }
     }
   }
-  stream(t = this.cwd, e = {}) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd);
-    let { withFileTypes: s = true, follow: i = false, filter: r, walkFilter: o } = e, h = new V({ objectMode: true });
-    (!r || r(t)) && h.write(s ? t : t.fullpath());
-    let a = /* @__PURE__ */ new Set(), l = [t], u = 0, c = () => {
+  stream(t2 = this.cwd, e = {}) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
+    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = new V({ objectMode: true });
+    (!r2 || r2(t2)) && h2.write(s ? t2 : t2.fullpath());
+    let a = /* @__PURE__ */ new Set(), l = [t2], u = 0, c3 = () => {
       let d = false;
       for (; !d; ) {
         let f = l.shift();
         if (!f) {
-          u === 0 && h.end();
+          u === 0 && h2.end();
           return;
         }
         u++, a.add(f);
-        let m = (w, g, S = false) => {
-          if (w) return h.emit("error", w);
-          if (i && !S) {
-            let E = [];
-            for (let y of g) y.isSymbolicLink() && E.push(y.realpath().then((b) => b?.isUnknown() ? b.lstat() : b));
-            if (E.length) {
-              Promise.all(E).then(() => m(null, g, true));
+        let m = (w, g, S2 = false) => {
+          if (w) return h2.emit("error", w);
+          if (i2 && !S2) {
+            let E2 = [];
+            for (let y2 of g) y2.isSymbolicLink() && E2.push(y2.realpath().then((b2) => b2?.isUnknown() ? b2.lstat() : b2));
+            if (E2.length) {
+              Promise.all(E2).then(() => m(null, g, true));
               return;
             }
           }
-          for (let E of g) E && (!r || r(E)) && (h.write(s ? E : E.fullpath()) || (d = true));
+          for (let E2 of g) E2 && (!r2 || r2(E2)) && (h2.write(s ? E2 : E2.fullpath()) || (d = true));
           u--;
-          for (let E of g) {
-            let y = E.realpathCached() || E;
-            y.shouldWalk(a, o) && l.push(y);
+          for (let E2 of g) {
+            let y2 = E2.realpathCached() || E2;
+            y2.shouldWalk(a, o2) && l.push(y2);
           }
-          d && !h.flowing ? h.once("drain", c) : p || c();
-        }, p = true;
-        f.readdirCB(m, true), p = false;
+          d && !h2.flowing ? h2.once("drain", c3) : p2 || c3();
+        }, p2 = true;
+        f.readdirCB(m, true), p2 = false;
       }
     };
-    return c(), h;
+    return c3(), h2;
   }
-  streamSync(t = this.cwd, e = {}) {
-    typeof t == "string" ? t = this.cwd.resolve(t) : t instanceof R || (e = t, t = this.cwd);
-    let { withFileTypes: s = true, follow: i = false, filter: r, walkFilter: o } = e, h = new V({ objectMode: true }), a = /* @__PURE__ */ new Set();
-    (!r || r(t)) && h.write(s ? t : t.fullpath());
-    let l = [t], u = 0, c = () => {
+  streamSync(t2 = this.cwd, e = {}) {
+    typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
+    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = new V({ objectMode: true }), a = /* @__PURE__ */ new Set();
+    (!r2 || r2(t2)) && h2.write(s ? t2 : t2.fullpath());
+    let l = [t2], u = 0, c3 = () => {
       let d = false;
       for (; !d; ) {
         let f = l.shift();
         if (!f) {
-          u === 0 && h.end();
+          u === 0 && h2.end();
           return;
         }
         u++, a.add(f);
         let m = f.readdirSync();
-        for (let p of m) (!r || r(p)) && (h.write(s ? p : p.fullpath()) || (d = true));
+        for (let p2 of m) (!r2 || r2(p2)) && (h2.write(s ? p2 : p2.fullpath()) || (d = true));
         u--;
-        for (let p of m) {
-          let w = p;
-          if (p.isSymbolicLink()) {
-            if (!(i && (w = p.realpathSync()))) continue;
+        for (let p2 of m) {
+          let w = p2;
+          if (p2.isSymbolicLink()) {
+            if (!(i2 && (w = p2.realpathSync()))) continue;
             w.isUnknown() && w.lstatSync();
           }
-          w.shouldWalk(a, o) && l.push(w);
+          w.shouldWalk(a, o2) && l.push(w);
         }
       }
-      d && !h.flowing && h.once("drain", c);
+      d && !h2.flowing && h2.once("drain", c3);
     };
-    return c(), h;
+    return c3(), h2;
   }
-  chdir(t = this.cwd) {
+  chdir(t2 = this.cwd) {
     let e = this.cwd;
-    this.cwd = typeof t == "string" ? this.cwd.resolve(t) : t, this.cwd[Ye](e);
+    this.cwd = typeof t2 == "string" ? this.cwd.resolve(t2) : t2, this.cwd[Ye](e);
   }
 }, _t6 = new WeakMap(), _s6 = new WeakMap(), _n5 = new WeakMap(), _r5 = new WeakMap(), _a8);
 var it = class extends It {
-  constructor(t = process.cwd(), e = {}) {
+  constructor(t2 = process.cwd(), e = {}) {
     let { nocase: s = true } = e;
-    super(t, import_node_path.win32, "\\", { ...e, nocase: s });
+    super(t2, import_node_path.win32, "\\", { ...e, nocase: s });
     __publicField(this, "sep", "\\");
     this.nocase = s;
-    for (let i = this.cwd; i; i = i.parent) i.nocase = this.nocase;
+    for (let i2 = this.cwd; i2; i2 = i2.parent) i2.nocase = this.nocase;
   }
-  parseRootPath(t) {
-    return import_node_path.win32.parse(t).root.toUpperCase();
+  parseRootPath(t2) {
+    return import_node_path.win32.parse(t2).root.toUpperCase();
   }
-  newRoot(t) {
-    return new Pt(this.rootPath, U, void 0, this.roots, this.nocase, this.childrenCache(), { fs: t });
+  newRoot(t2) {
+    return new Pt(this.rootPath, U, void 0, this.roots, this.nocase, this.childrenCache(), { fs: t2 });
   }
-  isAbsolute(t) {
-    return t.startsWith("/") || t.startsWith("\\") || /^[a-z]:(\/|\\)/i.test(t);
+  isAbsolute(t2) {
+    return t2.startsWith("/") || t2.startsWith("\\") || /^[a-z]:(\/|\\)/i.test(t2);
   }
 };
 var rt = class extends It {
-  constructor(t = process.cwd(), e = {}) {
+  constructor(t2 = process.cwd(), e = {}) {
     let { nocase: s = false } = e;
-    super(t, import_node_path.posix, "/", { ...e, nocase: s });
+    super(t2, import_node_path.posix, "/", { ...e, nocase: s });
     __publicField(this, "sep", "/");
     this.nocase = s;
   }
-  parseRootPath(t) {
+  parseRootPath(t2) {
     return "/";
   }
-  newRoot(t) {
-    return new jt(this.rootPath, U, void 0, this.roots, this.nocase, this.childrenCache(), { fs: t });
+  newRoot(t2) {
+    return new jt(this.rootPath, U, void 0, this.roots, this.nocase, this.childrenCache(), { fs: t2 });
   }
-  isAbsolute(t) {
-    return t.startsWith("/");
+  isAbsolute(t2) {
+    return t2.startsWith("/");
   }
 };
 var St = class extends rt {
-  constructor(t = process.cwd(), e = {}) {
+  constructor(t2 = process.cwd(), e = {}) {
     let { nocase: s = true } = e;
-    super(t, { ...e, nocase: s });
+    super(t2, { ...e, nocase: s });
   }
 };
 var Cr = process.platform === "win32" ? Pt : jt;
@@ -3681,7 +3606,7 @@ var Mi = (n5) => n5.length >= 1;
 var Ni = /* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom");
 var _t7, _s7, _n6, _r6, _o5, _S4, _w4, _c6, _h5, _u4, _a9;
 var nt = (_a9 = class {
-  constructor(t, e, s, i) {
+  constructor(t2, e, s, i2) {
     __privateAdd(this, _t7);
     __privateAdd(this, _s7);
     __privateAdd(this, _n6);
@@ -3693,21 +3618,21 @@ var nt = (_a9 = class {
     __privateAdd(this, _c6);
     __privateAdd(this, _h5);
     __privateAdd(this, _u4, true);
-    if (!Di(t)) throw new TypeError("empty pattern list");
+    if (!Di(t2)) throw new TypeError("empty pattern list");
     if (!Mi(e)) throw new TypeError("empty glob list");
-    if (e.length !== t.length) throw new TypeError("mismatched pattern list and glob list lengths");
-    if (this.length = t.length, s < 0 || s >= this.length) throw new TypeError("index out of range");
-    if (__privateSet(this, _t7, t), __privateSet(this, _s7, e), __privateSet(this, _n6, s), __privateSet(this, _r6, i), __privateGet(this, _n6) === 0) {
+    if (e.length !== t2.length) throw new TypeError("mismatched pattern list and glob list lengths");
+    if (this.length = t2.length, s < 0 || s >= this.length) throw new TypeError("index out of range");
+    if (__privateSet(this, _t7, t2), __privateSet(this, _s7, e), __privateSet(this, _n6, s), __privateSet(this, _r6, i2), __privateGet(this, _n6) === 0) {
       if (this.isUNC()) {
-        let [r, o, h, a, ...l] = __privateGet(this, _t7), [u, c, d, f, ...m] = __privateGet(this, _s7);
+        let [r2, o2, h2, a, ...l] = __privateGet(this, _t7), [u, c3, d, f, ...m] = __privateGet(this, _s7);
         l[0] === "" && (l.shift(), m.shift());
-        let p = [r, o, h, a, ""].join("/"), w = [u, c, d, f, ""].join("/");
-        __privateSet(this, _t7, [p, ...l]), __privateSet(this, _s7, [w, ...m]), this.length = __privateGet(this, _t7).length;
+        let p2 = [r2, o2, h2, a, ""].join("/"), w = [u, c3, d, f, ""].join("/");
+        __privateSet(this, _t7, [p2, ...l]), __privateSet(this, _s7, [w, ...m]), this.length = __privateGet(this, _t7).length;
       } else if (this.isDrive() || this.isAbsolute()) {
-        let [r, ...o] = __privateGet(this, _t7), [h, ...a] = __privateGet(this, _s7);
-        o[0] === "" && (o.shift(), a.shift());
-        let l = r + "/", u = h + "/";
-        __privateSet(this, _t7, [l, ...o]), __privateSet(this, _s7, [u, ...a]), this.length = __privateGet(this, _t7).length;
+        let [r2, ...o2] = __privateGet(this, _t7), [h2, ...a] = __privateGet(this, _s7);
+        o2[0] === "" && (o2.shift(), a.shift());
+        let l = r2 + "/", u = h2 + "/";
+        __privateSet(this, _t7, [l, ...o2]), __privateSet(this, _s7, [u, ...a]), this.length = __privateGet(this, _t7).length;
       }
     }
   }
@@ -3736,20 +3661,20 @@ var nt = (_a9 = class {
     return __privateGet(this, _o5) !== void 0 ? __privateGet(this, _o5) : this.hasMore() ? (__privateSet(this, _o5, new _a9(__privateGet(this, _t7), __privateGet(this, _s7), __privateGet(this, _n6) + 1, __privateGet(this, _r6))), __privateSet(__privateGet(this, _o5), _h5, __privateGet(this, _h5)), __privateSet(__privateGet(this, _o5), _c6, __privateGet(this, _c6)), __privateSet(__privateGet(this, _o5), _w4, __privateGet(this, _w4)), __privateGet(this, _o5)) : __privateSet(this, _o5, null);
   }
   isUNC() {
-    let t = __privateGet(this, _t7);
-    return __privateGet(this, _c6) !== void 0 ? __privateGet(this, _c6) : __privateSet(this, _c6, __privateGet(this, _r6) === "win32" && __privateGet(this, _n6) === 0 && t[0] === "" && t[1] === "" && typeof t[2] == "string" && !!t[2] && typeof t[3] == "string" && !!t[3]);
+    let t2 = __privateGet(this, _t7);
+    return __privateGet(this, _c6) !== void 0 ? __privateGet(this, _c6) : __privateSet(this, _c6, __privateGet(this, _r6) === "win32" && __privateGet(this, _n6) === 0 && t2[0] === "" && t2[1] === "" && typeof t2[2] == "string" && !!t2[2] && typeof t2[3] == "string" && !!t2[3]);
   }
   isDrive() {
-    let t = __privateGet(this, _t7);
-    return __privateGet(this, _w4) !== void 0 ? __privateGet(this, _w4) : __privateSet(this, _w4, __privateGet(this, _r6) === "win32" && __privateGet(this, _n6) === 0 && this.length > 1 && typeof t[0] == "string" && /^[a-z]:$/i.test(t[0]));
+    let t2 = __privateGet(this, _t7);
+    return __privateGet(this, _w4) !== void 0 ? __privateGet(this, _w4) : __privateSet(this, _w4, __privateGet(this, _r6) === "win32" && __privateGet(this, _n6) === 0 && this.length > 1 && typeof t2[0] == "string" && /^[a-z]:$/i.test(t2[0]));
   }
   isAbsolute() {
-    let t = __privateGet(this, _t7);
-    return __privateGet(this, _h5) !== void 0 ? __privateGet(this, _h5) : __privateSet(this, _h5, t[0] === "" && t.length > 1 || this.isDrive() || this.isUNC());
+    let t2 = __privateGet(this, _t7);
+    return __privateGet(this, _h5) !== void 0 ? __privateGet(this, _h5) : __privateSet(this, _h5, t2[0] === "" && t2.length > 1 || this.isDrive() || this.isUNC());
   }
   root() {
-    let t = __privateGet(this, _t7)[0];
-    return typeof t == "string" && this.isAbsolute() && __privateGet(this, _n6) === 0 ? t : "";
+    let t2 = __privateGet(this, _t7)[0];
+    return typeof t2 == "string" && this.isAbsolute() && __privateGet(this, _n6) === 0 ? t2 : "";
   }
   checkFollowGlobstar() {
     return !(__privateGet(this, _n6) === 0 || !this.isGlobstar() || !__privateGet(this, _u4));
@@ -3760,90 +3685,90 @@ var nt = (_a9 = class {
 }, _t7 = new WeakMap(), _s7 = new WeakMap(), _n6 = new WeakMap(), _r6 = new WeakMap(), _o5 = new WeakMap(), _S4 = new WeakMap(), _w4 = new WeakMap(), _c6 = new WeakMap(), _h5 = new WeakMap(), _u4 = new WeakMap(), _a9);
 var _i4 = typeof process == "object" && process && typeof process.platform == "string" ? process.platform : "linux";
 var ot = class {
-  constructor(t, { nobrace: e, nocase: s, noext: i, noglobstar: r, platform: o = _i4 }) {
+  constructor(t2, { nobrace: e, nocase: s, noext: i2, noglobstar: r2, platform: o2 = _i4 }) {
     __publicField(this, "relative");
     __publicField(this, "relativeChildren");
     __publicField(this, "absolute");
     __publicField(this, "absoluteChildren");
     __publicField(this, "platform");
     __publicField(this, "mmopts");
-    this.relative = [], this.absolute = [], this.relativeChildren = [], this.absoluteChildren = [], this.platform = o, this.mmopts = { dot: true, nobrace: e, nocase: s, noext: i, noglobstar: r, optimizationLevel: 2, platform: o, nocomment: true, nonegate: true };
-    for (let h of t) this.add(h);
+    this.relative = [], this.absolute = [], this.relativeChildren = [], this.absoluteChildren = [], this.platform = o2, this.mmopts = { dot: true, nobrace: e, nocase: s, noext: i2, noglobstar: r2, optimizationLevel: 2, platform: o2, nocomment: true, nonegate: true };
+    for (let h2 of t2) this.add(h2);
   }
-  add(t) {
-    let e = new D(t, this.mmopts);
+  add(t2) {
+    let e = new D(t2, this.mmopts);
     for (let s = 0; s < e.set.length; s++) {
-      let i = e.set[s], r = e.globParts[s];
-      if (!i || !r) throw new Error("invalid pattern object");
-      for (; i[0] === "." && r[0] === "."; ) i.shift(), r.shift();
-      let o = new nt(i, r, 0, this.platform), h = new D(o.globString(), this.mmopts), a = r[r.length - 1] === "**", l = o.isAbsolute();
-      l ? this.absolute.push(h) : this.relative.push(h), a && (l ? this.absoluteChildren.push(h) : this.relativeChildren.push(h));
+      let i2 = e.set[s], r2 = e.globParts[s];
+      if (!i2 || !r2) throw new Error("invalid pattern object");
+      for (; i2[0] === "." && r2[0] === "."; ) i2.shift(), r2.shift();
+      let o2 = new nt(i2, r2, 0, this.platform), h2 = new D(o2.globString(), this.mmopts), a = r2[r2.length - 1] === "**", l = o2.isAbsolute();
+      l ? this.absolute.push(h2) : this.relative.push(h2), a && (l ? this.absoluteChildren.push(h2) : this.relativeChildren.push(h2));
     }
   }
-  ignored(t) {
-    let e = t.fullpath(), s = `${e}/`, i = t.relative() || ".", r = `${i}/`;
-    for (let o of this.relative) if (o.match(i) || o.match(r)) return true;
-    for (let o of this.absolute) if (o.match(e) || o.match(s)) return true;
+  ignored(t2) {
+    let e = t2.fullpath(), s = `${e}/`, i2 = t2.relative() || ".", r2 = `${i2}/`;
+    for (let o2 of this.relative) if (o2.match(i2) || o2.match(r2)) return true;
+    for (let o2 of this.absolute) if (o2.match(e) || o2.match(s)) return true;
     return false;
   }
-  childrenIgnored(t) {
-    let e = t.fullpath() + "/", s = (t.relative() || ".") + "/";
-    for (let i of this.relativeChildren) if (i.match(s)) return true;
-    for (let i of this.absoluteChildren) if (i.match(e)) return true;
+  childrenIgnored(t2) {
+    let e = t2.fullpath() + "/", s = (t2.relative() || ".") + "/";
+    for (let i2 of this.relativeChildren) if (i2.match(s)) return true;
+    for (let i2 of this.absoluteChildren) if (i2.match(e)) return true;
     return false;
   }
 };
 var oe = class n3 {
-  constructor(t = /* @__PURE__ */ new Map()) {
+  constructor(t2 = /* @__PURE__ */ new Map()) {
     __publicField(this, "store");
-    this.store = t;
+    this.store = t2;
   }
   copy() {
     return new n3(new Map(this.store));
   }
-  hasWalked(t, e) {
-    return this.store.get(t.fullpath())?.has(e.globString());
+  hasWalked(t2, e) {
+    return this.store.get(t2.fullpath())?.has(e.globString());
   }
-  storeWalked(t, e) {
-    let s = t.fullpath(), i = this.store.get(s);
-    i ? i.add(e.globString()) : this.store.set(s, /* @__PURE__ */ new Set([e.globString()]));
+  storeWalked(t2, e) {
+    let s = t2.fullpath(), i2 = this.store.get(s);
+    i2 ? i2.add(e.globString()) : this.store.set(s, /* @__PURE__ */ new Set([e.globString()]));
   }
 };
 var he = class {
   constructor() {
     __publicField(this, "store", /* @__PURE__ */ new Map());
   }
-  add(t, e, s) {
-    let i = (e ? 2 : 0) | (s ? 1 : 0), r = this.store.get(t);
-    this.store.set(t, r === void 0 ? i : i & r);
+  add(t2, e, s) {
+    let i2 = (e ? 2 : 0) | (s ? 1 : 0), r2 = this.store.get(t2);
+    this.store.set(t2, r2 === void 0 ? i2 : i2 & r2);
   }
   entries() {
-    return [...this.store.entries()].map(([t, e]) => [t, !!(e & 2), !!(e & 1)]);
+    return [...this.store.entries()].map(([t2, e]) => [t2, !!(e & 2), !!(e & 1)]);
   }
 };
 var ae = class {
   constructor() {
     __publicField(this, "store", /* @__PURE__ */ new Map());
   }
-  add(t, e) {
-    if (!t.canReaddir()) return;
-    let s = this.store.get(t);
-    s ? s.find((i) => i.globString() === e.globString()) || s.push(e) : this.store.set(t, [e]);
+  add(t2, e) {
+    if (!t2.canReaddir()) return;
+    let s = this.store.get(t2);
+    s ? s.find((i2) => i2.globString() === e.globString()) || s.push(e) : this.store.set(t2, [e]);
   }
-  get(t) {
-    let e = this.store.get(t);
+  get(t2) {
+    let e = this.store.get(t2);
     if (!e) throw new Error("attempting to walk unknown path");
     return e;
   }
   entries() {
-    return this.keys().map((t) => [t, this.store.get(t)]);
+    return this.keys().map((t2) => [t2, this.store.get(t2)]);
   }
   keys() {
-    return [...this.store.keys()].filter((t) => t.canReaddir());
+    return [...this.store.keys()].filter((t2) => t2.canReaddir());
   }
 };
 var Et = class n4 {
-  constructor(t, e) {
+  constructor(t2, e) {
     __publicField(this, "hasWalkedCache");
     __publicField(this, "matches", new he());
     __publicField(this, "subwalks", new ae());
@@ -3851,43 +3776,43 @@ var Et = class n4 {
     __publicField(this, "follow");
     __publicField(this, "dot");
     __publicField(this, "opts");
-    this.opts = t, this.follow = !!t.follow, this.dot = !!t.dot, this.hasWalkedCache = e ? e.copy() : new oe();
+    this.opts = t2, this.follow = !!t2.follow, this.dot = !!t2.dot, this.hasWalkedCache = e ? e.copy() : new oe();
   }
-  processPatterns(t, e) {
+  processPatterns(t2, e) {
     this.patterns = e;
-    let s = e.map((i) => [t, i]);
-    for (let [i, r] of s) {
-      this.hasWalkedCache.storeWalked(i, r);
-      let o = r.root(), h = r.isAbsolute() && this.opts.absolute !== false;
-      if (o) {
-        i = i.resolve(o === "/" && this.opts.root !== void 0 ? this.opts.root : o);
-        let c = r.rest();
-        if (c) r = c;
+    let s = e.map((i2) => [t2, i2]);
+    for (let [i2, r2] of s) {
+      this.hasWalkedCache.storeWalked(i2, r2);
+      let o2 = r2.root(), h2 = r2.isAbsolute() && this.opts.absolute !== false;
+      if (o2) {
+        i2 = i2.resolve(o2 === "/" && this.opts.root !== void 0 ? this.opts.root : o2);
+        let c3 = r2.rest();
+        if (c3) r2 = c3;
         else {
-          this.matches.add(i, true, false);
+          this.matches.add(i2, true, false);
           continue;
         }
       }
-      if (i.isENOENT()) continue;
+      if (i2.isENOENT()) continue;
       let a, l, u = false;
-      for (; typeof (a = r.pattern()) == "string" && (l = r.rest()); ) i = i.resolve(a), r = l, u = true;
-      if (a = r.pattern(), l = r.rest(), u) {
-        if (this.hasWalkedCache.hasWalked(i, r)) continue;
-        this.hasWalkedCache.storeWalked(i, r);
+      for (; typeof (a = r2.pattern()) == "string" && (l = r2.rest()); ) i2 = i2.resolve(a), r2 = l, u = true;
+      if (a = r2.pattern(), l = r2.rest(), u) {
+        if (this.hasWalkedCache.hasWalked(i2, r2)) continue;
+        this.hasWalkedCache.storeWalked(i2, r2);
       }
       if (typeof a == "string") {
-        let c = a === ".." || a === "" || a === ".";
-        this.matches.add(i.resolve(a), h, c);
+        let c3 = a === ".." || a === "" || a === ".";
+        this.matches.add(i2.resolve(a), h2, c3);
         continue;
       } else if (a === A) {
-        (!i.isSymbolicLink() || this.follow || r.checkFollowGlobstar()) && this.subwalks.add(i, r);
-        let c = l?.pattern(), d = l?.rest();
-        if (!l || (c === "" || c === ".") && !d) this.matches.add(i, h, c === "" || c === ".");
-        else if (c === "..") {
-          let f = i.parent || i;
-          d ? this.hasWalkedCache.hasWalked(f, d) || this.subwalks.add(f, d) : this.matches.add(f, h, true);
+        (!i2.isSymbolicLink() || this.follow || r2.checkFollowGlobstar()) && this.subwalks.add(i2, r2);
+        let c3 = l?.pattern(), d = l?.rest();
+        if (!l || (c3 === "" || c3 === ".") && !d) this.matches.add(i2, h2, c3 === "" || c3 === ".");
+        else if (c3 === "..") {
+          let f = i2.parent || i2;
+          d ? this.hasWalkedCache.hasWalked(f, d) || this.subwalks.add(f, d) : this.matches.add(f, h2, true);
         }
-      } else a instanceof RegExp && this.subwalks.add(i, r);
+      } else a instanceof RegExp && this.subwalks.add(i2, r2);
     }
     return this;
   }
@@ -3897,35 +3822,35 @@ var Et = class n4 {
   child() {
     return new n4(this.opts, this.hasWalkedCache);
   }
-  filterEntries(t, e) {
-    let s = this.subwalks.get(t), i = this.child();
-    for (let r of e) for (let o of s) {
-      let h = o.isAbsolute(), a = o.pattern(), l = o.rest();
-      a === A ? i.testGlobstar(r, o, l, h) : a instanceof RegExp ? i.testRegExp(r, a, l, h) : i.testString(r, a, l, h);
+  filterEntries(t2, e) {
+    let s = this.subwalks.get(t2), i2 = this.child();
+    for (let r2 of e) for (let o2 of s) {
+      let h2 = o2.isAbsolute(), a = o2.pattern(), l = o2.rest();
+      a === A ? i2.testGlobstar(r2, o2, l, h2) : a instanceof RegExp ? i2.testRegExp(r2, a, l, h2) : i2.testString(r2, a, l, h2);
     }
-    return i;
+    return i2;
   }
-  testGlobstar(t, e, s, i) {
-    if ((this.dot || !t.name.startsWith(".")) && (e.hasMore() || this.matches.add(t, i, false), t.canReaddir() && (this.follow || !t.isSymbolicLink() ? this.subwalks.add(t, e) : t.isSymbolicLink() && (s && e.checkFollowGlobstar() ? this.subwalks.add(t, s) : e.markFollowGlobstar() && this.subwalks.add(t, e)))), s) {
-      let r = s.pattern();
-      if (typeof r == "string" && r !== ".." && r !== "" && r !== ".") this.testString(t, r, s.rest(), i);
-      else if (r === "..") {
-        let o = t.parent || t;
-        this.subwalks.add(o, s);
-      } else r instanceof RegExp && this.testRegExp(t, r, s.rest(), i);
+  testGlobstar(t2, e, s, i2) {
+    if ((this.dot || !t2.name.startsWith(".")) && (e.hasMore() || this.matches.add(t2, i2, false), t2.canReaddir() && (this.follow || !t2.isSymbolicLink() ? this.subwalks.add(t2, e) : t2.isSymbolicLink() && (s && e.checkFollowGlobstar() ? this.subwalks.add(t2, s) : e.markFollowGlobstar() && this.subwalks.add(t2, e)))), s) {
+      let r2 = s.pattern();
+      if (typeof r2 == "string" && r2 !== ".." && r2 !== "" && r2 !== ".") this.testString(t2, r2, s.rest(), i2);
+      else if (r2 === "..") {
+        let o2 = t2.parent || t2;
+        this.subwalks.add(o2, s);
+      } else r2 instanceof RegExp && this.testRegExp(t2, r2, s.rest(), i2);
     }
   }
-  testRegExp(t, e, s, i) {
-    e.test(t.name) && (s ? this.subwalks.add(t, s) : this.matches.add(t, i, false));
+  testRegExp(t2, e, s, i2) {
+    e.test(t2.name) && (s ? this.subwalks.add(t2, s) : this.matches.add(t2, i2, false));
   }
-  testString(t, e, s, i) {
-    t.isNamed(e) && (s ? this.subwalks.add(t, s) : this.matches.add(t, i, false));
+  testString(t2, e, s, i2) {
+    t2.isNamed(e) && (s ? this.subwalks.add(t2, s) : this.matches.add(t2, i2, false));
   }
 };
-var Li = (n5, t) => typeof n5 == "string" ? new ot([n5], t) : Array.isArray(n5) ? new ot(n5, t) : n5;
+var Li = (n5, t2) => typeof n5 == "string" ? new ot([n5], t2) : Array.isArray(n5) ? new ot(n5, t2) : n5;
 var _t8, _s8, _n7, _zt_instances, r_fn, o_fn, _a10;
 var zt = (_a10 = class {
-  constructor(t, e, s) {
+  constructor(t2, e, s) {
     __privateAdd(this, _zt_instances);
     __publicField(this, "path");
     __publicField(this, "patterns");
@@ -3939,9 +3864,9 @@ var zt = (_a10 = class {
     __publicField(this, "signal");
     __publicField(this, "maxDepth");
     __publicField(this, "includeChildMatches");
-    if (this.patterns = t, this.path = e, this.opts = s, __privateSet(this, _n7, !s.posix && s.platform === "win32" ? "\\" : "/"), this.includeChildMatches = s.includeChildMatches !== false, (s.ignore || !this.includeChildMatches) && (__privateSet(this, _s8, Li(s.ignore ?? [], s)), !this.includeChildMatches && typeof __privateGet(this, _s8).add != "function")) {
-      let i = "cannot ignore child matches, ignore lacks add() method.";
-      throw new Error(i);
+    if (this.patterns = t2, this.path = e, this.opts = s, __privateSet(this, _n7, !s.posix && s.platform === "win32" ? "\\" : "/"), this.includeChildMatches = s.includeChildMatches !== false, (s.ignore || !this.includeChildMatches) && (__privateSet(this, _s8, Li(s.ignore ?? [], s)), !this.includeChildMatches && typeof __privateGet(this, _s8).add != "function")) {
+      let i2 = "cannot ignore child matches, ignore lacks add() method.";
+      throw new Error(i2);
     }
     this.maxDepth = s.maxDepth || 1 / 0, s.signal && (this.signal = s.signal, this.signal.addEventListener("abort", () => {
       __privateGet(this, _t8).length = 0;
@@ -3953,149 +3878,149 @@ var zt = (_a10 = class {
   resume() {
     if (this.signal?.aborted) return;
     this.paused = false;
-    let t;
-    for (; !this.paused && (t = __privateGet(this, _t8).shift()); ) t();
+    let t2;
+    for (; !this.paused && (t2 = __privateGet(this, _t8).shift()); ) t2();
   }
-  onResume(t) {
-    this.signal?.aborted || (this.paused ? __privateGet(this, _t8).push(t) : t());
+  onResume(t2) {
+    this.signal?.aborted || (this.paused ? __privateGet(this, _t8).push(t2) : t2());
   }
-  async matchCheck(t, e) {
+  async matchCheck(t2, e) {
     if (e && this.opts.nodir) return;
     let s;
     if (this.opts.realpath) {
-      if (s = t.realpathCached() || await t.realpath(), !s) return;
-      t = s;
+      if (s = t2.realpathCached() || await t2.realpath(), !s) return;
+      t2 = s;
     }
-    let r = t.isUnknown() || this.opts.stat ? await t.lstat() : t;
-    if (this.opts.follow && this.opts.nodir && r?.isSymbolicLink()) {
-      let o = await r.realpath();
-      o && (o.isUnknown() || this.opts.stat) && await o.lstat();
+    let r2 = t2.isUnknown() || this.opts.stat ? await t2.lstat() : t2;
+    if (this.opts.follow && this.opts.nodir && r2?.isSymbolicLink()) {
+      let o2 = await r2.realpath();
+      o2 && (o2.isUnknown() || this.opts.stat) && await o2.lstat();
     }
-    return this.matchCheckTest(r, e);
+    return this.matchCheckTest(r2, e);
   }
-  matchCheckTest(t, e) {
-    return t && (this.maxDepth === 1 / 0 || t.depth() <= this.maxDepth) && (!e || t.canReaddir()) && (!this.opts.nodir || !t.isDirectory()) && (!this.opts.nodir || !this.opts.follow || !t.isSymbolicLink() || !t.realpathCached()?.isDirectory()) && !__privateMethod(this, _zt_instances, r_fn).call(this, t) ? t : void 0;
+  matchCheckTest(t2, e) {
+    return t2 && (this.maxDepth === 1 / 0 || t2.depth() <= this.maxDepth) && (!e || t2.canReaddir()) && (!this.opts.nodir || !t2.isDirectory()) && (!this.opts.nodir || !this.opts.follow || !t2.isSymbolicLink() || !t2.realpathCached()?.isDirectory()) && !__privateMethod(this, _zt_instances, r_fn).call(this, t2) ? t2 : void 0;
   }
-  matchCheckSync(t, e) {
+  matchCheckSync(t2, e) {
     if (e && this.opts.nodir) return;
     let s;
     if (this.opts.realpath) {
-      if (s = t.realpathCached() || t.realpathSync(), !s) return;
-      t = s;
+      if (s = t2.realpathCached() || t2.realpathSync(), !s) return;
+      t2 = s;
     }
-    let r = t.isUnknown() || this.opts.stat ? t.lstatSync() : t;
-    if (this.opts.follow && this.opts.nodir && r?.isSymbolicLink()) {
-      let o = r.realpathSync();
-      o && (o?.isUnknown() || this.opts.stat) && o.lstatSync();
+    let r2 = t2.isUnknown() || this.opts.stat ? t2.lstatSync() : t2;
+    if (this.opts.follow && this.opts.nodir && r2?.isSymbolicLink()) {
+      let o2 = r2.realpathSync();
+      o2 && (o2?.isUnknown() || this.opts.stat) && o2.lstatSync();
     }
-    return this.matchCheckTest(r, e);
+    return this.matchCheckTest(r2, e);
   }
-  matchFinish(t, e) {
-    if (__privateMethod(this, _zt_instances, r_fn).call(this, t)) return;
+  matchFinish(t2, e) {
+    if (__privateMethod(this, _zt_instances, r_fn).call(this, t2)) return;
     if (!this.includeChildMatches && __privateGet(this, _s8)?.add) {
-      let r = `${t.relativePosix()}/**`;
-      __privateGet(this, _s8).add(r);
+      let r2 = `${t2.relativePosix()}/**`;
+      __privateGet(this, _s8).add(r2);
     }
     let s = this.opts.absolute === void 0 ? e : this.opts.absolute;
-    this.seen.add(t);
-    let i = this.opts.mark && t.isDirectory() ? __privateGet(this, _n7) : "";
-    if (this.opts.withFileTypes) this.matchEmit(t);
+    this.seen.add(t2);
+    let i2 = this.opts.mark && t2.isDirectory() ? __privateGet(this, _n7) : "";
+    if (this.opts.withFileTypes) this.matchEmit(t2);
     else if (s) {
-      let r = this.opts.posix ? t.fullpathPosix() : t.fullpath();
-      this.matchEmit(r + i);
+      let r2 = this.opts.posix ? t2.fullpathPosix() : t2.fullpath();
+      this.matchEmit(r2 + i2);
     } else {
-      let r = this.opts.posix ? t.relativePosix() : t.relative(), o = this.opts.dotRelative && !r.startsWith(".." + __privateGet(this, _n7)) ? "." + __privateGet(this, _n7) : "";
-      this.matchEmit(r ? o + r + i : "." + i);
+      let r2 = this.opts.posix ? t2.relativePosix() : t2.relative(), o2 = this.opts.dotRelative && !r2.startsWith(".." + __privateGet(this, _n7)) ? "." + __privateGet(this, _n7) : "";
+      this.matchEmit(r2 ? o2 + r2 + i2 : "." + i2);
     }
   }
-  async match(t, e, s) {
-    let i = await this.matchCheck(t, s);
-    i && this.matchFinish(i, e);
+  async match(t2, e, s) {
+    let i2 = await this.matchCheck(t2, s);
+    i2 && this.matchFinish(i2, e);
   }
-  matchSync(t, e, s) {
-    let i = this.matchCheckSync(t, s);
-    i && this.matchFinish(i, e);
+  matchSync(t2, e, s) {
+    let i2 = this.matchCheckSync(t2, s);
+    i2 && this.matchFinish(i2, e);
   }
-  walkCB(t, e, s) {
-    this.signal?.aborted && s(), this.walkCB2(t, e, new Et(this.opts), s);
+  walkCB(t2, e, s) {
+    this.signal?.aborted && s(), this.walkCB2(t2, e, new Et(this.opts), s);
   }
-  walkCB2(t, e, s, i) {
-    if (__privateMethod(this, _zt_instances, o_fn).call(this, t)) return i();
-    if (this.signal?.aborted && i(), this.paused) {
-      this.onResume(() => this.walkCB2(t, e, s, i));
+  walkCB2(t2, e, s, i2) {
+    if (__privateMethod(this, _zt_instances, o_fn).call(this, t2)) return i2();
+    if (this.signal?.aborted && i2(), this.paused) {
+      this.onResume(() => this.walkCB2(t2, e, s, i2));
       return;
     }
-    s.processPatterns(t, e);
-    let r = 1, o = () => {
-      --r === 0 && i();
+    s.processPatterns(t2, e);
+    let r2 = 1, o2 = () => {
+      --r2 === 0 && i2();
     };
-    for (let [h, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h) || (r++, this.match(h, a, l).then(() => o()));
-    for (let h of s.subwalkTargets()) {
-      if (this.maxDepth !== 1 / 0 && h.depth() >= this.maxDepth) continue;
-      r++;
-      let a = h.readdirCached();
-      h.calledReaddir() ? this.walkCB3(h, a, s, o) : h.readdirCB((l, u) => this.walkCB3(h, u, s, o), true);
+    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || (r2++, this.match(h2, a, l).then(() => o2()));
+    for (let h2 of s.subwalkTargets()) {
+      if (this.maxDepth !== 1 / 0 && h2.depth() >= this.maxDepth) continue;
+      r2++;
+      let a = h2.readdirCached();
+      h2.calledReaddir() ? this.walkCB3(h2, a, s, o2) : h2.readdirCB((l, u) => this.walkCB3(h2, u, s, o2), true);
     }
-    o();
+    o2();
   }
-  walkCB3(t, e, s, i) {
-    s = s.filterEntries(t, e);
-    let r = 1, o = () => {
-      --r === 0 && i();
+  walkCB3(t2, e, s, i2) {
+    s = s.filterEntries(t2, e);
+    let r2 = 1, o2 = () => {
+      --r2 === 0 && i2();
     };
-    for (let [h, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h) || (r++, this.match(h, a, l).then(() => o()));
-    for (let [h, a] of s.subwalks.entries()) r++, this.walkCB2(h, a, s.child(), o);
-    o();
+    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || (r2++, this.match(h2, a, l).then(() => o2()));
+    for (let [h2, a] of s.subwalks.entries()) r2++, this.walkCB2(h2, a, s.child(), o2);
+    o2();
   }
-  walkCBSync(t, e, s) {
-    this.signal?.aborted && s(), this.walkCB2Sync(t, e, new Et(this.opts), s);
+  walkCBSync(t2, e, s) {
+    this.signal?.aborted && s(), this.walkCB2Sync(t2, e, new Et(this.opts), s);
   }
-  walkCB2Sync(t, e, s, i) {
-    if (__privateMethod(this, _zt_instances, o_fn).call(this, t)) return i();
-    if (this.signal?.aborted && i(), this.paused) {
-      this.onResume(() => this.walkCB2Sync(t, e, s, i));
+  walkCB2Sync(t2, e, s, i2) {
+    if (__privateMethod(this, _zt_instances, o_fn).call(this, t2)) return i2();
+    if (this.signal?.aborted && i2(), this.paused) {
+      this.onResume(() => this.walkCB2Sync(t2, e, s, i2));
       return;
     }
-    s.processPatterns(t, e);
-    let r = 1, o = () => {
-      --r === 0 && i();
+    s.processPatterns(t2, e);
+    let r2 = 1, o2 = () => {
+      --r2 === 0 && i2();
     };
-    for (let [h, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h) || this.matchSync(h, a, l);
-    for (let h of s.subwalkTargets()) {
-      if (this.maxDepth !== 1 / 0 && h.depth() >= this.maxDepth) continue;
-      r++;
-      let a = h.readdirSync();
-      this.walkCB3Sync(h, a, s, o);
+    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || this.matchSync(h2, a, l);
+    for (let h2 of s.subwalkTargets()) {
+      if (this.maxDepth !== 1 / 0 && h2.depth() >= this.maxDepth) continue;
+      r2++;
+      let a = h2.readdirSync();
+      this.walkCB3Sync(h2, a, s, o2);
     }
-    o();
+    o2();
   }
-  walkCB3Sync(t, e, s, i) {
-    s = s.filterEntries(t, e);
-    let r = 1, o = () => {
-      --r === 0 && i();
+  walkCB3Sync(t2, e, s, i2) {
+    s = s.filterEntries(t2, e);
+    let r2 = 1, o2 = () => {
+      --r2 === 0 && i2();
     };
-    for (let [h, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h) || this.matchSync(h, a, l);
-    for (let [h, a] of s.subwalks.entries()) r++, this.walkCB2Sync(h, a, s.child(), o);
-    o();
+    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || this.matchSync(h2, a, l);
+    for (let [h2, a] of s.subwalks.entries()) r2++, this.walkCB2Sync(h2, a, s.child(), o2);
+    o2();
   }
-}, _t8 = new WeakMap(), _s8 = new WeakMap(), _n7 = new WeakMap(), _zt_instances = new WeakSet(), r_fn = function(t) {
-  return this.seen.has(t) || !!__privateGet(this, _s8)?.ignored?.(t);
-}, o_fn = function(t) {
-  return !!__privateGet(this, _s8)?.childrenIgnored?.(t);
+}, _t8 = new WeakMap(), _s8 = new WeakMap(), _n7 = new WeakMap(), _zt_instances = new WeakSet(), r_fn = function(t2) {
+  return this.seen.has(t2) || !!__privateGet(this, _s8)?.ignored?.(t2);
+}, o_fn = function(t2) {
+  return !!__privateGet(this, _s8)?.childrenIgnored?.(t2);
 }, _a10);
 var xt = class extends zt {
-  constructor(t, e, s) {
-    super(t, e, s);
+  constructor(t2, e, s) {
+    super(t2, e, s);
     __publicField(this, "matches", /* @__PURE__ */ new Set());
   }
-  matchEmit(t) {
-    this.matches.add(t);
+  matchEmit(t2) {
+    this.matches.add(t2);
   }
   async walk() {
     if (this.signal?.aborted) throw this.signal.reason;
-    return this.path.isUnknown() && await this.path.lstat(), await new Promise((t, e) => {
+    return this.path.isUnknown() && await this.path.lstat(), await new Promise((t2, e) => {
       this.walkCB(this.path, this.patterns, () => {
-        this.signal?.aborted ? e(this.signal.reason) : t(this.matches);
+        this.signal?.aborted ? e(this.signal.reason) : t2(this.matches);
       });
     }), this.matches;
   }
@@ -4107,19 +4032,19 @@ var xt = class extends zt {
   }
 };
 var vt = class extends zt {
-  constructor(t, e, s) {
-    super(t, e, s);
+  constructor(t2, e, s) {
+    super(t2, e, s);
     __publicField(this, "results");
     this.results = new V({ signal: this.signal, objectMode: true }), this.results.on("drain", () => this.resume()), this.results.on("resume", () => this.resume());
   }
-  matchEmit(t) {
-    this.results.write(t), this.results.flowing || this.pause();
+  matchEmit(t2) {
+    this.results.write(t2), this.results.flowing || this.pause();
   }
   stream() {
-    let t = this.path;
-    return t.isUnknown() ? t.lstat().then(() => {
-      this.walkCB(t, this.patterns, () => this.results.end());
-    }) : this.walkCB(t, this.patterns, () => this.results.end()), this.results;
+    let t2 = this.path;
+    return t2.isUnknown() ? t2.lstat().then(() => {
+      this.walkCB(t2, this.patterns, () => this.results.end());
+    }) : this.walkCB(t2, this.patterns, () => this.results.end()), this.results;
   }
   streamSync() {
     return this.path.isUnknown() && this.path.lstatSync(), this.walkCBSync(this.path, this.patterns, () => this.results.end()), this.results;
@@ -4127,7 +4052,7 @@ var vt = class extends zt {
 };
 var Pi = typeof process == "object" && process && typeof process.platform == "string" ? process.platform : "linux";
 var I = class {
-  constructor(t, e) {
+  constructor(t2, e) {
     __publicField(this, "absolute");
     __publicField(this, "cwd");
     __publicField(this, "root");
@@ -4157,20 +4082,20 @@ var I = class {
     __publicField(this, "patterns");
     if (!e) throw new TypeError("glob options required");
     if (this.withFileTypes = !!e.withFileTypes, this.signal = e.signal, this.follow = !!e.follow, this.dot = !!e.dot, this.dotRelative = !!e.dotRelative, this.nodir = !!e.nodir, this.mark = !!e.mark, e.cwd ? (e.cwd instanceof URL || e.cwd.startsWith("file://")) && (e.cwd = (0, import_node_url.fileURLToPath)(e.cwd)) : this.cwd = "", this.cwd = e.cwd || "", this.root = e.root, this.magicalBraces = !!e.magicalBraces, this.nobrace = !!e.nobrace, this.noext = !!e.noext, this.realpath = !!e.realpath, this.absolute = e.absolute, this.includeChildMatches = e.includeChildMatches !== false, this.noglobstar = !!e.noglobstar, this.matchBase = !!e.matchBase, this.maxDepth = typeof e.maxDepth == "number" ? e.maxDepth : 1 / 0, this.stat = !!e.stat, this.ignore = e.ignore, this.withFileTypes && this.absolute !== void 0) throw new Error("cannot set absolute and withFileTypes:true");
-    if (typeof t == "string" && (t = [t]), this.windowsPathsNoEscape = !!e.windowsPathsNoEscape || e.allowWindowsEscape === false, this.windowsPathsNoEscape && (t = t.map((a) => a.replace(/\\/g, "/"))), this.matchBase) {
+    if (typeof t2 == "string" && (t2 = [t2]), this.windowsPathsNoEscape = !!e.windowsPathsNoEscape || e.allowWindowsEscape === false, this.windowsPathsNoEscape && (t2 = t2.map((a) => a.replace(/\\/g, "/"))), this.matchBase) {
       if (e.noglobstar) throw new TypeError("base matching requires globstar");
-      t = t.map((a) => a.includes("/") ? a : `./**/${a}`);
+      t2 = t2.map((a) => a.includes("/") ? a : `./**/${a}`);
     }
-    if (this.pattern = t, this.platform = e.platform || Pi, this.opts = { ...e, platform: this.platform }, e.scurry) {
+    if (this.pattern = t2, this.platform = e.platform || Pi, this.opts = { ...e, platform: this.platform }, e.scurry) {
       if (this.scurry = e.scurry, e.nocase !== void 0 && e.nocase !== e.scurry.nocase) throw new Error("nocase option contradicts provided scurry option");
     } else {
       let a = e.platform === "win32" ? it : e.platform === "darwin" ? St : e.platform ? rt : Xe;
       this.scurry = new a(this.cwd, { nocase: e.nocase, fs: e.fs });
     }
     this.nocase = this.scurry.nocase;
-    let s = this.platform === "darwin" || this.platform === "win32", i = { braceExpandMax: 1e4, ...e, dot: this.dot, matchBase: this.matchBase, nobrace: this.nobrace, nocase: this.nocase, nocaseMagicOnly: s, nocomment: true, noext: this.noext, nonegate: true, optimizationLevel: 2, platform: this.platform, windowsPathsNoEscape: this.windowsPathsNoEscape, debug: !!this.opts.debug }, r = this.pattern.map((a) => new D(a, i)), [o, h] = r.reduce((a, l) => (a[0].push(...l.set), a[1].push(...l.globParts), a), [[], []]);
-    this.patterns = o.map((a, l) => {
-      let u = h[l];
+    let s = this.platform === "darwin" || this.platform === "win32", i2 = { braceExpandMax: 1e4, ...e, dot: this.dot, matchBase: this.matchBase, nobrace: this.nobrace, nocase: this.nocase, nocaseMagicOnly: s, nocomment: true, noext: this.noext, nonegate: true, optimizationLevel: 2, platform: this.platform, windowsPathsNoEscape: this.windowsPathsNoEscape, debug: !!this.opts.debug }, r2 = this.pattern.map((a) => new D(a, i2)), [o2, h2] = r2.reduce((a, l) => (a[0].push(...l.set), a[1].push(...l.globParts), a), [[], []]);
+    this.patterns = o2.map((a, l) => {
+      let u = h2[l];
       if (!u) throw new Error("invalid pattern object");
       return new nt(a, u, 0, this.platform);
     });
@@ -4200,28 +4125,28 @@ var I = class {
     return this.iterate();
   }
 };
-var le = (n5, t = {}) => {
+var le = (n5, t2 = {}) => {
   Array.isArray(n5) || (n5 = [n5]);
-  for (let e of n5) if (new D(e, t).hasMagic()) return true;
+  for (let e of n5) if (new D(e, t2).hasMagic()) return true;
   return false;
 };
-function Bt(n5, t = {}) {
-  return new I(n5, t).streamSync();
+function Bt(n5, t2 = {}) {
+  return new I(n5, t2).streamSync();
 }
-function Qe(n5, t = {}) {
-  return new I(n5, t).stream();
+function Qe(n5, t2 = {}) {
+  return new I(n5, t2).stream();
 }
-function ts(n5, t = {}) {
-  return new I(n5, t).walkSync();
+function ts(n5, t2 = {}) {
+  return new I(n5, t2).walkSync();
 }
-async function Je(n5, t = {}) {
-  return new I(n5, t).walk();
+async function Je(n5, t2 = {}) {
+  return new I(n5, t2).walk();
 }
-function Ut(n5, t = {}) {
-  return new I(n5, t).iterateSync();
+function Ut(n5, t2 = {}) {
+  return new I(n5, t2).iterateSync();
 }
-function es(n5, t = {}) {
-  return new I(n5, t).iterate();
+function es(n5, t2 = {}) {
+  return new I(n5, t2).iterate();
 }
 var ji = Bt;
 var Ii = Object.assign(Qe, { sync: Bt });
@@ -4360,8 +4285,8 @@ function findCucumberFeaturesDir(featureFilePath, projectPath) {
   const relDir = import_path.default.relative(projectPath, import_path.default.dirname(featureFilePath));
   const parts = relDir.split(import_path.default.sep);
   let lastFeaturesIdx = -1;
-  for (let i = 0; i < parts.length; i++) {
-    if (parts[i] === "features") lastFeaturesIdx = i;
+  for (let i2 = 0; i2 < parts.length; i2++) {
+    if (parts[i2] === "features") lastFeaturesIdx = i2;
   }
   if (lastFeaturesIdx >= 0) {
     return import_path.default.join(projectPath, ...parts.slice(0, lastFeaturesIdx + 1));
@@ -4453,50 +4378,50 @@ init_cjs_shims();
 
 // node_modules/balanced-match/dist/esm/index.js
 init_cjs_shims();
-var balanced = (a, b, str) => {
+var balanced = (a, b2, str) => {
   const ma = a instanceof RegExp ? maybeMatch(a, str) : a;
-  const mb = b instanceof RegExp ? maybeMatch(b, str) : b;
-  const r = ma !== null && mb != null && range(ma, mb, str);
-  return r && {
-    start: r[0],
-    end: r[1],
-    pre: str.slice(0, r[0]),
-    body: str.slice(r[0] + ma.length, r[1]),
-    post: str.slice(r[1] + mb.length)
+  const mb = b2 instanceof RegExp ? maybeMatch(b2, str) : b2;
+  const r2 = ma !== null && mb != null && range(ma, mb, str);
+  return r2 && {
+    start: r2[0],
+    end: r2[1],
+    pre: str.slice(0, r2[0]),
+    body: str.slice(r2[0] + ma.length, r2[1]),
+    post: str.slice(r2[1] + mb.length)
   };
 };
 var maybeMatch = (reg, str) => {
   const m = str.match(reg);
   return m ? m[0] : null;
 };
-var range = (a, b, str) => {
+var range = (a, b2, str) => {
   let begs, beg, left, right = void 0, result;
   let ai2 = str.indexOf(a);
-  let bi2 = str.indexOf(b, ai2 + 1);
-  let i = ai2;
+  let bi2 = str.indexOf(b2, ai2 + 1);
+  let i2 = ai2;
   if (ai2 >= 0 && bi2 > 0) {
-    if (a === b) {
+    if (a === b2) {
       return [ai2, bi2];
     }
     begs = [];
     left = str.length;
-    while (i >= 0 && !result) {
-      if (i === ai2) {
-        begs.push(i);
-        ai2 = str.indexOf(a, i + 1);
+    while (i2 >= 0 && !result) {
+      if (i2 === ai2) {
+        begs.push(i2);
+        ai2 = str.indexOf(a, i2 + 1);
       } else if (begs.length === 1) {
-        const r = begs.pop();
-        if (r !== void 0)
-          result = [r, bi2];
+        const r2 = begs.pop();
+        if (r2 !== void 0)
+          result = [r2, bi2];
       } else {
         beg = begs.pop();
         if (beg !== void 0 && beg < left) {
           left = beg;
           right = bi2;
         }
-        bi2 = str.indexOf(b, i + 1);
+        bi2 = str.indexOf(b2, i2 + 1);
       }
-      i = ai2 < bi2 && ai2 >= 0 ? ai2 : bi2;
+      i2 = ai2 < bi2 && ai2 >= 0 ? ai2 : bi2;
     }
     if (begs.length && right !== void 0) {
       result = [left, right];
@@ -4541,15 +4466,15 @@ function parseCommaParts(str) {
     return str.split(",");
   }
   const { pre, body, post } = m;
-  const p = pre.split(",");
-  p[p.length - 1] += "{" + body + "}";
+  const p2 = pre.split(",");
+  p2[p2.length - 1] += "{" + body + "}";
   const postParts = parseCommaParts(post);
   if (post.length) {
     ;
-    p[p.length - 1] += postParts.shift();
-    p.push.apply(p, postParts);
+    p2[p2.length - 1] += postParts.shift();
+    p2.push.apply(p2, postParts);
   }
-  parts.push.apply(parts, p);
+  parts.push.apply(parts, p2);
   return parts;
 }
 function expand(str, options = {}) {
@@ -4568,11 +4493,11 @@ function embrace(str) {
 function isPadded(el) {
   return /^-?0\d/.test(el);
 }
-function lte(i, y) {
-  return i <= y;
+function lte(i2, y2) {
+  return i2 <= y2;
 }
-function gte(i, y) {
-  return i >= y;
+function gte(i2, y2) {
+  return i2 >= y2;
 }
 function expand_(str, max, isTop) {
   const expansions = [];
@@ -4582,8 +4507,8 @@ function expand_(str, max, isTop) {
   const pre = m.pre;
   const post = m.post.length ? expand_(m.post, max, false) : [""];
   if (/\$$/.test(m.pre)) {
-    for (let k2 = 0; k2 < post.length && k2 < max; k2++) {
-      const expansion = pre + "{" + m.body + "}" + post[k2];
+    for (let k3 = 0; k3 < post.length && k3 < max; k3++) {
+      const expansion = pre + "{" + m.body + "}" + post[k3];
       expansions.push(expansion);
     }
   } else {
@@ -4606,56 +4531,56 @@ function expand_(str, max, isTop) {
       if (n5.length === 1 && n5[0] !== void 0) {
         n5 = expand_(n5[0], max, false).map(embrace);
         if (n5.length === 1) {
-          return post.map((p) => m.pre + n5[0] + p);
+          return post.map((p2) => m.pre + n5[0] + p2);
         }
       }
     }
-    let N2;
+    let N3;
     if (isSequence && n5[0] !== void 0 && n5[1] !== void 0) {
-      const x2 = numeric(n5[0]);
-      const y = numeric(n5[1]);
+      const x3 = numeric(n5[0]);
+      const y2 = numeric(n5[1]);
       const width = Math.max(n5[0].length, n5[1].length);
       let incr = n5.length === 3 && n5[2] !== void 0 ? Math.max(Math.abs(numeric(n5[2])), 1) : 1;
       let test = lte;
-      const reverse = y < x2;
+      const reverse = y2 < x3;
       if (reverse) {
         incr *= -1;
         test = gte;
       }
       const pad = n5.some(isPadded);
-      N2 = [];
-      for (let i = x2; test(i, y); i += incr) {
-        let c;
+      N3 = [];
+      for (let i2 = x3; test(i2, y2); i2 += incr) {
+        let c3;
         if (isAlphaSequence) {
-          c = String.fromCharCode(i);
-          if (c === "\\") {
-            c = "";
+          c3 = String.fromCharCode(i2);
+          if (c3 === "\\") {
+            c3 = "";
           }
         } else {
-          c = String(i);
+          c3 = String(i2);
           if (pad) {
-            const need = width - c.length;
+            const need = width - c3.length;
             if (need > 0) {
-              const z = new Array(need + 1).join("0");
-              if (i < 0) {
-                c = "-" + z + c.slice(1);
+              const z2 = new Array(need + 1).join("0");
+              if (i2 < 0) {
+                c3 = "-" + z2 + c3.slice(1);
               } else {
-                c = z + c;
+                c3 = z2 + c3;
               }
             }
           }
         }
-        N2.push(c);
+        N3.push(c3);
       }
     } else {
-      N2 = [];
-      for (let j2 = 0; j2 < n5.length; j2++) {
-        N2.push.apply(N2, expand_(n5[j2], max, false));
+      N3 = [];
+      for (let j3 = 0; j3 < n5.length; j3++) {
+        N3.push.apply(N3, expand_(n5[j3], max, false));
       }
     }
-    for (let j2 = 0; j2 < N2.length; j2++) {
-      for (let k2 = 0; k2 < post.length && expansions.length < max; k2++) {
-        const expansion = pre + N2[j2] + post[k2];
+    for (let j3 = 0; j3 < N3.length; j3++) {
+      for (let k3 = 0; k3 < post.length && expansions.length < max; k3++) {
+        const expansion = pre + N3[j3] + post[k3];
         if (!isTop || isSequence || expansion) {
           expansions.push(expansion);
         }
@@ -4708,39 +4633,39 @@ var parseClass = (glob, position) => {
   }
   const ranges = [];
   const negs = [];
-  let i = pos + 1;
+  let i2 = pos + 1;
   let sawStart = false;
   let uflag = false;
   let escaping = false;
   let negate = false;
   let endPos = pos;
   let rangeStart = "";
-  WHILE: while (i < glob.length) {
-    const c = glob.charAt(i);
-    if ((c === "!" || c === "^") && i === pos + 1) {
+  WHILE: while (i2 < glob.length) {
+    const c3 = glob.charAt(i2);
+    if ((c3 === "!" || c3 === "^") && i2 === pos + 1) {
       negate = true;
-      i++;
+      i2++;
       continue;
     }
-    if (c === "]" && sawStart && !escaping) {
-      endPos = i + 1;
+    if (c3 === "]" && sawStart && !escaping) {
+      endPos = i2 + 1;
       break;
     }
     sawStart = true;
-    if (c === "\\") {
+    if (c3 === "\\") {
       if (!escaping) {
         escaping = true;
-        i++;
+        i2++;
         continue;
       }
     }
-    if (c === "[" && !escaping) {
+    if (c3 === "[" && !escaping) {
       for (const [cls, [unip, u, neg]] of Object.entries(posixClasses)) {
-        if (glob.startsWith(cls, i)) {
+        if (glob.startsWith(cls, i2)) {
           if (rangeStart) {
             return ["$.", false, glob.length - pos, true];
           }
-          i += cls.length;
+          i2 += cls.length;
           if (neg)
             negs.push(unip);
           else
@@ -4752,37 +4677,37 @@ var parseClass = (glob, position) => {
     }
     escaping = false;
     if (rangeStart) {
-      if (c > rangeStart) {
-        ranges.push(braceEscape(rangeStart) + "-" + braceEscape(c));
-      } else if (c === rangeStart) {
-        ranges.push(braceEscape(c));
+      if (c3 > rangeStart) {
+        ranges.push(braceEscape(rangeStart) + "-" + braceEscape(c3));
+      } else if (c3 === rangeStart) {
+        ranges.push(braceEscape(c3));
       }
       rangeStart = "";
-      i++;
+      i2++;
       continue;
     }
-    if (glob.startsWith("-]", i + 1)) {
-      ranges.push(braceEscape(c + "-"));
-      i += 2;
+    if (glob.startsWith("-]", i2 + 1)) {
+      ranges.push(braceEscape(c3 + "-"));
+      i2 += 2;
       continue;
     }
-    if (glob.startsWith("-", i + 1)) {
-      rangeStart = c;
-      i += 2;
+    if (glob.startsWith("-", i2 + 1)) {
+      rangeStart = c3;
+      i2 += 2;
       continue;
     }
-    ranges.push(braceEscape(c));
-    i++;
+    ranges.push(braceEscape(c3));
+    i2++;
   }
-  if (endPos < i) {
+  if (endPos < i2) {
     return ["", false, 0, false];
   }
   if (!ranges.length && !negs.length) {
     return ["$.", false, glob.length - pos, true];
   }
   if (negs.length === 0 && ranges.length === 1 && /^\\?.$/.test(ranges[0]) && !negate) {
-    const r = ranges[0].length === 2 ? ranges[0].slice(-1) : ranges[0];
-    return [regexpEscape(r), false, endPos - pos, false];
+    const r2 = ranges[0].length === 2 ? ranges[0].slice(-1) : ranges[0];
+    return [regexpEscape(r2), false, endPos - pos, false];
   }
   const sranges = "[" + (negate ? "^" : "") + rangesToString(ranges) + "]";
   const snegs = "[" + (negate ? "" : "^") + rangesToString(negs) + "]";
@@ -4802,8 +4727,8 @@ var unescape = (s, { windowsPathsNoEscape = false, magicalBraces = true } = {}) 
 // node_modules/minimatch/dist/esm/ast.js
 var _a11;
 var types = /* @__PURE__ */ new Set(["!", "?", "+", "*", "@"]);
-var isExtglobType = (c) => types.has(c);
-var isExtglobAST = (c) => isExtglobType(c.type);
+var isExtglobType = (c3) => types.has(c3);
+var isExtglobAST = (c3) => isExtglobType(c3.type);
 var adoptionMap = /* @__PURE__ */ new Map([
   ["!", ["@"]],
   ["?", ["?", "@"]],
@@ -4908,10 +4833,10 @@ var AST = class {
   get hasMagic() {
     if (__privateGet(this, _hasMagic) !== void 0)
       return __privateGet(this, _hasMagic);
-    for (const p of __privateGet(this, _parts)) {
-      if (typeof p === "string")
+    for (const p2 of __privateGet(this, _parts)) {
+      if (typeof p2 === "string")
         continue;
-      if (p.type || p.hasMagic)
+      if (p2.type || p2.hasMagic)
         return __privateSet(this, _hasMagic, true);
     }
     return __privateGet(this, _hasMagic);
@@ -4921,23 +4846,23 @@ var AST = class {
     if (__privateGet(this, _toString) !== void 0)
       return __privateGet(this, _toString);
     if (!this.type) {
-      return __privateSet(this, _toString, __privateGet(this, _parts).map((p) => String(p)).join(""));
+      return __privateSet(this, _toString, __privateGet(this, _parts).map((p2) => String(p2)).join(""));
     } else {
-      return __privateSet(this, _toString, this.type + "(" + __privateGet(this, _parts).map((p) => String(p)).join("|") + ")");
+      return __privateSet(this, _toString, this.type + "(" + __privateGet(this, _parts).map((p2) => String(p2)).join("|") + ")");
     }
   }
   push(...parts) {
-    for (const p of parts) {
-      if (p === "")
+    for (const p2 of parts) {
+      if (p2 === "")
         continue;
-      if (typeof p !== "string" && !(p instanceof _a11 && __privateGet(p, _parent) === this)) {
-        throw new Error("invalid part: " + p);
+      if (typeof p2 !== "string" && !(p2 instanceof _a11 && __privateGet(p2, _parent) === this)) {
+        throw new Error("invalid part: " + p2);
       }
-      __privateGet(this, _parts).push(p);
+      __privateGet(this, _parts).push(p2);
     }
   }
   toJSON() {
-    const ret = this.type === null ? __privateGet(this, _parts).slice().map((p) => typeof p === "string" ? p : p.toJSON()) : [this.type, ...__privateGet(this, _parts).map((p) => p.toJSON())];
+    const ret = this.type === null ? __privateGet(this, _parts).slice().map((p2) => typeof p2 === "string" ? p2 : p2.toJSON()) : [this.type, ...__privateGet(this, _parts).map((p2) => p2.toJSON())];
     if (this.isStart() && !this.type)
       ret.unshift([]);
     if (this.isEnd() && (this === __privateGet(this, _root) || __privateGet(__privateGet(this, _root), _filledNegs) && __privateGet(this, _parent)?.type === "!")) {
@@ -4952,9 +4877,9 @@ var AST = class {
       return false;
     if (__privateGet(this, _parentIndex) === 0)
       return true;
-    const p = __privateGet(this, _parent);
-    for (let i = 0; i < __privateGet(this, _parentIndex); i++) {
-      const pp = __privateGet(p, _parts)[i];
+    const p2 = __privateGet(this, _parent);
+    for (let i2 = 0; i2 < __privateGet(this, _parentIndex); i2++) {
+      const pp = __privateGet(p2, _parts)[i2];
       if (!(pp instanceof _a11 && pp.type === "!")) {
         return false;
       }
@@ -4980,11 +4905,11 @@ var AST = class {
       this.push(part.clone(this));
   }
   clone(parent) {
-    const c = new _a11(this.type, parent);
-    for (const p of __privateGet(this, _parts)) {
-      c.copyIn(p);
+    const c3 = new _a11(this.type, parent);
+    for (const p2 of __privateGet(this, _parts)) {
+      c3.copyIn(p2);
     }
-    return c;
+    return c3;
   }
   static fromGlob(pattern, options = {}) {
     var _a13;
@@ -5089,9 +5014,9 @@ var AST = class {
     }
     if (!isExtglobAST(this)) {
       const noEmpty = this.isStart() && this.isEnd() && !__privateGet(this, _parts).some((s) => typeof s !== "string");
-      const src = __privateGet(this, _parts).map((p) => {
+      const src = __privateGet(this, _parts).map((p2) => {
         var _a13;
-        const [re2, _2, hasMagic, uflag] = typeof p === "string" ? __privateMethod(_a13 = _a11, _AST_static, parseGlob_fn).call(_a13, p, __privateGet(this, _hasMagic), noEmpty) : p.toRegExpSource(allowDot);
+        const [re2, _3, hasMagic, uflag] = typeof p2 === "string" ? __privateMethod(_a13 = _a11, _AST_static, parseGlob_fn).call(_a13, p2, __privateGet(this, _hasMagic), noEmpty) : p2.toRegExpSource(allowDot);
         __privateSet(this, _hasMagic, __privateGet(this, _hasMagic) || hasMagic);
         __privateSet(this, _uflag, __privateGet(this, _uflag) || uflag);
         return re2;
@@ -5184,19 +5109,19 @@ fillNegs_fn = function() {
   while (n5 = __privateGet(this, _negs).pop()) {
     if (n5.type !== "!")
       continue;
-    let p = n5;
-    let pp = __privateGet(p, _parent);
+    let p2 = n5;
+    let pp = __privateGet(p2, _parent);
     while (pp) {
-      for (let i = __privateGet(p, _parentIndex) + 1; !pp.type && i < __privateGet(pp, _parts).length; i++) {
+      for (let i2 = __privateGet(p2, _parentIndex) + 1; !pp.type && i2 < __privateGet(pp, _parts).length; i2++) {
         for (const part of __privateGet(n5, _parts)) {
           if (typeof part === "string") {
             throw new Error("string part in extglob AST??");
           }
-          part.copyIn(__privateGet(pp, _parts)[i]);
+          part.copyIn(__privateGet(pp, _parts)[i2]);
         }
       }
-      p = pp;
-      pp = __privateGet(p, _parent);
+      p2 = pp;
+      pp = __privateGet(p2, _parent);
     }
   }
   return this;
@@ -5210,107 +5135,107 @@ parseAST_fn = function(str, ast, pos, opt, extDepth) {
   let braceStart = -1;
   let braceNeg = false;
   if (ast.type === null) {
-    let i2 = pos;
+    let i3 = pos;
     let acc2 = "";
-    while (i2 < str.length) {
-      const c = str.charAt(i2++);
-      if (escaping || c === "\\") {
+    while (i3 < str.length) {
+      const c3 = str.charAt(i3++);
+      if (escaping || c3 === "\\") {
         escaping = !escaping;
-        acc2 += c;
+        acc2 += c3;
         continue;
       }
       if (inBrace) {
-        if (i2 === braceStart + 1) {
-          if (c === "^" || c === "!") {
+        if (i3 === braceStart + 1) {
+          if (c3 === "^" || c3 === "!") {
             braceNeg = true;
           }
-        } else if (c === "]" && !(i2 === braceStart + 2 && braceNeg)) {
+        } else if (c3 === "]" && !(i3 === braceStart + 2 && braceNeg)) {
           inBrace = false;
         }
-        acc2 += c;
+        acc2 += c3;
         continue;
-      } else if (c === "[") {
+      } else if (c3 === "[") {
         inBrace = true;
-        braceStart = i2;
+        braceStart = i3;
         braceNeg = false;
-        acc2 += c;
+        acc2 += c3;
         continue;
       }
-      const doRecurse = !opt.noext && isExtglobType(c) && str.charAt(i2) === "(" && extDepth <= maxDepth;
+      const doRecurse = !opt.noext && isExtglobType(c3) && str.charAt(i3) === "(" && extDepth <= maxDepth;
       if (doRecurse) {
         ast.push(acc2);
         acc2 = "";
-        const ext2 = new _a11(c, ast);
-        i2 = __privateMethod(_a13 = _a11, _AST_static, parseAST_fn).call(_a13, str, ext2, i2, opt, extDepth + 1);
+        const ext2 = new _a11(c3, ast);
+        i3 = __privateMethod(_a13 = _a11, _AST_static, parseAST_fn).call(_a13, str, ext2, i3, opt, extDepth + 1);
         ast.push(ext2);
         continue;
       }
-      acc2 += c;
+      acc2 += c3;
     }
     ast.push(acc2);
-    return i2;
+    return i3;
   }
-  let i = pos + 1;
+  let i2 = pos + 1;
   let part = new _a11(null, ast);
   const parts = [];
   let acc = "";
-  while (i < str.length) {
-    const c = str.charAt(i++);
-    if (escaping || c === "\\") {
+  while (i2 < str.length) {
+    const c3 = str.charAt(i2++);
+    if (escaping || c3 === "\\") {
       escaping = !escaping;
-      acc += c;
+      acc += c3;
       continue;
     }
     if (inBrace) {
-      if (i === braceStart + 1) {
-        if (c === "^" || c === "!") {
+      if (i2 === braceStart + 1) {
+        if (c3 === "^" || c3 === "!") {
           braceNeg = true;
         }
-      } else if (c === "]" && !(i === braceStart + 2 && braceNeg)) {
+      } else if (c3 === "]" && !(i2 === braceStart + 2 && braceNeg)) {
         inBrace = false;
       }
-      acc += c;
+      acc += c3;
       continue;
-    } else if (c === "[") {
+    } else if (c3 === "[") {
       inBrace = true;
-      braceStart = i;
+      braceStart = i2;
       braceNeg = false;
-      acc += c;
+      acc += c3;
       continue;
     }
-    const doRecurse = !opt.noext && isExtglobType(c) && str.charAt(i) === "(" && /* c8 ignore start - the maxDepth is sufficient here */
-    (extDepth <= maxDepth || ast && __privateMethod(_b5 = ast, _AST_instances, canAdoptType_fn).call(_b5, c));
+    const doRecurse = !opt.noext && isExtglobType(c3) && str.charAt(i2) === "(" && /* c8 ignore start - the maxDepth is sufficient here */
+    (extDepth <= maxDepth || ast && __privateMethod(_b5 = ast, _AST_instances, canAdoptType_fn).call(_b5, c3));
     if (doRecurse) {
-      const depthAdd = ast && __privateMethod(_c7 = ast, _AST_instances, canAdoptType_fn).call(_c7, c) ? 0 : 1;
+      const depthAdd = ast && __privateMethod(_c7 = ast, _AST_instances, canAdoptType_fn).call(_c7, c3) ? 0 : 1;
       part.push(acc);
       acc = "";
-      const ext2 = new _a11(c, part);
+      const ext2 = new _a11(c3, part);
       part.push(ext2);
-      i = __privateMethod(_d4 = _a11, _AST_static, parseAST_fn).call(_d4, str, ext2, i, opt, extDepth + depthAdd);
+      i2 = __privateMethod(_d4 = _a11, _AST_static, parseAST_fn).call(_d4, str, ext2, i2, opt, extDepth + depthAdd);
       continue;
     }
-    if (c === "|") {
+    if (c3 === "|") {
       part.push(acc);
       acc = "";
       parts.push(part);
       part = new _a11(null, ast);
       continue;
     }
-    if (c === ")") {
+    if (c3 === ")") {
       if (acc === "" && __privateGet(ast, _parts).length === 0) {
         __privateSet(ast, _emptyExt, true);
       }
       part.push(acc);
       acc = "";
       ast.push(...parts, part);
-      return i;
+      return i2;
     }
-    acc += c;
+    acc += c3;
   }
   ast.type = null;
   __privateSet(ast, _hasMagic, void 0);
   __privateSet(ast, _parts, [str.substring(pos - 1)]);
-  return i;
+  return i2;
 };
 canAdoptWithSpace_fn = function(child) {
   return __privateMethod(this, _AST_instances, canAdopt_fn).call(this, child, adoptionWithSpaceMap);
@@ -5325,8 +5250,8 @@ canAdopt_fn = function(child, map = adoptionMap) {
   }
   return __privateMethod(this, _AST_instances, canAdoptType_fn).call(this, gc.type, map);
 };
-canAdoptType_fn = function(c, map = adoptionAnyMap) {
-  return !!map.get(this.type)?.includes(c);
+canAdoptType_fn = function(c3, map = adoptionAnyMap) {
+  return !!map.get(this.type)?.includes(c3);
 };
 adoptWithSpace_fn = function(child, index) {
   const gc = __privateGet(child, _parts)[0];
@@ -5338,15 +5263,15 @@ adoptWithSpace_fn = function(child, index) {
 adopt_fn = function(child, index) {
   const gc = __privateGet(child, _parts)[0];
   __privateGet(this, _parts).splice(index, 1, ...__privateGet(gc, _parts));
-  for (const p of __privateGet(gc, _parts)) {
-    if (typeof p === "object")
-      __privateSet(p, _parent, this);
+  for (const p2 of __privateGet(gc, _parts)) {
+    if (typeof p2 === "object")
+      __privateSet(p2, _parent, this);
   }
   __privateSet(this, _toString, void 0);
 };
-canUsurpType_fn = function(c) {
+canUsurpType_fn = function(c3) {
   const m = usurpMap.get(this.type);
-  return !!m?.has(c);
+  return !!m?.has(c3);
 };
 canUsurp_fn = function(child) {
   if (!child || typeof child !== "object" || child.type !== null || __privateGet(child, _parts).length !== 1 || this.type === null || __privateGet(this, _parts).length !== 1) {
@@ -5365,9 +5290,9 @@ usurp_fn = function(child) {
   if (!nt2)
     return false;
   __privateSet(this, _parts, __privateGet(gc, _parts));
-  for (const p of __privateGet(this, _parts)) {
-    if (typeof p === "object") {
-      __privateSet(p, _parent, this);
+  for (const p2 of __privateGet(this, _parts)) {
+    if (typeof p2 === "object") {
+      __privateSet(p2, _parent, this);
     }
   }
   this.type = nt2;
@@ -5377,9 +5302,9 @@ usurp_fn = function(child) {
 flatten_fn = function() {
   var _a13, _b5;
   if (!isExtglobAST(this)) {
-    for (const p of __privateGet(this, _parts)) {
-      if (typeof p === "object") {
-        __privateMethod(_a13 = p, _AST_instances, flatten_fn).call(_a13);
+    for (const p2 of __privateGet(this, _parts)) {
+      if (typeof p2 === "object") {
+        __privateMethod(_a13 = p2, _AST_instances, flatten_fn).call(_a13);
       }
     }
   } else {
@@ -5387,19 +5312,19 @@ flatten_fn = function() {
     let done = false;
     do {
       done = true;
-      for (let i = 0; i < __privateGet(this, _parts).length; i++) {
-        const c = __privateGet(this, _parts)[i];
-        if (typeof c === "object") {
-          __privateMethod(_b5 = c, _AST_instances, flatten_fn).call(_b5);
-          if (__privateMethod(this, _AST_instances, canAdopt_fn).call(this, c)) {
+      for (let i2 = 0; i2 < __privateGet(this, _parts).length; i2++) {
+        const c3 = __privateGet(this, _parts)[i2];
+        if (typeof c3 === "object") {
+          __privateMethod(_b5 = c3, _AST_instances, flatten_fn).call(_b5);
+          if (__privateMethod(this, _AST_instances, canAdopt_fn).call(this, c3)) {
             done = false;
-            __privateMethod(this, _AST_instances, adopt_fn).call(this, c, i);
-          } else if (__privateMethod(this, _AST_instances, canAdoptWithSpace_fn).call(this, c)) {
+            __privateMethod(this, _AST_instances, adopt_fn).call(this, c3, i2);
+          } else if (__privateMethod(this, _AST_instances, canAdoptWithSpace_fn).call(this, c3)) {
             done = false;
-            __privateMethod(this, _AST_instances, adoptWithSpace_fn).call(this, c, i);
-          } else if (__privateMethod(this, _AST_instances, canUsurp_fn).call(this, c)) {
+            __privateMethod(this, _AST_instances, adoptWithSpace_fn).call(this, c3, i2);
+          } else if (__privateMethod(this, _AST_instances, canUsurp_fn).call(this, c3)) {
             done = false;
-            __privateMethod(this, _AST_instances, usurp_fn).call(this, c);
+            __privateMethod(this, _AST_instances, usurp_fn).call(this, c3);
           }
         }
       }
@@ -5408,28 +5333,28 @@ flatten_fn = function() {
   __privateSet(this, _toString, void 0);
 };
 partsToRegExp_fn = function(dot) {
-  return __privateGet(this, _parts).map((p) => {
-    if (typeof p === "string") {
+  return __privateGet(this, _parts).map((p2) => {
+    if (typeof p2 === "string") {
       throw new Error("string type in extglob ast??");
     }
-    const [re2, _2, _hasMagic2, uflag] = p.toRegExpSource(dot);
+    const [re2, _3, _hasMagic2, uflag] = p2.toRegExpSource(dot);
     __privateSet(this, _uflag, __privateGet(this, _uflag) || uflag);
     return re2;
-  }).filter((p) => !(this.isStart() && this.isEnd()) || !!p).join("|");
+  }).filter((p2) => !(this.isStart() && this.isEnd()) || !!p2).join("|");
 };
 parseGlob_fn = function(glob, hasMagic, noEmpty = false) {
   let escaping = false;
   let re2 = "";
   let uflag = false;
   let inStar = false;
-  for (let i = 0; i < glob.length; i++) {
-    const c = glob.charAt(i);
+  for (let i2 = 0; i2 < glob.length; i2++) {
+    const c3 = glob.charAt(i2);
     if (escaping) {
       escaping = false;
-      re2 += (reSpecials.has(c) ? "\\" : "") + c;
+      re2 += (reSpecials.has(c3) ? "\\" : "") + c3;
       continue;
     }
-    if (c === "*") {
+    if (c3 === "*") {
       if (inStar)
         continue;
       inStar = true;
@@ -5439,30 +5364,30 @@ parseGlob_fn = function(glob, hasMagic, noEmpty = false) {
     } else {
       inStar = false;
     }
-    if (c === "\\") {
-      if (i === glob.length - 1) {
+    if (c3 === "\\") {
+      if (i2 === glob.length - 1) {
         re2 += "\\\\";
       } else {
         escaping = true;
       }
       continue;
     }
-    if (c === "[") {
-      const [src, needUflag, consumed, magic] = parseClass(glob, i);
+    if (c3 === "[") {
+      const [src, needUflag, consumed, magic] = parseClass(glob, i2);
       if (consumed) {
         re2 += src;
         uflag = uflag || needUflag;
-        i += consumed - 1;
+        i2 += consumed - 1;
         hasMagic = hasMagic || magic;
         continue;
       }
     }
-    if (c === "?") {
+    if (c3 === "?") {
       re2 += qmark;
       hasMagic = true;
       continue;
     }
-    re2 += regExpEscape(c);
+    re2 += regExpEscape(c3);
   }
   return [re2, unescape(glob), !!hasMagic, uflag];
 };
@@ -5479,12 +5404,12 @@ var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) =
 };
 
 // node_modules/minimatch/dist/esm/index.js
-var minimatch = (p, pattern, options = {}) => {
+var minimatch = (p2, pattern, options = {}) => {
   assertValidPattern(pattern);
   if (!options.nocomment && pattern.charAt(0) === "#") {
     return false;
   }
-  return new Minimatch(pattern, options).match(p);
+  return new Minimatch(pattern, options).match(p2);
 };
 var starDotExtRE = /^\*+([^+@!?\*\[\(]*)$/;
 var starDotExtTest = (ext2) => (f) => !f.startsWith(".") && f.endsWith(ext2);
@@ -5549,15 +5474,15 @@ var qmark2 = "[^/]";
 var star2 = qmark2 + "*?";
 var twoStarDot = "(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?";
 var twoStarNoDot = "(?:(?!(?:\\/|^)\\.).)*?";
-var filter = (pattern, options = {}) => (p) => minimatch(p, pattern, options);
+var filter = (pattern, options = {}) => (p2) => minimatch(p2, pattern, options);
 minimatch.filter = filter;
-var ext = (a, b = {}) => Object.assign({}, a, b);
+var ext = (a, b2 = {}) => Object.assign({}, a, b2);
 var defaults = (def) => {
   if (!def || typeof def !== "object" || !Object.keys(def).length) {
     return minimatch;
   }
   const orig = minimatch;
-  const m = (p, pattern, options = {}) => orig(p, pattern, ext(def, options));
+  const m = (p2, pattern, options = {}) => orig(p2, pattern, ext(def, options));
   return Object.assign(m, {
     Minimatch: class Minimatch extends orig.Minimatch {
       constructor(pattern, options = {}) {
@@ -5670,7 +5595,7 @@ var Minimatch = class {
     }
     return false;
   }
-  debug(..._2) {
+  debug(..._3) {
   }
   make() {
     const pattern = this.pattern;
@@ -5692,7 +5617,7 @@ var Minimatch = class {
     const rawGlobParts = this.globSet.map((s) => this.slashSplit(s));
     this.globParts = this.preprocess(rawGlobParts);
     this.debug(this.pattern, this.globParts);
-    let set = this.globParts.map((s, _2, __3) => {
+    let set = this.globParts.map((s, _3, __3) => {
       if (this.isWindows && this.windowsNoMagicRoot) {
         const isUNC = s[0] === "" && s[1] === "" && (s[2] === "?" || !globMagic.test(s[2])) && !globMagic.test(s[3]);
         const isDrive = /^[a-z]:/i.test(s[0]);
@@ -5710,10 +5635,10 @@ var Minimatch = class {
     this.debug(this.pattern, set);
     this.set = set.filter((s) => s.indexOf(false) === -1);
     if (this.isWindows) {
-      for (let i = 0; i < this.set.length; i++) {
-        const p = this.set[i];
-        if (p[0] === "" && p[1] === "" && this.globParts[i][2] === "?" && typeof p[3] === "string" && /^[a-z]:$/i.test(p[3])) {
-          p[2] = "?";
+      for (let i2 = 0; i2 < this.set.length; i2++) {
+        const p2 = this.set[i2];
+        if (p2[0] === "" && p2[1] === "" && this.globParts[i2][2] === "?" && typeof p2[3] === "string" && /^[a-z]:$/i.test(p2[3])) {
+          p2[2] = "?";
         }
       }
     }
@@ -5726,10 +5651,10 @@ var Minimatch = class {
   // of patterns that we have to process.
   preprocess(globParts) {
     if (this.options.noglobstar) {
-      for (let i = 0; i < globParts.length; i++) {
-        for (let j2 = 0; j2 < globParts[i].length; j2++) {
-          if (globParts[i][j2] === "**") {
-            globParts[i][j2] = "*";
+      for (let i2 = 0; i2 < globParts.length; i2++) {
+        for (let j3 = 0; j3 < globParts[i2].length; j3++) {
+          if (globParts[i2][j3] === "**") {
+            globParts[i2][j3] = "*";
           }
         }
       }
@@ -5750,12 +5675,12 @@ var Minimatch = class {
     return globParts.map((parts) => {
       let gs2 = -1;
       while (-1 !== (gs2 = parts.indexOf("**", gs2 + 1))) {
-        let i = gs2;
-        while (parts[i + 1] === "**") {
-          i++;
+        let i2 = gs2;
+        while (parts[i2 + 1] === "**") {
+          i2++;
         }
-        if (i !== gs2) {
-          parts.splice(gs2, i - gs2);
+        if (i2 !== gs2) {
+          parts.splice(gs2, i2 - gs2);
         }
       }
       return parts;
@@ -5789,14 +5714,14 @@ var Minimatch = class {
     do {
       didSomething = false;
       if (!this.preserveMultipleSlashes) {
-        for (let i = 1; i < parts.length - 1; i++) {
-          const p = parts[i];
-          if (i === 1 && p === "" && parts[0] === "")
+        for (let i2 = 1; i2 < parts.length - 1; i2++) {
+          const p2 = parts[i2];
+          if (i2 === 1 && p2 === "" && parts[0] === "")
             continue;
-          if (p === "." || p === "") {
+          if (p2 === "." || p2 === "") {
             didSomething = true;
-            parts.splice(i, 1);
-            i--;
+            parts.splice(i2, 1);
+            i2--;
           }
         }
         if (parts[0] === "." && parts.length === 2 && (parts[1] === "." || parts[1] === "")) {
@@ -5806,8 +5731,8 @@ var Minimatch = class {
       }
       let dd = 0;
       while (-1 !== (dd = parts.indexOf("..", dd + 1))) {
-        const p = parts[dd - 1];
-        if (p && p !== "." && p !== ".." && p !== "**") {
+        const p2 = parts[dd - 1];
+        if (p2 && p2 !== "." && p2 !== ".." && p2 !== "**") {
           didSomething = true;
           parts.splice(dd - 1, 2);
           dd -= 2;
@@ -5849,11 +5774,11 @@ var Minimatch = class {
             parts.splice(gs2 + 1, gss - gs2);
           }
           let next = parts[gs2 + 1];
-          const p = parts[gs2 + 2];
-          const p2 = parts[gs2 + 3];
+          const p2 = parts[gs2 + 2];
+          const p22 = parts[gs2 + 3];
           if (next !== "..")
             continue;
-          if (!p || p === "." || p === ".." || !p2 || p2 === "." || p2 === "..") {
+          if (!p2 || p2 === "." || p2 === ".." || !p22 || p22 === "." || p22 === "..") {
             continue;
           }
           didSomething = true;
@@ -5864,14 +5789,14 @@ var Minimatch = class {
           gs2--;
         }
         if (!this.preserveMultipleSlashes) {
-          for (let i = 1; i < parts.length - 1; i++) {
-            const p = parts[i];
-            if (i === 1 && p === "" && parts[0] === "")
+          for (let i2 = 1; i2 < parts.length - 1; i2++) {
+            const p2 = parts[i2];
+            if (i2 === 1 && p2 === "" && parts[0] === "")
               continue;
-            if (p === "." || p === "") {
+            if (p2 === "." || p2 === "") {
               didSomething = true;
-              parts.splice(i, 1);
-              i--;
+              parts.splice(i2, 1);
+              i2--;
             }
           }
           if (parts[0] === "." && parts.length === 2 && (parts[1] === "." || parts[1] === "")) {
@@ -5881,8 +5806,8 @@ var Minimatch = class {
         }
         let dd = 0;
         while (-1 !== (dd = parts.indexOf("..", dd + 1))) {
-          const p = parts[dd - 1];
-          if (p && p !== "." && p !== ".." && p !== "**") {
+          const p2 = parts[dd - 1];
+          if (p2 && p2 !== "." && p2 !== ".." && p2 !== "**") {
             didSomething = true;
             const needDot = dd === 1 && parts[dd + 1] === "**";
             const splin = needDot ? ["."] : [];
@@ -5904,53 +5829,53 @@ var Minimatch = class {
   // {<pre>/**/<rest>,<pre>/**/<p>/<rest>} -> <pre>/**/<rest>
   // ^-- not valid because ** doens't follow symlinks
   secondPhasePreProcess(globParts) {
-    for (let i = 0; i < globParts.length - 1; i++) {
-      for (let j2 = i + 1; j2 < globParts.length; j2++) {
-        const matched = this.partsMatch(globParts[i], globParts[j2], !this.preserveMultipleSlashes);
+    for (let i2 = 0; i2 < globParts.length - 1; i2++) {
+      for (let j3 = i2 + 1; j3 < globParts.length; j3++) {
+        const matched = this.partsMatch(globParts[i2], globParts[j3], !this.preserveMultipleSlashes);
         if (matched) {
-          globParts[i] = [];
-          globParts[j2] = matched;
+          globParts[i2] = [];
+          globParts[j3] = matched;
           break;
         }
       }
     }
     return globParts.filter((gs2) => gs2.length);
   }
-  partsMatch(a, b, emptyGSMatch = false) {
+  partsMatch(a, b2, emptyGSMatch = false) {
     let ai2 = 0;
     let bi2 = 0;
     let result = [];
     let which = "";
-    while (ai2 < a.length && bi2 < b.length) {
-      if (a[ai2] === b[bi2]) {
-        result.push(which === "b" ? b[bi2] : a[ai2]);
+    while (ai2 < a.length && bi2 < b2.length) {
+      if (a[ai2] === b2[bi2]) {
+        result.push(which === "b" ? b2[bi2] : a[ai2]);
         ai2++;
         bi2++;
-      } else if (emptyGSMatch && a[ai2] === "**" && b[bi2] === a[ai2 + 1]) {
+      } else if (emptyGSMatch && a[ai2] === "**" && b2[bi2] === a[ai2 + 1]) {
         result.push(a[ai2]);
         ai2++;
-      } else if (emptyGSMatch && b[bi2] === "**" && a[ai2] === b[bi2 + 1]) {
-        result.push(b[bi2]);
+      } else if (emptyGSMatch && b2[bi2] === "**" && a[ai2] === b2[bi2 + 1]) {
+        result.push(b2[bi2]);
         bi2++;
-      } else if (a[ai2] === "*" && b[bi2] && (this.options.dot || !b[bi2].startsWith(".")) && b[bi2] !== "**") {
+      } else if (a[ai2] === "*" && b2[bi2] && (this.options.dot || !b2[bi2].startsWith(".")) && b2[bi2] !== "**") {
         if (which === "b")
           return false;
         which = "a";
         result.push(a[ai2]);
         ai2++;
         bi2++;
-      } else if (b[bi2] === "*" && a[ai2] && (this.options.dot || !a[ai2].startsWith(".")) && a[ai2] !== "**") {
+      } else if (b2[bi2] === "*" && a[ai2] && (this.options.dot || !a[ai2].startsWith(".")) && a[ai2] !== "**") {
         if (which === "a")
           return false;
         which = "b";
-        result.push(b[bi2]);
+        result.push(b2[bi2]);
         ai2++;
         bi2++;
       } else {
         return false;
       }
     }
-    return a.length === b.length && result;
+    return a.length === b2.length && result;
   }
   parseNegate() {
     if (this.nonegate)
@@ -5958,7 +5883,7 @@ var Minimatch = class {
     const pattern = this.pattern;
     let negate = false;
     let negateOffset = 0;
-    for (let i = 0; i < pattern.length && pattern.charAt(i) === "!"; i++) {
+    for (let i2 = 0; i2 < pattern.length && pattern.charAt(i2) === "!"; i2++) {
       negate = !negate;
       negateOffset++;
     }
@@ -6043,37 +5968,37 @@ var Minimatch = class {
     const twoStar = options.noglobstar ? star2 : options.dot ? twoStarDot : twoStarNoDot;
     const flags = new Set(options.nocase ? ["i"] : []);
     let re2 = set.map((pattern) => {
-      const pp = pattern.map((p) => {
-        if (p instanceof RegExp) {
-          for (const f of p.flags.split(""))
+      const pp = pattern.map((p2) => {
+        if (p2 instanceof RegExp) {
+          for (const f of p2.flags.split(""))
             flags.add(f);
         }
-        return typeof p === "string" ? regExpEscape2(p) : p === GLOBSTAR ? GLOBSTAR : p._src;
+        return typeof p2 === "string" ? regExpEscape2(p2) : p2 === GLOBSTAR ? GLOBSTAR : p2._src;
       });
-      pp.forEach((p, i) => {
-        const next = pp[i + 1];
-        const prev = pp[i - 1];
-        if (p !== GLOBSTAR || prev === GLOBSTAR) {
+      pp.forEach((p2, i2) => {
+        const next = pp[i2 + 1];
+        const prev = pp[i2 - 1];
+        if (p2 !== GLOBSTAR || prev === GLOBSTAR) {
           return;
         }
         if (prev === void 0) {
           if (next !== void 0 && next !== GLOBSTAR) {
-            pp[i + 1] = "(?:\\/|" + twoStar + "\\/)?" + next;
+            pp[i2 + 1] = "(?:\\/|" + twoStar + "\\/)?" + next;
           } else {
-            pp[i] = twoStar;
+            pp[i2] = twoStar;
           }
         } else if (next === void 0) {
-          pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + ")?";
+          pp[i2 - 1] = prev + "(?:\\/|\\/" + twoStar + ")?";
         } else if (next !== GLOBSTAR) {
-          pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + "\\/)" + next;
-          pp[i + 1] = GLOBSTAR;
+          pp[i2 - 1] = prev + "(?:\\/|\\/" + twoStar + "\\/)" + next;
+          pp[i2 + 1] = GLOBSTAR;
         }
       });
-      const filtered = pp.filter((p) => p !== GLOBSTAR);
+      const filtered = pp.filter((p2) => p2 !== GLOBSTAR);
       if (this.partial && filtered.length >= 1) {
         const prefixes = [];
-        for (let i = 1; i <= filtered.length; i++) {
-          prefixes.push(filtered.slice(0, i).join("/"));
+        for (let i2 = 1; i2 <= filtered.length; i2++) {
+          prefixes.push(filtered.slice(0, i2).join("/"));
         }
         return "(?:" + prefixes.join("|") + ")";
       }
@@ -6093,13 +6018,13 @@ var Minimatch = class {
     }
     return this.regexp;
   }
-  slashSplit(p) {
+  slashSplit(p2) {
     if (this.preserveMultipleSlashes) {
-      return p.split("/");
-    } else if (this.isWindows && /^\/\/[^\/]+/.test(p)) {
-      return ["", ...p.split(/\/+/)];
+      return p2.split("/");
+    } else if (this.isWindows && /^\/\/[^\/]+/.test(p2)) {
+      return ["", ...p2.split(/\/+/)];
     } else {
-      return p.split(/\/+/);
+      return p2.split(/\/+/);
     }
   }
   match(f, partial = this.partial) {
@@ -6123,12 +6048,12 @@ var Minimatch = class {
     this.debug(this.pattern, "set", set);
     let filename = ff[ff.length - 1];
     if (!filename) {
-      for (let i = ff.length - 2; !filename && i >= 0; i--) {
-        filename = ff[i];
+      for (let i2 = ff.length - 2; !filename && i2 >= 0; i2--) {
+        filename = ff[i2];
       }
     }
-    for (let i = 0; i < set.length; i++) {
-      const pattern = set[i];
+    for (let i2 = 0; i2 < set.length; i2++) {
+      const pattern = set[i2];
       let file = ff;
       if (options.matchBase && pattern.length === 1) {
         file = [filename];
@@ -6191,8 +6116,8 @@ matchGlobstar_fn = function(file, pattern, partial, fileIndex, patternIndex) {
   }
   if (!body.length) {
     let sawSome = !!fileTailMatch;
-    for (let i2 = fileIndex; i2 < file.length - fileTailMatch; i2++) {
-      const f = String(file[i2]);
+    for (let i3 = fileIndex; i3 < file.length - fileTailMatch; i3++) {
+      const f = String(file[i3]);
       sawSome = true;
       if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
         return false;
@@ -6204,20 +6129,20 @@ matchGlobstar_fn = function(file, pattern, partial, fileIndex, patternIndex) {
   let currentBody = bodySegments[0];
   let nonGsParts = 0;
   const nonGsPartsSums = [0];
-  for (const b of body) {
-    if (b === GLOBSTAR) {
+  for (const b2 of body) {
+    if (b2 === GLOBSTAR) {
       nonGsPartsSums.push(nonGsParts);
       currentBody = [[], 0];
       bodySegments.push(currentBody);
     } else {
-      currentBody[0].push(b);
+      currentBody[0].push(b2);
       nonGsParts++;
     }
   }
-  let i = bodySegments.length - 1;
+  let i2 = bodySegments.length - 1;
   const fileLength = file.length - fileTailMatch;
-  for (const b of bodySegments) {
-    b[1] = fileLength - (nonGsPartsSums[i--] + b[0].length);
+  for (const b2 of bodySegments) {
+    b2[1] = fileLength - (nonGsPartsSums[i2--] + b2[0].length);
   }
   return !!__privateMethod(this, _Minimatch_instances, matchGlobStarBodySections_fn).call(this, file, bodySegments, fileIndex, 0, partial, 0, !!fileTailMatch);
 };
@@ -6226,9 +6151,9 @@ matchGlobstar_fn = function(file, pattern, partial, fileIndex, patternIndex) {
 matchGlobStarBodySections_fn = function(file, bodySegments, fileIndex, bodyIndex, partial, globStarDepth, sawTail) {
   const bs2 = bodySegments[bodyIndex];
   if (!bs2) {
-    for (let i = fileIndex; i < file.length; i++) {
+    for (let i2 = fileIndex; i2 < file.length; i2++) {
       sawTail = true;
-      const f = file[i];
+      const f = file[i2];
       if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
         return false;
       }
@@ -6259,19 +6184,19 @@ matchOne_fn = function(file, pattern, partial, fileIndex, patternIndex) {
   let fl;
   for (fi2 = fileIndex, pi2 = patternIndex, fl = file.length, pl = pattern.length; fi2 < fl && pi2 < pl; fi2++, pi2++) {
     this.debug("matchOne loop");
-    let p = pattern[pi2];
+    let p2 = pattern[pi2];
     let f = file[fi2];
-    this.debug(pattern, p, f);
-    if (p === false || p === GLOBSTAR) {
+    this.debug(pattern, p2, f);
+    if (p2 === false || p2 === GLOBSTAR) {
       return false;
     }
     let hit;
-    if (typeof p === "string") {
-      hit = f === p;
-      this.debug("string match", p, f, hit);
+    if (typeof p2 === "string") {
+      hit = f === p2;
+      this.debug("string match", p2, f, hit);
     } else {
-      hit = p.test(f);
-      this.debug("pattern match", p, f, hit);
+      hit = p2.test(f);
+      this.debug("pattern match", p2, f, hit);
     }
     if (!hit)
       return false;
@@ -6306,13 +6231,13 @@ function lineNumberAt(content, position) {
 }
 function findMatchingBrace(content, openPos) {
   let depth = 0;
-  for (let i = openPos; i < content.length; i++) {
-    if (content[i] === "{") {
+  for (let i2 = openPos; i2 < content.length; i2++) {
+    if (content[i2] === "{") {
       depth++;
-    } else if (content[i] === "}") {
+    } else if (content[i2] === "}") {
       depth--;
       if (depth === 0) {
-        return i;
+        return i2;
       }
     }
   }
@@ -6388,9 +6313,9 @@ function countParameterSets(dataContent) {
   let stringChar = "";
   let braceDepth = 0;
   let bracketDepth = 0;
-  for (let i = 0; i < dataContent.length; i++) {
-    const char = dataContent[i];
-    const prevChar = i > 0 ? dataContent[i - 1] : "";
+  for (let i2 = 0; i2 < dataContent.length; i2++) {
+    const char = dataContent[i2];
+    const prevChar = i2 > 0 ? dataContent[i2 - 1] : "";
     if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
       if (!inString) {
         inString = true;
@@ -6431,9 +6356,9 @@ function detectParameterizedLoop(content, testIndex) {
 }
 function isLoopStillOpen(context, loopStart) {
   let netBraces = 0;
-  for (let i = loopStart; i < context.length; i++) {
-    if (context[i] === "{") netBraces++;
-    else if (context[i] === "}") netBraces--;
+  for (let i2 = loopStart; i2 < context.length; i2++) {
+    if (context[i2] === "{") netBraces++;
+    else if (context[i2] === "}") netBraces--;
     if (netBraces < 0) return false;
   }
   return true;
@@ -6472,7 +6397,7 @@ function parsePlaywrightSpec(filePath, content, projectRoot) {
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const tags = extractInlineTags(content, matchIndex);
     const isParameterized = detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
-    if (isParameterized && !tags.some((t) => t.name === "@parameterized")) {
+    if (isParameterized && !tags.some((t2) => t2.name === "@parameterized")) {
       tags.push({ name: "@parameterized" });
     }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
@@ -6516,8 +6441,8 @@ function extractInlineTags(content, testIndex) {
     if (match2[2]) {
       tags.push({ name: match2[2] });
     } else if (match2[3]) {
-      const tagList = match2[3].split(",").map((t) => t.trim().replace(/^['"`]|['"`]$/g, "")).filter((t) => t.length > 0);
-      tagList.forEach((t) => tags.push({ name: t }));
+      const tagList = match2[3].split(",").map((t2) => t2.trim().replace(/^['"`]|['"`]$/g, "")).filter((t2) => t2.length > 0);
+      tagList.forEach((t2) => tags.push({ name: t2 }));
     }
   }
   return tags;
@@ -6554,9 +6479,9 @@ function parseCypressSpec(filePath, content, projectRoot) {
     const paramData = extractParameterizedDataFromForEach(content, matchIndex);
     if (paramData?.hasParameters) {
       if (paramData.count > 0) {
-        for (let i = 0; i < paramData.count; i++) {
-          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
-          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+        for (let i2 = 0; i2 < paramData.count; i2++) {
+          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i2}`);
+          const expandedName = generateParameterizedTestName(testName, i2, paramData.count);
           tests.push({
             id: id2,
             name: expandedName,
@@ -6907,12 +6832,12 @@ function parseCucumberSpec(filePath, content, projectRoot) {
         name: currentOutlineName,
         fullName,
         describe: featureName,
-        tags: currentOutlineTags.map((t) => ({ name: t })),
+        tags: currentOutlineTags.map((t2) => ({ name: t2 })),
         line: currentOutlineLine
       });
     } else {
-      for (let i = 0; i < rowCount; i++) {
-        const name = generateParameterizedTestName(currentOutlineName, i, rowCount);
+      for (let i2 = 0; i2 < rowCount; i2++) {
+        const name = generateParameterizedTestName(currentOutlineName, i2, rowCount);
         const id = hashId(`${relativePath}::${featureName ?? ""}::${name}`);
         const fullName = featureName ? `${featureName} > ${name}` : name;
         tests.push({
@@ -6920,8 +6845,8 @@ function parseCucumberSpec(filePath, content, projectRoot) {
           name,
           fullName,
           describe: featureName,
-          tags: currentOutlineTags.map((t) => ({ name: t })),
-          line: outlineRows[i]
+          tags: currentOutlineTags.map((t2) => ({ name: t2 })),
+          line: outlineRows[i2]
         });
       }
     }
@@ -6932,12 +6857,12 @@ function parseCucumberSpec(filePath, content, projectRoot) {
     currentOutlineName = void 0;
     currentOutlineTags = [];
   };
-  for (let i = 0; i < lines.length; i++) {
-    const rawLine = lines[i];
+  for (let i2 = 0; i2 < lines.length; i2++) {
+    const rawLine = lines[i2];
     const trimmed2 = rawLine.trim();
     const tagMatch = TAG_LINE_RE.exec(rawLine);
     if (tagMatch) {
-      const tokens = tagMatch[1].trim().split(/\s+/).filter((t) => t.startsWith("@"));
+      const tokens = tagMatch[1].trim().split(/\s+/).filter((t2) => t2.startsWith("@"));
       pendingTags.push(...tokens);
       continue;
     }
@@ -6954,7 +6879,7 @@ function parseCucumberSpec(filePath, content, projectRoot) {
       flushOutline();
       currentOutlineName = outlineMatch[1].trim();
       currentOutlineTags = [...featureTags, ...pendingTags];
-      currentOutlineLine = i + 1;
+      currentOutlineLine = i2 + 1;
       inOutline = true;
       inExamplesBlock = false;
       examplesHeaderSeen = false;
@@ -6973,7 +6898,7 @@ function parseCucumberSpec(filePath, content, projectRoot) {
       if (!examplesHeaderSeen) {
         examplesHeaderSeen = true;
       } else {
-        outlineRows.push(i + 1);
+        outlineRows.push(i2 + 1);
       }
       continue;
     }
@@ -6984,13 +6909,13 @@ function parseCucumberSpec(filePath, content, projectRoot) {
       const mergedTags = [...featureTags, ...pendingTags];
       const id = hashId(`${relativePath}::${featureName ?? ""}::${name}`);
       const fullName = featureName ? `${featureName} > ${name}` : name;
-      const line = i + 1;
+      const line = i2 + 1;
       tests.push({
         id,
         name,
         fullName,
         describe: featureName,
-        tags: mergedTags.map((t) => ({ name: t })),
+        tags: mergedTags.map((t2) => ({ name: t2 })),
         line
       });
       pendingTags = [];
@@ -7026,8 +6951,8 @@ function extractTestNames6(content) {
     if (rowCount === 0) {
       names.push(featureName ? `${featureName} > ${outlineName}` : outlineName);
     } else {
-      for (let i = 0; i < rowCount; i++) {
-        const name = generateParameterizedTestName(outlineName, i, rowCount);
+      for (let i2 = 0; i2 < rowCount; i2++) {
+        const name = generateParameterizedTestName(outlineName, i2, rowCount);
         names.push(featureName ? `${featureName} > ${name}` : name);
       }
     }
@@ -7041,7 +6966,7 @@ function extractTestNames6(content) {
     const trimmed2 = rawLine.trim();
     if (TAG_LINE_RE.test(rawLine)) {
       pendingTags.push(
-        ...rawLine.trim().split(/\s+/).filter((t) => t.startsWith("@"))
+        ...rawLine.trim().split(/\s+/).filter((t2) => t2.startsWith("@"))
       );
       continue;
     }
@@ -7137,7 +7062,7 @@ function extractTestsWithLinesFromContent(content, framework) {
   const parser4 = getParser(framework);
   if (!parser4) return [];
   const spec = parser4.parseFile(dummyPath, content, dummyRoot);
-  return spec.tests.map((t) => ({ name: t.fullName, line: t.line }));
+  return spec.tests.map((t2) => ({ name: t2.fullName, line: t2.line }));
 }
 function findSpecFiles(projectRoot, testDir, framework) {
   const parser4 = getParser(framework);
@@ -7160,7 +7085,7 @@ function isFrameworkSpecFile(filePath, framework) {
 function parseAllSpecs(projectRoot, frameworkConfigs) {
   const seen = /* @__PURE__ */ new Set();
   const allSpecs = [];
-  const sorted2 = [...frameworkConfigs].sort((a, b) => b.testDir.length - a.testDir.length);
+  const sorted2 = [...frameworkConfigs].sort((a, b2) => b2.testDir.length - a.testDir.length);
   for (const { framework, testDir } of sorted2) {
     if (framework === "unknown") continue;
     const files = findSpecFiles(projectRoot, testDir, framework);
@@ -7178,39 +7103,39 @@ function parseAllSpecs(projectRoot, frameworkConfigs) {
 // src/core/frameworks/testDiff.ts
 init_cjs_shims();
 var RENAME_SIMILARITY_THRESHOLD = 0.85;
-function levenshteinDistance(a, b) {
-  const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
-  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
-  for (let j2 = 0; j2 <= b.length; j2++) matrix[j2][0] = j2;
-  for (let j2 = 1; j2 <= b.length; j2++) {
-    for (let i = 1; i <= a.length; i++) {
-      const cost = a[i - 1] === b[j2 - 1] ? 0 : 1;
-      matrix[j2][i] = Math.min(
-        matrix[j2][i - 1] + 1,
+function levenshteinDistance(a, b2) {
+  const matrix = Array(b2.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+  for (let i2 = 0; i2 <= a.length; i2++) matrix[0][i2] = i2;
+  for (let j3 = 0; j3 <= b2.length; j3++) matrix[j3][0] = j3;
+  for (let j3 = 1; j3 <= b2.length; j3++) {
+    for (let i2 = 1; i2 <= a.length; i2++) {
+      const cost = a[i2 - 1] === b2[j3 - 1] ? 0 : 1;
+      matrix[j3][i2] = Math.min(
+        matrix[j3][i2 - 1] + 1,
         // deletion
-        matrix[j2 - 1][i] + 1,
+        matrix[j3 - 1][i2] + 1,
         // insertion
-        matrix[j2 - 1][i - 1] + cost
+        matrix[j3 - 1][i2 - 1] + cost
         // substitution
       );
     }
   }
-  return matrix[b.length][a.length];
+  return matrix[b2.length][a.length];
 }
 function normalizeTestName(name) {
   return name.toLowerCase().replace(/[_\-\s]+/g, " ").trim();
 }
-function calculateSimilarity(a, b) {
+function calculateSimilarity(a, b2) {
   const normA = normalizeTestName(a);
-  const normB = normalizeTestName(b);
+  const normB = normalizeTestName(b2);
   if (normA === normB) return 1;
   const distance = levenshteinDistance(normA, normB);
   const maxLength = Math.max(normA.length, normB.length);
   if (maxLength === 0) return 1;
   return 1 - distance / maxLength;
 }
-function isSameTest(a, b) {
-  const similarity = calculateSimilarity(a, b);
+function isSameTest(a, b2) {
+  const similarity = calculateSimilarity(a, b2);
   return similarity > RENAME_SIMILARITY_THRESHOLD;
 }
 
@@ -7222,12 +7147,494 @@ init_cjs_shims();
 
 // node_modules/simple-git/dist/esm/index.js
 init_cjs_shims();
-var import_node_buffer = require("buffer");
 var import_file_exists = __toESM(require_dist(), 1);
+
+// node_modules/@simple-git/args-pathspec/dist/index.mjs
+init_cjs_shims();
+var t = /* @__PURE__ */ new WeakMap();
+function c(...n5) {
+  const e = new String(n5);
+  return t.set(e, n5), e;
+}
+function r(n5) {
+  return n5 instanceof String && t.has(n5);
+}
+function o(n5) {
+  return t.get(n5) ?? [];
+}
+
+// node_modules/simple-git/dist/esm/index.js
 var import_debug = __toESM(require_src(), 1);
 var import_child_process = require("child_process");
 var import_promise_deferred = __toESM(require_dist2(), 1);
 var import_node_path2 = require("path");
+
+// node_modules/@simple-git/argv-parser/dist/index.mjs
+init_cjs_shims();
+function* U2(e, t2) {
+  const n5 = t2 === "global";
+  for (const o2 of e)
+    o2.isGlobal === n5 && (yield o2);
+}
+var k2 = /* @__PURE__ */ new Set([
+  "--add",
+  "--edit",
+  "--remove-section",
+  "--rename-section",
+  "--replace-all",
+  "--unset",
+  "--unset-all",
+  "-e"
+]);
+var S = /* @__PURE__ */ new Set([
+  "--get",
+  "--get-all",
+  "--get-color",
+  "--get-colorbool",
+  "--get-regexp",
+  "--get-urlmatch",
+  "--list",
+  "-l"
+]);
+var P2 = /* @__PURE__ */ new Set([
+  "edit",
+  "remove-section",
+  "rename-section",
+  "set",
+  "unset"
+]);
+var E = /* @__PURE__ */ new Set(["get", "get-color", "get-colorbool", "list"]);
+function F2(e, t2) {
+  for (const { name: o2 } of U2(e, "task")) {
+    if (k2.has(o2))
+      return p(true, t2);
+    if (S.has(o2))
+      return p(false, t2);
+  }
+  const n5 = t2.at(0)?.toLowerCase();
+  return n5 === void 0 ? null : P2.has(n5) ? p(true, t2.slice(1)) : E.has(n5) ? p(false, t2.slice(1)) : t2.length === 1 ? p(false, t2) : p(true, t2);
+}
+function p(e = false, t2 = []) {
+  const n5 = t2.at(0)?.toLowerCase();
+  return n5 === void 0 ? null : {
+    isWrite: e,
+    isRead: !e,
+    key: n5,
+    value: t2.at(1)
+  };
+}
+function A2(e, t2) {
+  return t2.isWrite && t2.value !== void 0 ? { key: t2.key, value: t2.value, scope: e } : { key: t2.key, scope: e };
+}
+function M2(e) {
+  const t2 = e?.indexOf("=") || -1;
+  return !e || t2 < 0 ? null : {
+    key: e.slice(0, t2).trim().toLowerCase(),
+    value: e.slice(t2 + 1)
+  };
+}
+function N2(e) {
+  for (const { name: t2 } of U2(e, "task"))
+    switch (t2) {
+      case "--global":
+        return "global";
+      case "--system":
+        return "system";
+      case "--worktree":
+        return "worktree";
+      case "--local":
+        return "local";
+      case "--file":
+      case "-f":
+        return "file";
+    }
+  return "local";
+}
+function G2({ name: e }) {
+  if (e === "-c" || e === "--config")
+    return "inline";
+  if (e === "--config-env")
+    return "env";
+}
+function* O2(e) {
+  for (const t2 of e) {
+    const n5 = G2(t2), o2 = n5 && M2(t2.value);
+    o2 && (yield {
+      ...o2,
+      scope: n5
+    });
+  }
+}
+function L2(e, t2, n5) {
+  const o2 = {
+    read: [],
+    write: [...O2(t2)]
+  };
+  return e === "config" && $(
+    o2,
+    N2(t2),
+    F2(t2, n5)
+  ), o2;
+}
+function $(e, t2, n5) {
+  if (n5 === null)
+    return;
+  const o2 = A2(t2, n5);
+  n5.isWrite ? e.write.push(o2) : e.read.push(o2);
+}
+var x2 = {
+  short: /* @__PURE__ */ new Map([
+    ["c", true]
+    //  -c <k=v>    set config key for this invocation
+  ])
+};
+var D2 = {
+  short: new Map([
+    ["C", true],
+    //  -C <path>   change working directory
+    ["P", false],
+    // -P          no pager (alias for --no-pager)
+    ["h", false],
+    // -h          help
+    ["p", false],
+    // -p          paginate
+    ["v", false],
+    // -v          version
+    ...x2.short.entries()
+  ]),
+  long: /* @__PURE__ */ new Set([
+    "attr-source",
+    "config-env",
+    "exec-path",
+    "git-dir",
+    "list-cmds",
+    "namespace",
+    "super-prefix",
+    "work-tree"
+  ])
+};
+var R2 = {
+  clone: {
+    short: /* @__PURE__ */ new Map([
+      ["b", true],
+      // -b <branch>
+      ["j", true],
+      // -j <n>          parallel jobs
+      ["l", false],
+      // -l local
+      ["n", false],
+      // -n no-checkout
+      ["o", true],
+      // -o <name>       remote name
+      ["q", false],
+      // -q quiet
+      ["s", false],
+      // -s shared
+      ["u", true]
+      // -u <upload-pack>
+    ]),
+    long: /* @__PURE__ */ new Set(["branch", "config", "jobs", "origin", "upload-pack", "u", "template"])
+  },
+  commit: {
+    short: /* @__PURE__ */ new Map([
+      ["C", true],
+      // -C <commit>  reuse message
+      ["F", true],
+      // -F <file>    read message from file
+      ["c", true],
+      // -c <commit>  reedit message
+      ["m", true],
+      // -m <msg>
+      ["t", true]
+      // -t <template>
+    ]),
+    long: /* @__PURE__ */ new Set(["file", "message", "reedit-message", "reuse-message", "template"])
+  },
+  config: {
+    short: /* @__PURE__ */ new Map([
+      ["e", false],
+      // -e  open editor
+      ["f", true],
+      //  -f <file>
+      ["l", false]
+      // -l  list
+    ]),
+    long: /* @__PURE__ */ new Set(["blob", "comment", "default", "file", "type", "value"])
+  },
+  fetch: {
+    short: /* @__PURE__ */ new Map(),
+    long: /* @__PURE__ */ new Set(["upload-pack"])
+  },
+  init: {
+    short: /* @__PURE__ */ new Map(),
+    long: /* @__PURE__ */ new Set(["template"])
+  },
+  pull: {
+    short: /* @__PURE__ */ new Map(),
+    long: /* @__PURE__ */ new Set(["upload-pack"])
+  },
+  push: {
+    short: /* @__PURE__ */ new Map(),
+    long: /* @__PURE__ */ new Set(["exec", "receive-pack"])
+  }
+};
+var T2 = { short: /* @__PURE__ */ new Map(), long: /* @__PURE__ */ new Set() };
+function I2(e) {
+  const t2 = R2[e ?? ""] ?? T2;
+  return {
+    short: new Map([...x2.short.entries(), ...t2.short.entries()]),
+    long: t2.long
+  };
+}
+function b(e, t2 = D2) {
+  if (e.startsWith("--")) {
+    const n5 = e.indexOf("=");
+    if (n5 > 2)
+      return [{ name: e.slice(0, n5), value: e.slice(n5 + 1), needsNext: false }];
+    const o2 = e.slice(2);
+    return [{ name: e, needsNext: t2.long.has(o2) }];
+  }
+  if (e.length === 2) {
+    const n5 = e.charAt(1), o2 = t2.short.get(n5);
+    return [{ name: e, needsNext: o2 === true }];
+  }
+  return W2(e, t2.short);
+}
+function W2(e, t2) {
+  const n5 = e.slice(1).split(""), o2 = [];
+  for (let s = 0; s < n5.length; s++) {
+    const r2 = n5[s], l = t2.get(r2);
+    if (l === void 0)
+      return [{ name: e, needsNext: false }];
+    if (l) {
+      const a = n5.slice(s + 1).join("");
+      if (a && ![...a].every((w) => t2.has(w)))
+        return o2.push({ name: `-${r2}`, value: a, needsNext: false }), o2;
+    }
+    o2.push({ name: `-${r2}`, needsNext: l });
+  }
+  return o2;
+}
+function j2(e, t2 = []) {
+  let n5 = 0;
+  for (; n5 < e.length; ) {
+    const o2 = String(e[n5]);
+    if (!o2.startsWith("-") || o2.length < 2) break;
+    const s = b(o2);
+    let r2 = n5 + 1;
+    for (const l of s) {
+      const a = {
+        name: l.name,
+        value: l.value,
+        absorbedNext: false,
+        isGlobal: true
+      };
+      l.needsNext && a.value === void 0 && r2 < e.length && (a.value = String(e[r2]), a.absorbedNext = true, r2++), t2.push(a);
+    }
+    n5 = r2;
+  }
+  return { flags: t2, taskIndex: n5 };
+}
+function B2(e, t2, n5 = []) {
+  const o2 = I2(t2), s = [], r2 = [];
+  let l = 0;
+  for (; l < e.length; ) {
+    const a = e[l];
+    if (r(a)) {
+      r2.push(...o(a)), l++;
+      continue;
+    }
+    const f = String(a);
+    if (f === "--") {
+      for (let g = l + 1; g < e.length; g++) {
+        const u = e[g];
+        r(u) ? r2.push(...o(u)) : r2.push(String(u));
+      }
+      break;
+    }
+    if (!f.startsWith("-") || f.length < 2) {
+      s.push(f), l++;
+      continue;
+    }
+    const w = b(f, o2);
+    let d = l + 1;
+    for (const g of w) {
+      const u = {
+        name: g.name,
+        value: g.value,
+        absorbedNext: false,
+        isGlobal: false
+      };
+      g.needsNext && u.value === void 0 && d < e.length && !r(e[d]) && (u.value = String(e[d]), u.absorbedNext = true, d++), n5.push(u);
+    }
+    l = d;
+  }
+  return { flags: n5, positionals: s, pathspecs: r2 };
+}
+function* V2({
+  write: e
+}) {
+  for (const t2 of e)
+    for (const n5 of q2) {
+      const o2 = n5(t2.key);
+      o2 && (yield o2);
+    }
+}
+function c2(e, t2, n5 = String(e)) {
+  const o2 = typeof e == "string" ? new RegExp(`\\s*${e.toLowerCase()}`) : e;
+  return function(r2) {
+    if (o2.test(r2))
+      return {
+        category: t2,
+        message: `Configuring ${n5} is not permitted without enabling ${t2}`
+      };
+  };
+}
+function i(e, t2) {
+  const n5 = new RegExp(`\\s*${e.toLowerCase().replace(/\./g, "(..+)?.")}`);
+  return c2(n5, t2, e);
+}
+var q2 = [
+  c2("alias", "allowUnsafeAlias"),
+  c2("core.askPass", "allowUnsafeAskPass"),
+  c2("core.editor", "allowUnsafeEditor"),
+  c2("core.fsmonitor", "allowUnsafeFsMonitor"),
+  c2("core.gitProxy", "allowUnsafeGitProxy"),
+  c2("core.hooksPath", "allowUnsafeHooksPath"),
+  c2("core.pager", "allowUnsafePager"),
+  c2("core.sshCommand", "allowUnsafeSshCommand"),
+  i("credential.helper", "allowUnsafeCredentialHelper"),
+  i("diff.command", "allowUnsafeDiffExternal"),
+  c2("diff.external", "allowUnsafeDiffExternal"),
+  i("diff.textconv", "allowUnsafeDiffTextConv"),
+  i("filter.clean", "allowUnsafeFilter"),
+  i("filter.smudge", "allowUnsafeFilter"),
+  i("gpg.program", "allowUnsafeGpgProgram"),
+  c2("init.templateDir", "allowUnsafeTemplateDir"),
+  i("merge.driver", "allowUnsafeMergeDriver"),
+  i("mergetool.path", "allowUnsafeMergeDriver"),
+  i("mergetool.cmd", "allowUnsafeMergeDriver"),
+  i("protocol.allow", "allowUnsafeProtocolOverride"),
+  i("remote.receivepack", "allowUnsafePack"),
+  i("remote.uploadpack", "allowUnsafePack"),
+  c2("sequence.editor", "allowUnsafeEditor")
+];
+function* K2(e, t2) {
+  for (const n5 of t2)
+    for (const o2 of H2) {
+      const s = o2(e, n5.name);
+      s && (yield s);
+    }
+}
+function h(e, t2, n5, o2 = String(t2)) {
+  const s = typeof t2 == "string" ? new RegExp(`\\s*${t2.toLowerCase()}`) : t2, r2 = `Use of ${e ? `${e} with option ` : ""}${o2} is not permitted without enabling ${n5}`;
+  return function(a, f) {
+    if ((!e || a === e) && s.test(f))
+      return {
+        category: n5,
+        message: r2
+      };
+  };
+}
+var H2 = [
+  h(
+    null,
+    /--(upload|receive)-pack/,
+    "allowUnsafePack",
+    "--upload-pack or --receive-pack"
+  ),
+  h("clone", /^-\w*u/, "allowUnsafePack"),
+  h("clone", "--u", "allowUnsafePack"),
+  h("push", "--exec", "allowUnsafePack"),
+  h(null, "--template", "allowUnsafeTemplateDir")
+];
+function C2(e, t2, n5) {
+  return [...K2(e, t2), ...V2(n5)];
+}
+function Y2(...e) {
+  const { flags: t2, taskIndex: n5 } = j2(e), o2 = n5 < e.length ? String(e[n5]).toLowerCase() : null, s = o2 !== null ? e.slice(n5 + 1) : [], { positionals: r2, pathspecs: l } = B2(s, o2, t2), a = L2(o2, t2, r2);
+  return {
+    task: o2,
+    flags: t2.map(J),
+    paths: l,
+    config: a,
+    vulnerabilities: z(C2(o2, t2, a))
+  };
+}
+function z(e) {
+  return Object.defineProperty(e, "vulnerabilities", {
+    value: e
+  });
+}
+function J({ value: e, name: t2 }) {
+  return e !== void 0 ? { name: t2, value: e } : { name: t2 };
+}
+var y = {
+  editor: "allowUnsafeEditor",
+  git_askpass: "allowUnsafeAskPass",
+  git_config_global: "allowUnsafeConfigPaths",
+  git_config_system: "allowUnsafeConfigPaths",
+  git_config_count: "allowUnsafeConfigEnvCount",
+  git_config: "allowUnsafeConfigPaths",
+  git_editor: "allowUnsafeEditor",
+  git_exec_path: "allowUnsafeConfigPaths",
+  git_external_diff: "allowUnsafeDiffExternal",
+  git_pager: "allowUnsafePager",
+  git_proxy_command: "allowUnsafeGitProxy",
+  git_template_dir: "allowUnsafeTemplateDir",
+  git_sequence_editor: "allowUnsafeEditor",
+  git_ssh: "allowUnsafeSshCommand",
+  git_ssh_command: "allowUnsafeSshCommand",
+  pager: "allowUnsafePager",
+  prefix: "allowUnsafeConfigPaths",
+  ssh_askpass: "allowUnsafeAskPass"
+};
+function* Q2(e) {
+  const t2 = parseInt(e.git_config_count ?? "0", 10);
+  for (let n5 = 0; n5 < t2; n5++) {
+    const o2 = e[`git_config_key_${n5}`], s = e[`git_config_value_${n5}`];
+    o2 !== void 0 && (yield { key: o2.toLowerCase().trim(), value: s, scope: "env" });
+  }
+}
+function* X2(e) {
+  for (const t2 of Object.keys(e))
+    if (_2(t2)) {
+      const n5 = y[t2];
+      yield {
+        category: n5,
+        message: `Use of "${t2.toUpperCase()}" is not permitted without enabling ${n5}`
+      };
+    }
+}
+function _2(e) {
+  return Object.hasOwn(y, e);
+}
+function Z(e) {
+  const t2 = {};
+  for (const [n5, o2] of Object.entries(e)) {
+    const s = n5.toLowerCase().trim();
+    (_2(s) || s.startsWith("git")) && (t2[s] = String(o2));
+  }
+  return t2;
+}
+function ee2(e) {
+  const t2 = Z(e), n5 = {
+    read: [],
+    write: [...Q2(t2)]
+  }, o2 = [
+    ...X2(t2),
+    ...C2(null, [], n5)
+  ];
+  return {
+    config: n5,
+    vulnerabilities: o2
+  };
+}
+function ne2(e, t2) {
+  return [...Y2(...e).vulnerabilities, ...ee2(t2).vulnerabilities];
+}
+
+// node_modules/simple-git/dist/esm/index.js
 var import_promise_deferred2 = __toESM(require_dist2(), 1);
 var import_node_events2 = require("events");
 var __defProp2 = Object.defineProperty;
@@ -7253,24 +7660,6 @@ var __copyProps2 = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-function pathspec(...paths) {
-  const key = new String(paths);
-  cache.set(key, paths);
-  return key;
-}
-function isPathSpec(path12) {
-  return path12 instanceof String && cache.has(path12);
-}
-function toPaths(pathSpec) {
-  return cache.get(pathSpec) || [];
-}
-var cache;
-var init_pathspec = __esm2({
-  "src/lib/args/pathspec.ts"() {
-    "use strict";
-    cache = /* @__PURE__ */ new WeakMap();
-  }
-});
 var GitError;
 var init_git_error = __esm2({
   "src/lib/errors/git-error.ts"() {
@@ -7400,13 +7789,13 @@ function asNumber(source, onNaN = 0) {
 }
 function prefixedArray(input, prefix) {
   const output = [];
-  for (let i = 0, max = input.length; i < max; i++) {
-    output.push(prefix, input[i]);
+  for (let i2 = 0, max = input.length; i2 < max; i2++) {
+    output.push(prefix, input[i2]);
   }
   return output;
 }
 function bufferToString(input) {
-  return (Array.isArray(input) ? import_node_buffer.Buffer.concat(input) : input).toString("utf-8");
+  return (Array.isArray(input) ? Buffer.concat(input) : input).toString("utf-8");
 }
 function pick(source, properties) {
   const out = {};
@@ -7446,7 +7835,7 @@ function filterType(input, filter2, def) {
   return arguments.length > 2 ? def : void 0;
 }
 function filterPrimitives(input, omit) {
-  const type = isPathSpec(input) ? "string" : typeof input;
+  const type = r(input) ? "string" : typeof input;
   return /number|string|boolean/.test(type) && (!omit || !omit.includes(type));
 }
 function filterPlainObject(input) {
@@ -7463,7 +7852,6 @@ var filterHasLength;
 var init_argument_filters = __esm2({
   "src/lib/utils/argument-filters.ts"() {
     "use strict";
-    init_pathspec();
     init_util();
     filterArray = (input) => {
       return Array.isArray(input);
@@ -7472,7 +7860,7 @@ var init_argument_filters = __esm2({
       return typeof input === "number";
     };
     filterString = (input) => {
-      return typeof input === "string" || isPathSpec(input);
+      return typeof input === "string" || r(input);
     };
     filterStringOrStringArray = (input) => {
       return filterString(input) || Array.isArray(input) && input.every(filterString);
@@ -7570,7 +7958,7 @@ function createInstanceConfig(...options) {
   const baseDir = process.cwd();
   const config = Object.assign(
     { baseDir, ...defaultOptions },
-    ...options.filter((o) => typeof o === "object" && o)
+    ...options.filter((o2) => typeof o2 === "object" && o2)
   );
   config.baseDir = config.baseDir || baseDir;
   config.trimmed = config.trimmed === true;
@@ -7594,7 +7982,7 @@ function appendTaskOptions(options, commands = []) {
   }
   return Object.keys(options).reduce((commands2, key) => {
     const value = options[key];
-    if (isPathSpec(value)) {
+    if (r(value)) {
       commands2.push(value);
     } else if (filterPrimitives(value, ["boolean"])) {
       commands2.push(key + "=" + value);
@@ -7612,9 +8000,9 @@ function appendTaskOptions(options, commands = []) {
 }
 function getTrailingOptions(args, initialPrimitive = 0, objectOnly = false) {
   const command = [];
-  for (let i = 0, max = initialPrimitive < 0 ? args.length : initialPrimitive; i < max; i++) {
-    if ("string|number".includes(typeof args[i])) {
-      command.push(String(args[i]));
+  for (let i2 = 0, max = initialPrimitive < 0 ? args.length : initialPrimitive; i2 < max; i2++) {
+    if ("string|number".includes(typeof args[i2])) {
+      command.push(String(args[i2]));
     }
   }
   appendTaskOptions(trailingOptionsArgument(args), command);
@@ -7640,7 +8028,6 @@ var init_task_options = __esm2({
     "use strict";
     init_argument_filters();
     init_util();
-    init_pathspec();
   }
 });
 function callTaskParser(parser4, streams) {
@@ -7648,12 +8035,12 @@ function callTaskParser(parser4, streams) {
 }
 function parseStringResponse(result, parsers12, texts, trim = true) {
   asArray(texts).forEach((text) => {
-    for (let lines = toLinesWithContent(text, trim), i = 0, max = lines.length; i < max; i++) {
+    for (let lines = toLinesWithContent(text, trim), i2 = 0, max = lines.length; i2 < max; i2++) {
       const line = (offset = 0) => {
-        if (i + offset >= max) {
+        if (i2 + offset >= max) {
           return;
         }
-        return lines[i + offset];
+        return lines[i2 + offset];
       };
       parsers12.some(({ parse }) => parse(line, result));
     }
@@ -8014,9 +8401,9 @@ function configFilePath(filePath) {
 }
 function* configParser(text, requestedKey = null) {
   const lines = text.split("\0");
-  for (let i = 0, max = lines.length - 1; i < max; ) {
-    const file = configFilePath(lines[i++]);
-    let value = lines[i++];
+  for (let i2 = 0, max = lines.length - 1; i2 < max; ) {
+    const file = configFilePath(lines[i2++]);
+    let value = lines[i2++];
     let key = requestedKey;
     if (value.includes("\n")) {
       const line = splitOn(value, "\n");
@@ -8516,11 +8903,10 @@ var init_git_executor_chain = __esm2({
       }
       async attemptRemoteTask(task, logger) {
         const binary = this._plugins.exec("spawn.binary", "", pluginContext(task, task.commands));
-        const args = this._plugins.exec(
-          "spawn.args",
-          [...task.commands],
-          pluginContext(task, task.commands)
-        );
+        const args = this._plugins.exec("spawn.args", [...task.commands], {
+          ...pluginContext(task, task.commands),
+          env: { ...this.env }
+        });
         const raw = await this.gitResponse(
           task,
           binary,
@@ -9018,8 +9404,8 @@ var init_init = __esm2({
   }
 });
 function logFormatFromCommand(customArgs) {
-  for (let i = 0; i < customArgs.length; i++) {
-    const format = logFormatRegex.exec(customArgs[i]);
+  for (let i2 = 0; i2 < customArgs.length; i2++) {
+    const format = logFormatRegex.exec(customArgs[i2]);
     if (format) {
       return `--${format[1]}`;
     }
@@ -9313,7 +9699,7 @@ function parseLogOptions(opt = {}, customArgs = []) {
     suffix.push(`${opt.from || ""}${rangeOperator}${opt.to || ""}`);
   }
   if (filterString(opt.file)) {
-    command.push("--follow", pathspec(opt.file));
+    command.push("--follow", c(opt.file));
   }
   appendTaskOptions(userOptions(opt), command);
   return {
@@ -9356,7 +9742,6 @@ var init_log = __esm2({
   "src/lib/tasks/log.ts"() {
     "use strict";
     init_log_format();
-    init_pathspec();
     init_parse_list_log_summary();
     init_utils();
     init_task();
@@ -9845,7 +10230,7 @@ function parser3(indexX, indexY, handler) {
   return [`${indexX}${indexY}`, handler];
 }
 function conflicts(indexX, ...indexY) {
-  return indexY.map((y) => parser3(indexX, y, (result, file) => result.conflicted.push(file)));
+  return indexY.map((y2) => parser3(indexX, y2, (result, file) => result.conflicted.push(file)));
 }
 function splitLine(result, lineStr) {
   const trimmed2 = lineStr.trim();
@@ -9996,13 +10381,13 @@ var init_StatusSummary = __esm2({
     parseStatusSummary = function(text) {
       const lines = text.split(NULL);
       const status = new StatusSummary();
-      for (let i = 0, l = lines.length; i < l; ) {
-        let line = lines[i++].trim();
+      for (let i2 = 0, l = lines.length; i2 < l; ) {
+        let line = lines[i2++].trim();
         if (!line) {
           continue;
         }
         if (line.charAt(0) === "R") {
-          line += NULL + (lines[i++] || "");
+          line += NULL + (lines[i2++] || "");
         }
         splitLine(status, line);
       }
@@ -10135,11 +10520,10 @@ var init_clone = __esm2({
     "use strict";
     init_task();
     init_utils();
-    init_pathspec();
     cloneTask = (repo, directory, customArgs) => {
       const commands = ["clone", ...customArgs];
-      filterString(repo) && commands.push(pathspec(repo));
-      filterString(directory) && commands.push(pathspec(directory));
+      filterString(repo) && commands.push(c(repo));
+      filterString(directory) && commands.push(c(directory));
       return straightThroughStringTask(commands);
     };
     cloneMirrorTask = (repo, directory, customArgs) => {
@@ -10550,7 +10934,7 @@ function deleteBranchTask(branch, forceDelete = false) {
     parser(stdOut, stdErr) {
       return parseBranchDeletions(stdOut, stdErr).branches[branch];
     },
-    onError({ exitCode, stdErr, stdOut }, error, _2, fail) {
+    onError({ exitCode, stdErr, stdOut }, error, _3, fail) {
       if (!hasBranchDeletionError(String(error), exitCode)) {
         return fail(error);
       }
@@ -10880,16 +11264,16 @@ var init_sub_module = __esm2({
     init_task();
   }
 });
-function singleSorted(a, b) {
+function singleSorted(a, b2) {
   const aIsNum = Number.isNaN(a);
-  const bIsNum = Number.isNaN(b);
+  const bIsNum = Number.isNaN(b2);
   if (aIsNum !== bIsNum) {
     return aIsNum ? 1 : -1;
   }
-  return aIsNum ? sorted(a, b) : 0;
+  return aIsNum ? sorted(a, b2) : 0;
 }
-function sorted(a, b) {
-  return a === b ? 0 : a > b ? 1 : -1;
+function sorted(a, b2) {
+  return a === b2 ? 0 : a > b2 ? 1 : -1;
 }
 function trimmed(input) {
   return input.trim();
@@ -10920,8 +11304,8 @@ var init_TagList = __esm2({
           if (partsA.length === 1 || partsB.length === 1) {
             return singleSorted(toNumber(partsA[0]), toNumber(partsB[0]));
           }
-          for (let i = 0, l = Math.max(partsA.length, partsB.length); i < l; i++) {
-            const diff = sorted(toNumber(partsA[i]), toNumber(partsB[i]));
+          for (let i2 = 0, l = Math.max(partsA.length, partsB.length); i2 < l; i2++) {
+            const diff = sorted(toNumber(partsA[i2]), toNumber(partsB[i2]));
             if (diff) {
               return diff;
             }
@@ -11157,9 +11541,9 @@ var require_git = __commonJS2({
     Git2.prototype.raw = function(commands) {
       const createRestCommands = !Array.isArray(commands);
       const command = [].slice.call(createRestCommands ? arguments : commands, 0);
-      for (let i = 0; i < command.length && createRestCommands; i++) {
-        if (!filterPrimitives2(command[i])) {
-          command.splice(i, command.length - i);
+      for (let i2 = 0; i2 < command.length && createRestCommands; i2++) {
+        if (!filterPrimitives2(command[i2])) {
+          command.splice(i2, command.length - i2);
           break;
         }
       }
@@ -11342,7 +11726,6 @@ var require_git = __commonJS2({
     module2.exports = Git2;
   }
 });
-init_pathspec();
 init_git_error();
 var GitConstructError = class extends GitError {
   constructor(config, message) {
@@ -11392,74 +11775,15 @@ function abortPlugin(signal) {
   };
   return [onSpawnBefore, onSpawnAfter];
 }
-function isConfigSwitch(arg) {
-  return typeof arg === "string" && arg.trim().toLowerCase() === "-c";
-}
-function isCloneUploadPackSwitch(char, arg) {
-  if (typeof arg !== "string" || !arg.includes(char)) {
-    return false;
-  }
-  const cleaned = arg.trim().replace(/\0/g, "");
-  return /^(--no)?-{1,2}[\dlsqvnobucj]+(\s|$)/.test(cleaned);
-}
-function preventConfigBuilder(config, setting, message = String(config)) {
-  const regex = typeof config === "string" ? new RegExp(`\\s*${config}`, "i") : config;
-  return function preventCommand(options, arg, next) {
-    if (options[setting] !== true && isConfigSwitch(arg) && regex.test(next)) {
-      throw new GitPluginError(
-        void 0,
-        "unsafe",
-        `Configuring ${message} is not permitted without enabling ${setting}`
-      );
-    }
-  };
-}
-var preventUnsafeConfig = [
-  preventConfigBuilder(
-    /^\s*protocol(.[a-z]+)?.allow/i,
-    "allowUnsafeProtocolOverride",
-    "protocol.allow"
-  ),
-  preventConfigBuilder("core.sshCommand", "allowUnsafeSshCommand"),
-  preventConfigBuilder("core.gitProxy", "allowUnsafeGitProxy"),
-  preventConfigBuilder("core.hooksPath", "allowUnsafeHooksPath"),
-  preventConfigBuilder("diff.external", "allowUnsafeDiffExternal")
-];
-function preventUploadPack(arg, method) {
-  if (/^\s*--(upload|receive)-pack/.test(arg)) {
-    throw new GitPluginError(
-      void 0,
-      "unsafe",
-      `Use of --upload-pack or --receive-pack is not permitted without enabling allowUnsafePack`
-    );
-  }
-  if (method === "clone" && isCloneUploadPackSwitch("u", arg)) {
-    throw new GitPluginError(
-      void 0,
-      "unsafe",
-      `Use of clone with option -u is not permitted without enabling allowUnsafePack`
-    );
-  }
-  if (method === "push" && /^\s*--exec\b/.test(arg)) {
-    throw new GitPluginError(
-      void 0,
-      "unsafe",
-      `Use of push with option --exec is not permitted without enabling allowUnsafePack`
-    );
-  }
-}
-function blockUnsafeOperationsPlugin({
-  allowUnsafePack = false,
-  ...options
-} = {}) {
+function blockUnsafeOperationsPlugin(options = {}) {
   return {
     type: "spawn.args",
-    action(args, context) {
-      args.forEach((current, index) => {
-        const next = index < args.length ? args[index + 1] : "";
-        allowUnsafePack || preventUploadPack(current, context.method);
-        preventUnsafeConfig.forEach((helper) => helper(options, current, next));
-      });
+    action(args, { env }) {
+      for (const vulnerability of ne2(args, env)) {
+        if (options[vulnerability.category] !== true) {
+          throw new GitPluginError(void 0, "unsafe", vulnerability.message);
+        }
+      }
       return args;
     }
   };
@@ -11724,7 +12048,6 @@ function timeoutPlugin({
     };
   }
 }
-init_pathspec();
 function suffixPathsPlugin() {
   return {
     type: "spawn.args",
@@ -11734,15 +12057,15 @@ function suffixPathsPlugin() {
       function append2(args) {
         (suffix = suffix || []).push(...args);
       }
-      for (let i = 0; i < data.length; i++) {
-        const param = data[i];
-        if (isPathSpec(param)) {
-          append2(toPaths(param));
+      for (let i2 = 0; i2 < data.length; i2++) {
+        const param = data[i2];
+        if (r(param)) {
+          append2(o(param));
           continue;
         }
         if (param === "--") {
           append2(
-            data.slice(i + 1).flatMap((item) => isPathSpec(item) && toPaths(item) || item)
+            data.slice(i2 + 1).flatMap((item) => r(item) && o(item) || item)
           );
           break;
         }
@@ -11819,7 +12142,7 @@ async function getRepoUrl(projectPath) {
   const git = esm_default(projectPath);
   try {
     const remotes = await git.getRemotes(true);
-    const origin = remotes.find((r) => r.name === "origin");
+    const origin = remotes.find((r2) => r2.name === "origin");
     const raw = origin?.refs?.fetch || origin?.refs?.push;
     if (!raw) return null;
     return normaliseRemoteUrl(raw);
@@ -11849,7 +12172,7 @@ async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceC
   const errors = [];
   const warnings = [];
   const remoteRef = `origin/${defaultBranch}`;
-  const allTestDirs = frameworkConfigs.filter((c) => c.framework !== "unknown").map((c) => c.testDir.replace(/^\.\//, ""));
+  const allTestDirs = frameworkConfigs.filter((c3) => c3.framework !== "unknown").map((c3) => c3.testDir.replace(/^\.\//, ""));
   let logArgs;
   if (sinceCommit) {
     logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..${remoteRef}`, "--", ...allTestDirs] : [`${sinceCommit}..${remoteRef}`];
@@ -11953,8 +12276,8 @@ async function fetchCommitsWithFiles(git, logArgs, testDirs) {
     const message = msgParts.join(FIELD_SEP);
     if (!hash?.trim()) continue;
     const fileChanges = [];
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
+    for (let i2 = 1; i2 < lines.length; i2++) {
+      const line = lines[i2];
       if (!line || !line.trim()) continue;
       const parts = line.split("	");
       const status = parts[0];
@@ -12112,17 +12435,17 @@ function detectMaintenanceChanges(previousContent, currentContent, framework, al
   const currTests = extractTestsWithLinesFromContent(currentContent, framework);
   if (prevTests.length === 0 || currTests.length === 0) return [];
   const alreadyChangedNames = new Set(
-    alreadyChangedTests.flatMap((c) => c.oldName ? [c.name, c.oldName] : [c.name])
+    alreadyChangedTests.flatMap((c3) => c3.oldName ? [c3.name, c3.oldName] : [c3.name])
   );
-  const prevNames = new Set(prevTests.map((t) => t.name));
-  const currNames = new Set(currTests.map((t) => t.name));
+  const prevNames = new Set(prevTests.map((t2) => t2.name));
+  const currNames = new Set(currTests.map((t2) => t2.name));
   const stableNames = [...currNames].filter((name) => prevNames.has(name) && !alreadyChangedNames.has(name));
   if (stableNames.length === 0) return [];
   const prevLines = previousContent.split("\n");
   const currLines = currentContent.split("\n");
   function getTestSpan(tests, name, lines) {
-    const sorted2 = [...tests].sort((a, b) => a.line - b.line);
-    const idx = sorted2.findIndex((t) => t.name === name);
+    const sorted2 = [...tests].sort((a, b2) => a.line - b2.line);
+    const idx = sorted2.findIndex((t2) => t2.name === name);
     if (idx === -1) return "";
     const start = sorted2[idx].line - 1;
     const end = idx + 1 < sorted2.length ? sorted2[idx + 1].line - 1 : lines.length;
@@ -12139,8 +12462,8 @@ function detectMaintenanceChanges(previousContent, currentContent, framework, al
   return results;
 }
 function diffTestNames(previous, current) {
-  const added = [...current].filter((t) => !previous.has(t));
-  const removed = [...previous].filter((t) => !current.has(t));
+  const added = [...current].filter((t2) => !previous.has(t2));
+  const removed = [...previous].filter((t2) => !current.has(t2));
   const changes = [];
   const matchedAdded = /* @__PURE__ */ new Set();
   for (const removedName of removed) {
@@ -12352,26 +12675,26 @@ function deduplicateCommitChanges(entry) {
     return true;
   });
   const removedByName = /* @__PURE__ */ new Map();
-  uniqueChanges.forEach((c, i) => {
-    if (c.type === "deleted") {
-      const existing = removedByName.get(c.testName) ?? [];
-      existing.push(i);
-      removedByName.set(c.testName, existing);
+  uniqueChanges.forEach((c3, i2) => {
+    if (c3.type === "deleted") {
+      const existing = removedByName.get(c3.testName) ?? [];
+      existing.push(i2);
+      removedByName.set(c3.testName, existing);
     }
   });
   const suppressedRemoves = /* @__PURE__ */ new Set();
-  uniqueChanges.forEach((c) => {
-    if (c.type === "added") {
-      const removeIndices = removedByName.get(c.testName);
+  uniqueChanges.forEach((c3) => {
+    if (c3.type === "added") {
+      const removeIndices = removedByName.get(c3.testName);
       if (removeIndices) {
         const crossSpecIdx = removeIndices.find(
-          (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c.specPath
+          (i2) => !suppressedRemoves.has(i2) && uniqueChanges[i2].specPath !== c3.specPath
         );
         if (crossSpecIdx !== void 0) suppressedRemoves.add(crossSpecIdx);
       }
     }
   });
-  return uniqueChanges.filter((_2, i) => !suppressedRemoves.has(i));
+  return uniqueChanges.filter((_3, i2) => !suppressedRemoves.has(i2));
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
@@ -12502,13 +12825,13 @@ async function syncProject(options) {
   const historyOldestFirst = [...transformedHistory].reverse();
   const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
   const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+  if (totalChunks > 1) {
+    console.log(`[sync] Uploading in ${totalChunks} batches...`);
+  }
   for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
     const isLastChunk = chunkIndex === totalChunks - 1;
     const chunkStart = chunkIndex * HISTORY_CHUNK_SIZE;
     const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
-    if (totalChunks > 1) {
-      console.log(`[sync] Uploading ${chunkIndex + 1}/${totalChunks} batches...`);
-    }
     await syncToDashboard(dashboardUrl, apiKey, {
       projectId,
       // Only include specs and stats with the first chunk — the server uses
