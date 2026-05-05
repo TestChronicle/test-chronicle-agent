@@ -2,6 +2,18 @@
 
 import { DashboardSyncConfig } from './types';
 
+/**
+ * Thrown when every upload attempt timed out (no HTTP error was returned).
+ * The server may have processed the request — callers should treat this as
+ * a recoverable warning rather than a fatal failure.
+ */
+export class UploadTimeoutError extends Error {
+    constructor(attempts: number, timeoutMs: number) {
+        super(`Upload timed out after ${timeoutMs / 1000}s on all ${attempts} attempt(s).`);
+        this.name = 'UploadTimeoutError';
+    }
+}
+
 interface SyncMarkerResponse {
     lastSyncedCommit?: string;
     commitHash?: string;
@@ -151,9 +163,10 @@ export async function syncToDashboard(
     }
 
     const MAX_RETRIES = 3;
-    const TIMEOUT_MS = 60_000; // 60 s
+    const TIMEOUT_MS = 120_000; // 120 s
 
     let lastError: Error | null = null;
+    let allTimedOut = true; // flipped to false if any error is not a timeout
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         const controller = new AbortController();
@@ -179,7 +192,10 @@ export async function syncToDashboard(
             lastError = err instanceof Error ? err : new Error(String(err));
             const isAbort = lastError.name === 'AbortError';
             if (isAbort) {
+                allTimedOut = true;
                 lastError = new Error(`Upload timed out after ${TIMEOUT_MS / 1000}s`);
+            } else {
+                allTimedOut = false;
             }
             if (attempt < MAX_RETRIES) {
                 const backoffMs = 1000 * 2 ** (attempt - 1); // 1 s, 2 s
@@ -195,5 +211,8 @@ export async function syncToDashboard(
         }
     }
 
+    if (allTimedOut) {
+        throw new UploadTimeoutError(MAX_RETRIES, TIMEOUT_MS);
+    }
     throw lastError ?? new Error('Sync failed after retries');
 }

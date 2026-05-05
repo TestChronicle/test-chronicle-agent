@@ -10,6 +10,7 @@ import {
     syncToDashboard,
     fetchProjectConfig,
     validateProjectAccess,
+    UploadTimeoutError,
 } from './sync-client';
 import { DetectionResult, TestChange, FrameworkOverride, CommitHistory, SpecFile } from './types';
 
@@ -330,10 +331,19 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         ...(repoUrl ? { repoUrl } : {}),
     };
 
-    await syncToDashboard(dashboardUrl, apiKey, payload);
-    console.log('[sync] Sync successful!');
-    console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
-    console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
+    try {
+        await syncToDashboard(dashboardUrl, apiKey, payload);
+        console.log('[sync] Sync successful!');
+        console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
+        console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
+    } catch (err) {
+        if (err instanceof UploadTimeoutError) {
+            console.warn('[sync] Warning: Upload timed out waiting for a response from the server.');
+            console.warn('[sync] Your data may have synced successfully — check your dashboard to confirm.');
+        } else {
+            throw err;
+        }
+    }
 
     // Handle baseline sync and incremental marker
     // Always save the tip of origin/<defaultBranch> as the marker so that
