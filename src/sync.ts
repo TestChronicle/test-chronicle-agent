@@ -33,24 +33,33 @@ function getChangeKey(change: TestChange, specPath?: string): string {
     return `${path}:${change.type}:${change.name}:${oldName}`;
 }
 
+/** Composite map key so multiple entries per framework (e.g. ios + android) can coexist. */
+function mapKey(framework: string, testDir: string): string {
+    return `${framework}:${testDir}`;
+}
+
 /**
  * Merges dashboard frameworkOverrides into the framework map.
- * Existing entries have their testDir updated; new entries are added.
+ * Each dir in override.dirs adds/replaces one entry. Auto-detected entries for the
+ * same framework that are not mentioned in dirs are removed, so the dashboard config
+ * is authoritative when overrides are present.
  */
 function applyFrameworkOverrides(frameworkMap: Map<string, DetectionResult>, overrides: FrameworkOverride[]): void {
     for (const override of overrides) {
         if (!override.dirs?.length) continue;
-        const existing = frameworkMap.get(override.framework);
-        if (existing) {
-            existing.testDir = override.dirs[0];
-            console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
-        } else {
-            frameworkMap.set(override.framework, {
+
+        // Remove all auto-detected entries for this framework so the explicit dirs take over
+        for (const [key, config] of frameworkMap) {
+            if (config.framework === override.framework) frameworkMap.delete(key);
+        }
+
+        for (const dir of override.dirs) {
+            frameworkMap.set(mapKey(override.framework, dir), {
                 framework: override.framework,
-                testDir: override.dirs[0],
+                testDir: dir,
                 confidence: 'high',
             });
-            console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
+            console.log(`[config] ${override.framework}: dir added via dashboard override -> ${dir}`);
         }
     }
 }
@@ -61,11 +70,11 @@ function applyFrameworkOverrides(frameworkMap: Map<string, DetectionResult>, ove
 function applyTestDirExcludes(frameworkMap: Map<string, DetectionResult>, excludes: string[]): void {
     for (const excludeDir of excludes) {
         const normalised = excludeDir.replace(/^\.\//, '');
-        for (const [fw, config] of frameworkMap) {
+        for (const [key, config] of frameworkMap) {
             const configDir = config.testDir.replace(/^\.\//, '');
             if (configDir.startsWith(normalised)) {
-                frameworkMap.delete(fw);
-                console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
+                frameworkMap.delete(key);
+                console.log(`[config] ${config.framework}: excluded by testDirExcludes (${excludeDir})`);
             }
         }
     }
@@ -192,8 +201,9 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     console.log('[sync] Detecting frameworks...');
     const detected = detectFrameworks(process.cwd());
 
-    // Build a mutable map of framework → DetectionResult for merging overrides
-    const frameworkMap = new Map<string, DetectionResult>(detected.map((d) => [d.framework, d]));
+    // Build a mutable map keyed by "framework:testDir" so multiple entries for the
+    // same framework (e.g. cucumber ios + android) can coexist.
+    const frameworkMap = new Map<string, DetectionResult>(detected.map((d) => [mapKey(d.framework, d.testDir), d]));
 
     // Apply dashboard frameworkOverrides and testDirExcludes from project config
     applyFrameworkOverrides(frameworkMap, projectConfig?.frameworkOverrides ?? []);

@@ -17,8 +17,23 @@ export declare function extractParameterizedDataFromEach(content: string): Param
  * users.forEach(user => {
  *   it(`should greet ${user.name}`, () => { ... })
  * })
+ *
+ * @param testIndex - The character index of the it()/test() call in `content`,
+ *   as returned by the regex match. Using the exact position avoids false
+ *   positives from indexOf() finding an earlier occurrence of the test name.
  */
-export declare function extractParameterizedDataFromForEach(content: string, testName: string): ParameterData | null;
+export declare function extractParameterizedDataFromForEach(content: string, testIndex: number): ParameterData | null;
+/**
+ * Detects whether a test at `testIndex` is wrapped inside a parameterized loop.
+ * Scans backward up to 1000 characters looking for:
+ * - for...of loops:     for (const x of items) {
+ * - for...in loops:     for (const x in items) {
+ * - forEach calls:      items.forEach(x => {
+ *
+ * This catches cases where the loop variable (and therefore the array) is
+ * defined externally — i.e. where static count extraction is impossible.
+ */
+export declare function detectParameterizedLoop(content: string, testIndex: number): boolean;
 /**
  * Determines if a test name likely comes from a parameterized test.
  * Looks for patterns like:
