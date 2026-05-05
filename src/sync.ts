@@ -345,6 +345,10 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             isLastChunk,
         });
 
+        if (totalChunks > 1) {
+            console.log(`[sync]   → ${chunkIndex + 1}/${totalChunks} uploaded`);
+        }
+
         if (isLastChunk) {
             console.log(
                 `[sync] Done — ${specs.length} specs, ${totalTests} tests, ${history.entries.length} commits synced`,
