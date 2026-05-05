@@ -278,10 +278,14 @@ export async function syncProject(options: SyncOptions): Promise<void> {
 
     // Compute stats
     const tags: Record<string, number> = {};
+    let parameterizedTestCount = 0;
     specs.forEach((spec) => {
         spec.tests.forEach((test) => {
             test.tags?.forEach((tag) => {
                 tags[tag.name] = (tags[tag.name] || 0) + 1;
+                if (tag.name === '@parameterized') {
+                    parameterizedTestCount++;
+                }
             });
         });
     });
@@ -290,6 +294,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         totalSpecs: specs.length,
         totalTests,
         tags,
+        parameterizedTestCount,
     };
 
     console.log('[sync] Summary');

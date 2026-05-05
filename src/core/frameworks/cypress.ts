@@ -25,22 +25,35 @@ export function parseCypressSpec(filePath: string, content: string, projectRoot:
 
         // Check if this is a parameterized test (forEach loop)
         const paramData = extractParameterizedDataFromForEach(content, testName);
-        if (paramData?.hasParameters && paramData.count > 0) {
-            // Expand to individual test cases
-            for (let i = 0; i < paramData.count; i++) {
-                const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
-                const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+        if (paramData?.hasParameters) {
+            if (paramData.count > 0) {
+                // Inline array — count is known, expand to individual test cases
+                for (let i = 0; i < paramData.count; i++) {
+                    const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}::${i}`);
+                    const expandedName = generateParameterizedTestName(testName, i, paramData.count);
 
+                    tests.push({
+                        id,
+                        name: expandedName,
+                        fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+                        describe: parentDescribe,
+                        tags: [{ name: '@parameterized' }],
+                        line,
+                    });
+                }
+            } else {
+                // External/dynamic source — count unknown, tag as parameterized
+                const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);
                 tests.push({
                     id,
-                    name: expandedName,
-                    fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+                    name: testName,
+                    fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
                     describe: parentDescribe,
                     tags: [{ name: '@parameterized' }],
                     line,
                 });
             }
-            continue; // Skip adding the base test
+            continue; // Skip the plain test push below
         }
 
         const id = hashId(`${relativePath}::${parentDescribe ?? ''}::${testName}`);

@@ -140,6 +140,33 @@ function countParameterSets(dataContent: string): number {
 }
 
 /**
+ * Detects whether a test at `testIndex` is wrapped inside a parameterized loop.
+ * Scans backward up to 1000 characters looking for:
+ * - for...of loops:     for (const x of items) {
+ * - for...in loops:     for (const x in items) {
+ * - forEach calls:      items.forEach(x => {
+ *
+ * This catches cases where the loop variable (and therefore the array) is
+ * defined externally — i.e. where static count extraction is impossible.
+ */
+export function detectParameterizedLoop(content: string, testIndex: number): boolean {
+    const contextStart = Math.max(0, testIndex - 1000);
+    const context = content.substring(contextStart, testIndex);
+
+    // for...of / for...in wrapping the test
+    if (/\bfor\s*\(\s*(?:const|let|var)\s+.+?\s+(?:of|in)\s+.+?\)/.test(context)) {
+        return true;
+    }
+
+    // .forEach( wrapping the test
+    if (/\.\s*forEach\s*\(/.test(context)) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
  * Determines if a test name likely comes from a parameterized test.
  * Looks for patterns like:
  * - "test name $variable" (Playwright each syntax)
