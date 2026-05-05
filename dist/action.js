@@ -128,7 +128,7 @@ var require_main = __commonJS({
     "use strict";
     init_cjs_shims();
     var fs3 = require("fs");
-    var path10 = require("path");
+    var path11 = require("path");
     var os2 = require("os");
     var crypto = require("crypto");
     var packageJson = require_package();
@@ -274,7 +274,7 @@ var require_main = __commonJS({
           possibleVaultPath = options.path.endsWith(".vault") ? options.path : `${options.path}.vault`;
         }
       } else {
-        possibleVaultPath = path10.resolve(process.cwd(), ".env.vault");
+        possibleVaultPath = path11.resolve(process.cwd(), ".env.vault");
       }
       if (fs3.existsSync(possibleVaultPath)) {
         return possibleVaultPath;
@@ -282,7 +282,7 @@ var require_main = __commonJS({
       return null;
     }
     function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path10.join(os2.homedir(), envPath.slice(1)) : envPath;
+      return envPath[0] === "~" ? path11.join(os2.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
       const debug2 = parseBoolean(process.env.DOTENV_CONFIG_DEBUG || options && options.debug);
@@ -299,7 +299,7 @@ var require_main = __commonJS({
       return { parsed };
     }
     function configDotenv(options) {
-      const dotenvPath = path10.resolve(process.cwd(), ".env");
+      const dotenvPath = path11.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       let processEnv = process.env;
       if (options && options.processEnv != null) {
@@ -327,13 +327,13 @@ var require_main = __commonJS({
       }
       let lastError;
       const parsedAll = {};
-      for (const path11 of optionPaths) {
+      for (const path12 of optionPaths) {
         try {
-          const parsed = DotenvModule.parse(fs3.readFileSync(path11, { encoding }));
+          const parsed = DotenvModule.parse(fs3.readFileSync(path12, { encoding }));
           DotenvModule.populate(parsedAll, parsed, options);
         } catch (e) {
           if (debug2) {
-            _debug(`Failed to load ${path11} ${e.message}`);
+            _debug(`Failed to load ${path12} ${e.message}`);
           }
           lastError = e;
         }
@@ -346,7 +346,7 @@ var require_main = __commonJS({
         const shortPaths = [];
         for (const filePath of optionPaths) {
           try {
-            const relative = path10.relative(process.cwd(), filePath);
+            const relative = path11.relative(process.cwd(), filePath);
             shortPaths.push(relative);
           } catch (e) {
             if (debug2) {
@@ -1120,10 +1120,10 @@ var require_src2 = __commonJS({
     var fs_1 = require("fs");
     var debug_1 = __importDefault(require_src());
     var log = debug_1.default("@kwsites/file-exists");
-    function check(path10, isFile, isDirectory) {
-      log(`checking %s`, path10);
+    function check(path11, isFile, isDirectory) {
+      log(`checking %s`, path11);
       try {
-        const stat = fs_1.statSync(path10);
+        const stat = fs_1.statSync(path11);
         if (stat.isFile() && isFile) {
           log(`[OK] path represents a file`);
           return true;
@@ -1143,8 +1143,8 @@ var require_src2 = __commonJS({
         throw e;
       }
     }
-    function exists2(path10, type = exports2.READABLE) {
-      return check(path10, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
+    function exists2(path11, type = exports2.READABLE) {
+      return check(path11, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
     }
     exports2.exists = exists2;
     exports2.FILE = 1;
@@ -1214,7 +1214,7 @@ init_cjs_shims();
 
 // src/sync.ts
 init_cjs_shims();
-var import_path9 = __toESM(require("path"));
+var import_path10 = __toESM(require("path"));
 var import_fs4 = __toESM(require("fs"));
 var import_dotenv = __toESM(require_main());
 
@@ -4252,6 +4252,10 @@ var SIGNATURES = {
   vitest: {
     configFiles: ["vitest.config.ts", "vitest.config.js"],
     packageDeps: ["vitest"]
+  },
+  cucumber: {
+    configFiles: ["cucumber.properties", "cucumber.yml", "cucumber.yaml"],
+    packageDeps: ["@cucumber/cucumber", "io.cucumber:cucumber-java"]
   }
 };
 function detectFrameworks(projectPath) {
@@ -4275,7 +4279,8 @@ function detectFrameworks(projectPath) {
   const nestedConfigGlobs = {
     playwright: "**/playwright.config.{ts,js,mjs}",
     cypress: "**/cypress.config.{ts,js}",
-    vitest: "**/vitest.config.{ts,js}"
+    vitest: "**/vitest.config.{ts,js}",
+    cucumber: "**/*.feature"
   };
   for (const [framework, glob] of Object.entries(nestedConfigGlobs)) {
     if (seen.has(framework)) continue;
@@ -4286,12 +4291,19 @@ function detectFrameworks(projectPath) {
     });
     if (matches.length > 0) {
       seen.add(framework);
-      const configPath = matches[0];
-      results.push({
-        framework,
-        testDir: extractTestDir(framework, configPath, projectPath),
-        confidence: "high"
-      });
+      if (framework === "cucumber") {
+        const testDirs = findCucumberTestDirs(matches, projectPath);
+        for (const testDir of testDirs) {
+          results.push({ framework, testDir, confidence: "high" });
+        }
+      } else {
+        const configPath = matches[0];
+        results.push({
+          framework,
+          testDir: extractTestDir(framework, configPath, projectPath),
+          confidence: "high"
+        });
+      }
     }
   }
   const pkgResults = detectAllFromPackageJson(projectPath, seen);
@@ -4309,6 +4321,8 @@ function extractTestDir(framework, configPath, projectPath) {
       return extractCypressTestDir(configPath, projectPath);
     case "vitest":
       return extractVitestTestDir(configPath, projectPath);
+    case "cucumber":
+      return extractCucumberTestDir(configPath, projectPath);
     default:
       return guessTestDir(projectPath);
   }
@@ -4341,6 +4355,41 @@ function extractCypressTestDir(configPath, projectPath) {
   const legacyDir = "./cypress/integration";
   if ((0, import_fs2.existsSync)(import_path.default.join(projectPath, legacyDir))) return legacyDir;
   return defaultDir;
+}
+function findCucumberFeaturesDir(featureFilePath, projectPath) {
+  const relDir = import_path.default.relative(projectPath, import_path.default.dirname(featureFilePath));
+  const parts = relDir.split(import_path.default.sep);
+  let lastFeaturesIdx = -1;
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i] === "features") lastFeaturesIdx = i;
+  }
+  if (lastFeaturesIdx >= 0) {
+    return import_path.default.join(projectPath, ...parts.slice(0, lastFeaturesIdx + 1));
+  }
+  return import_path.default.dirname(featureFilePath);
+}
+function findCucumberTestDirs(featureFiles, projectPath) {
+  const dirs = /* @__PURE__ */ new Set();
+  for (const file of featureFiles) {
+    const featuresDir = findCucumberFeaturesDir(file, projectPath);
+    const relative = import_path.default.relative(projectPath, featuresDir);
+    dirs.add(relative ? "./" + relative.replace(/\\/g, "/") : ".");
+  }
+  return [...dirs];
+}
+function extractCucumberTestDir(featureFilePath, projectPath) {
+  const isFeatureFile = featureFilePath.endsWith(".feature");
+  const featureFiles = isFeatureFile ? [featureFilePath] : ts("**/*.feature", {
+    cwd: projectPath,
+    ignore: ["**/node_modules/**", "**/dist/**"],
+    absolute: true
+  });
+  if (featureFiles.length === 0) {
+    const featuresDir = import_path.default.join(projectPath, "features");
+    if ((0, import_fs2.existsSync)(featuresDir)) return "./features";
+    return ".";
+  }
+  return findCucumberTestDirs(featureFiles, projectPath)[0];
 }
 function extractVitestTestDir(_configPath, _projectPath) {
   return ".";
@@ -4394,7 +4443,7 @@ function detectAllFromPackageJson(projectPath, alreadySeen) {
 // src/core/parser.ts
 init_cjs_shims();
 var import_fs3 = require("fs");
-var import_path7 = __toESM(require("path"));
+var import_path8 = __toESM(require("path"));
 
 // src/core/frameworks/playwright.ts
 init_cjs_shims();
@@ -4452,6 +4501,113 @@ function resolveParentDescribe(blocks, index) {
   return innermost?.name;
 }
 
+// src/core/frameworks/parameterized.ts
+init_cjs_shims();
+function extractParameterizedDataFromEach(content) {
+  const eachRegex = new RegExp(`(?:test|describe)\\.each\\s*\\(\\s*\\[([\\s\\S]*?)\\]\\s*\\)`, "g");
+  let match;
+  while ((match = eachRegex.exec(content)) !== null) {
+    const dataContent = match[1];
+    const paramCount = countParameterSets(dataContent);
+    if (paramCount > 0) {
+      return {
+        count: paramCount,
+        hasParameters: true
+      };
+    }
+  }
+  return null;
+}
+function extractParameterizedDataFromForEach(content, testIndex) {
+  const contextStart = Math.max(0, testIndex - 1e3);
+  const context = content.substring(contextStart, testIndex);
+  const forEachMatch = context.match(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i);
+  const forMatch = context.match(/\bfor\s*\(\s*(?:let|var|const)\s+(\w+)\s+(?:of|in)\s+(.+?)\s*\)/);
+  if (!(forEachMatch || forMatch)) return null;
+  const loopSearchStart = forEachMatch ? context.search(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i) : context.search(/\bfor\s*\(\s*(?:let|var|const)/);
+  if (loopSearchStart === -1 || !isLoopStillOpen(context, loopSearchStart)) return null;
+  const arrayDeclMatch = context.match(/(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/);
+  if (arrayDeclMatch) {
+    const arrayContent = arrayDeclMatch[1];
+    const count = countParameterSets(arrayContent);
+    if (count > 0) {
+      return { count, hasParameters: true };
+    }
+  }
+  return { count: 0, hasParameters: true };
+}
+function countParameterSets(dataContent) {
+  let count = 0;
+  let inString = false;
+  let stringChar = "";
+  let braceDepth = 0;
+  let bracketDepth = 0;
+  for (let i = 0; i < dataContent.length; i++) {
+    const char = dataContent[i];
+    const prevChar = i > 0 ? dataContent[i - 1] : "";
+    if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
+      if (!inString) {
+        inString = true;
+        stringChar = char;
+      } else if (char === stringChar) {
+        inString = false;
+      }
+      continue;
+    }
+    if (inString) continue;
+    if (char === "{" && bracketDepth === 0) {
+      braceDepth++;
+    } else if (char === "}" && bracketDepth === 0) {
+      braceDepth--;
+      if (braceDepth === 0) {
+        count++;
+      }
+    } else if (char === "[") {
+      bracketDepth++;
+    } else if (char === "]") {
+      bracketDepth--;
+    }
+  }
+  return count;
+}
+function detectParameterizedLoop(content, testIndex) {
+  const contextStart = Math.max(0, testIndex - 1e3);
+  const context = content.substring(contextStart, testIndex);
+  const forMatch = /\bfor\s*\(\s*(?:const|let|var)\s+.+?\s+(?:of|in)\s+.+?\)/.exec(context);
+  if (forMatch && isLoopStillOpen(context, forMatch.index)) {
+    return true;
+  }
+  const forEachMatch = /\.\s*forEach\s*\(/.exec(context);
+  if (forEachMatch && isLoopStillOpen(context, forEachMatch.index)) {
+    return true;
+  }
+  return false;
+}
+function isLoopStillOpen(context, loopStart) {
+  let netBraces = 0;
+  for (let i = loopStart; i < context.length; i++) {
+    if (context[i] === "{") netBraces++;
+    else if (context[i] === "}") netBraces--;
+    if (netBraces < 0) return false;
+  }
+  return true;
+}
+function isLikelyParameterizedTest(testName) {
+  if (testName.includes("$")) {
+    return true;
+  }
+  if (/\[\d+\]/.test(testName)) {
+    return true;
+  }
+  if (/\s#\s*\d+/.test(testName) || /param\s*\d+/i.test(testName)) {
+    return true;
+  }
+  return false;
+}
+function generateParameterizedTestName(baseName, paramIndex, paramCount) {
+  return `${baseName} [${paramIndex + 1}/${paramCount}]`;
+}
+
 // src/core/frameworks/playwright.ts
 var DESCRIBE_RE = /test\.describe(?:\.(?:serial|parallel|skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE = /(?:^|[ \t]+)test(?:\.(?:skip|only|fixme|slow))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
@@ -4469,6 +4625,10 @@ function parsePlaywrightSpec(filePath, content, projectRoot) {
     const line = lineNumberAt(content, matchIndex);
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const tags = extractInlineTags(content, matchIndex);
+    const isParameterized = detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
+    if (isParameterized && !tags.some((t) => t.name === "@parameterized")) {
+      tags.push({ name: "@parameterized" });
+    }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
     tests.push({
       id,
@@ -4523,7 +4683,7 @@ var playwrightParser = {
   supportedFeatures: {
     tags: true,
     describes: true,
-    parameterized: false,
+    parameterized: true,
     lineNumbers: true,
     asyncTests: true
   }
@@ -4532,74 +4692,6 @@ var playwrightParser = {
 // src/core/frameworks/cypress.ts
 init_cjs_shims();
 var import_path3 = __toESM(require("path"));
-
-// src/core/frameworks/parameterized.ts
-init_cjs_shims();
-function extractParameterizedDataFromForEach(content, testName) {
-  const contextStart = Math.max(0, content.lastIndexOf("\n", content.indexOf(testName)) - 1e3);
-  const contextEnd = content.indexOf(testName);
-  const context = content.substring(contextStart, contextEnd);
-  const forEachMatch = context.match(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i);
-  const forMatch = context.match(/\bfor\s*\(\s*(?:let|var|const)\s+(\w+)\s+(?:of|in)\s+(.+?)\s*\)/);
-  if (forEachMatch || forMatch) {
-    const arrayDeclMatch = context.match(/(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/);
-    if (arrayDeclMatch) {
-      const arrayContent = arrayDeclMatch[1];
-      const count = countParameterSets(arrayContent);
-      if (count > 0) {
-        return {
-          count,
-          hasParameters: true
-        };
-      }
-    }
-    return {
-      count: 0,
-      // Unknown
-      hasParameters: true
-    };
-  }
-  return null;
-}
-function countParameterSets(dataContent) {
-  let count = 0;
-  let inString = false;
-  let stringChar = "";
-  let braceDepth = 0;
-  let bracketDepth = 0;
-  for (let i = 0; i < dataContent.length; i++) {
-    const char = dataContent[i];
-    const prevChar = i > 0 ? dataContent[i - 1] : "";
-    if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
-      if (!inString) {
-        inString = true;
-        stringChar = char;
-      } else if (char === stringChar) {
-        inString = false;
-      }
-      continue;
-    }
-    if (inString) continue;
-    if (char === "{" && bracketDepth === 0) {
-      braceDepth++;
-    } else if (char === "}" && bracketDepth === 0) {
-      braceDepth--;
-      if (braceDepth === 0) {
-        count++;
-      }
-    } else if (char === "[") {
-      bracketDepth++;
-    } else if (char === "]") {
-      bracketDepth--;
-    }
-  }
-  return count;
-}
-function generateParameterizedTestName(baseName, paramIndex, paramCount) {
-  return `${baseName} [${paramIndex + 1}/${paramCount}]`;
-}
-
-// src/core/frameworks/cypress.ts
 var DESCRIBE_RE2 = /describe\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE2 = /(?:^|[ \t]+)(?:it|specify|test)\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseCypressSpec(filePath, content, projectRoot) {
@@ -4613,15 +4705,27 @@ function parseCypressSpec(filePath, content, projectRoot) {
     const matchIndex = match.index;
     const line = lineNumberAt(content, matchIndex);
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
-    const paramData = extractParameterizedDataFromForEach(content, testName);
-    if (paramData?.hasParameters && paramData.count > 0) {
-      for (let i = 0; i < paramData.count; i++) {
-        const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
-        const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+    const paramData = extractParameterizedDataFromForEach(content, matchIndex);
+    if (paramData?.hasParameters) {
+      if (paramData.count > 0) {
+        for (let i = 0; i < paramData.count; i++) {
+          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
+          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
+          tests.push({
+            id: id2,
+            name: expandedName,
+            fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+            describe: parentDescribe,
+            tags: [{ name: "@parameterized" }],
+            line
+          });
+        }
+      } else {
+        const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
         tests.push({
           id: id2,
-          name: expandedName,
-          fullName: parentDescribe ? `${parentDescribe} > ${expandedName}` : expandedName,
+          name: testName,
+          fullName: parentDescribe ? `${parentDescribe} > ${testName}` : testName,
           describe: parentDescribe,
           tags: [{ name: "@parameterized" }],
           line
@@ -4692,6 +4796,10 @@ function parseVitestSpec(filePath, content, projectRoot) {
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
     const tags = isTodo ? [{ name: "@todo" }] : [];
+    const isParameterized = extractParameterizedDataFromEach(content.substring(Math.max(0, matchIndex - 500), matchIndex + 200)) !== null || detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
+    if (isParameterized) {
+      tags.push({ name: "@parameterized" });
+    }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
     tests.push({
       id,
@@ -4731,7 +4839,7 @@ var vitestParser = {
   supportedFeatures: {
     tags: true,
     describes: true,
-    parameterized: false,
+    parameterized: true,
     lineNumbers: true,
     asyncTests: true
   }
@@ -4919,13 +5027,246 @@ var junitParser = {
   }
 };
 
+// src/core/frameworks/cucumber.ts
+init_cjs_shims();
+var import_path7 = __toESM(require("path"));
+var FEATURE_RE = /^Feature:\s*(.+)/i;
+var SCENARIO_RE = /^\s*(?:Scenario|Example):\s*(.+)/i;
+var OUTLINE_RE = /^\s*(?:Scenario Outline|Scenario Template):\s*(.+)/i;
+var EXAMPLES_RE = /^\s*(?:Examples|Scenarios)\s*:/i;
+var TAG_LINE_RE = /^\s*(@\S+(?:\s+@\S+)*)\s*$/;
+var DATA_ROW_RE = /^\s*\|/;
+function parseCucumberSpec(filePath, content, projectRoot) {
+  const relativePath = import_path7.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const tests = [];
+  const lines = content.split("\n");
+  let featureName;
+  let featureTags = [];
+  let pendingTags = [];
+  let currentOutlineName;
+  let currentOutlineTags = [];
+  let currentOutlineLine = 0;
+  let inOutline = false;
+  let inExamplesBlock = false;
+  let examplesHeaderSeen = false;
+  let outlineRows = [];
+  const flushOutline = () => {
+    if (!currentOutlineName || !inOutline) return;
+    const rowCount = outlineRows.length;
+    if (rowCount === 0) {
+      const id = hashId(`${relativePath}::${featureName ?? ""}::${currentOutlineName}`);
+      const fullName = featureName ? `${featureName} > ${currentOutlineName}` : currentOutlineName;
+      tests.push({
+        id,
+        name: currentOutlineName,
+        fullName,
+        describe: featureName,
+        tags: currentOutlineTags.map((t) => ({ name: t })),
+        line: currentOutlineLine
+      });
+    } else {
+      for (let i = 0; i < rowCount; i++) {
+        const name = generateParameterizedTestName(currentOutlineName, i, rowCount);
+        const id = hashId(`${relativePath}::${featureName ?? ""}::${name}`);
+        const fullName = featureName ? `${featureName} > ${name}` : name;
+        tests.push({
+          id,
+          name,
+          fullName,
+          describe: featureName,
+          tags: currentOutlineTags.map((t) => ({ name: t })),
+          line: outlineRows[i]
+        });
+      }
+    }
+    inOutline = false;
+    inExamplesBlock = false;
+    examplesHeaderSeen = false;
+    outlineRows = [];
+    currentOutlineName = void 0;
+    currentOutlineTags = [];
+  };
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const trimmed2 = rawLine.trim();
+    const tagMatch = TAG_LINE_RE.exec(rawLine);
+    if (tagMatch) {
+      const tokens = tagMatch[1].trim().split(/\s+/).filter((t) => t.startsWith("@"));
+      pendingTags.push(...tokens);
+      continue;
+    }
+    const featureMatch = FEATURE_RE.exec(trimmed2);
+    if (featureMatch) {
+      flushOutline();
+      featureName = featureMatch[1].trim();
+      featureTags = [...pendingTags];
+      pendingTags = [];
+      continue;
+    }
+    const outlineMatch = OUTLINE_RE.exec(trimmed2);
+    if (outlineMatch) {
+      flushOutline();
+      currentOutlineName = outlineMatch[1].trim();
+      currentOutlineTags = [...featureTags, ...pendingTags];
+      currentOutlineLine = i + 1;
+      inOutline = true;
+      inExamplesBlock = false;
+      examplesHeaderSeen = false;
+      outlineRows = [];
+      pendingTags = [];
+      continue;
+    }
+    if (inOutline && EXAMPLES_RE.test(trimmed2)) {
+      currentOutlineTags = [...currentOutlineTags, ...pendingTags];
+      pendingTags = [];
+      inExamplesBlock = true;
+      examplesHeaderSeen = false;
+      continue;
+    }
+    if (inOutline && inExamplesBlock && DATA_ROW_RE.test(rawLine)) {
+      if (!examplesHeaderSeen) {
+        examplesHeaderSeen = true;
+      } else {
+        outlineRows.push(i + 1);
+      }
+      continue;
+    }
+    const scenarioMatch = SCENARIO_RE.exec(trimmed2);
+    if (scenarioMatch) {
+      flushOutline();
+      const name = scenarioMatch[1].trim();
+      const mergedTags = [...featureTags, ...pendingTags];
+      const id = hashId(`${relativePath}::${featureName ?? ""}::${name}`);
+      const fullName = featureName ? `${featureName} > ${name}` : name;
+      const line = i + 1;
+      tests.push({
+        id,
+        name,
+        fullName,
+        describe: featureName,
+        tags: mergedTags.map((t) => ({ name: t })),
+        line
+      });
+      pendingTags = [];
+      continue;
+    }
+    if (trimmed2.length > 0 && !trimmed2.startsWith("#")) {
+      pendingTags = [];
+    }
+  }
+  flushOutline();
+  return {
+    id: hashId(relativePath),
+    path: relativePath,
+    name: import_path7.default.basename(filePath),
+    framework: "cucumber",
+    tests,
+    testCount: tests.length,
+    lastModified: (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+function extractTestNames6(content) {
+  const lines = content.split("\n");
+  const names = [];
+  let featureName;
+  let pendingTags = [];
+  let inOutline = false;
+  let outlineName;
+  let inExamplesBlock = false;
+  let examplesHeaderSeen = false;
+  let rowCount = 0;
+  const flushOutline = () => {
+    if (!outlineName) return;
+    if (rowCount === 0) {
+      names.push(featureName ? `${featureName} > ${outlineName}` : outlineName);
+    } else {
+      for (let i = 0; i < rowCount; i++) {
+        const name = generateParameterizedTestName(outlineName, i, rowCount);
+        names.push(featureName ? `${featureName} > ${name}` : name);
+      }
+    }
+    inOutline = false;
+    inExamplesBlock = false;
+    examplesHeaderSeen = false;
+    rowCount = 0;
+    outlineName = void 0;
+  };
+  for (const rawLine of lines) {
+    const trimmed2 = rawLine.trim();
+    if (TAG_LINE_RE.test(rawLine)) {
+      pendingTags.push(
+        ...rawLine.trim().split(/\s+/).filter((t) => t.startsWith("@"))
+      );
+      continue;
+    }
+    const featureMatch = FEATURE_RE.exec(trimmed2);
+    if (featureMatch) {
+      flushOutline();
+      featureName = featureMatch[1].trim();
+      pendingTags = [];
+      continue;
+    }
+    const outlineMatch = OUTLINE_RE.exec(trimmed2);
+    if (outlineMatch) {
+      flushOutline();
+      outlineName = outlineMatch[1].trim();
+      inOutline = true;
+      inExamplesBlock = false;
+      examplesHeaderSeen = false;
+      rowCount = 0;
+      pendingTags = [];
+      continue;
+    }
+    if (inOutline && EXAMPLES_RE.test(trimmed2)) {
+      pendingTags = [];
+      inExamplesBlock = true;
+      examplesHeaderSeen = false;
+      continue;
+    }
+    if (inOutline && inExamplesBlock && DATA_ROW_RE.test(rawLine)) {
+      if (!examplesHeaderSeen) {
+        examplesHeaderSeen = true;
+      } else {
+        rowCount++;
+      }
+      continue;
+    }
+    const scenarioMatch = SCENARIO_RE.exec(trimmed2);
+    if (scenarioMatch) {
+      flushOutline();
+      const name = scenarioMatch[1].trim();
+      names.push(featureName ? `${featureName} > ${name}` : name);
+      pendingTags = [];
+      continue;
+    }
+    if (trimmed2.length > 0 && !trimmed2.startsWith("#")) {
+      pendingTags = [];
+    }
+  }
+  flushOutline();
+  return names;
+}
+var cucumberParser = {
+  parseFile: parseCucumberSpec,
+  extractTestNames: extractTestNames6,
+  filePatterns: ["**/*.feature"],
+  supportedFeatures: {
+    tags: true,
+    describes: true,
+    parameterized: true,
+    lineNumbers: true,
+    asyncTests: false
+  }
+};
+
 // src/core/parser.ts
 var PARSERS = {
   playwright: playwrightParser,
   cypress: cypressParser,
   vitest: vitestParser,
   testng: testngParser,
-  junit: junitParser
+  junit: junitParser,
+  cucumber: cucumberParser
 };
 function getParser(framework) {
   if (framework === "unknown") return null;
@@ -4955,7 +5296,7 @@ function extractTestsWithLinesFromContent(content, framework) {
 function findSpecFiles(projectRoot, testDir, framework) {
   const parser4 = getParser(framework);
   if (!parser4) return [];
-  const baseDir = import_path7.default.resolve(projectRoot, testDir);
+  const baseDir = import_path8.default.resolve(projectRoot, testDir);
   return ts(parser4.filePatterns, {
     cwd: baseDir,
     absolute: true,
@@ -4970,7 +5311,7 @@ function parseAllSpecs(projectRoot, frameworkConfigs) {
     if (framework === "unknown") continue;
     const files = findSpecFiles(projectRoot, testDir, framework);
     for (const filePath of files) {
-      const normalized = import_path7.default.normalize(filePath);
+      const normalized = import_path8.default.normalize(filePath);
       if (seen.has(normalized)) continue;
       seen.add(normalized);
       const content = (0, import_fs3.readFileSync)(filePath, "utf-8");
@@ -5063,8 +5404,8 @@ function pathspec(...paths) {
   cache.set(key, paths);
   return key;
 }
-function isPathSpec(path10) {
-  return path10 instanceof String && cache.has(path10);
+function isPathSpec(path11) {
+  return path11 instanceof String && cache.has(path11);
 }
 function toPaths(pathSpec) {
   return cache.get(pathSpec) || [];
@@ -5153,8 +5494,8 @@ function toLinesWithContent(input = "", trimmed2 = true, separator = "\n") {
 function forEachLineWithContent(input, callback) {
   return toLinesWithContent(input, true).map((line) => callback(line));
 }
-function folderExists(path10) {
-  return (0, import_file_exists.exists)(path10, import_file_exists.FOLDER);
+function folderExists(path11) {
+  return (0, import_file_exists.exists)(path11, import_file_exists.FOLDER);
 }
 function append(target, item) {
   if (Array.isArray(target)) {
@@ -5558,8 +5899,8 @@ function checkIsRepoRootTask() {
     commands,
     format: "utf-8",
     onError,
-    parser(path10) {
-      return /^\.(git)?$/.test(path10.trim());
+    parser(path11) {
+      return /^\.(git)?$/.test(path11.trim());
     }
   };
 }
@@ -5993,11 +6334,11 @@ function parseGrep(grep) {
   const paths = /* @__PURE__ */ new Set();
   const results = {};
   forEachLineWithContent(grep, (input) => {
-    const [path10, line, preview] = input.split(NULL);
-    paths.add(path10);
-    (results[path10] = results[path10] || []).push({
+    const [path11, line, preview] = input.split(NULL);
+    paths.add(path11);
+    (results[path11] = results[path11] || []).push({
       line: asNumber(line),
-      path: path10,
+      path: path11,
       preview
     });
   });
@@ -6760,14 +7101,14 @@ var init_hash_object = __esm2({
     init_task();
   }
 });
-function parseInit(bare, path10, text) {
+function parseInit(bare, path11, text) {
   const response = String(text).trim();
   let result;
   if (result = initResponseRegex.exec(response)) {
-    return new InitSummary(bare, path10, false, result[1]);
+    return new InitSummary(bare, path11, false, result[1]);
   }
   if (result = reInitResponseRegex.exec(response)) {
-    return new InitSummary(bare, path10, true, result[1]);
+    return new InitSummary(bare, path11, true, result[1]);
   }
   let gitDir = "";
   const tokens = response.split(" ");
@@ -6778,7 +7119,7 @@ function parseInit(bare, path10, text) {
       break;
     }
   }
-  return new InitSummary(bare, path10, /^re/i.test(response), gitDir);
+  return new InitSummary(bare, path11, /^re/i.test(response), gitDir);
 }
 var InitSummary;
 var initResponseRegex;
@@ -6787,9 +7128,9 @@ var init_InitSummary = __esm2({
   "src/lib/responses/InitSummary.ts"() {
     "use strict";
     InitSummary = class {
-      constructor(bare, path10, existing, gitDir) {
+      constructor(bare, path11, existing, gitDir) {
         this.bare = bare;
-        this.path = path10;
+        this.path = path11;
         this.existing = existing;
         this.gitDir = gitDir;
       }
@@ -6801,7 +7142,7 @@ var init_InitSummary = __esm2({
 function hasBareCommand(command) {
   return command.includes(bareCommand);
 }
-function initTask(bare = false, path10, customArgs) {
+function initTask(bare = false, path11, customArgs) {
   const commands = ["init", ...customArgs];
   if (bare && !hasBareCommand(commands)) {
     commands.splice(1, 0, bareCommand);
@@ -6810,7 +7151,7 @@ function initTask(bare = false, path10, customArgs) {
     commands,
     format: "utf-8",
     parser(text) {
-      return parseInit(commands.includes("--bare"), path10, text);
+      return parseInit(commands.includes("--bare"), path11, text);
     }
   };
 }
@@ -7626,12 +7967,12 @@ var init_FileStatusSummary = __esm2({
     "use strict";
     fromPathRegex = /^(.+)\0(.+)$/;
     FileStatusSummary = class {
-      constructor(path10, index, working_dir) {
-        this.path = path10;
+      constructor(path11, index, working_dir) {
+        this.path = path11;
         this.index = index;
         this.working_dir = working_dir;
         if (index === "R" || working_dir === "R") {
-          const detail = fromPathRegex.exec(path10) || [null, path10, path10];
+          const detail = fromPathRegex.exec(path11) || [null, path11, path11];
           this.from = detail[2] || "";
           this.path = detail[1] || "";
         }
@@ -7662,14 +8003,14 @@ function splitLine(result, lineStr) {
     default:
       return;
   }
-  function data(index, workingDir, path10) {
+  function data(index, workingDir, path11) {
     const raw = `${index}${workingDir}`;
     const handler = parsers6.get(raw);
     if (handler) {
-      handler(result, path10);
+      handler(result, path11);
     }
     if (raw !== "##" && raw !== "!!") {
-      result.files.push(new FileStatusSummary(path10, index, workingDir));
+      result.files.push(new FileStatusSummary(path11, index, workingDir));
     }
   }
 }
@@ -8021,9 +8362,9 @@ var init_simple_git_api = __esm2({
           next
         );
       }
-      hashObject(path10, write) {
+      hashObject(path11, write) {
         return this._runTask(
-          hashObjectTask(path10, write === true),
+          hashObjectTask(path11, write === true),
           trailingFunctionArgument(arguments)
         );
       }
@@ -8377,8 +8718,8 @@ var init_branch = __esm2({
   }
 });
 function toPath(input) {
-  const path10 = input.trim().replace(/^["']|["']$/g, "");
-  return path10 && (0, import_node_path2.normalize)(path10);
+  const path11 = input.trim().replace(/^["']|["']$/g, "");
+  return path11 && (0, import_node_path2.normalize)(path11);
 }
 var parseCheckIgnore;
 var init_CheckIgnore = __esm2({
@@ -8663,8 +9004,8 @@ __export(sub_module_exports, {
   subModuleTask: () => subModuleTask,
   updateSubModuleTask: () => updateSubModuleTask
 });
-function addSubModuleTask(repo, path10) {
-  return subModuleTask(["add", repo, path10]);
+function addSubModuleTask(repo, path11) {
+  return subModuleTask(["add", repo, path11]);
 }
 function initSubModuleTask(customArgs) {
   return subModuleTask(["init", ...customArgs]);
@@ -8978,8 +9319,8 @@ var require_git = __commonJS2({
       }
       return this._runTask(straightThroughStringTask2(command, this._trimmed), next);
     };
-    Git2.prototype.submoduleAdd = function(repo, path10, then) {
-      return this._runTask(addSubModuleTask2(repo, path10), trailingFunctionArgument2(arguments));
+    Git2.prototype.submoduleAdd = function(repo, path11, then) {
+      return this._runTask(addSubModuleTask2(repo, path11), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.submoduleUpdate = function(args, then) {
       return this._runTask(
@@ -9590,7 +9931,7 @@ init_git_response_error();
 var esm_default = gitInstanceFactory;
 
 // src/git/history.ts
-var import_path8 = __toESM(require("path"));
+var import_path9 = __toESM(require("path"));
 async function getLatestCommitHash(projectPath) {
   const git = esm_default(projectPath);
   try {
@@ -9681,7 +10022,9 @@ async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceC
   }
   console.log(`[sync] Processing ${commits.length} commits...`);
   const BATCH_SIZE = 20;
-  const reportEvery = Math.max(50, Math.floor(commits.length / 10));
+  const PROGRESS_REPORT_COUNT = 20;
+  const MIN_REPORT_INTERVAL = 50;
+  const reportEvery = Math.max(MIN_REPORT_INTERVAL, Math.floor(commits.length / PROGRESS_REPORT_COUNT));
   const slots = new Array(commits.length).fill(null);
   let processed = 0;
   for (let batchStart = 0; batchStart < commits.length; batchStart += BATCH_SIZE) {
@@ -9791,7 +10134,7 @@ async function fetchCommitsWithFiles(git, logArgs, testDirs) {
 function isInTestDir(filePath, testDir) {
   if (testDir === ".") return true;
   const normalised = testDir.endsWith("/") ? testDir : testDir + "/";
-  return filePath.startsWith(normalised) || import_path8.default.dirname(filePath) + "/" === normalised;
+  return filePath.startsWith(normalised) || import_path9.default.dirname(filePath) + "/" === normalised;
 }
 function isInAnyTestDir(filePath, testDirs) {
   return testDirs.some((dir) => isInTestDir(filePath, dir));
@@ -9984,6 +10327,29 @@ function makeAuthHeaders(apiToken) {
     Authorization: `Bearer ${apiToken}`
   };
 }
+async function validateProjectAccess(dashboardUrl, apiToken, projectId) {
+  const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: makeAuthHeaders(apiToken)
+    });
+    if (response.status === 401 || response.status === 403) {
+      throw new Error("Invalid API key. Please check your API_KEY.");
+    }
+    if (response.status === 404) {
+      throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
+    }
+    if (!response.ok) {
+      console.warn(`[sync] Warning: Could not validate project access (${response.status}). Proceeding anyway.`);
+    }
+  } catch (error) {
+    if (error instanceof Error && (error.message.startsWith("Invalid API key") || error.message.startsWith("Project not found"))) {
+      throw error;
+    }
+    console.warn("[sync] Warning: Could not reach dashboard to validate project access. Proceeding anyway.");
+  }
+}
 async function fetchProjectConfig(dashboardUrl, apiToken, projectId) {
   const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
   try {
@@ -10031,52 +10397,80 @@ async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
 }
 async function syncToDashboard(dashboardUrl, apiToken, payload) {
   const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();
-  const response = await fetch(url, {
-    method: "POST",
-    headers: makeAuthHeaders(apiToken),
-    body: JSON.stringify(payload)
-  });
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => "");
-    throw new Error(
-      `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
-    );
+  const body = JSON.stringify(payload);
+  const MAX_RETRIES = 3;
+  const TIMEOUT_MS = 6e4;
+  const BASE_BACKOFF_MS = 1e3;
+  let lastError = null;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: makeAuthHeaders(apiToken),
+        body,
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        const errorBody = await response.text().catch(() => "");
+        throw new Error(
+          `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
+        );
+      }
+      return response.json();
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      const isAbort = lastError.name === "AbortError";
+      if (isAbort) {
+        lastError = new Error(`Upload timed out after ${TIMEOUT_MS / 1e3}s`);
+      }
+      if (attempt < MAX_RETRIES) {
+        const backoffMs = BASE_BACKOFF_MS * 2 ** (attempt - 1);
+        console.warn(`[sync] Warning: Upload error, retrying. (${lastError.message})`);
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    } finally {
+      clearTimeout(timer);
+    }
   }
-  return response.json();
+  throw lastError ?? new Error("Sync failed after retries");
 }
 
 // src/sync.ts
 var MAX_FIRST_SYNC_DAYS = 365;
 function getChangeKey(change, specPath) {
-  const path10 = specPath ?? "";
+  const path11 = specPath ?? "";
   const oldName = change.oldName ?? "";
-  return `${path10}:${change.type}:${change.name}:${oldName}`;
+  return `${path11}:${change.type}:${change.name}:${oldName}`;
+}
+function mapKey(framework, testDir) {
+  return `${framework}:${testDir}`;
 }
 function applyFrameworkOverrides(frameworkMap, overrides) {
   for (const override of overrides) {
     if (!override.dirs?.length) continue;
-    const existing = frameworkMap.get(override.framework);
-    if (existing) {
-      existing.testDir = override.dirs[0];
-      console.log(`[config] ${override.framework}: testDir overridden to ${override.dirs[0]}`);
-    } else {
-      frameworkMap.set(override.framework, {
+    for (const [key, config] of frameworkMap) {
+      if (config.framework === override.framework) frameworkMap.delete(key);
+    }
+    for (const dir of override.dirs) {
+      frameworkMap.set(mapKey(override.framework, dir), {
         framework: override.framework,
-        testDir: override.dirs[0],
+        testDir: dir,
         confidence: "high"
       });
-      console.log(`[config] ${override.framework}: added via dashboard override (dir: ${override.dirs[0]})`);
+      console.log(`[config] ${override.framework}: dir added via dashboard override -> ${dir}`);
     }
   }
 }
 function applyTestDirExcludes(frameworkMap, excludes) {
   for (const excludeDir of excludes) {
     const normalised = excludeDir.replace(/^\.\//, "");
-    for (const [fw, config] of frameworkMap) {
+    for (const [key, config] of frameworkMap) {
       const configDir = config.testDir.replace(/^\.\//, "");
       if (configDir.startsWith(normalised)) {
-        frameworkMap.delete(fw);
-        console.log(`[config] ${fw}: excluded by testDirExcludes (${excludeDir})`);
+        frameworkMap.delete(key);
+        console.log(`[config] ${config.framework}: excluded by testDirExcludes (${excludeDir})`);
       }
     }
   }
@@ -10138,7 +10532,9 @@ function deduplicateCommitChanges(entry) {
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
-  const envLocalPath = import_path9.default.join(process.cwd(), ".env.local");
+  console.log("[sync] Validating project access...");
+  await validateProjectAccess(dashboardUrl, apiKey, projectId);
+  const envLocalPath = import_path10.default.join(process.cwd(), ".env.local");
   if (import_fs4.default.existsSync(envLocalPath)) {
     import_dotenv.default.config({ path: envLocalPath, debug: false });
   }
@@ -10161,7 +10557,7 @@ async function syncProject(options) {
   console.log(`[sync] Default branch: ${defaultBranch}`);
   console.log("[sync] Detecting frameworks...");
   const detected = detectFrameworks(process.cwd());
-  const frameworkMap = new Map(detected.map((d) => [d.framework, d]));
+  const frameworkMap = new Map(detected.map((d) => [mapKey(d.framework, d.testDir), d]));
   applyFrameworkOverrides(frameworkMap, projectConfig?.frameworkOverrides ?? []);
   applyTestDirExcludes(frameworkMap, projectConfig?.testDirExcludes ?? []);
   let frameworkConfigs = [...frameworkMap.values()];
@@ -10172,16 +10568,13 @@ async function syncProject(options) {
       `[config] No frameworks remain after exclusions, falling back to: ${frameworkConfigs[0].framework}`
     );
   }
-  console.log(`[sync] Active frameworks (${frameworkConfigs.length}):`);
   for (const { framework, testDir, confidence } of frameworkConfigs) {
     console.log(`[sync]   ${framework} \u2192 ${testDir} (${confidence})`);
   }
   console.log("[sync] Parsing test specifications...");
   const specs = parseAllSpecs(process.cwd(), frameworkConfigs);
-  console.log(`[sync] Found ${specs.length} spec files`);
   const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
-  console.log(`[sync] Total tests: ${totalTests}`);
-  console.log("[sync] Checking sync status...");
+  console.log(`[sync] Found ${specs.length} spec files with ${totalTests} tests`);
   let lastSyncCommit = null;
   let isFirstSync = false;
   try {
@@ -10228,21 +10621,23 @@ async function syncProject(options) {
     });
   }
   const tags = {};
+  let parameterizedTestCount = 0;
   specs.forEach((spec) => {
     spec.tests.forEach((test) => {
       test.tags?.forEach((tag) => {
         tags[tag.name] = (tags[tag.name] || 0) + 1;
+        if (tag.name === "@parameterized") {
+          parameterizedTestCount++;
+        }
       });
     });
   });
   const stats = {
     totalSpecs: specs.length,
     totalTests,
-    tags
+    tags,
+    parameterizedTestCount
   };
-  console.log("[sync] Summary");
-  console.log(`[sync] Specs: ${specs.length}`);
-  console.log(`[sync] Tests: ${totalTests}`);
   console.log("[sync] Syncing to dashboard...");
   const transformedSpecs = transformSpecsForPayload(specs);
   const transformedHistory = history.entries.map((entry) => {
@@ -10260,17 +10655,45 @@ async function syncProject(options) {
       }))
     };
   });
-  const payload = {
-    projectId,
-    specs: transformedSpecs,
-    history: transformedHistory,
-    stats,
-    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-    ...repoUrl ? { repoUrl } : {}
-  };
-  await syncToDashboard(dashboardUrl, apiKey, payload);
-  console.log("[sync] Sync successful!");
-  console.log(`[sync] Synced ${specs.length} specs with ${totalTests} tests`);
+  const HISTORY_CHUNK_SIZE = 100;
+  const historyOldestFirst = [...transformedHistory].reverse();
+  const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
+  const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+    const isLastChunk = chunkIndex === totalChunks - 1;
+    const chunkStart = chunkIndex * HISTORY_CHUNK_SIZE;
+    const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
+    if (totalChunks > 1) {
+      console.log(`[sync] Uploading ${chunkIndex + 1}/${totalChunks} batches...`);
+    }
+    await syncToDashboard(dashboardUrl, apiKey, {
+      projectId,
+      // Only include specs and stats with the first chunk — the server uses
+      // the spec list to upsert files and prune stale entries.
+      specs: chunkIndex === 0 ? transformedSpecs : [],
+      history: historyChunk,
+      stats: chunkIndex === 0 ? stats : {},
+      timestamp,
+      ...repoUrl ? { repoUrl } : {},
+      chunkIndex,
+      isLastChunk
+    });
+    if (totalChunks > 1) {
+      console.log(`[sync]   \u2192 ${chunkIndex + 1}/${totalChunks} batches uploaded`);
+    }
+    if (isLastChunk) {
+      console.log(
+        `[sync] Done \u2014 ${specs.length} specs, ${totalTests} tests, ${history.entries.length} commits synced`
+      );
+      console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
+    } else {
+      const newestInChunk = historyChunk[historyChunk.length - 1].commitHash;
+      try {
+        await saveSyncMarker(dashboardUrl, apiKey, projectId, newestInChunk);
+      } catch {
+      }
+    }
+  }
   try {
     let lastHash = await getRemoteBranchTip(process.cwd(), defaultBranch);
     if (!lastHash) {

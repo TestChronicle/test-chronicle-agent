@@ -1,6 +1,6 @@
 import path from 'path';
 import { TestCase, SpecFile } from '../../types';
-import { hashId, lineNumberAt } from './common';
+import { hashId } from './common';
 import { generateParameterizedTestName } from './parameterized';
 import { IFrameworkParser } from '../base';
 

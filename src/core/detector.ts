@@ -85,12 +85,23 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
 
         if (matches.length > 0) {
             seen.add(framework);
-            const configPath = matches[0];
-            results.push({
-                framework,
-                testDir: extractTestDir(framework, configPath, projectPath),
-                confidence: 'high',
-            });
+
+            if (framework === 'cucumber') {
+                // Cucumber: find all distinct "features" root directories so that
+                // monorepos with multiple projects (e.g. ios + android) and multiple
+                // subdirectories (productDiscovery, confidenceToBy, …) are all captured.
+                const testDirs = findCucumberTestDirs(matches, projectPath);
+                for (const testDir of testDirs) {
+                    results.push({ framework, testDir, confidence: 'high' });
+                }
+            } else {
+                const configPath = matches[0];
+                results.push({
+                    framework,
+                    testDir: extractTestDir(framework, configPath, projectPath),
+                    confidence: 'high',
+                });
+            }
         }
     }
 
@@ -170,10 +181,48 @@ function extractCypressTestDir(configPath: string, projectPath: string): string 
     return defaultDir;
 }
 
+/**
+ * Given an absolute path to a .feature file, returns the "features" root directory
+ * by walking up the path to find the deepest directory named "features".
+ * Falls back to the file's direct parent directory.
+ */
+function findCucumberFeaturesDir(featureFilePath: string, projectPath: string): string {
+    const relDir = path.relative(projectPath, path.dirname(featureFilePath));
+    const parts = relDir.split(path.sep);
+
+    // Find the deepest directory segment named "features"
+    let lastFeaturesIdx = -1;
+    for (let i = 0; i < parts.length; i++) {
+        if (parts[i] === 'features') lastFeaturesIdx = i;
+    }
+
+    if (lastFeaturesIdx >= 0) {
+        return path.join(projectPath, ...parts.slice(0, lastFeaturesIdx + 1));
+    }
+
+    return path.dirname(featureFilePath);
+}
+
+/**
+ * Given a list of absolute .feature file paths, returns unique testDir strings
+ * (relative to projectPath) by grouping files by their "features" root directory.
+ * This allows a monorepo with e.g. ios/features/ and android/features/ to produce
+ * two separate DetectionResults instead of collapsing to a single common ancestor.
+ */
+function findCucumberTestDirs(featureFiles: string[], projectPath: string): string[] {
+    const dirs = new Set<string>();
+    for (const file of featureFiles) {
+        const featuresDir = findCucumberFeaturesDir(file, projectPath);
+        const relative = path.relative(projectPath, featuresDir);
+        dirs.add(relative ? './' + relative.replace(/\\/g, '/') : '.');
+    }
+    return [...dirs];
+}
+
 function extractCucumberTestDir(featureFilePath: string, projectPath: string): string {
     // For root-level config files (cucumber.properties etc.), glob for .feature files
-    // to discover where they live. For nested detection, the featureFilePath IS a
-    // .feature file — use its directory as the starting point.
+    // to discover where they live. For nested detection the caller now uses
+    // findCucumberTestDirs() directly, so this path handles root-config only.
     const isFeatureFile = featureFilePath.endsWith('.feature');
 
     const featureFiles = isFeatureFile
@@ -190,21 +239,8 @@ function extractCucumberTestDir(featureFilePath: string, projectPath: string): s
         return '.';
     }
 
-    // Find the common ancestor directory of all .feature files
-    const dirs = featureFiles.map((f) => path.dirname(f));
-    let common = dirs[0];
-    for (const dir of dirs.slice(1)) {
-        while (!dir.startsWith(common)) {
-            common = path.dirname(common);
-            if (common === path.dirname(common)) {
-                // Reached filesystem root — fall back to project root
-                return '.';
-            }
-        }
-    }
-
-    const relative = path.relative(projectPath, common);
-    return relative ? './' + relative.replace(/\\/g, '/') : '.';
+    // Use the same grouping logic and return the first dir found
+    return findCucumberTestDirs(featureFiles, projectPath)[0];
 }
 
 function extractVitestTestDir(_configPath: string, _projectPath: string): string {
