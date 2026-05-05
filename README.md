@@ -48,18 +48,7 @@ That's it! Your tests will sync automatically on merges to main.
 
 ## 🎯 Supported Frameworks
 
-| Framework  | Test Names | Specs | Tags | Parameterized |
-| ---------- | :--------: | :---: | :--: | :-----------: |
-| Playwright |     ✅     |  ✅   |  ✅  |      ✅       |
-| Cypress    |     ✅     |  ✅   |  ❌  |      ✅       |
-| Vitest     |     ✅     |  ✅   |  ❌  |      ✅       |
-| TestNG     |     ✅     |  🟡   |  ✅  |      ❌       |
-| JUnit      |     ✅     |  🟡   |  🟡  |      ❌       |
-| Jest      |     ✅     |  ✅   |  ❌  |      ✅       |
-
-**Note:** 🟡 = Partial support (class names instead of describe blocks for Java frameworks)
-
-Framework detection is automatic. No configuration needed.
+See [Framework Support](https://www.testchronicle.com/#framework-support) for more details.
 
 ## 📊 What Gets Synced
 
