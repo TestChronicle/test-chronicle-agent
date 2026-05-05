@@ -173,9 +173,11 @@ export async function buildHistory(
 
     console.log(`[sync] Processing ${commits.length} commits...`);
 
-    // Report roughly 10 times across the full run, minimum every 50 commits
+    // Report roughly 20 times across the full run, minimum every 50 commits
     const BATCH_SIZE = 20;
-    const reportEvery = Math.max(50, Math.floor(commits.length / 10));
+    const PROGRESS_REPORT_COUNT = 20;
+    const MIN_REPORT_INTERVAL = 50;
+    const reportEvery = Math.max(MIN_REPORT_INTERVAL, Math.floor(commits.length / PROGRESS_REPORT_COUNT));
 
     // Process commits in parallel batches — preserving index order for timeline integrity
     const slots: (CommitHistory | null)[] = new Array(commits.length).fill(null);
