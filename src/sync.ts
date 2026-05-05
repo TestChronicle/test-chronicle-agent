@@ -329,7 +329,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
 
         if (totalChunks > 1) {
-            console.log(`[sync] Uploading ${chunkIndex + 1}/${totalChunks} (${historyChunk.length} commits)...`);
+            console.log(`[sync] Uploading ${chunkIndex + 1}/${totalChunks} batches...`);
         }
 
         await syncToDashboard(dashboardUrl, apiKey, {
@@ -346,7 +346,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         });
 
         if (totalChunks > 1) {
-            console.log(`[sync]   → ${chunkIndex + 1}/${totalChunks} uploaded`);
+            console.log(`[sync]   → ${chunkIndex + 1}/${totalChunks} batches uploaded`);
         }
 
         if (isLastChunk) {
