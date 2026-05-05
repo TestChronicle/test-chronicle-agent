@@ -10,7 +10,7 @@ import {
     HistoryBuildResult,
     DetectionResult,
 } from '../types';
-import { extractTestNamesFromContent, extractTestsWithLinesFromContent } from '../core/parser';
+import { extractTestNamesFromContent, extractTestsWithLinesFromContent, isFrameworkSpecFile } from '../core/parser';
 import { isSameTest } from '../core/frameworks/testDiff';
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -502,24 +502,12 @@ async function getFileAtCommit(git: ReturnType<typeof simpleGit>, ref: string, f
 
 /**
  * Returns true if the file looks like a spec file for the given framework.
- * Falls back to a generic extension check when no framework is provided.
+ * Delegates to the parser registry's filePatterns so this stays in sync
+ * automatically whenever a new framework is added.
  */
 function isSpecFile(filePath: string, framework?: Framework): boolean {
-    switch (framework) {
-        case 'playwright':
-            return /\.spec\.[jt]s(x?)$/.test(filePath);
-        case 'cypress':
-            return /\.cy\.[jt]s$|\.spec\.[jt]s$/.test(filePath);
-        case 'vitest':
-            return /\.(spec|test)\.[jt]sx?$/.test(filePath);
-        case 'testng':
-        case 'junit':
-            return /(Test|Tests|TestCase)\.java$/.test(filePath);
-        case 'cucumber':
-            return /\.feature$/.test(filePath);
-        default:
-            return /\.(spec|test)\.[jt]s$/.test(filePath);
-    }
+    if (!framework) return /\.(spec|test)\.[jt]s$/.test(filePath);
+    return isFrameworkSpecFile(filePath, framework);
 }
 
 /**
