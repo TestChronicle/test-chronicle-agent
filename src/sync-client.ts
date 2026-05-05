@@ -19,11 +19,7 @@ function makeAuthHeaders(apiToken: string): Record<string, string> {
  * endpoint early. Throws a descriptive error on auth failure or unknown project
  * so the sync fails fast before doing any expensive local work.
  */
-export async function validateProjectAccess(
-    dashboardUrl: string,
-    apiToken: string,
-    projectId: string,
-): Promise<void> {
+export async function validateProjectAccess(dashboardUrl: string, apiToken: string, projectId: string): Promise<void> {
     const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
     try {
         const response = await fetch(url, {
@@ -34,9 +30,7 @@ export async function validateProjectAccess(
             throw new Error('Invalid API key. Please check your API_KEY.');
         }
         if (response.status === 404) {
-            throw new Error(
-                `Project not found: ${projectId}. Please check your PROJECT_ID.`,
-            );
+            throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
         }
         if (!response.ok) {
             console.warn(`[sync] Warning: Could not validate project access (${response.status}). Proceeding anyway.`);
@@ -144,19 +138,60 @@ export async function syncToDashboard(
     },
 ): Promise<{ success: true; projectId: string; synced_at: string }> {
     const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();
+    const body = JSON.stringify(payload);
 
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: makeAuthHeaders(apiToken),
-        body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.text().catch(() => '');
-        throw new Error(
-            `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ''}`,
+    // Warn if payload is large — very large payloads can silently timeout on
+    // some edge runtimes or reverse proxies.
+    const payloadBytes = Buffer.byteLength(body, 'utf8');
+    const WARN_THRESHOLD = 5 * 1024 * 1024; // 5 MB
+    if (payloadBytes > WARN_THRESHOLD) {
+        console.warn(
+            `[sync] Warning: payload is ${(payloadBytes / 1024 / 1024).toFixed(1)} MB — consider reducing history batch size if uploads time out`,
         );
     }
 
-    return response.json() as Promise<{ success: true; projectId: string; synced_at: string }>;
+    const MAX_RETRIES = 3;
+    const TIMEOUT_MS = 60_000; // 60 s
+
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: makeAuthHeaders(apiToken),
+                body,
+                signal: controller.signal,
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text().catch(() => '');
+                throw new Error(
+                    `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ''}`,
+                );
+            }
+
+            return response.json() as Promise<{ success: true; projectId: string; synced_at: string }>;
+        } catch (err) {
+            lastError = err instanceof Error ? err : new Error(String(err));
+            const isAbort = lastError.name === 'AbortError';
+            if (isAbort) {
+                lastError = new Error(`Upload timed out after ${TIMEOUT_MS / 1000}s`);
+            }
+            if (attempt < MAX_RETRIES) {
+                const backoffMs = 1000 * 2 ** (attempt - 1); // 1 s, 2 s
+                console.warn(
+                    `[sync] Upload attempt ${attempt} failed (${lastError.message}). Retrying in ${backoffMs / 1000}s…`,
+                );
+                await new Promise((resolve) => setTimeout(resolve, backoffMs));
+            }
+        } finally {
+            clearTimeout(timer);
+        }
+    }
+
+    throw lastError ?? new Error('Sync failed after retries');
 }
