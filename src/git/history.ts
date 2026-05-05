@@ -515,6 +515,8 @@ function isSpecFile(filePath: string, framework?: Framework): boolean {
         case 'testng':
         case 'junit':
             return /(Test|Tests|TestCase)\.java$/.test(filePath);
+        case 'cucumber':
+            return /\.feature$/.test(filePath);
         default:
             return /\.(spec|test)\.[jt]s$/.test(filePath);
     }

@@ -10270,6 +10270,8 @@ function isSpecFile(filePath, framework) {
     case "testng":
     case "junit":
       return /(Test|Tests|TestCase)\.java$/.test(filePath);
+    case "cucumber":
+      return /\.feature$/.test(filePath);
     default:
       return /\.(spec|test)\.[jt]s$/.test(filePath);
   }
