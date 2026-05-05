@@ -64,3 +64,19 @@ describe('Playwright parser — inline tags', () => {
         expect(spec.tests[0].tags).toEqual([]);
     });
 });
+
+describe('Playwright parser — parameterized detection', () => {
+    it('does not tag a test that uses for..of inside its own body', () => {
+        const spec = parsePlaywrightSpec(FILE, PLAYWRIGHT.forLoopInsideBody, ROOT);
+        const loopTest = spec.tests.find((t) => t.name === 'loops internally');
+        expect(loopTest).toBeDefined();
+        expect(loopTest!.tags.some((t) => t.name === '@parameterized')).toBe(false);
+    });
+
+    it('does not tag a plain test that follows a test with an internal for..of loop', () => {
+        const spec = parsePlaywrightSpec(FILE, PLAYWRIGHT.forLoopInsideBody, ROOT);
+        const plainTest = spec.tests.find((t) => t.name === 'plain test after loop');
+        expect(plainTest).toBeDefined();
+        expect(plainTest!.tags.some((t) => t.name === '@parameterized')).toBe(false);
+    });
+});

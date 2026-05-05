@@ -23,8 +23,10 @@ export function parseCypressSpec(filePath: string, content: string, projectRoot:
 
         const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
 
-        // Check if this is a parameterized test (forEach loop)
-        const paramData = extractParameterizedDataFromForEach(content, testName);
+        // Check if this is a parameterized test (forEach loop).
+        // Pass matchIndex so the function uses the exact call site rather than
+        // indexOf(testName), which could match an earlier occurrence in the file.
+        const paramData = extractParameterizedDataFromForEach(content, matchIndex);
         if (paramData?.hasParameters) {
             if (paramData.count > 0) {
                 // Inline array — count is known, expand to individual test cases

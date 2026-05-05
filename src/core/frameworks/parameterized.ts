@@ -38,45 +38,43 @@ export function extractParameterizedDataFromEach(content: string): ParameterData
  * users.forEach(user => {
  *   it(`should greet ${user.name}`, () => { ... })
  * })
+ *
+ * @param testIndex - The character index of the it()/test() call in `content`,
+ *   as returned by the regex match. Using the exact position avoids false
+ *   positives from indexOf() finding an earlier occurrence of the test name.
  */
-export function extractParameterizedDataFromForEach(content: string, testName: string): ParameterData | null {
-    // Look for forEach pattern near the test
-    // This is more heuristic-based since we can't know the actual array size at static analysis time
-    // We'll look for array declarations near the test
+export function extractParameterizedDataFromForEach(content: string, testIndex: number): ParameterData | null {
+    // Look at the 1 000 characters immediately before this test's it()/test() call.
+    const contextStart = Math.max(0, testIndex - 1000);
+    const context = content.substring(contextStart, testIndex);
 
-    // Find forEach(...) patterns that come before this test
-    const contextStart = Math.max(0, content.lastIndexOf('\n', content.indexOf(testName)) - 1000);
-    const contextEnd = content.indexOf(testName);
-    const context = content.substring(contextStart, contextEnd);
-
-    // Match patterns like: .forEach(x => or .forEach((x) => or FOR patterns
+    // Match patterns like: .forEach(x => or .forEach((x) => or for-of/for-in
     const forEachMatch = context.match(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i);
     const forMatch = context.match(/\bfor\s*\(\s*(?:let|var|const)\s+(\w+)\s+(?:of|in)\s+(.+?)\s*\)/);
 
-    // If we found forEach or for-of, try to find the array declaration
-    if (forEachMatch || forMatch) {
-        // Look for array declarations: const arr = [...] or let x = [...]
-        const arrayDeclMatch = context.match(/(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/);
+    if (!(forEachMatch || forMatch)) return null;
 
-        if (arrayDeclMatch) {
-            const arrayContent = arrayDeclMatch[1];
-            const count = countParameterSets(arrayContent);
-            if (count > 0) {
-                return {
-                    count,
-                    hasParameters: true,
-                };
-            }
+    // Guard: verify the loop is still open at the point of our test (i.e. it
+    // genuinely wraps this it() call rather than being inside a previous test).
+    const loopSearchStart = forEachMatch
+        ? context.search(/\b(?:users|items|data|elements|nodes)\.forEach\s*\(/i)
+        : context.search(/\bfor\s*\(\s*(?:let|var|const)/);
+
+    if (loopSearchStart === -1 || !isLoopStillOpen(context, loopSearchStart)) return null;
+
+    // The loop is open — now try to count its items from an inline array decl.
+    const arrayDeclMatch = context.match(/(?:const|let|var)\s+\w+\s*=\s*\[([\s\S]*?)\]/);
+
+    if (arrayDeclMatch) {
+        const arrayContent = arrayDeclMatch[1];
+        const count = countParameterSets(arrayContent);
+        if (count > 0) {
+            return { count, hasParameters: true };
         }
-
-        // If we found forEach but couldn't count, mark as unknown (heuristic)
-        return {
-            count: 0, // Unknown
-            hasParameters: true,
-        };
     }
 
-    return null;
+    // Loop found but array size is dynamic/unknown
+    return { count: 0, hasParameters: true };
 }
 
 /**
@@ -154,16 +152,34 @@ export function detectParameterizedLoop(content: string, testIndex: number): boo
     const context = content.substring(contextStart, testIndex);
 
     // for...of / for...in wrapping the test
-    if (/\bfor\s*\(\s*(?:const|let|var)\s+.+?\s+(?:of|in)\s+.+?\)/.test(context)) {
+    const forMatch = /\bfor\s*\(\s*(?:const|let|var)\s+.+?\s+(?:of|in)\s+.+?\)/.exec(context);
+    if (forMatch && isLoopStillOpen(context, forMatch.index)) {
         return true;
     }
 
     // .forEach( wrapping the test
-    if (/\.\s*forEach\s*\(/.test(context)) {
+    const forEachMatch = /\.\s*forEach\s*\(/.exec(context);
+    if (forEachMatch && isLoopStillOpen(context, forEachMatch.index)) {
         return true;
     }
 
     return false;
+}
+
+/**
+ * Returns true if the loop/block starting at `loopStart` in `context` has not
+ * been closed by the end of `context` (i.e. net brace depth never goes negative).
+ * A negative net depth means the opening brace was matched by a closing brace
+ * before the current test position — the loop belongs to a previous test's body.
+ */
+function isLoopStillOpen(context: string, loopStart: number): boolean {
+    let netBraces = 0;
+    for (let i = loopStart; i < context.length; i++) {
+        if (context[i] === '{') netBraces++;
+        else if (context[i] === '}') netBraces--;
+        if (netBraces < 0) return false; // closed before our test
+    }
+    return true;
 }
 
 /**
