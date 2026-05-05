@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseCypressSpec } from '../../../src/core/frameworks/cypress';
-import { CYPRESS } from '../../fixtures';
+import { CYPRESS, CYPRESS_PARAMETERIZED } from '../../fixtures';
 
 const ROOT = '/project';
 const FILE = '/project/cypress/e2e/login.cy.ts';
@@ -49,5 +49,27 @@ describe('Cypress parser — tags', () => {
     it('tests have an empty tags array by default', () => {
         const spec = parseCypressSpec(FILE, CYPRESS.plain, ROOT);
         expect(spec.tests[0].tags).toEqual([]);
+    });
+});
+
+describe('Cypress parser — parameterized detection', () => {
+    it('tags tests wrapped in a forEach as @parameterized', () => {
+        const spec = parseCypressSpec(FILE, CYPRESS_PARAMETERIZED.forEach, ROOT);
+        expect(spec.tests.length).toBeGreaterThan(0);
+        expect(spec.tests.every((t) => t.tags.some((tag) => tag.name === '@parameterized'))).toBe(true);
+    });
+
+    it('does not tag a test that uses for..of inside its own body', () => {
+        const spec = parseCypressSpec(FILE, CYPRESS_PARAMETERIZED.forLoopInsideBody, ROOT);
+        const loopTest = spec.tests.find((t) => t.name === 'loops internally');
+        expect(loopTest).toBeDefined();
+        expect(loopTest!.tags).toEqual([]);
+    });
+
+    it('does not tag a plain test that follows a test with an internal for..of loop', () => {
+        const spec = parseCypressSpec(FILE, CYPRESS_PARAMETERIZED.forLoopInsideBody, ROOT);
+        const plainTest = spec.tests.find((t) => t.name === 'plain test after loop');
+        expect(plainTest).toBeDefined();
+        expect(plainTest!.tags).toEqual([]);
     });
 });

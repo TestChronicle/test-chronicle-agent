@@ -257,3 +257,31 @@ export const PARAMETERIZED = {
 
     plain: `test('plain test', () => {})`,
 };
+
+// ─── Cypress parameterized fixtures ──────────────────────────────────────────
+
+export const CYPRESS_PARAMETERIZED = {
+    // A test that wraps it() calls in a forEach — genuinely parameterized.
+    forEach: [
+        `const users = [`,
+        `    { name: 'alice' },`,
+        `    { name: 'bob' },`,
+        `];`,
+        `users.forEach((user) => {`,
+        `    it('should greet ' + user.name, () => {})`,
+        `});`,
+    ].join('\n'),
+
+    // A test that uses for..of INSIDE its body — NOT parameterized.
+    // A second plain test follows to test that it is also not tagged.
+    forLoopInsideBody: [
+        `it('loops internally', () => {`,
+        `    const items = ['a', 'b', 'c'];`,
+        `    for (const item of items) {`,
+        `        expect(item).toBeTruthy();`,
+        `    }`,
+        `});`,
+        ``,
+        `it('plain test after loop', () => {});`,
+    ].join('\n'),
+};
