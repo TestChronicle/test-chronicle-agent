@@ -29,6 +29,10 @@ const SIGNATURES: Record<Exclude<Framework, 'unknown'>, FrameworkSignature> = {
         configFiles: ['vitest.config.ts', 'vitest.config.js'],
         packageDeps: ['vitest'],
     },
+    cucumber: {
+        configFiles: ['cucumber.properties', 'cucumber.yml', 'cucumber.yaml'],
+        packageDeps: ['@cucumber/cucumber', 'io.cucumber:cucumber-java'],
+    },
 };
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -67,6 +71,7 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
         playwright: '**/playwright.config.{ts,js,mjs}',
         cypress: '**/cypress.config.{ts,js}',
         vitest: '**/vitest.config.{ts,js}',
+        cucumber: '**/*.feature',
     };
 
     for (const [framework, glob] of Object.entries(nestedConfigGlobs) as [Exclude<Framework, 'unknown'>, string][]) {
@@ -114,6 +119,8 @@ function extractTestDir(framework: Exclude<Framework, 'unknown'>, configPath: st
             return extractCypressTestDir(configPath, projectPath);
         case 'vitest':
             return extractVitestTestDir(configPath, projectPath);
+        case 'cucumber':
+            return extractCucumberTestDir(configPath, projectPath);
         default:
             return guessTestDir(projectPath);
     }
@@ -161,6 +168,43 @@ function extractCypressTestDir(configPath: string, projectPath: string): string 
     if (existsSync(path.join(projectPath, legacyDir))) return legacyDir;
 
     return defaultDir;
+}
+
+function extractCucumberTestDir(featureFilePath: string, projectPath: string): string {
+    // For root-level config files (cucumber.properties etc.), glob for .feature files
+    // to discover where they live. For nested detection, the featureFilePath IS a
+    // .feature file — use its directory as the starting point.
+    const isFeatureFile = featureFilePath.endsWith('.feature');
+
+    const featureFiles = isFeatureFile
+        ? [featureFilePath]
+        : globSync('**/*.feature', {
+              cwd: projectPath,
+              ignore: ['**/node_modules/**', '**/dist/**'],
+              absolute: true,
+          });
+
+    if (featureFiles.length === 0) {
+        const featuresDir = path.join(projectPath, 'features');
+        if (existsSync(featuresDir)) return './features';
+        return '.';
+    }
+
+    // Find the common ancestor directory of all .feature files
+    const dirs = featureFiles.map((f) => path.dirname(f));
+    let common = dirs[0];
+    for (const dir of dirs.slice(1)) {
+        while (!dir.startsWith(common)) {
+            common = path.dirname(common);
+            if (common === path.dirname(common)) {
+                // Reached filesystem root — fall back to project root
+                return '.';
+            }
+        }
+    }
+
+    const relative = path.relative(projectPath, common);
+    return relative ? './' + relative.replace(/\\/g, '/') : '.';
 }
 
 function extractVitestTestDir(_configPath: string, _projectPath: string): string {

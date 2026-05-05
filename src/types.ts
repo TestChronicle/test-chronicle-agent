@@ -1,6 +1,6 @@
 // ─── Framework ───────────────────────────────────────────────────────────────
 
-export type Framework = 'playwright' | 'cypress' | 'testng' | 'junit' | 'vitest' | 'unknown';
+export type Framework = 'playwright' | 'cypress' | 'testng' | 'junit' | 'vitest' | 'cucumber' | 'unknown';
 
 export type ChangeStatus = 'added' | 'removed' | 'changed' | 'unchanged';
 

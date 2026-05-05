@@ -309,3 +309,136 @@ export const CYPRESS_PARAMETERIZED = {
         `it('plain test after loop', () => {});`,
     ].join('\n'),
 };
+
+// ─── Cucumber / Gherkin fixtures ──────────────────────────────────────────────
+
+export const CUCUMBER = {
+    /** Single Feature + single Scenario — no tags */
+    simpleScenario: [
+        `Feature: Login`,
+        `  As a user`,
+        `  I want to log in`,
+        ``,
+        `  Scenario: Successful login`,
+        `    Given I am on the login page`,
+        `    When I enter valid credentials`,
+        `    Then I should see the dashboard`,
+    ].join('\n'),
+
+    /** Feature-level tags should be inherited by the Scenario */
+    withFeatureTags: [
+        `@smoke @regression`,
+        `Feature: Search`,
+        ``,
+        `  Scenario: Basic search`,
+        `    Given I am on the search page`,
+        `    When I search for "widget"`,
+        `    Then I see results`,
+    ].join('\n'),
+
+    /** Scenario-level tags only (no feature tags) */
+    withScenarioTags: [
+        `Feature: Checkout`,
+        ``,
+        `  @smoke @critical`,
+        `  Scenario: Complete purchase`,
+        `    Given I have items in my basket`,
+        `    When I complete checkout`,
+        `    Then I receive a confirmation`,
+    ].join('\n'),
+
+    /** Feature tags AND Scenario tags — merged on the test */
+    mixedTagInheritance: [
+        `@feature-tag`,
+        `Feature: Add to Bag`,
+        ``,
+        `  @scenario-tag @SEVERITY=Critical`,
+        `  Scenario: Adding item to Bag`,
+        `    Given the user is on a Product Display Page`,
+        `    When adding this size to the Bag`,
+        `    Then this product should appear in their Bag`,
+    ].join('\n'),
+
+    /** Scenario Outline with 3 data rows → 3 test cases */
+    scenarioOutline: [
+        `Feature: Form Validation`,
+        ``,
+        `  Scenario Outline: Validate email format`,
+        `    Given I enter "<email>" in the email field`,
+        `    Then I see the error "<error>"`,
+        ``,
+        `    Examples:`,
+        `      | email            | error              |`,
+        `      | invalid          | Invalid email      |`,
+        `      | missing@         | Invalid email      |`,
+        `      | valid@test.com   | No error           |`,
+    ].join('\n'),
+
+    /** Scenario Template (synonym for Scenario Outline) with 2 rows */
+    scenarioTemplate: [
+        `Feature: Pricing`,
+        ``,
+        `  Scenario Template: Check price`,
+        `    Given the product is "<product>"`,
+        `    Then the price is "<price>"`,
+        ``,
+        `    Examples:`,
+        `      | product | price |`,
+        `      | Widget  | $10   |`,
+        `      | Gadget  | $20   |`,
+    ].join('\n'),
+
+    /** Multiple Scenarios in one feature file */
+    multipleScenarios: [
+        `Feature: User Profile`,
+        ``,
+        `  Scenario: View profile`,
+        `    Given I am logged in`,
+        `    When I visit my profile`,
+        `    Then I see my details`,
+        ``,
+        `  Scenario: Edit profile`,
+        `    Given I am logged in`,
+        `    When I edit my profile`,
+        `    Then my changes are saved`,
+    ].join('\n'),
+
+    /** Scenario Outline with tags on the outline AND on the Examples block */
+    outlineWithExampleTags: [
+        `@feature-tag`,
+        `Feature: Mobile Login`,
+        ``,
+        `  @outline-tag`,
+        `  Scenario Outline: Login as <role>`,
+        `    Given I am a "<role>" user`,
+        `    When I log in`,
+        `    Then I see the "<dashboard>" dashboard`,
+        ``,
+        `    @examples-tag`,
+        `    Examples:`,
+        `      | role  | dashboard |`,
+        `      | admin | admin     |`,
+        `      | guest | public    |`,
+    ].join('\n'),
+
+    /** The AddToBag.feature example from the user */
+    addToBag: [
+        `@AddToBag @OWNER=ConfidenceToBuy @FEATURE=BagV2`,
+        `Feature: Add to Bag`,
+        `  As a user`,
+        `  I want to be able to add products to my Bag`,
+        `  So that I can add my products to my Bag ready for checkout`,
+        ``,
+        `  @TMSLINK=SHOP-1776 @SEVERITY=Critical`,
+        `  Scenario: Adding sized item to Bag from Product Display Page`,
+        `    Given the user is on a Product Display Page displaying a size which is in stock`,
+        `    When adding this size to the Bag`,
+        `    Then this product should appear in their Bag`,
+        ``,
+        `  @AddToBag-002 @SEVERITY=Critical`,
+        `  Scenario: Adding a discounted item to the Bag`,
+        `    Given the user is on a discounted Product's Display Page displaying a size which is in stock`,
+        `    When adding this size to the Bag`,
+        `    Then this product should appear in their Bag with the correct discount applied`,
+    ].join('\n'),
+};
