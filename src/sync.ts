@@ -100,6 +100,7 @@ type CommitChange = {
     testName: string;
     type: 'added' | 'deleted' | 'renamed' | 'maintenance';
     oldName?: string;
+    framework: string;
 };
 
 /**
@@ -116,6 +117,7 @@ function deduplicateCommitChanges(entry: CommitHistory): CommitChange[] {
                 testName: change.name,
                 type: change.type,
                 oldName: change.oldName,
+                framework: spec.framework,
             });
         }
     }
@@ -318,6 +320,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
                 specFile: change.specPath,
                 testName: change.testName,
                 type: change.type,
+                framework: change.framework,
                 details: change.oldName ? { old_name: change.oldName } : undefined,
             })),
         };

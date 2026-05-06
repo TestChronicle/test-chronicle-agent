@@ -12066,6 +12066,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
     return {
       specPath: change.path,
       fileStatus: "added",
+      framework,
       changes: tests.map((name) => ({ type: "added", name }))
     };
   }
@@ -12076,6 +12077,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
     return {
       specPath: change.path,
       fileStatus: "deleted",
+      framework,
       changes: tests.map((name) => ({ type: "deleted", name }))
     };
   }
@@ -12091,6 +12093,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
     return {
       specPath: change.path,
       fileStatus: "renamed",
+      framework,
       changes: testChanges
     };
   }
@@ -12107,6 +12110,7 @@ async function buildSpecEntry(git, hash, change, framework, _projectPath) {
   return {
     specPath: change.path,
     fileStatus: "changed",
+    framework,
     changes: allChanges
   };
 }
@@ -12348,7 +12352,8 @@ function deduplicateCommitChanges(entry) {
         specPath: spec.specPath,
         testName: change.name,
         type: change.type,
-        oldName: change.oldName
+        oldName: change.oldName,
+        framework: spec.framework
       });
     }
   }
@@ -12505,6 +12510,7 @@ async function syncProject(options) {
         specFile: change.specPath,
         testName: change.testName,
         type: change.type,
+        framework: change.framework,
         details: change.oldName ? { old_name: change.oldName } : void 0
       }))
     };
@@ -12513,13 +12519,13 @@ async function syncProject(options) {
   const historyOldestFirst = [...transformedHistory].reverse();
   const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
   const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+  if (totalChunks > 1) {
+    console.log(`[sync] Uploading in ${totalChunks} batches...`);
+  }
   for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
     const isLastChunk = chunkIndex === totalChunks - 1;
     const chunkStart = chunkIndex * HISTORY_CHUNK_SIZE;
     const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
-    if (totalChunks > 1) {
-      console.log(`[sync] Uploading ${chunkIndex + 1}/${totalChunks} batches...`);
-    }
     await syncToDashboard(dashboardUrl, apiKey, {
       projectId,
       // Only include specs and stats with the first chunk — the server uses

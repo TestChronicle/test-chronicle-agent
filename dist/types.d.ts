@@ -89,6 +89,7 @@ export interface SpecHistoryEntry {
     specPath: string;
     fileStatus: 'added' | 'deleted' | 'renamed' | 'changed';
     changes: TestChange[];
+    framework: Framework;
 }
 export interface CommitHistory {
     commit: GitCommit;
