@@ -439,6 +439,7 @@ async function buildSpecEntry(
         return {
             specPath: change.path,
             fileStatus: 'added',
+            framework,
             changes: tests.map((name) => ({ type: 'added', name })),
         };
     }
@@ -450,6 +451,7 @@ async function buildSpecEntry(
         return {
             specPath: change.path,
             fileStatus: 'deleted',
+            framework,
             changes: tests.map((name) => ({ type: 'deleted', name })),
         };
     }
@@ -469,6 +471,7 @@ async function buildSpecEntry(
         return {
             specPath: change.path,
             fileStatus: 'renamed',
+            framework,
             changes: testChanges,
         };
     }
@@ -490,6 +493,7 @@ async function buildSpecEntry(
     return {
         specPath: change.path,
         fileStatus: 'changed',
+        framework,
         changes: allChanges,
     };
 }
