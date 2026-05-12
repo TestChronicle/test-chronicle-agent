@@ -7146,6 +7146,7 @@ function findSpecFiles(projectRoot, testDir, framework) {
   return ts(parser4.filePatterns, {
     cwd: baseDir,
     absolute: true,
+    nodir: true,
     ignore: ["**/node_modules/**"]
   });
 }
@@ -7165,6 +7166,11 @@ function parseAllSpecs(projectRoot, frameworkConfigs) {
     if (framework === "unknown") continue;
     const files = findSpecFiles(projectRoot, testDir, framework);
     for (const filePath of files) {
+      try {
+        if (!(0, import_fs3.statSync)(filePath).isFile()) continue;
+      } catch {
+        continue;
+      }
       const normalized = import_path8.default.normalize(filePath);
       if (seen.has(normalized)) continue;
       seen.add(normalized);
@@ -12295,8 +12301,17 @@ function mapKey(framework, testDir) {
   return `${framework}:${testDir}`;
 }
 function applyFrameworkOverrides(frameworkMap, overrides) {
+  const cleaned = /* @__PURE__ */ new Set();
   for (const override of overrides) {
     if (!override.dirs?.length) continue;
+    if (!cleaned.has(override.framework)) {
+      for (const [key, config] of frameworkMap) {
+        if (config.framework === override.framework) {
+          frameworkMap.delete(key);
+        }
+        cleaned.add(override.framework);
+      }
+    }
     for (const [key, config] of frameworkMap) {
       if (config.framework === override.framework) frameworkMap.delete(key);
     }
