@@ -45,8 +45,24 @@ function mapKey(framework: string, testDir: string): string {
  * is authoritative when overrides are present.
  */
 function applyFrameworkOverrides(frameworkMap: Map<string, DetectionResult>, overrides: FrameworkOverride[]): void {
+    // Track which frameworks have already had their auto-dtected entries removed.
+    // Without this, a second override for the same framework would delete entries
+    // added by the first override, leaving only the last one in the map.
+    const cleaned = new Set<string>();
+
     for (const override of overrides) {
         if (!override.dirs?.length) continue;
+
+        // Remove all auto-detected entries for this framework if we haven't already, so the explicit dirs take over,
+        // but only do this once per framework so previous overrides' entries are preserved.
+        if (!cleaned.has(override.framework)) {
+            for (const [key, config] of frameworkMap) {
+                if (config.framework === override.framework) {
+                    frameworkMap.delete(key);
+                }
+                cleaned.add(override.framework);
+            }
+        }
 
         // Remove all auto-detected entries for this framework so the explicit dirs take over
         for (const [key, config] of frameworkMap) {
