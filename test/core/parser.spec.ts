@@ -1,5 +1,8 @@
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { describe, it, expect } from 'vitest';
-import { extractTestNamesFromContent, extractTestsWithLinesFromContent } from '../../src/core/parser';
+import { extractTestNamesFromContent, extractTestsWithLinesFromContent, parseAllSpecs } from '../../src/core/parser';
 import { PARSER } from '../fixtures';
 
 describe('extractTestNamesFromContent', () => {
@@ -47,5 +50,32 @@ describe('extractTestsWithLinesFromContent', () => {
         const tests = extractTestsWithLinesFromContent(PARSER.lineNumbersDeep, 'playwright');
         expect(tests).toHaveLength(1);
         expect(tests[0].line).toBeGreaterThan(1);
+    });
+});
+
+describe('parseAllSpecs', () => {
+    it('parses Playwright tests in nested subfolders without reading directories', () => {
+        const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tc-parser-'));
+
+        try {
+            const testsRoot = path.join(projectRoot, 'playwright', 'tests');
+            fs.mkdirSync(path.join(testsRoot, 'components', 'auth'), { recursive: true });
+            fs.writeFileSync(
+                path.join(testsRoot, 'components', 'auth', 'login.spec.ts'),
+                "test('logs in', async () => {})\n",
+                'utf-8',
+            );
+
+            const specs = parseAllSpecs(projectRoot, [
+                { framework: 'playwright', testDir: './playwright/tests', confidence: 'high' },
+            ]);
+
+            expect(specs).toHaveLength(1);
+            expect(specs[0].path).toBe('playwright/tests/components/auth/login.spec.ts');
+            expect(specs[0].tests).toHaveLength(1);
+            expect(specs[0].tests[0].name).toBe('logs in');
+        } finally {
+            fs.rmSync(projectRoot, { recursive: true, force: true });
+        }
     });
 });
