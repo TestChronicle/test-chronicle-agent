@@ -72,6 +72,7 @@ export function findSpecFiles(projectRoot: string, testDir: string, framework: F
     return globSync(parser.filePatterns, {
         cwd: baseDir,
         absolute: true,
+        nodir: true,
         ignore: ['**/node_modules/**'],
     });
 }
@@ -110,6 +111,12 @@ export function parseAllSpecs(projectRoot: string, frameworkConfigs: DetectionRe
         if (framework === 'unknown') continue;
         const files = findSpecFiles(projectRoot, testDir, framework);
         for (const filePath of files) {
+            try {
+                if (!statSync(filePath).isFile()) continue;
+            } catch {
+                continue;
+            }
+
             const normalized = path.normalize(filePath);
             if (seen.has(normalized)) continue;
             seen.add(normalized);
