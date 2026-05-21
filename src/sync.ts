@@ -53,20 +53,15 @@ function applyFrameworkOverrides(frameworkMap: Map<string, DetectionResult>, ove
     for (const override of overrides) {
         if (!override.dirs?.length) continue;
 
-        // Remove all auto-detected entries for this framework if we haven't already, so the explicit dirs take over,
+        // Remove all auto-detected entries for this framework so the explicit dirs take over,
         // but only do this once per framework so previous overrides' entries are preserved.
         if (!cleaned.has(override.framework)) {
             for (const [key, config] of frameworkMap) {
                 if (config.framework === override.framework) {
                     frameworkMap.delete(key);
                 }
-                cleaned.add(override.framework);
             }
-        }
-
-        // Remove all auto-detected entries for this framework so the explicit dirs take over
-        for (const [key, config] of frameworkMap) {
-            if (config.framework === override.framework) frameworkMap.delete(key);
+                cleaned.add(override.framework);
         }
 
         for (const dir of override.dirs) {
