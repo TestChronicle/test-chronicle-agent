@@ -12379,11 +12379,8 @@ function applyFrameworkOverrides(frameworkMap, overrides) {
         if (config2.framework === override.framework) {
           frameworkMap.delete(key);
         }
-        cleaned.add(override.framework);
       }
-    }
-    for (const [key, config2] of frameworkMap) {
-      if (config2.framework === override.framework) frameworkMap.delete(key);
+      cleaned.add(override.framework);
     }
     for (const dir of override.dirs) {
       frameworkMap.set(mapKey(override.framework, dir), {
