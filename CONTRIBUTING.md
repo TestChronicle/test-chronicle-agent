@@ -5,9 +5,9 @@
 ```bash
 git clone https://github.com/TestChronicle/test-chronicle-agent.git
 cd test-chronicle-agent
-npm install
-npm run build
-npm test
+pnpm install
+pnpm run build
+pnpm run test
 ```
 
 ## Development Workflow
@@ -17,9 +17,9 @@ npm test
 2. **Develop and test**:
 
     ```bash
-    npm run test:watch   # watch mode during development
-    npm run build        # check for TypeScript errors
-    npm test             # run all tests before committing
+    pnpm run test:watch   # watch mode during development
+    pnpm run build        # check for TypeScript errors
+    pnpm run test         # run all tests before committing
     ```
 
 3. **Commit** using [conventional commits](#commit-messages) and open a PR.

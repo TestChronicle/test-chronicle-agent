@@ -1,5 +1,6 @@
 /node_modules
 .env.local
 .npmrc
+testchronicle.config.json
 .DS_Store
 *.log

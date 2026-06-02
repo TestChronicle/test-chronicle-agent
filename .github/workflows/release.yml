@@ -1,4 +1,4 @@
-name: 📦 Release & Build Action
+name: Release and Publish
 run-name: Release ${{ inputs.releaseVersion }} by ${{ github.actor }}
 
 on:
@@ -17,44 +17,66 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-    name: Build & Release
+    name: Build, publish, and release
 
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: ⚙️ Setup Node.js
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.0
+          run_install: false
+
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '24'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
-      - name: 📦 Install dependencies
-        run: npm ci --prefer-offline --no-audit
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: 🧪 Run tests
-        run: npm test
+      - name: Set package version
+        run: npm version ${{ inputs.releaseVersion }} --no-git-tag-version
 
-      - name: 🔨 Build action
-        run: npm run build
+      - name: Run tests
+        run: pnpm run test
 
-      - name: 📝 Configure Git
+      - name: Build package and action
+        run: pnpm run build
+
+      - name: Package smoke test
+        shell: bash
+        run: |
+          PACK_FILE="$(npm pack --json | node -e "let input='';process.stdin.on('data',d=>input+=d);process.stdin.on('end',()=>process.stdout.write(JSON.parse(input)[0].filename))")"
+          mkdir -p pack-smoke
+          tar -xzf "$PACK_FILE" -C pack-smoke
+          node pack-smoke/package/dist/cli.js --help
+
+      - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: 📌 Create release commit and tag
+      - name: Create release commit and tag
         run: |
           git add -A
           git commit -m "release ${{ inputs.releaseVersion }}" --no-verify || echo "No changes to commit"
           git tag ${{ inputs.releaseVersion }}
           git push origin ${{ inputs.releaseVersion }}
 
-      - name: 🚀 Create GitHub Release
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.releaseVersion }}
@@ -65,7 +87,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📌 Update major version tag
+      - name: Update major version tag
         run: |
           git tag -f ${{ inputs.majorReleaseVersion }}
           git push origin ${{ inputs.majorReleaseVersion }} --force

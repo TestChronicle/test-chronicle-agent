@@ -1,11 +1,13 @@
-/**
- * CLI entry point for test-chronicle agent
- *
- * Environment variables (set by GitHub Action or user):
- * - PROJECT_ID: Project ID
- * - API_KEY: API key
- * - CHRONICLE_DASHBOARD_URL: Dashboard URL (optional, default: http://localhost:3000)
- */
+import { SyncOptions } from './sync';
+interface CliContext {
+    argv: string[];
+    env: NodeJS.ProcessEnv;
+    cwd: string;
+}
+export declare function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptions & {
+    source: 'env' | 'local';
+}>;
+export declare function runCli(ctx: CliContext): Promise<void>;
 declare function main(): Promise<void>;
 export { main as cli };
 //# sourceMappingURL=cli.d.ts.map

@@ -1,7 +1,7 @@
 {
-  "name": "test-chronicle-agent",
+  "name": "testchronicle",
   "version": "0.1.0",
-  "description": "CLI agent for syncing test data to test-chronicle dashboard",
+  "description": "CLI agent for syncing test data to Test Chronicle",
   "author": "Daniel Williams",
   "license": "MIT",
   "keywords": [
@@ -19,24 +19,28 @@
     "url": "https://github.com/TestChronicle/test-chronicle-agent.git"
   },
   "bin": {
-    "test-chronicle-agent": "./dist/cli.js"
+    "testchronicle": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "action.yml"
+    "action.yml",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "dev": "tsx src/cli.ts",
-    "build": "tsup && tsc -p tsconfig.build.json && npm run bundle:cli",
+    "build": "tsup && tsc -p tsconfig.build.json && ncc build dist/cli.js -o dist/cli-bundle --target es2020",
     "bundle:cli": "ncc build dist/cli.js -o dist/cli-bundle --target es2020",
+    "pack:dry-run": "npm pack --dry-run",
     "test": "vitest run",
     "test:watch": "vitest watch"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
     "glob": "^13.0.6",
+    "minimatch": "10.2.5",
     "simple-git": "^3.36.0"
   },
   "devDependencies": {
@@ -49,5 +53,10 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@11.0.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

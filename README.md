@@ -1,68 +1,76 @@
-# test-chronicle-agent
+# testchronicle
 
 Keep your test suite visible. Sync test specs and history to your dashboard automatically.
 
-## 🚀 GitHub Action
+## Local NPM Usage
 
-Use test-chronicle-agent as a GitHub Action to automatically sync your tests on merges to main:
+Link a local repository to your Test Chronicle account:
 
-```yaml
-name: 🔄 Sync Tests to Chronicle
-
-on:
-    push:
-        branches: [main]
-
-jobs:
-    sync:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v6
-              with:
-                  fetch-depth: 0
-
-            - uses: TestChronicle/test-chronicle-agent@v0
-              with:
-                  API_KEY: ${{ secrets.API_KEY }}
-                  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+```bash
+npx testchronicle@latest login
 ```
 
-### Setup Instructions
+The login command opens a browser, lets you select or create a project, writes a non-secret
+`testchronicle.config.json` file in the repository, and stores the project-scoped agent token
+in your user config directory.
 
-1. **Create a project on the dashboard**
-    - Go to your Test Chronicle dashboard
-    - Create a new project and copy the Project ID
+Run a sync locally:
 
-2. **Get your API key**
-    - From your Test Chronicle dashboard settings
-    - Copy your personal API key
+```bash
+npx testchronicle@latest sync
+```
 
-3. **Add secrets to GitHub**
-    - Go to Settings → Secrets and variables → Actions
-    - Add `API_KEY` with your API key
-    - Add `PROJECT_ID` with your project ID
+Check or remove the local link:
 
-4. **Add the workflow** to your repository
+```bash
+npx testchronicle@latest status
+npx testchronicle@latest logout
+```
 
-That's it! Your tests will sync automatically on merges to main.
+## GitHub Action
 
-## 🎯 Supported Frameworks
+Use the GitHub Action to sync tests on merges to main:
 
-See [Framework Support](https://www.testchronicle.com/#framework-support) for more details.
+```yaml
+name: Sync Tests to Chronicle
 
-## 📊 What Gets Synced
+on:
+  push:
+    branches: [main]
 
-- Test specifications (names, paths, structure)
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: TestChronicle/test-chronicle-agent@v0
+        with:
+          API_KEY: ${{ secrets.API_KEY }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+```
+
+## CI Environment Variables
+
+For CI or scripts, set:
+
+- `API_KEY`: personal or team API key
+- `PROJECT_ID`: Test Chronicle project ID
+
+Environment variables take precedence over local login credentials.
+
+## Supported Frameworks
+
+See [Framework Support](https://www.testchronicle.com/#framework-support).
+
+## What Gets Synced
+
+- Test specifications, names, paths, and structure
 - Test file changes from git history
-- Author information
-- Timestamps
+- Author information and timestamps
 
-This gives you a complete view of your test suite on the dashboard.
+## License
 
-## 🔄 How It Works
-
-Once installed as a GitHub Action, test-chronicle-agent automatically syncs your test suite on merges to main. Your tests are parsed, changes are tracked from git history, and everything is sent to your dashboard for visualization and analysis.
-
-## 📄 License
-
-MIT - See [LICENSE](./LICENSE) file for details.
+MIT. See [LICENSE](./LICENSE).
