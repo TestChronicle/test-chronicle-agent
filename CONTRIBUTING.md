@@ -5,12 +5,10 @@
 ```bash
 git clone https://github.com/TestChronicle/test-chronicle-agent.git
 cd test-chronicle-agent
-corepack pnpm install
-corepack pnpm run build
-corepack pnpm run test
+pnpm install
+pnpm run build
+pnpm run test
 ```
-
-If `pnpm` is already available on your PATH, you can use `pnpm` instead of `corepack pnpm`.
 
 ## Development Workflow
 
@@ -19,9 +17,9 @@ If `pnpm` is already available on your PATH, you can use `pnpm` instead of `core
 2. **Develop and test**:
 
     ```bash
-    corepack pnpm run test:watch   # watch mode during development
-    corepack pnpm run build        # check for TypeScript errors
-    corepack pnpm run test         # run all tests before committing
+    pnpm run test:watch   # watch mode during development
+    pnpm run build        # check for TypeScript errors
+    pnpm run test         # run all tests before committing
     ```
 
 3. **Commit** using [conventional commits](#commit-messages) and open a PR.
