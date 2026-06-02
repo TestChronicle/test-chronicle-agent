@@ -30,8 +30,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve release metadata
-        id: release
+      - name: Validate release version
         shell: bash
         run: |
           set -euo pipefail
@@ -47,27 +46,11 @@ jobs:
             exit 1
           fi
 
-          previous_tag="$(
-            git tag --sort=-creatordate |
-              grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' |
-              head -n 1 || true
-          )"
-
-          if [ -z "$previous_tag" ]; then
-            previous_tag="$(
-              git tag --sort=-v:refname |
-                grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' |
-                head -n 1 || true
-            )"
-          fi
-
-          if [ -z "$previous_tag" ]; then
-            echo "No previous semver release tag found."
-            exit 1
-          fi
-
-          echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
-          echo "Release notes will compare $previous_tag...$release_version"
+      - name: Get previous release tag
+        id: previous_tag
+        uses: WyriHaximus/github-action-get-previous-tag@v2
+        with:
+          pattern: v*[0-9].*[0-9].*[0-9]
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -123,7 +106,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.releaseVersion }}
-          previous_tag: ${{ steps.release.outputs.previous_tag }}
+          previous_tag: ${{ steps.previous_tag.outputs.tag }}
           files: |
             action.yml
             package.json
