@@ -112,6 +112,45 @@ describe('CLI credential resolution', () => {
         });
     });
 
+    it('uses the dashboard URL flag override for local sync credentials', async () => {
+        const cwd = tempDir('tc-cli-local-dev-url-flag-');
+        process.env.TESTCHRONICLE_CONFIG_HOME = tempDir('tc-cli-dev-url-flag-creds-');
+        const localConfig = { projectId: 'local-project' };
+        writeProjectConfig(localConfig, cwd);
+        saveCredential(localConfig, 'tc_agent_secret');
+
+        const result = await resolveSyncCredentials({
+            argv: ['sync', '--dashboard-url', 'http://localhost:3000/'],
+            cwd,
+            env: {},
+        });
+
+        expect(result).toEqual({
+            apiKey: 'tc_agent_secret',
+            projectId: 'local-project',
+            dashboardUrl: 'http://localhost:3000',
+            source: 'local',
+        });
+    });
+
+    it('uses the dashboard URL flag override for environment sync credentials', async () => {
+        const result = await resolveSyncCredentials({
+            argv: ['sync', '--dashboard-url', 'http://localhost:3000/'],
+            cwd: tempDir('tc-cli-env-dev-url-flag-'),
+            env: {
+                API_KEY: 'env-token',
+                PROJECT_ID: 'env-project',
+            },
+        });
+
+        expect(result).toEqual({
+            apiKey: 'env-token',
+            projectId: 'env-project',
+            dashboardUrl: 'http://localhost:3000',
+            source: 'env',
+        });
+    });
+
     it('matches stored local credentials by project ID only', async () => {
         const cwd = tempDir('tc-cli-project-key-');
         process.env.TESTCHRONICLE_CONFIG_HOME = tempDir('tc-cli-project-key-creds-');

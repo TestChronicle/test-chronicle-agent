@@ -36,6 +36,13 @@ function hasFlag(args: string[], name: string): boolean {
     return args.includes(name);
 }
 
+function dashboardUrlFromArgsOrEnv(ctx: CliContext): string {
+    return (getFlag(ctx.argv, '--dashboard-url') || dashboardUrlFromEnv(ctx.env) || DEFAULT_DASHBOARD_URL).replace(
+        /\/$/,
+        '',
+    );
+}
+
 function printHelp(): void {
     console.log(`Test Chronicle CLI
 
@@ -65,8 +72,14 @@ function openBrowser(url: string): void {
 }
 
 export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptions & { source: 'env' | 'local' }> {
+    const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
     const envCredentials = resolveEnvCredentials(ctx.env);
-    if (envCredentials) return envCredentials;
+    if (envCredentials) {
+        return {
+            ...envCredentials,
+            dashboardUrl,
+        };
+    }
 
     const projectConfig = readProjectConfig(ctx.cwd);
     if (!projectConfig) {
@@ -75,7 +88,7 @@ export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptio
         );
     }
 
-    const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrlFromEnv(ctx.env));
+    const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrl);
     if (!localCredentials) {
         throw new Error(
             `No local credential found for project ${projectConfig.projectId}. Run "testchronicle login" again.`,
@@ -92,10 +105,7 @@ async function runSync(ctx: CliContext): Promise<void> {
 }
 
 async function runLogin(ctx: CliContext): Promise<void> {
-    const dashboardUrl = (getFlag(ctx.argv, '--dashboard-url') || dashboardUrlFromEnv(ctx.env) || DEFAULT_DASHBOARD_URL).replace(
-        /\/$/,
-        '',
-    );
+    const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
     const repoUrl = await getRepoUrl(ctx.cwd);
     const projectName = path.basename(ctx.cwd);
     const session = await startBrowserLogin(dashboardUrl, {
@@ -142,12 +152,14 @@ async function runLogin(ctx: CliContext): Promise<void> {
 }
 
 function runStatus(ctx: CliContext): void {
+    const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
+    const hasDashboardOverride = !!ctx.env.CHRONICLE_DASHBOARD_URL || !!getFlag(ctx.argv, '--dashboard-url');
     const envCredentials = resolveEnvCredentials(ctx.env);
     if (envCredentials) {
         console.log('Test Chronicle status');
         console.log(`  Source: environment`);
         console.log(`  Project: ${envCredentials.projectId}`);
-        if (ctx.env.CHRONICLE_DASHBOARD_URL) console.log(`  Dashboard: ${envCredentials.dashboardUrl}`);
+        if (hasDashboardOverride) console.log(`  Dashboard: ${dashboardUrl}`);
         return;
     }
 
@@ -157,12 +169,11 @@ function runStatus(ctx: CliContext): void {
         return;
     }
 
-    const dashboardUrl = dashboardUrlFromEnv(ctx.env);
     const hasCredential = !!resolveLocalCredentials(projectConfig, dashboardUrl);
     console.log('Test Chronicle status');
     console.log(`  Source: local project`);
     console.log(`  Project: ${projectConfig.projectId}`);
-    if (ctx.env.CHRONICLE_DASHBOARD_URL) console.log(`  Dashboard: ${dashboardUrl}`);
+    if (hasDashboardOverride) console.log(`  Dashboard: ${dashboardUrl}`);
     console.log(`  Credential: ${hasCredential ? 'stored' : 'missing'}`);
 }
 
@@ -216,11 +227,11 @@ async function main() {
             env: process.env,
             cwd: process.cwd(),
         });
-        process.exit(0);
+        process.exitCode = 0;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error('Fatal error:', message);
-        process.exit(1);
+        process.exitCode = 1;
     }
 }
 
