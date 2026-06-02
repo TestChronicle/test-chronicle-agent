@@ -127,7 +127,6 @@ async function runLogin(ctx: CliContext): Promise<void> {
     });
 
     console.log(`Open this URL to approve local sync:\n${session.approveUrl}`);
-    console.log(`Code: ${session.userCode}`);
 
     if (!hasFlag(ctx.argv, '--no-open')) {
         try {
@@ -156,7 +155,7 @@ async function runLogin(ctx: CliContext): Promise<void> {
             console.log(`Linked Test Chronicle project: ${linkedConfig.projectId}`);
             console.log(`Wrote config: ${projectConfigPath(ctx.cwd)}`);
             console.log(`Stored credential: ${credentialsPath()}`);
-            console.log('Next: testchronicle sync');
+            console.log('Run a sync locally:\n npx testchronicle@latest sync');
             return;
         }
 
