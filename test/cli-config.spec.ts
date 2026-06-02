@@ -199,7 +199,7 @@ describe('CLI credential resolution', () => {
                 json: () => Promise.resolve({ status: 'approved', projectId: 'linked-project' }),
             });
         vi.stubGlobal('fetch', fetchSpy);
-        vi.spyOn(console, 'log').mockImplementation(() => {});
+        const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         await runCli({
             argv: ['login', '--dashboard-url', 'http://localhost:3000/', '--no-open'],
@@ -211,6 +211,14 @@ describe('CLI credential resolution', () => {
         expect(JSON.parse(fs.readFileSync(projectConfigPath(cwd), 'utf8'))).toEqual({
             projectId: 'linked-project',
         });
+        expect(consoleLog.mock.calls.flat()).toEqual(
+            expect.arrayContaining([
+                'Waiting for browser approval...',
+                'Linked Test Chronicle project: linked-project',
+                `Wrote config: ${projectConfigPath(cwd)}`,
+                'Next: testchronicle sync',
+            ]),
+        );
     });
 
     it('does not print polling dots while waiting for browser approval', async () => {

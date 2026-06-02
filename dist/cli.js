@@ -13121,7 +13121,20 @@ async function resolveSyncCredentials(ctx) {
 async function runSync(ctx) {
   const { source, ...options } = await resolveSyncCredentials(ctx);
   console.log(`[cli] Using ${source === "env" ? "environment" : "local project"} credentials`);
-  await syncProject(options);
+  try {
+    await syncProject(options);
+  } catch (error) {
+    if (source === "local" && error instanceof Error && error.message.startsWith("Invalid API key")) {
+      throw new Error(
+        [
+          "Local project credential was rejected by the dashboard.",
+          'Run "testchronicle login" again to refresh the local link.',
+          'If you are testing against a local dashboard, pass "--dashboard-url" or set CHRONICLE_DASHBOARD_URL.'
+        ].join("\n")
+      );
+    }
+    throw error;
+  }
 }
 async function runLogin(ctx) {
   const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
@@ -13131,7 +13144,7 @@ async function runLogin(ctx) {
     projectName,
     ...repoUrl ? { repoUrl } : {}
   });
-  console.log(`Open this URL to link your project:
+  console.log(`Open this URL to approve local sync:
 ${session.approveUrl}`);
   console.log(`Code: ${session.userCode}`);
   if (!hasFlag(ctx.argv, "--no-open")) {
@@ -13143,6 +13156,7 @@ ${session.approveUrl}`);
   }
   const expiresAt = new Date(session.expiresAt).getTime();
   const intervalMs = Math.max(1, session.pollIntervalSeconds ?? 2) * 1e3;
+  console.log("Waiting for browser approval...");
   while (Date.now() < expiresAt) {
     await sleep(intervalMs);
     const result = await pollBrowserLogin(dashboardUrl, session.deviceCode);
@@ -13153,9 +13167,10 @@ ${session.approveUrl}`);
       };
       writeProjectConfig(linkedConfig, ctx.cwd);
       saveCredential(linkedConfig, session.deviceCode);
-      console.log(`[login] Linked project ${linkedConfig.projectId}`);
-      console.log(`[login] Wrote ${PROJECT_CONFIG_FILE}`);
-      console.log(`[login] Stored credentials at ${credentialsPath()}`);
+      console.log(`Linked Test Chronicle project: ${linkedConfig.projectId}`);
+      console.log(`Wrote config: ${projectConfigPath(ctx.cwd)}`);
+      console.log(`Stored credential: ${credentialsPath()}`);
+      console.log("Next: testchronicle sync");
       return;
     }
     throw new Error(`Login ${result.status}`);
