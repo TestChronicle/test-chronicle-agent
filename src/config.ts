@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { vercelProtectionBypassFromEnv } from './vercel-protection';
 
 export const DEFAULT_DASHBOARD_URL = 'https://www.testchronicle.com';
 export const PROJECT_CONFIG_FILE = 'testchronicle.config.json';
@@ -13,7 +12,6 @@ export interface ProjectLinkConfig {
 export interface ResolvedSyncCredentials extends ProjectLinkConfig {
     apiKey: string;
     source: 'env' | 'local';
-    vercelProtectionBypass?: string;
 }
 
 function normaliseDashboardUrl(value: string): string {
@@ -51,14 +49,12 @@ export function resolveEnvCredentials(env: NodeJS.ProcessEnv): ResolvedSyncCrede
     const projectId = env.PROJECT_ID;
     const apiKey = env.API_KEY;
     if (!projectId || !apiKey) return null;
-    const vercelProtectionBypass = vercelProtectionBypassFromEnv(env);
 
     return {
         projectId,
         apiKey,
         dashboardUrl: normaliseDashboardUrl(env.CHRONICLE_DASHBOARD_URL || DEFAULT_DASHBOARD_URL),
         source: 'env',
-        ...(vercelProtectionBypass ? { vercelProtectionBypass } : {}),
     };
 }
 

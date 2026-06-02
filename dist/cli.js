@@ -10668,73 +10668,20 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
-
-// src/vercel-protection.ts
-init_cjs_shims();
-var VERCEL_PROTECTION_BYPASS_HEADER = "x-vercel-protection-bypass";
-var VERCEL_PROTECTION_BYPASS_PARAM = "x-vercel-protection-bypass";
-var VERCEL_SET_BYPASS_COOKIE_PARAM = "x-vercel-set-bypass-cookie";
-var VERCEL_BYPASS_ENV_VARS = [
-  "CHRONICLE_VERCEL_BYPASS_TOKEN",
-  "VERCEL_AUTOMATION_BYPASS_SECRET",
-  "VERCEL_PROTECTION_BYPASS",
-  "VERCEL_PROTECTION_BYPASS_TOKEN"
-];
-function vercelProtectionBypassFromEnv(env) {
-  for (const name of VERCEL_BYPASS_ENV_VARS) {
-    const value = env[name]?.trim();
-    if (value) return value;
-  }
-  return void 0;
-}
-function withVercelProtectionBypassHeader(headers, vercelProtectionBypass) {
-  if (!vercelProtectionBypass) return headers;
+function makeAuthHeaders(apiToken) {
   return {
-    ...headers,
-    [VERCEL_PROTECTION_BYPASS_HEADER]: vercelProtectionBypass
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiToken}`
   };
 }
-function withVercelProtectionBypassQuery(url, vercelProtectionBypass, setBypassCookie = false) {
-  if (!vercelProtectionBypass) return url;
-  const nextUrl = new URL(url);
-  nextUrl.searchParams.set(VERCEL_PROTECTION_BYPASS_PARAM, vercelProtectionBypass);
-  if (setBypassCookie) {
-    nextUrl.searchParams.set(VERCEL_SET_BYPASS_COOKIE_PARAM, "true");
-  }
-  return nextUrl.toString();
-}
-function isVercelAuthenticationResponse(status, body) {
-  if (status !== 401 && status !== 403) return false;
-  return body.includes("Vercel Authentication") || body.includes("Authentication Required") || body.includes("x-vercel-protection-bypass");
-}
-function vercelAuthenticationError(action) {
-  return new Error(
-    `Failed to ${action}: the dashboard URL is protected by Vercel Deployment Protection. Use the production dashboard URL, disable protection for the preview deployment, or pass a Vercel automation bypass token with --vercel-bypass-token or CHRONICLE_VERCEL_BYPASS_TOKEN.`
-  );
-}
-
-// src/sync-client.ts
-function makeAuthHeaders(apiToken, vercelProtectionBypass) {
-  return withVercelProtectionBypassHeader(
-    {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiToken}`
-    },
-    vercelProtectionBypass
-  );
-}
-async function validateProjectAccess(dashboardUrl, apiToken, projectId, vercelProtectionBypass) {
+async function validateProjectAccess(dashboardUrl, apiToken, projectId) {
   const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: makeAuthHeaders(apiToken, vercelProtectionBypass)
+      headers: makeAuthHeaders(apiToken)
     });
     if (response.status === 401 || response.status === 403) {
-      const body = await response.text().catch(() => "");
-      if (isVercelAuthenticationResponse(response.status, body)) {
-        throw vercelAuthenticationError("validate project access");
-      }
       throw new Error("Invalid API key. Please check your API_KEY.");
     }
     if (response.status === 404) {
@@ -10744,18 +10691,18 @@ async function validateProjectAccess(dashboardUrl, apiToken, projectId, vercelPr
       console.warn(`[sync] Warning: Could not validate project access (${response.status}). Proceeding anyway.`);
     }
   } catch (error) {
-    if (error instanceof Error && (error.message.startsWith("Invalid API key") || error.message.startsWith("Project not found") || error.message.startsWith("Failed to validate project access"))) {
+    if (error instanceof Error && (error.message.startsWith("Invalid API key") || error.message.startsWith("Project not found"))) {
       throw error;
     }
     console.warn("[sync] Warning: Could not reach dashboard to validate project access. Proceeding anyway.");
   }
 }
-async function fetchProjectConfig(dashboardUrl, apiToken, projectId, vercelProtectionBypass) {
+async function fetchProjectConfig(dashboardUrl, apiToken, projectId) {
   const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: makeAuthHeaders(apiToken, vercelProtectionBypass)
+      headers: makeAuthHeaders(apiToken)
     });
     if (!response.ok) return null;
     return await response.json();
@@ -10763,48 +10710,39 @@ async function fetchProjectConfig(dashboardUrl, apiToken, projectId, vercelProte
     return null;
   }
 }
-async function getSyncMarker(dashboardUrl, apiToken, projectId, vercelProtectionBypass) {
+async function getSyncMarker(dashboardUrl, apiToken, projectId) {
   const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: makeAuthHeaders(apiToken, vercelProtectionBypass)
+      headers: makeAuthHeaders(apiToken)
     });
     if (!response.ok) {
       if (response.status === 404) return null;
       const errorBody = await response.text().catch(() => "");
-      if (isVercelAuthenticationResponse(response.status, errorBody)) {
-        throw vercelAuthenticationError("get sync marker");
-      }
       throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ""}`);
     }
     const data = await response.json();
     return data?.lastSyncedCommit || data?.commitHash || null;
   } catch (error) {
-    if (error instanceof Error && error.message.startsWith("Failed to get sync marker")) {
-      throw error;
-    }
     return null;
   }
 }
-async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash, vercelProtectionBypass) {
+async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
   const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
   const response = await fetch(url, {
     method: "POST",
-    headers: makeAuthHeaders(apiToken, vercelProtectionBypass),
+    headers: makeAuthHeaders(apiToken),
     body: JSON.stringify({ commitHash })
   });
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
-    if (isVercelAuthenticationResponse(response.status, errorBody)) {
-      throw vercelAuthenticationError("save sync marker");
-    }
     throw new Error(
       `Failed to save sync marker: ${response.status} ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
     );
   }
 }
-async function syncToDashboard(dashboardUrl, apiToken, payload, vercelProtectionBypass) {
+async function syncToDashboard(dashboardUrl, apiToken, payload) {
   const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();
   const body = JSON.stringify(payload);
   const MAX_RETRIES = 3;
@@ -10817,15 +10755,12 @@ async function syncToDashboard(dashboardUrl, apiToken, payload, vercelProtection
     try {
       const response = await fetch(url, {
         method: "POST",
-        headers: makeAuthHeaders(apiToken, vercelProtectionBypass),
+        headers: makeAuthHeaders(apiToken),
         body,
         signal: controller.signal
       });
       if (!response.ok) {
         const errorBody = await response.text().catch(() => "");
-        if (isVercelAuthenticationResponse(response.status, errorBody)) {
-          throw vercelAuthenticationError("sync to dashboard");
-        }
         throw new Error(
           `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
         );
@@ -10950,9 +10885,9 @@ function deduplicateCommitChanges(entry) {
   return uniqueChanges.filter((_3, i2) => !suppressedRemoves.has(i2));
 }
 async function syncProject(options) {
-  const { projectId, apiKey, dashboardUrl, vercelProtectionBypass } = options;
+  const { projectId, apiKey, dashboardUrl } = options;
   console.log("[sync] Validating project access...");
-  await validateProjectAccess(dashboardUrl, apiKey, projectId, vercelProtectionBypass);
+  await validateProjectAccess(dashboardUrl, apiKey, projectId);
   const envLocalPath = import_path10.default.join(process.cwd(), ".env.local");
   if (import_fs4.default.existsSync(envLocalPath)) {
     import_dotenv.default.config({ path: envLocalPath, debug: false });
@@ -10963,7 +10898,7 @@ async function syncProject(options) {
   }
   const repoUrl = detectedRepoUrl ?? void 0;
   console.log("[config] Fetching project config from dashboard...");
-  let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId, vercelProtectionBypass);
+  let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
   const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
   if (projectConfig === null) {
     console.log("[config] Warning: Could not reach dashboard config endpoint. Using auto-detected config");
@@ -10997,7 +10932,7 @@ async function syncProject(options) {
   let lastSyncCommit = null;
   let isFirstSync = false;
   try {
-    lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId, vercelProtectionBypass);
+    lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
   } catch (error) {
     if (error instanceof Error) {
       console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
@@ -11086,23 +11021,18 @@ async function syncProject(options) {
     const isLastChunk = chunkIndex === totalChunks - 1;
     const chunkStart = chunkIndex * HISTORY_CHUNK_SIZE;
     const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
-    await syncToDashboard(
-      dashboardUrl,
-      apiKey,
-      {
-        projectId,
-        // Only include specs and stats with the first chunk — the server uses
-        // the spec list to upsert files and prune stale entries.
-        specs: chunkIndex === 0 ? transformedSpecs : [],
-        history: historyChunk,
-        stats: chunkIndex === 0 ? stats : {},
-        timestamp,
-        ...repoUrl ? { repoUrl } : {},
-        chunkIndex,
-        isLastChunk
-      },
-      vercelProtectionBypass
-    );
+    await syncToDashboard(dashboardUrl, apiKey, {
+      projectId,
+      // Only include specs and stats with the first chunk — the server uses
+      // the spec list to upsert files and prune stale entries.
+      specs: chunkIndex === 0 ? transformedSpecs : [],
+      history: historyChunk,
+      stats: chunkIndex === 0 ? stats : {},
+      timestamp,
+      ...repoUrl ? { repoUrl } : {},
+      chunkIndex,
+      isLastChunk
+    });
     if (totalChunks > 1) {
       console.log(`[sync]   \u2192 ${chunkIndex + 1}/${totalChunks} batches uploaded`);
     }
@@ -11114,7 +11044,7 @@ async function syncProject(options) {
     } else {
       const newestInChunk = historyChunk[historyChunk.length - 1].commitHash;
       try {
-        await saveSyncMarker(dashboardUrl, apiKey, projectId, newestInChunk, vercelProtectionBypass);
+        await saveSyncMarker(dashboardUrl, apiKey, projectId, newestInChunk);
       } catch {
       }
     }
@@ -11128,7 +11058,7 @@ async function syncProject(options) {
       console.log("[sync] Warning: Could not determine last commit hash");
       return;
     }
-    await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash, vercelProtectionBypass);
+    await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
     if (isFirstSync) {
       console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
     } else {
@@ -11177,13 +11107,11 @@ function resolveEnvCredentials(env) {
   const projectId = env.PROJECT_ID;
   const apiKey = env.API_KEY;
   if (!projectId || !apiKey) return null;
-  const vercelProtectionBypass = vercelProtectionBypassFromEnv(env);
   return {
     projectId,
     apiKey,
     dashboardUrl: normaliseDashboardUrl(env.CHRONICLE_DASHBOARD_URL || DEFAULT_DASHBOARD_URL),
-    source: "env",
-    ...vercelProtectionBypass ? { vercelProtectionBypass } : {}
+    source: "env"
   };
 }
 function dashboardUrlFromEnv(env) {
@@ -11267,42 +11195,26 @@ function resolveLocalCredentials(config) {
 
 // src/cli-login.ts
 init_cjs_shims();
-async function startBrowserLogin(dashboardUrl, request, options = {}) {
+async function startBrowserLogin(dashboardUrl, request) {
   const response = await fetch(new URL("/api/cli-login/start", dashboardUrl), {
     method: "POST",
-    headers: withVercelProtectionBypassHeader(
-      { "Content-Type": "application/json" },
-      options.vercelProtectionBypass
-    ),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request)
   });
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    if (isVercelAuthenticationResponse(response.status, body)) {
-      throw vercelAuthenticationError("start login");
-    }
     throw new Error(`Failed to start login (${response.status})${body ? ` - ${body}` : ""}`);
   }
-  const session = await response.json();
-  return {
-    ...session,
-    approveUrl: withVercelProtectionBypassQuery(session.approveUrl, options.vercelProtectionBypass, true)
-  };
+  return await response.json();
 }
-async function pollBrowserLogin(dashboardUrl, deviceCode, options = {}) {
+async function pollBrowserLogin(dashboardUrl, deviceCode) {
   const response = await fetch(new URL("/api/cli-login/poll", dashboardUrl), {
     method: "POST",
-    headers: withVercelProtectionBypassHeader(
-      { "Content-Type": "application/json" },
-      options.vercelProtectionBypass
-    ),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ deviceCode })
   });
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    if (isVercelAuthenticationResponse(response.status, body)) {
-      throw vercelAuthenticationError("poll login");
-    }
     throw new Error(`Failed to poll login (${response.status})${body ? ` - ${body}` : ""}`);
   }
   return await response.json();
@@ -11324,14 +11236,13 @@ function printHelp() {
   console.log(`Test Chronicle CLI
 
 Usage:
-  testchronicle login [--dashboard-url <url>] [--no-open] [--vercel-bypass-token <token>]
+  testchronicle login [--dashboard-url <url>] [--no-open]
   testchronicle sync
   testchronicle status
   testchronicle logout [--remove-config]
 
 Environment overrides:
   API_KEY, PROJECT_ID, CHRONICLE_DASHBOARD_URL
-  CHRONICLE_VERCEL_BYPASS_TOKEN, VERCEL_AUTOMATION_BYPASS_SECRET
 
 Local config:
   ${PROJECT_CONFIG_FILE}`);
@@ -11357,11 +11268,7 @@ async function resolveSyncCredentials(ctx) {
       `No local credential found for project ${projectConfig.projectId}. Run "testchronicle login" again.`
     );
   }
-  const vercelProtectionBypass = vercelProtectionBypassFromEnv(ctx.env);
-  return {
-    ...localCredentials,
-    ...vercelProtectionBypass ? { vercelProtectionBypass } : {}
-  };
+  return localCredentials;
 }
 async function runSync(ctx) {
   const { source, ...options } = await resolveSyncCredentials(ctx);
@@ -11373,19 +11280,12 @@ async function runLogin(ctx) {
     /\/$/,
     ""
   );
-  const vercelProtectionBypass = getFlag(ctx.argv, "--vercel-bypass-token") || vercelProtectionBypassFromEnv(ctx.env);
   const repoUrl = await getRepoUrl(ctx.cwd);
   const projectName = import_path13.default.basename(ctx.cwd);
-  const session = await startBrowserLogin(
-    dashboardUrl,
-    {
-      projectName,
-      ...repoUrl ? { repoUrl } : {}
-    },
-    {
-      vercelProtectionBypass
-    }
-  );
+  const session = await startBrowserLogin(dashboardUrl, {
+    projectName,
+    ...repoUrl ? { repoUrl } : {}
+  });
   console.log(`Open this URL to link your project:
 ${session.approveUrl}`);
   console.log(`Code: ${session.userCode}`);
@@ -11400,9 +11300,7 @@ ${session.approveUrl}`);
   const intervalMs = Math.max(1, session.pollIntervalSeconds ?? 2) * 1e3;
   while (Date.now() < expiresAt) {
     await sleep(intervalMs);
-    const result = await pollBrowserLogin(dashboardUrl, session.deviceCode, {
-      vercelProtectionBypass
-    });
+    const result = await pollBrowserLogin(dashboardUrl, session.deviceCode);
     if (result.status === "pending") {
       process.stdout.write(".");
       continue;

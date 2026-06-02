@@ -76,20 +76,4 @@ describe('fetchProjectConfig', () => {
             }),
         );
     });
-
-    it('adds the Vercel bypass header when provided', async () => {
-        const fetchSpy = vi.fn().mockResolvedValue({ ok: true, status: 200, json: () => Promise.resolve({}) });
-        vi.stubGlobal('fetch', fetchSpy);
-
-        await fetchProjectConfig(DASHBOARD_URL, API_TOKEN, PROJECT_ID, 'vercel-bypass-token');
-
-        expect(fetchSpy).toHaveBeenCalledWith(
-            `${DASHBOARD_URL}/api/projects/${PROJECT_ID}/config`,
-            expect.objectContaining({
-                headers: expect.objectContaining({
-                    'x-vercel-protection-bypass': 'vercel-bypass-token',
-                }),
-            }),
-        );
-    });
 });

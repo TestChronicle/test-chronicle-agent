@@ -7,7 +7,6 @@ export interface ProjectLinkConfig {
 export interface ResolvedSyncCredentials extends ProjectLinkConfig {
     apiKey: string;
     source: 'env' | 'local';
-    vercelProtectionBypass?: string;
 }
 export declare function projectConfigPath(projectDir?: string): string;
 export declare function readProjectConfig(projectDir?: string): ProjectLinkConfig | null;

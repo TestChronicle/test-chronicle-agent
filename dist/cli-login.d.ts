@@ -15,9 +15,6 @@ export interface PollLoginResponse {
     projectId?: string;
     dashboardUrl?: string;
 }
-export interface LoginRequestOptions {
-    vercelProtectionBypass?: string;
-}
-export declare function startBrowserLogin(dashboardUrl: string, request: StartLoginRequest, options?: LoginRequestOptions): Promise<StartLoginResponse>;
-export declare function pollBrowserLogin(dashboardUrl: string, deviceCode: string, options?: LoginRequestOptions): Promise<PollLoginResponse>;
+export declare function startBrowserLogin(dashboardUrl: string, request: StartLoginRequest): Promise<StartLoginResponse>;
+export declare function pollBrowserLogin(dashboardUrl: string, deviceCode: string): Promise<PollLoginResponse>;
 //# sourceMappingURL=cli-login.d.ts.map
