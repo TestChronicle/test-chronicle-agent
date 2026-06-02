@@ -6,11 +6,12 @@ export const PROJECT_CONFIG_FILE = 'testchronicle.config.json';
 
 export interface ProjectLinkConfig {
     projectId: string;
-    dashboardUrl: string;
 }
 
-export interface ResolvedSyncCredentials extends ProjectLinkConfig {
+export interface ResolvedSyncCredentials {
+    projectId: string;
     apiKey: string;
+    dashboardUrl: string;
     source: 'env' | 'local';
 }
 
@@ -27,20 +28,18 @@ export function readProjectConfig(projectDir = process.cwd()): ProjectLinkConfig
     if (!fs.existsSync(configPath)) return null;
 
     const parsed = JSON.parse(fs.readFileSync(configPath, 'utf8')) as Partial<ProjectLinkConfig>;
-    if (!parsed.projectId || !parsed.dashboardUrl) {
-        throw new Error(`${PROJECT_CONFIG_FILE} must include projectId and dashboardUrl`);
+    if (!parsed.projectId) {
+        throw new Error(`${PROJECT_CONFIG_FILE} must include projectId`);
     }
 
     return {
         projectId: parsed.projectId,
-        dashboardUrl: normaliseDashboardUrl(parsed.dashboardUrl),
     };
 }
 
 export function writeProjectConfig(config: ProjectLinkConfig, projectDir = process.cwd()): void {
     const payload: ProjectLinkConfig = {
         projectId: config.projectId,
-        dashboardUrl: normaliseDashboardUrl(config.dashboardUrl),
     };
     fs.writeFileSync(projectConfigPath(projectDir), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
 }

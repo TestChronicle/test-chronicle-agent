@@ -11144,18 +11144,16 @@ function readProjectConfig(projectDir = process.cwd()) {
   const configPath = projectConfigPath(projectDir);
   if (!import_fs5.default.existsSync(configPath)) return null;
   const parsed = JSON.parse(import_fs5.default.readFileSync(configPath, "utf8"));
-  if (!parsed.projectId || !parsed.dashboardUrl) {
-    throw new Error(`${PROJECT_CONFIG_FILE} must include projectId and dashboardUrl`);
+  if (!parsed.projectId) {
+    throw new Error(`${PROJECT_CONFIG_FILE} must include projectId`);
   }
   return {
-    projectId: parsed.projectId,
-    dashboardUrl: normaliseDashboardUrl(parsed.dashboardUrl)
+    projectId: parsed.projectId
   };
 }
 function writeProjectConfig(config, projectDir = process.cwd()) {
   const payload = {
-    projectId: config.projectId,
-    dashboardUrl: normaliseDashboardUrl(config.dashboardUrl)
+    projectId: config.projectId
   };
   import_fs5.default.writeFileSync(projectConfigPath(projectDir), `${JSON.stringify(payload, null, 2)}
 `, "utf8");
@@ -11213,13 +11211,12 @@ function writeStore(store) {
   }
 }
 function credentialKey(config) {
-  return `${config.dashboardUrl}|${config.projectId}`;
+  return config.projectId;
 }
 function saveCredential(config, token) {
   const store = readStore();
   const key = credentialKey(config);
   const next = {
-    dashboardUrl: config.dashboardUrl,
     projectId: config.projectId,
     token,
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
@@ -11240,11 +11237,12 @@ function removeCredential(config) {
   writeStore(store);
   return true;
 }
-function resolveLocalCredentials(config) {
+function resolveLocalCredentials(config, dashboardUrl = DEFAULT_DASHBOARD_URL) {
   const token = readCredential(config);
   if (!token) return null;
   return {
-    ...config,
+    projectId: config.projectId,
+    dashboardUrl,
     apiKey: token,
     source: "local"
   };
@@ -11293,13 +11291,13 @@ function printHelp() {
   console.log(`Test Chronicle CLI
 
 Usage:
-  testchronicle login [--dashboard-url <url>] [--no-open]
+  testchronicle login [--no-open]
   testchronicle sync
   testchronicle status
   testchronicle logout [--remove-config]
 
 Environment overrides:
-  API_KEY, PROJECT_ID, CHRONICLE_DASHBOARD_URL
+  API_KEY, PROJECT_ID
 
 Local config:
   ${PROJECT_CONFIG_FILE}`);
@@ -11319,7 +11317,7 @@ async function resolveSyncCredentials(ctx) {
       `No Test Chronicle project is linked. Run "testchronicle login" or set API_KEY and PROJECT_ID.`
     );
   }
-  const localCredentials = resolveLocalCredentials(projectConfig);
+  const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrlFromEnv(ctx.env));
   if (!localCredentials) {
     throw new Error(
       `No local credential found for project ${projectConfig.projectId}. Run "testchronicle login" again.`
@@ -11365,8 +11363,7 @@ ${session.approveUrl}`);
     process.stdout.write("\n");
     if (result.status === "approved" && result.projectId) {
       const linkedConfig = {
-        projectId: result.projectId,
-        dashboardUrl: (result.dashboardUrl || dashboardUrl).replace(/\/$/, "")
+        projectId: result.projectId
       };
       writeProjectConfig(linkedConfig, ctx.cwd);
       saveCredential(linkedConfig, session.deviceCode);
@@ -11385,7 +11382,7 @@ function runStatus(ctx) {
     console.log("Test Chronicle status");
     console.log(`  Source: environment`);
     console.log(`  Project: ${envCredentials.projectId}`);
-    console.log(`  Dashboard: ${envCredentials.dashboardUrl}`);
+    if (ctx.env.CHRONICLE_DASHBOARD_URL) console.log(`  Dashboard: ${envCredentials.dashboardUrl}`);
     return;
   }
   const projectConfig = readProjectConfig(ctx.cwd);
@@ -11393,11 +11390,12 @@ function runStatus(ctx) {
     console.log("No Test Chronicle project linked.");
     return;
   }
-  const hasCredential = !!resolveLocalCredentials(projectConfig);
+  const dashboardUrl = dashboardUrlFromEnv(ctx.env);
+  const hasCredential = !!resolveLocalCredentials(projectConfig, dashboardUrl);
   console.log("Test Chronicle status");
   console.log(`  Source: local project`);
   console.log(`  Project: ${projectConfig.projectId}`);
-  console.log(`  Dashboard: ${projectConfig.dashboardUrl}`);
+  if (ctx.env.CHRONICLE_DASHBOARD_URL) console.log(`  Dashboard: ${dashboardUrl}`);
   console.log(`  Credential: ${hasCredential ? "stored" : "missing"}`);
 }
 function runLogout(ctx) {

@@ -40,13 +40,13 @@ function printHelp(): void {
     console.log(`Test Chronicle CLI
 
 Usage:
-  testchronicle login [--dashboard-url <url>] [--no-open]
+  testchronicle login [--no-open]
   testchronicle sync
   testchronicle status
   testchronicle logout [--remove-config]
 
 Environment overrides:
-  API_KEY, PROJECT_ID, CHRONICLE_DASHBOARD_URL
+  API_KEY, PROJECT_ID
 
 Local config:
   ${PROJECT_CONFIG_FILE}`);
@@ -75,7 +75,7 @@ export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptio
         );
     }
 
-    const localCredentials = resolveLocalCredentials(projectConfig);
+    const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrlFromEnv(ctx.env));
     if (!localCredentials) {
         throw new Error(
             `No local credential found for project ${projectConfig.projectId}. Run "testchronicle login" again.`,
@@ -130,7 +130,6 @@ async function runLogin(ctx: CliContext): Promise<void> {
         if (result.status === 'approved' && result.projectId) {
             const linkedConfig = {
                 projectId: result.projectId,
-                dashboardUrl: (result.dashboardUrl || dashboardUrl).replace(/\/$/, ''),
             };
             writeProjectConfig(linkedConfig, ctx.cwd);
             saveCredential(linkedConfig, session.deviceCode);
@@ -152,7 +151,7 @@ function runStatus(ctx: CliContext): void {
         console.log('Test Chronicle status');
         console.log(`  Source: environment`);
         console.log(`  Project: ${envCredentials.projectId}`);
-        console.log(`  Dashboard: ${envCredentials.dashboardUrl}`);
+        if (ctx.env.CHRONICLE_DASHBOARD_URL) console.log(`  Dashboard: ${envCredentials.dashboardUrl}`);
         return;
     }
 
@@ -162,11 +161,12 @@ function runStatus(ctx: CliContext): void {
         return;
     }
 
-    const hasCredential = !!resolveLocalCredentials(projectConfig);
+    const dashboardUrl = dashboardUrlFromEnv(ctx.env);
+    const hasCredential = !!resolveLocalCredentials(projectConfig, dashboardUrl);
     console.log('Test Chronicle status');
     console.log(`  Source: local project`);
     console.log(`  Project: ${projectConfig.projectId}`);
-    console.log(`  Dashboard: ${projectConfig.dashboardUrl}`);
+    if (ctx.env.CHRONICLE_DASHBOARD_URL) console.log(`  Dashboard: ${dashboardUrl}`);
     console.log(`  Credential: ${hasCredential ? 'stored' : 'missing'}`);
 }
 

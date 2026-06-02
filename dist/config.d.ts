@@ -2,10 +2,11 @@ export declare const DEFAULT_DASHBOARD_URL = "https://www.testchronicle.com";
 export declare const PROJECT_CONFIG_FILE = "testchronicle.config.json";
 export interface ProjectLinkConfig {
     projectId: string;
-    dashboardUrl: string;
 }
-export interface ResolvedSyncCredentials extends ProjectLinkConfig {
+export interface ResolvedSyncCredentials {
+    projectId: string;
     apiKey: string;
+    dashboardUrl: string;
     source: 'env' | 'local';
 }
 export declare function projectConfigPath(projectDir?: string): string;

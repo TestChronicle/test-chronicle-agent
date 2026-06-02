@@ -1,10 +1,10 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { ProjectLinkConfig, ResolvedSyncCredentials } from './config';
+import { DEFAULT_DASHBOARD_URL, ProjectLinkConfig, ResolvedSyncCredentials } from './config';
 
 interface StoredCredential {
-    dashboardUrl: string;
+    dashboardUrl?: string;
     projectId: string;
     token: string;
     createdAt: string;
@@ -52,14 +52,13 @@ function writeStore(store: CredentialStore): void {
 }
 
 function credentialKey(config: ProjectLinkConfig): string {
-    return `${config.dashboardUrl}|${config.projectId}`;
+    return config.projectId;
 }
 
 export function saveCredential(config: ProjectLinkConfig, token: string): void {
     const store = readStore();
     const key = credentialKey(config);
     const next: StoredCredential = {
-        dashboardUrl: config.dashboardUrl,
         projectId: config.projectId,
         token,
         createdAt: new Date().toISOString(),
@@ -84,11 +83,15 @@ export function removeCredential(config: ProjectLinkConfig): boolean {
     return true;
 }
 
-export function resolveLocalCredentials(config: ProjectLinkConfig): ResolvedSyncCredentials | null {
+export function resolveLocalCredentials(
+    config: ProjectLinkConfig,
+    dashboardUrl = DEFAULT_DASHBOARD_URL,
+): ResolvedSyncCredentials | null {
     const token = readCredential(config);
     if (!token) return null;
     return {
-        ...config,
+        projectId: config.projectId,
+        dashboardUrl,
         apiKey: token,
         source: 'local',
     };

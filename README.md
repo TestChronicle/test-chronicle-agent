@@ -58,7 +58,6 @@ For CI or scripts, set:
 
 - `API_KEY`: personal or team API key
 - `PROJECT_ID`: Test Chronicle project ID
-- `CHRONICLE_DASHBOARD_URL`: optional dashboard URL, defaults to `https://www.testchronicle.com`
 
 Environment variables take precedence over local login credentials.
 
