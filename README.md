@@ -1,6 +1,6 @@
 # testchronicle
 
-Sync test specs and git-mapped test history to Test Chronicle.
+Keep your test suite visible. Sync test specs and history to your dashboard automatically.
 
 ## Local NPM Usage
 
