@@ -173,4 +173,44 @@ describe('CLI credential resolution', () => {
             projectId: 'linked-project',
         });
     });
+
+    it('does not print polling dots while waiting for browser approval', async () => {
+        const cwd = tempDir('tc-cli-quiet-login-');
+        process.env.TESTCHRONICLE_CONFIG_HOME = tempDir('tc-cli-quiet-login-creds-');
+        const fetchSpy = vi
+            .fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                json: () =>
+                    Promise.resolve({
+                        deviceCode: 'tc_agent_secret',
+                        userCode: 'ABCD1234',
+                        approveUrl: 'http://localhost:3000/cli/login?code=ABCD1234',
+                        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+                        pollIntervalSeconds: 1,
+                    }),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({ status: 'pending' }),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({ status: 'approved', projectId: 'linked-project' }),
+            });
+        vi.stubGlobal('fetch', fetchSpy);
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+        const stdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+
+        await runCli({
+            argv: ['login', '--dashboard-url', 'http://localhost:3000/', '--no-open'],
+            cwd,
+            env: {},
+        });
+
+        expect(stdoutWrite).not.toHaveBeenCalled();
+    });
 });

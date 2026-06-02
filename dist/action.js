@@ -10874,7 +10874,7 @@ async function syncProject(options) {
   await validateProjectAccess(dashboardUrl, apiKey, projectId);
   const envLocalPath = import_path10.default.join(process.cwd(), ".env.local");
   if (import_fs4.default.existsSync(envLocalPath)) {
-    import_dotenv.default.config({ path: envLocalPath, debug: false });
+    import_dotenv.default.config({ path: envLocalPath, debug: false, quiet: true });
   }
   const detectedRepoUrl = await getRepoUrl(process.cwd());
   if (detectedRepoUrl) {

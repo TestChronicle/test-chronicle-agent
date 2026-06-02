@@ -186,7 +186,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     // Load .env.local from project directory if it exists
     const envLocalPath = path.join(process.cwd(), '.env.local');
     if (fs.existsSync(envLocalPath)) {
-        dotenv.config({ path: envLocalPath, debug: false });
+        dotenv.config({ path: envLocalPath, debug: false, quiet: true });
     }
 
     // Resolve repo URL: explicit option takes priority, then auto-detect from git remote

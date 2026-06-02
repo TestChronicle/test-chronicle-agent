@@ -121,11 +121,7 @@ async function runLogin(ctx: CliContext): Promise<void> {
         await sleep(intervalMs);
         const result = await pollBrowserLogin(dashboardUrl, session.deviceCode);
 
-        if (result.status === 'pending') {
-            process.stdout.write('.');
-            continue;
-        }
-        process.stdout.write('\n');
+        if (result.status === 'pending') continue;
 
         if (result.status === 'approved' && result.projectId) {
             const linkedConfig = {
@@ -214,7 +210,7 @@ export async function runCli(ctx: CliContext): Promise<void> {
 
 async function main() {
     try {
-        loadDotenv({ path: '.env.local' });
+        loadDotenv({ path: ['.env.local', '.env'], quiet: true });
         await runCli({
             argv: process.argv.slice(2),
             env: process.env,

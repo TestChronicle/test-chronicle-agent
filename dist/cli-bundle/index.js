@@ -10897,7 +10897,7 @@ async function syncProject(options) {
   await validateProjectAccess(dashboardUrl, apiKey, projectId);
   const envLocalPath = import_path10.default.join(process.cwd(), ".env.local");
   if (import_fs4.default.existsSync(envLocalPath)) {
-    import_dotenv.default.config({ path: envLocalPath, debug: false });
+    import_dotenv.default.config({ path: envLocalPath, debug: false, quiet: true });
   }
   const detectedRepoUrl = await getRepoUrl(process.cwd());
   if (detectedRepoUrl) {
@@ -11306,11 +11306,7 @@ ${session.approveUrl}`);
   while (Date.now() < expiresAt) {
     await sleep(intervalMs);
     const result = await pollBrowserLogin(dashboardUrl, session.deviceCode);
-    if (result.status === "pending") {
-      process.stdout.write(".");
-      continue;
-    }
-    process.stdout.write("\n");
+    if (result.status === "pending") continue;
     if (result.status === "approved" && result.projectId) {
       const linkedConfig = {
         projectId: result.projectId
@@ -11387,7 +11383,7 @@ async function runCli(ctx) {
 }
 async function main() {
   try {
-    (0, import_dotenv2.config)({ path: ".env.local" });
+    (0, import_dotenv2.config)({ path: [".env.local", ".env"], quiet: true });
     await runCli({
       argv: process.argv.slice(2),
       env: process.env,
