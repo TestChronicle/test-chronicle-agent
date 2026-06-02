@@ -27,6 +27,30 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Validate release version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          release_version="${{ inputs.releaseVersion }}"
+          if [[ ! "$release_version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "releaseVersion must be a semver tag like v0.1.0"
+            exit 1
+          fi
+
+          if git rev-parse "$release_version" >/dev/null 2>&1; then
+            echo "Tag $release_version already exists. Use a new release version."
+            exit 1
+          fi
+
+      - name: Get previous release tag
+        id: previous_tag
+        uses: WyriHaximus/github-action-get-previous-tag@v2
+        with:
+          pattern: v*[0-9].*[0-9].*[0-9]
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -66,28 +90,32 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create release commit and tag
+      - name: Create local release commit and tag
         run: |
           git add -A
           git commit -m "release ${{ inputs.releaseVersion }}" --no-verify || echo "No changes to commit"
           git tag ${{ inputs.releaseVersion }}
-          git push origin ${{ inputs.releaseVersion }}
 
       - name: Publish to npm
         run: npm publish --provenance --access public
+
+      - name: Push release tag
+        run: git push origin refs/tags/${{ inputs.releaseVersion }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.releaseVersion }}
+          previous_tag: ${{ steps.previous_tag.outputs.tag }}
           files: |
             action.yml
             package.json
+          fail_on_unmatched_files: true
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update major version tag
         run: |
-          git tag -f ${{ inputs.majorReleaseVersion }}
+          git tag -f ${{ inputs.majorReleaseVersion }} ${{ inputs.releaseVersion }}
           git push origin ${{ inputs.majorReleaseVersion }} --force
