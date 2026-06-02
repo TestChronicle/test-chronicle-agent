@@ -15,6 +15,7 @@ import {
 import { removeCredential, resolveLocalCredentials, saveCredential, credentialsPath } from './credentials';
 import { pollBrowserLogin, startBrowserLogin } from './cli-login';
 import { getRepoUrl } from './git';
+import { vercelProtectionBypassFromEnv } from './vercel-protection';
 
 interface CliContext {
     argv: string[];
@@ -40,13 +41,14 @@ function printHelp(): void {
     console.log(`Test Chronicle CLI
 
 Usage:
-  testchronicle login [--dashboard-url <url>] [--no-open]
+  testchronicle login [--dashboard-url <url>] [--no-open] [--vercel-bypass-token <token>]
   testchronicle sync
   testchronicle status
   testchronicle logout [--remove-config]
 
 Environment overrides:
   API_KEY, PROJECT_ID, CHRONICLE_DASHBOARD_URL
+  CHRONICLE_VERCEL_BYPASS_TOKEN, VERCEL_AUTOMATION_BYPASS_SECRET
 
 Local config:
   ${PROJECT_CONFIG_FILE}`);
@@ -82,7 +84,11 @@ export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptio
         );
     }
 
-    return localCredentials;
+    const vercelProtectionBypass = vercelProtectionBypassFromEnv(ctx.env);
+    return {
+        ...localCredentials,
+        ...(vercelProtectionBypass ? { vercelProtectionBypass } : {}),
+    };
 }
 
 async function runSync(ctx: CliContext): Promise<void> {
@@ -96,12 +102,20 @@ async function runLogin(ctx: CliContext): Promise<void> {
         /\/$/,
         '',
     );
+    const vercelProtectionBypass =
+        getFlag(ctx.argv, '--vercel-bypass-token') || vercelProtectionBypassFromEnv(ctx.env);
     const repoUrl = await getRepoUrl(ctx.cwd);
     const projectName = path.basename(ctx.cwd);
-    const session = await startBrowserLogin(dashboardUrl, {
-        projectName,
-        ...(repoUrl ? { repoUrl } : {}),
-    });
+    const session = await startBrowserLogin(
+        dashboardUrl,
+        {
+            projectName,
+            ...(repoUrl ? { repoUrl } : {}),
+        },
+        {
+            vercelProtectionBypass,
+        },
+    );
 
     console.log(`Open this URL to link your project:\n${session.approveUrl}`);
     console.log(`Code: ${session.userCode}`);
@@ -119,7 +133,9 @@ async function runLogin(ctx: CliContext): Promise<void> {
 
     while (Date.now() < expiresAt) {
         await sleep(intervalMs);
-        const result = await pollBrowserLogin(dashboardUrl, session.deviceCode);
+        const result = await pollBrowserLogin(dashboardUrl, session.deviceCode, {
+            vercelProtectionBypass,
+        });
 
         if (result.status === 'pending') {
             process.stdout.write('.');

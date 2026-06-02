@@ -2,6 +2,7 @@ export interface SyncOptions {
     projectId: string;
     apiKey: string;
     dashboardUrl: string;
+    vercelProtectionBypass?: string;
 }
 /**
  * Core sync function - syncs test data to dashboard.

@@ -21,6 +21,7 @@ export interface SyncOptions {
     projectId: string;
     apiKey: string;
     dashboardUrl: string;
+    vercelProtectionBypass?: string;
 }
 
 /**
@@ -177,11 +178,11 @@ function deduplicateCommitChanges(entry: CommitHistory): CommitChange[] {
  * First sync creates a baseline marker; subsequent syncs are incremental from the last commit.
  */
 export async function syncProject(options: SyncOptions): Promise<void> {
-    const { projectId, apiKey, dashboardUrl } = options;
+    const { projectId, apiKey, dashboardUrl, vercelProtectionBypass } = options;
 
     // Validate API key and project ID early — fail fast before any expensive work
     console.log('[sync] Validating project access...');
-    await validateProjectAccess(dashboardUrl, apiKey, projectId);
+    await validateProjectAccess(dashboardUrl, apiKey, projectId, vercelProtectionBypass);
 
     // Load .env.local from project directory if it exists
     const envLocalPath = path.join(process.cwd(), '.env.local');
@@ -197,7 +198,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const repoUrl = detectedRepoUrl ?? undefined;
 
     console.log('[config] Fetching project config from dashboard...');
-    let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
+    let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId, vercelProtectionBypass);
     const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
     if (projectConfig === null) {
         console.log('[config] Warning: Could not reach dashboard config endpoint. Using auto-detected config');
@@ -247,7 +248,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     let isFirstSync = false;
 
     try {
-        lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
+        lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId, vercelProtectionBypass);
     } catch (error) {
         if (error instanceof Error) {
             console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
@@ -356,18 +357,23 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         const chunkStart = chunkIndex * HISTORY_CHUNK_SIZE;
         const historyChunk = historyOldestFirst.slice(chunkStart, chunkStart + HISTORY_CHUNK_SIZE);
 
-        await syncToDashboard(dashboardUrl, apiKey, {
-            projectId,
-            // Only include specs and stats with the first chunk — the server uses
-            // the spec list to upsert files and prune stale entries.
-            specs: chunkIndex === 0 ? transformedSpecs : [],
-            history: historyChunk,
-            stats: chunkIndex === 0 ? stats : {},
-            timestamp,
-            ...(repoUrl ? { repoUrl } : {}),
-            chunkIndex,
-            isLastChunk,
-        });
+        await syncToDashboard(
+            dashboardUrl,
+            apiKey,
+            {
+                projectId,
+                // Only include specs and stats with the first chunk — the server uses
+                // the spec list to upsert files and prune stale entries.
+                specs: chunkIndex === 0 ? transformedSpecs : [],
+                history: historyChunk,
+                stats: chunkIndex === 0 ? stats : {},
+                timestamp,
+                ...(repoUrl ? { repoUrl } : {}),
+                chunkIndex,
+                isLastChunk,
+            },
+            vercelProtectionBypass,
+        );
 
         if (totalChunks > 1) {
             console.log(`[sync]   → ${chunkIndex + 1}/${totalChunks} batches uploaded`);
@@ -384,7 +390,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             // exactly the commits that haven't been uploaded yet.
             const newestInChunk = historyChunk[historyChunk.length - 1].commitHash;
             try {
-                await saveSyncMarker(dashboardUrl, apiKey, projectId, newestInChunk);
+                await saveSyncMarker(dashboardUrl, apiKey, projectId, newestInChunk, vercelProtectionBypass);
             } catch {
                 // Non-fatal — worst case the next run re-uploads from the previous marker
             }
@@ -410,7 +416,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             return;
         }
 
-        await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
+        await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash, vercelProtectionBypass);
 
         if (isFirstSync) {
             console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);

@@ -14,6 +14,12 @@ The login command opens a browser, lets you select or create a project, writes a
 `testchronicle.config.json` file in the repository, and stores the project-scoped agent token
 in your user config directory.
 
+For protected Vercel preview deployments, pass an automation bypass token while testing login:
+
+```bash
+npx testchronicle@latest login --dashboard-url https://your-preview.vercel.app --vercel-bypass-token "$VERCEL_AUTOMATION_BYPASS_SECRET"
+```
+
 Run a sync locally:
 
 ```bash
@@ -59,6 +65,7 @@ For CI or scripts, set:
 - `API_KEY`: personal or team API key
 - `PROJECT_ID`: Test Chronicle project ID
 - `CHRONICLE_DASHBOARD_URL`: optional dashboard URL, defaults to `https://www.testchronicle.com`
+- `CHRONICLE_VERCEL_BYPASS_TOKEN`: optional Vercel automation bypass token for protected preview deployments
 
 Environment variables take precedence over local login credentials.
 

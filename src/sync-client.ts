@@ -1,17 +1,25 @@
 // Sync client for posting data to dashboard
 
 import { DashboardSyncConfig } from './types';
+import {
+    isVercelAuthenticationResponse,
+    vercelAuthenticationError,
+    withVercelProtectionBypassHeader,
+} from './vercel-protection';
 
 interface SyncMarkerResponse {
     lastSyncedCommit?: string;
     commitHash?: string;
 }
 
-function makeAuthHeaders(apiToken: string): Record<string, string> {
-    return {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiToken}`,
-    };
+function makeAuthHeaders(apiToken: string, vercelProtectionBypass?: string): Record<string, string> {
+    return withVercelProtectionBypassHeader(
+        {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiToken}`,
+        },
+        vercelProtectionBypass,
+    );
 }
 
 /**
@@ -19,14 +27,23 @@ function makeAuthHeaders(apiToken: string): Record<string, string> {
  * endpoint early. Throws a descriptive error on auth failure or unknown project
  * so the sync fails fast before doing any expensive local work.
  */
-export async function validateProjectAccess(dashboardUrl: string, apiToken: string, projectId: string): Promise<void> {
+export async function validateProjectAccess(
+    dashboardUrl: string,
+    apiToken: string,
+    projectId: string,
+    vercelProtectionBypass?: string,
+): Promise<void> {
     const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
     try {
         const response = await fetch(url, {
             method: 'GET',
-            headers: makeAuthHeaders(apiToken),
+            headers: makeAuthHeaders(apiToken, vercelProtectionBypass),
         });
         if (response.status === 401 || response.status === 403) {
+            const body = await response.text().catch(() => '');
+            if (isVercelAuthenticationResponse(response.status, body)) {
+                throw vercelAuthenticationError('validate project access');
+            }
             throw new Error('Invalid API key. Please check your API_KEY.');
         }
         if (response.status === 404) {
@@ -38,7 +55,9 @@ export async function validateProjectAccess(dashboardUrl: string, apiToken: stri
     } catch (error) {
         if (
             error instanceof Error &&
-            (error.message.startsWith('Invalid API key') || error.message.startsWith('Project not found'))
+            (error.message.startsWith('Invalid API key') ||
+                error.message.startsWith('Project not found') ||
+                error.message.startsWith('Failed to validate project access'))
         ) {
             throw error;
         }
@@ -56,12 +75,13 @@ export async function fetchProjectConfig(
     dashboardUrl: string,
     apiToken: string,
     projectId: string,
+    vercelProtectionBypass?: string,
 ): Promise<DashboardSyncConfig | null> {
     const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
     try {
         const response = await fetch(url, {
             method: 'GET',
-            headers: makeAuthHeaders(apiToken),
+            headers: makeAuthHeaders(apiToken, vercelProtectionBypass),
         });
         if (!response.ok) return null;
         return (await response.json()) as DashboardSyncConfig;
@@ -74,26 +94,37 @@ export async function fetchProjectConfig(
  * Get the last synced commit hash from the dashboard.
  * Returns null if no sync has been performed yet.
  */
-export async function getSyncMarker(dashboardUrl: string, apiToken: string, projectId: string): Promise<string | null> {
+export async function getSyncMarker(
+    dashboardUrl: string,
+    apiToken: string,
+    projectId: string,
+    vercelProtectionBypass?: string,
+): Promise<string | null> {
     const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
 
     try {
         const response = await fetch(url, {
             method: 'GET',
-            headers: makeAuthHeaders(apiToken),
+            headers: makeAuthHeaders(apiToken, vercelProtectionBypass),
         });
 
         if (!response.ok) {
             // 404 is expected on first sync
             if (response.status === 404) return null;
             const errorBody = await response.text().catch(() => '');
+            if (isVercelAuthenticationResponse(response.status, errorBody)) {
+                throw vercelAuthenticationError('get sync marker');
+            }
             throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ''}`);
         }
 
         const data = (await response.json()) as SyncMarkerResponse;
         return data?.lastSyncedCommit || data?.commitHash || null;
     } catch (error) {
-        // On error, return null and let sync proceed with full history
+        if (error instanceof Error && error.message.startsWith('Failed to get sync marker')) {
+            throw error;
+        }
+        // On non-auth errors, return null and let sync proceed with full history
         return null;
     }
 }
@@ -106,17 +137,21 @@ export async function saveSyncMarker(
     apiToken: string,
     projectId: string,
     commitHash: string,
+    vercelProtectionBypass?: string,
 ): Promise<void> {
     const url = new URL(`/api/projects/${projectId}/sync-marker`, dashboardUrl).toString();
 
     const response = await fetch(url, {
         method: 'POST',
-        headers: makeAuthHeaders(apiToken),
+        headers: makeAuthHeaders(apiToken, vercelProtectionBypass),
         body: JSON.stringify({ commitHash }),
     });
 
     if (!response.ok) {
         const errorBody = await response.text().catch(() => '');
+        if (isVercelAuthenticationResponse(response.status, errorBody)) {
+            throw vercelAuthenticationError('save sync marker');
+        }
         throw new Error(
             `Failed to save sync marker: ${response.status} ${response.statusText}${
                 errorBody ? ` - ${errorBody}` : ''
@@ -138,6 +173,7 @@ export async function syncToDashboard(
         chunkIndex: number;
         isLastChunk: boolean;
     },
+    vercelProtectionBypass?: string,
 ): Promise<{ success: true; projectId: string; synced_at: string }> {
     const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();
     const body = JSON.stringify(payload);
@@ -155,13 +191,16 @@ export async function syncToDashboard(
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: makeAuthHeaders(apiToken),
+                headers: makeAuthHeaders(apiToken, vercelProtectionBypass),
                 body,
                 signal: controller.signal,
             });
 
             if (!response.ok) {
                 const errorBody = await response.text().catch(() => '');
+                if (isVercelAuthenticationResponse(response.status, errorBody)) {
+                    throw vercelAuthenticationError('sync to dashboard');
+                }
                 throw new Error(
                     `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ''}`,
                 );
