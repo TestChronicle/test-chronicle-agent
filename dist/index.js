@@ -13203,7 +13203,6 @@ async function runLogin(ctx) {
   });
   console.log(`Open this URL to approve local sync:
 ${session.approveUrl}`);
-  console.log(`Code: ${session.userCode}`);
   if (!hasFlag(ctx.argv, "--no-open")) {
     try {
       openBrowser(session.approveUrl);
@@ -13227,7 +13226,7 @@ ${session.approveUrl}`);
       console.log(`Linked Test Chronicle project: ${linkedConfig.projectId}`);
       console.log(`Wrote config: ${projectConfigPath(ctx.cwd)}`);
       console.log(`Stored credential: ${credentialsPath()}`);
-      console.log("Next: testchronicle sync");
+      console.log("Run a sync locally:\n npx testchronicle@latest sync");
       return;
     }
     throw new Error(`Login ${result.status}`);
