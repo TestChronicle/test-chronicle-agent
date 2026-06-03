@@ -70,7 +70,7 @@ function applyFrameworkOverrides(frameworkMap: Map<string, DetectionResult>, ove
                 testDir: dir,
                 confidence: 'high',
             });
-            console.log(`[config] ${override.framework}: dir added via dashboard override -> ${dir}`);
+            console.log(`[config] ${override.framework}: dashboard override added ${dir}.`);
         }
     }
 }
@@ -85,7 +85,7 @@ function applyTestDirExcludes(frameworkMap: Map<string, DetectionResult>, exclud
             const configDir = config.testDir.replace(/^\.\//, '');
             if (configDir.startsWith(normalised)) {
                 frameworkMap.delete(key);
-                console.log(`[config] ${config.framework}: excluded by testDirExcludes (${excludeDir})`);
+                console.log(`[config] ${config.framework}: excluded ${excludeDir}.`);
             }
         }
     }
@@ -180,7 +180,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const { projectId, apiKey, dashboardUrl } = options;
 
     // Validate API key and project ID early — fail fast before any expensive work
-    console.log('[sync] Validating project access...');
+    console.log('[sync] Validating project access.');
     await validateProjectAccess(dashboardUrl, apiKey, projectId);
 
     // Load .env.local from project directory if it exists
@@ -192,26 +192,26 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     // Resolve repo URL: explicit option takes priority, then auto-detect from git remote
     const detectedRepoUrl = await getRepoUrl(process.cwd());
     if (detectedRepoUrl) {
-        console.log(`[sync] Detected repository URL: ${detectedRepoUrl}`);
+        console.log(`[sync] Repository: ${detectedRepoUrl}`);
     }
     const repoUrl = detectedRepoUrl ?? undefined;
 
-    console.log('[config] Fetching project config from dashboard...');
+    console.log('[config] Fetching project config.');
     let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
     const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
     if (projectConfig === null) {
-        console.log('[config] Warning: Could not reach dashboard config endpoint. Using auto-detected config');
+        console.warn('[config] Could not fetch project config; using auto-detected settings.');
     } else if (overrideCount > 0) {
-        console.log(`[config] Loaded project config from dashboard (${overrideCount} framework override(s))`);
+        console.log(`[config] Loaded project config (${overrideCount} framework override(s)).`);
     } else {
-        console.log('[config] No project overrides set. Using auto-detected config');
+        console.log('[config] No project overrides set; using auto-detected settings.');
     }
 
     // Resolve the default branch: dashboard setting takes priority, then auto-detect from git
     const defaultBranch = projectConfig?.defaultBranch ?? (await getDefaultBranch(process.cwd()));
     console.log(`[sync] Default branch: ${defaultBranch}`);
 
-    console.log('[sync] Detecting frameworks...');
+    console.log('[sync] Detecting frameworks.');
     const detected = detectFrameworks(process.cwd());
 
     // Build a mutable map keyed by "framework:testDir" so multiple entries for the
@@ -229,18 +229,18 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         const primary = projectConfig?.primaryFramework;
         frameworkConfigs = [{ framework: primary ?? 'unknown', testDir: './tests', confidence: 'low' }];
         console.log(
-            `[config] No frameworks remain after exclusions, falling back to: ${frameworkConfigs[0].framework}`,
+            `[config] No frameworks matched after exclusions; using ${frameworkConfigs[0].framework}.`,
         );
     }
 
     for (const { framework, testDir, confidence } of frameworkConfigs) {
-        console.log(`[sync]   ${framework} → ${testDir} (${confidence})`);
+        console.log(`[sync]   ${framework}: ${testDir} (${confidence})`);
     }
 
-    console.log('[sync] Parsing test specifications...');
+    console.log('[sync] Parsing test specifications.');
     const specs = parseAllSpecs(process.cwd(), frameworkConfigs);
     const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
-    console.log(`[sync] Found ${specs.length} spec files with ${totalTests} tests`);
+    console.log(`[sync] Found ${specs.length} spec files and ${totalTests} tests.`);
 
     // Check if this is first sync or subsequent sync
     let lastSyncCommit: string | null = null;
@@ -250,24 +250,24 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
     } catch (error) {
         if (error instanceof Error) {
-            console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
+            console.warn(`[sync] Could not retrieve sync marker: ${error.message}`);
         }
     }
 
     isFirstSync = !lastSyncCommit;
     if (isFirstSync) {
-        console.log('[sync] First sync detected - creating baseline');
+        console.log('[sync] First sync: creating baseline.');
     } else {
-        console.log(`[sync] Subsequent sync - last synced: ${lastSyncCommit!.substring(0, 7)}`);
+        console.log(`[sync] Incremental sync from ${lastSyncCommit!.substring(0, 7)}.`);
     }
 
-    console.log('[sync] Building git history...');
+    console.log('[sync] Building git history.');
 
     // For first sync, scan all commits; for subsequent, only scan incremental
     const sinceCommit = isFirstSync ? undefined : lastSyncCommit!;
     const sinceDate = isFirstSync ? new Date(Date.now() - MAX_FIRST_SYNC_DAYS * 86_400_000) : undefined;
     if (sinceDate) {
-        console.log(`[sync] First sync: limiting history to last ${MAX_FIRST_SYNC_DAYS} days`);
+        console.log(`[sync] First sync: scanning the last ${MAX_FIRST_SYNC_DAYS} days.`);
     }
     const history = await buildHistory(
         process.cwd(),
@@ -277,21 +277,21 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         false, // never do full history anymore
         sinceDate,
     );
-    console.log(`[sync] Built history for ${history.entries.length} commits`);
+    console.log(`[sync] Built history for ${history.entries.length} commits.`);
 
     // Report any errors encountered during history building
     if (history.errors.length > 0) {
-        console.warn(`[sync] Warning: ${history.errors.length} commits had processing issues:`);
+        console.warn(`[sync] ${history.errors.length} commits had processing issues:`);
         history.errors.slice(0, 5).forEach((error) => {
             console.warn(`[sync]   - ${error.commit.substring(0, 7)}: ${error.file} (${error.reason})`);
         });
         if (history.errors.length > 5) {
-            console.warn(`[sync]   ... and ${history.errors.length - 5} more`);
+            console.warn(`[sync]   and ${history.errors.length - 5} more.`);
         }
     }
     if (history.warnings.length > 0) {
         history.warnings.forEach((warning) => {
-            console.warn(`[sync] Warning: ${warning}`);
+            console.warn(`[sync] ${warning}`);
         });
     }
 
@@ -316,7 +316,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         parameterizedTestCount,
     };
 
-    console.log('[sync] Syncing to dashboard...');
+    console.log('[sync] Syncing to dashboard.');
 
     const transformedSpecs = transformSpecsForPayload(specs);
 
@@ -348,7 +348,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const timestamp = new Date().toISOString();
 
     if (totalChunks > 1) {
-        console.log(`[sync] Uploading in ${totalChunks} batches...`);
+        console.log(`[sync] Uploading ${totalChunks} batches.`);
     }
 
     for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
@@ -370,12 +370,12 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         });
 
         if (totalChunks > 1) {
-            console.log(`[sync]   → ${chunkIndex + 1}/${totalChunks} batches uploaded`);
+            console.log(`[sync]   ${chunkIndex + 1}/${totalChunks} batches uploaded.`);
         }
 
         if (isLastChunk) {
             console.log(
-                `[sync] Done — ${specs.length} specs, ${totalTests} tests, ${history.entries.length} commits synced`,
+                `[sync] Done: ${specs.length} specs, ${totalTests} tests, ${history.entries.length} commits synced.`,
             );
             console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
         } else {
@@ -406,20 +406,20 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         }
 
         if (!lastHash) {
-            console.log('[sync] Warning: Could not determine last commit hash');
+            console.warn('[sync] Could not determine the last commit hash.');
             return;
         }
 
         await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
 
         if (isFirstSync) {
-            console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
+            console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests.`);
         } else {
-            console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}`);
+            console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}.`);
         }
     } catch (error) {
         if (error instanceof Error) {
-            console.log(`[sync] Warning: Could not save sync marker: ${error.message}`);
+            console.warn(`[sync] Could not save sync marker: ${error.message}`);
         }
     }
 }

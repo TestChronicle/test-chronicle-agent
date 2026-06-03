@@ -161,7 +161,6 @@ export async function buildHistory(
         commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : allTestDirs);
     } catch (error) {
         if (error instanceof Error) {
-            console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
             warnings.push(`Git log failed: ${error.message}`);
         }
         return { entries: [], errors, warnings };
@@ -171,7 +170,7 @@ export async function buildHistory(
         return { entries: [], errors, warnings };
     }
 
-    console.log(`[sync] Processing ${commits.length} commits...`);
+    console.log(`[sync] Processing ${commits.length} commits.`);
 
     // Report roughly 20 times across the full run, minimum every 50 commits
     const BATCH_SIZE = 20;
@@ -239,7 +238,7 @@ export async function buildHistory(
             Math.floor(prevProcessed / reportEvery) !== Math.floor(processed / reportEvery) ||
             processed >= commits.length
         ) {
-            console.log(`[sync]   → ${processed}/${commits.length} commits processed`);
+            console.log(`[sync]   ${processed}/${commits.length} commits processed.`);
         }
     }
 

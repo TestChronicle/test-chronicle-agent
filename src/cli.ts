@@ -100,7 +100,7 @@ export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptio
 
 async function runSync(ctx: CliContext): Promise<void> {
     const { source, ...options } = await resolveSyncCredentials(ctx);
-    console.log(`[cli] Using ${source === 'env' ? 'environment' : 'local project'} credentials`);
+    console.log(`[cli] Using ${source === 'env' ? 'environment' : 'local project'} credentials.`);
     try {
         await syncProject(options);
     } catch (error) {
@@ -126,19 +126,19 @@ async function runLogin(ctx: CliContext): Promise<void> {
         ...(repoUrl ? { repoUrl } : {}),
     });
 
-    console.log(`Open this URL to approve local sync:\n${session.approveUrl}`);
+    console.log(`[login] Open this URL to approve local sync:\n${session.approveUrl}`);
 
     if (!hasFlag(ctx.argv, '--no-open')) {
         try {
             openBrowser(session.approveUrl);
         } catch {
-            console.log('[login] Could not open a browser automatically.');
+            console.warn('[login] Could not open a browser automatically.');
         }
     }
 
     const expiresAt = new Date(session.expiresAt).getTime();
     const intervalMs = Math.max(1, session.pollIntervalSeconds ?? 2) * 1000;
-    console.log('Waiting for browser approval...');
+    console.log('[login] Waiting for browser approval.');
 
     while (Date.now() < expiresAt) {
         await sleep(intervalMs);
@@ -152,10 +152,10 @@ async function runLogin(ctx: CliContext): Promise<void> {
             };
             writeProjectConfig(linkedConfig, ctx.cwd);
             saveCredential(linkedConfig, session.deviceCode);
-            console.log(`Linked Test Chronicle project: ${linkedConfig.projectId}`);
-            console.log(`Wrote config: ${projectConfigPath(ctx.cwd)}`);
-            console.log(`Stored credential: ${credentialsPath()}`);
-            console.log('Sync using: npx testchronicle@latest sync');
+            console.log(`[login] Linked project: ${linkedConfig.projectId}`);
+            console.log(`[login] Config saved: ${projectConfigPath(ctx.cwd)}`);
+            console.log(`[login] Credential saved: ${credentialsPath()}`);
+            console.log('[login] Next: npx testchronicle@latest sync');
             return;
         }
 
@@ -244,7 +244,7 @@ async function main() {
         process.exitCode = 0;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error('Fatal error:', message);
+        console.error('Error:', message);
         process.exitCode = 1;
     }
 }
