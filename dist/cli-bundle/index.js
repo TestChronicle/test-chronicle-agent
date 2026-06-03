@@ -1158,7 +1158,6 @@ init_cjs_shims();
 var import_child_process2 = __nccwpck_require__(317);
 var import_fs7 = __toESM(__nccwpck_require__(896));
 var import_path13 = __toESM(__nccwpck_require__(928));
-var import_dotenv2 = __toESM(require_main());
 
 // src/sync.ts
 init_cjs_shims();
@@ -13037,12 +13036,31 @@ function resolveLocalCredentials(config, dashboardUrl = DEFAULT_DASHBOARD_URL) {
 
 // src/cli-login.ts
 init_cjs_shims();
+function getCauseCode(error) {
+  const cause = error instanceof Error && "cause" in error ? error.cause : void 0;
+  if (!cause || typeof cause !== "object" || !("code" in cause)) return null;
+  const code = cause.code;
+  return typeof code === "string" && /^[A-Z0-9_]+$/.test(code) ? code : null;
+}
+function loginNetworkError(message, dashboardUrl, error) {
+  const code = getCauseCode(error);
+  const wrapped = new Error(
+    `${message} at ${dashboardUrl}. Check --dashboard-url or CHRONICLE_DASHBOARD_URL.${code ? ` (${code})` : ""}`
+  );
+  wrapped.cause = error;
+  return wrapped;
+}
 async function startBrowserLogin(dashboardUrl, request) {
-  const response = await fetch(new URL("/api/cli-login/start", dashboardUrl), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request)
-  });
+  let response;
+  try {
+    response = await fetch(new URL("/api/cli-login/start", dashboardUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request)
+    });
+  } catch (error) {
+    throw loginNetworkError("Could not reach Test Chronicle login", dashboardUrl, error);
+  }
   if (!response.ok) {
     const body = await response.text().catch(() => "");
     throw new Error(`Failed to start login (${response.status})${body ? ` - ${body}` : ""}`);
@@ -13050,11 +13068,16 @@ async function startBrowserLogin(dashboardUrl, request) {
   return await response.json();
 }
 async function pollBrowserLogin(dashboardUrl, deviceCode) {
-  const response = await fetch(new URL("/api/cli-login/poll", dashboardUrl), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ deviceCode })
-  });
+  let response;
+  try {
+    response = await fetch(new URL("/api/cli-login/poll", dashboardUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deviceCode })
+    });
+  } catch (error) {
+    throw loginNetworkError("Could not reach Test Chronicle login status", dashboardUrl, error);
+  }
   if (!response.ok) {
     const body = await response.text().catch(() => "");
     throw new Error(`Failed to poll login (${response.status})${body ? ` - ${body}` : ""}`);
@@ -13113,13 +13136,16 @@ async function resolveSyncCredentials(ctx) {
   const projectConfig = readProjectConfig(ctx.cwd);
   if (!projectConfig) {
     throw new Error(
-      `No Test Chronicle project is linked. Run "testchronicle login" or set API_KEY and PROJECT_ID.`
+      `No Test Chronicle project is linked. Run "npx testchronicle@latest login" or set API_KEY and PROJECT_ID.`
     );
   }
   const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrl);
   if (!localCredentials) {
     throw new Error(
-      `No local credential found for project ${projectConfig.projectId}. Run "testchronicle login" again.`
+      [
+        `Project ${projectConfig.projectId} is linked, but no local credential is stored.`,
+        'Run "npx testchronicle@latest login" to link this machine, or set API_KEY and PROJECT_ID.'
+      ].join("\n")
     );
   }
   return localCredentials;
@@ -13134,7 +13160,7 @@ async function runSync(ctx) {
       throw new Error(
         [
           "Local project credential was rejected by the dashboard.",
-          'Run "testchronicle login" again to refresh the local link.',
+          'Run "npx testchronicle@latest login" again to refresh the local link.',
           'If you are testing against a local dashboard, pass "--dashboard-url" or set CHRONICLE_DASHBOARD_URL.'
         ].join("\n")
       );
@@ -13208,15 +13234,20 @@ function runStatus(ctx) {
 function runLogout(ctx) {
   const projectConfig = readProjectConfig(ctx.cwd);
   if (!projectConfig) {
-    console.log("No Test Chronicle project linked.");
+    console.log("[logout] No Test Chronicle project linked.");
     return;
   }
   const removed = removeCredential(projectConfig);
+  console.log(removed ? "[logout] Credential removed." : "[logout] No stored credential found.");
   if (hasFlag(ctx.argv, "--remove-config")) {
     const configPath = projectConfigPath(ctx.cwd);
-    if (import_fs7.default.existsSync(configPath)) import_fs7.default.unlinkSync(configPath);
+    if (import_fs7.default.existsSync(configPath)) {
+      import_fs7.default.unlinkSync(configPath);
+      console.log(`[logout] Config removed: ${configPath}`);
+    } else {
+      console.log("[logout] No local config found.");
+    }
   }
-  console.log(removed ? "Removed stored Test Chronicle credential." : "No stored credential found.");
 }
 async function runCli(ctx) {
   const command = ctx.argv[0] ?? "sync";
@@ -13244,7 +13275,6 @@ async function runCli(ctx) {
 }
 async function main() {
   try {
-    (0, import_dotenv2.config)({ path: [".env.local", ".env"], quiet: true });
     await runCli({
       argv: process.argv.slice(2),
       env: process.env,
