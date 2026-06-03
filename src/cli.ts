@@ -194,17 +194,22 @@ function runStatus(ctx: CliContext): void {
 function runLogout(ctx: CliContext): void {
     const projectConfig = readProjectConfig(ctx.cwd);
     if (!projectConfig) {
-        console.log('No Test Chronicle project linked.');
+        console.log('[logout] No Test Chronicle project linked.');
         return;
     }
 
     const removed = removeCredential(projectConfig);
+    console.log(removed ? '[logout] Credential removed.' : '[logout] No stored credential found.');
+
     if (hasFlag(ctx.argv, '--remove-config')) {
         const configPath = projectConfigPath(ctx.cwd);
-        if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
+        if (fs.existsSync(configPath)) {
+            fs.unlinkSync(configPath);
+            console.log(`[logout] Config removed: ${configPath}`);
+        } else {
+            console.log('[logout] No local config found.');
+        }
     }
-
-    console.log(removed ? 'Removed stored Test Chronicle credential.' : 'No stored credential found.');
 }
 
 export async function runCli(ctx: CliContext): Promise<void> {
