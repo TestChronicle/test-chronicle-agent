@@ -155,7 +155,7 @@ async function runLogin(ctx: CliContext): Promise<void> {
             console.log(`Linked Test Chronicle project: ${linkedConfig.projectId}`);
             console.log(`Wrote config: ${projectConfigPath(ctx.cwd)}`);
             console.log(`Stored credential: ${credentialsPath()}`);
-            console.log('Run a sync locally:\n npx testchronicle@latest sync');
+            console.log('Sync using: npx testchronicle@latest sync');
             return;
         }
 

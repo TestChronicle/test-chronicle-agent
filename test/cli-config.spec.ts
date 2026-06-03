@@ -216,7 +216,7 @@ describe('CLI credential resolution', () => {
                 'Waiting for browser approval...',
                 'Linked Test Chronicle project: linked-project',
                 `Wrote config: ${projectConfigPath(cwd)}`,
-                'Next: testchronicle sync',
+                'Sync using: npx testchronicle@latest sync',
             ]),
         );
     });
