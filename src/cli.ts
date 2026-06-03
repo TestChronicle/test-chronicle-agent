@@ -84,14 +84,17 @@ export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptio
     const projectConfig = readProjectConfig(ctx.cwd);
     if (!projectConfig) {
         throw new Error(
-            `No Test Chronicle project is linked. Run "testchronicle login" or set API_KEY and PROJECT_ID.`,
+            `No Test Chronicle project is linked. Run "npx testchronicle@latest login" or set API_KEY and PROJECT_ID.`,
         );
     }
 
     const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrl);
     if (!localCredentials) {
         throw new Error(
-            `No local credential found for project ${projectConfig.projectId}. Run "testchronicle login" again.`,
+            [
+                `Project ${projectConfig.projectId} is linked, but no local credential is stored.`,
+                'Run "npx testchronicle@latest login" to link this machine, or set API_KEY and PROJECT_ID.',
+            ].join('\n'),
         );
     }
 
@@ -108,7 +111,7 @@ async function runSync(ctx: CliContext): Promise<void> {
             throw new Error(
                 [
                     'Local project credential was rejected by the dashboard.',
-                    'Run "testchronicle login" again to refresh the local link.',
+                    'Run "npx testchronicle@latest login" again to refresh the local link.',
                     'If you are testing against a local dashboard, pass "--dashboard-url" or set CHRONICLE_DASHBOARD_URL.',
                 ].join('\n'),
             );
