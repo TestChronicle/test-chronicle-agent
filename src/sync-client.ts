@@ -33,7 +33,7 @@ export async function validateProjectAccess(dashboardUrl: string, apiToken: stri
             throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
         }
         if (!response.ok) {
-            console.warn(`[sync] Warning: Could not validate project access (${response.status}). Proceeding anyway.`);
+            console.warn(`[sync] Could not validate project access (${response.status}); continuing.`);
         }
     } catch (error) {
         if (
@@ -43,7 +43,7 @@ export async function validateProjectAccess(dashboardUrl: string, apiToken: stri
             throw error;
         }
         // Network / unreachable — warn and let the sync attempt proceed
-        console.warn('[sync] Warning: Could not reach dashboard to validate project access. Proceeding anyway.');
+        console.warn('[sync] Could not reach dashboard to validate project access; continuing.');
     }
 }
 
@@ -176,7 +176,7 @@ export async function syncToDashboard(
             }
             if (attempt < MAX_RETRIES) {
                 const backoffMs = BASE_BACKOFF_MS * 2 ** (attempt - 1); // 1 s, 2 s
-                console.warn(`[sync] Warning: Upload error, retrying. (${lastError.message})`);
+                console.warn(`[sync] Upload failed; retrying. ${lastError.message}`);
                 await new Promise((resolve) => setTimeout(resolve, backoffMs));
             }
         } finally {

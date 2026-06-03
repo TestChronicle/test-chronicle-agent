@@ -84,14 +84,17 @@ export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptio
     const projectConfig = readProjectConfig(ctx.cwd);
     if (!projectConfig) {
         throw new Error(
-            `No Test Chronicle project is linked. Run "testchronicle login" or set API_KEY and PROJECT_ID.`,
+            `No Test Chronicle project is linked. Run "npx testchronicle@latest login" or set API_KEY and PROJECT_ID.`,
         );
     }
 
     const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrl);
     if (!localCredentials) {
         throw new Error(
-            `No local credential found for project ${projectConfig.projectId}. Run "testchronicle login" again.`,
+            [
+                `Project ${projectConfig.projectId} is linked, but no local credential is stored.`,
+                'Run "npx testchronicle@latest login" to link this machine, or set API_KEY and PROJECT_ID.',
+            ].join('\n'),
         );
     }
 
@@ -100,7 +103,7 @@ export async function resolveSyncCredentials(ctx: CliContext): Promise<SyncOptio
 
 async function runSync(ctx: CliContext): Promise<void> {
     const { source, ...options } = await resolveSyncCredentials(ctx);
-    console.log(`[cli] Using ${source === 'env' ? 'environment' : 'local project'} credentials`);
+    console.log(`[cli] Using ${source === 'env' ? 'environment' : 'local project'} credentials.`);
     try {
         await syncProject(options);
     } catch (error) {
@@ -108,7 +111,7 @@ async function runSync(ctx: CliContext): Promise<void> {
             throw new Error(
                 [
                     'Local project credential was rejected by the dashboard.',
-                    'Run "testchronicle login" again to refresh the local link.',
+                    'Run "npx testchronicle@latest login" again to refresh the local link.',
                     'If you are testing against a local dashboard, pass "--dashboard-url" or set CHRONICLE_DASHBOARD_URL.',
                 ].join('\n'),
             );
@@ -126,19 +129,19 @@ async function runLogin(ctx: CliContext): Promise<void> {
         ...(repoUrl ? { repoUrl } : {}),
     });
 
-    console.log(`Open this URL to approve local sync:\n${session.approveUrl}`);
+    console.log(`[login] Open this URL to approve local sync:\n${session.approveUrl}`);
 
     if (!hasFlag(ctx.argv, '--no-open')) {
         try {
             openBrowser(session.approveUrl);
         } catch {
-            console.log('[login] Could not open a browser automatically.');
+            console.warn('[login] Could not open a browser automatically.');
         }
     }
 
     const expiresAt = new Date(session.expiresAt).getTime();
     const intervalMs = Math.max(1, session.pollIntervalSeconds ?? 2) * 1000;
-    console.log('Waiting for browser approval...');
+    console.log('[login] Waiting for browser approval.');
 
     while (Date.now() < expiresAt) {
         await sleep(intervalMs);
@@ -152,10 +155,10 @@ async function runLogin(ctx: CliContext): Promise<void> {
             };
             writeProjectConfig(linkedConfig, ctx.cwd);
             saveCredential(linkedConfig, session.deviceCode);
-            console.log(`Linked Test Chronicle project: ${linkedConfig.projectId}`);
-            console.log(`Wrote config: ${projectConfigPath(ctx.cwd)}`);
-            console.log(`Stored credential: ${credentialsPath()}`);
-            console.log('Run a sync locally:\n npx testchronicle@latest sync');
+            console.log(`[login] Linked project: ${linkedConfig.projectId}`);
+            console.log(`[login] Config saved: ${projectConfigPath(ctx.cwd)}`);
+            console.log(`[login] Credential saved: ${credentialsPath()}`);
+            console.log('[login] Next: npx testchronicle@latest sync');
             return;
         }
 
@@ -194,17 +197,22 @@ function runStatus(ctx: CliContext): void {
 function runLogout(ctx: CliContext): void {
     const projectConfig = readProjectConfig(ctx.cwd);
     if (!projectConfig) {
-        console.log('No Test Chronicle project linked.');
+        console.log('[logout] No Test Chronicle project linked.');
         return;
     }
 
     const removed = removeCredential(projectConfig);
+    console.log(removed ? '[logout] Credential removed.' : '[logout] No stored credential found.');
+
     if (hasFlag(ctx.argv, '--remove-config')) {
         const configPath = projectConfigPath(ctx.cwd);
-        if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
+        if (fs.existsSync(configPath)) {
+            fs.unlinkSync(configPath);
+            console.log(`[logout] Config removed: ${configPath}`);
+        } else {
+            console.log('[logout] No local config found.');
+        }
     }
-
-    console.log(removed ? 'Removed stored Test Chronicle credential.' : 'No stored credential found.');
 }
 
 export async function runCli(ctx: CliContext): Promise<void> {
@@ -244,7 +252,7 @@ async function main() {
         process.exitCode = 0;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error('Fatal error:', message);
+        console.error('Error:', message);
         process.exitCode = 1;
     }
 }

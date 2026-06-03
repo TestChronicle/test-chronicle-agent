@@ -172,7 +172,7 @@ describe('CLI credential resolution', () => {
         removeCredential(localConfig);
 
         await expect(resolveSyncCredentials({ argv: [], cwd, env: {} })).rejects.toThrow(
-            'No local credential found',
+            'Run "npx testchronicle@latest login" to link this machine',
         );
     });
 
@@ -213,10 +213,10 @@ describe('CLI credential resolution', () => {
         });
         expect(consoleLog.mock.calls.flat()).toEqual(
             expect.arrayContaining([
-                'Waiting for browser approval...',
-                'Linked Test Chronicle project: linked-project',
-                `Wrote config: ${projectConfigPath(cwd)}`,
-                'Next: testchronicle sync',
+                '[login] Waiting for browser approval.',
+                '[login] Linked project: linked-project',
+                `[login] Config saved: ${projectConfigPath(cwd)}`,
+                '[login] Next: npx testchronicle@latest sync',
             ]),
         );
     });
@@ -259,5 +259,25 @@ describe('CLI credential resolution', () => {
         });
 
         expect(stdoutWrite).not.toHaveBeenCalled();
+    });
+
+    it('prints concise logout messages', async () => {
+        const cwd = tempDir('tc-cli-logout-');
+        process.env.TESTCHRONICLE_CONFIG_HOME = tempDir('tc-cli-logout-creds-');
+        const localConfig = { projectId: 'local-project' };
+        writeProjectConfig(localConfig, cwd);
+        saveCredential(localConfig, 'tc_agent_secret');
+        const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        await runCli({
+            argv: ['logout', '--remove-config'],
+            cwd,
+            env: {},
+        });
+
+        expect(consoleLog.mock.calls.flat()).toEqual([
+            '[logout] Credential removed.',
+            `[logout] Config removed: ${projectConfigPath(cwd)}`,
+        ]);
     });
 });

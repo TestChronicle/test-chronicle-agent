@@ -12204,7 +12204,6 @@ async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceC
     commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : allTestDirs);
   } catch (error) {
     if (error instanceof Error) {
-      console.error(`[DEBUG] Git log error: ${error.message} with args: ${JSON.stringify(logArgs)}`);
       warnings.push(`Git log failed: ${error.message}`);
     }
     return { entries: [], errors, warnings };
@@ -12212,7 +12211,7 @@ async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceC
   if (commits.length === 0) {
     return { entries: [], errors, warnings };
   }
-  console.log(`[sync] Processing ${commits.length} commits...`);
+  console.log(`[sync] Processing ${commits.length} commits.`);
   const BATCH_SIZE = 20;
   const PROGRESS_REPORT_COUNT = 20;
   const MIN_REPORT_INTERVAL = 50;
@@ -12265,7 +12264,7 @@ async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceC
     const prevProcessed = processed;
     processed += batch.length;
     if (Math.floor(prevProcessed / reportEvery) !== Math.floor(processed / reportEvery) || processed >= commits.length) {
-      console.log(`[sync]   \u2192 ${processed}/${commits.length} commits processed`);
+      console.log(`[sync]   ${processed}/${commits.length} commits processed.`);
     }
   }
   const entries = slots.filter((e) => e !== null);
@@ -12526,13 +12525,13 @@ async function validateProjectAccess(dashboardUrl, apiToken, projectId) {
       throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
     }
     if (!response.ok) {
-      console.warn(`[sync] Warning: Could not validate project access (${response.status}). Proceeding anyway.`);
+      console.warn(`[sync] Could not validate project access (${response.status}); continuing.`);
     }
   } catch (error) {
     if (error instanceof Error && (error.message.startsWith("Invalid API key") || error.message.startsWith("Project not found"))) {
       throw error;
     }
-    console.warn("[sync] Warning: Could not reach dashboard to validate project access. Proceeding anyway.");
+    console.warn("[sync] Could not reach dashboard to validate project access; continuing.");
   }
 }
 async function fetchProjectConfig(dashboardUrl, apiToken, projectId) {
@@ -12612,7 +12611,7 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
       }
       if (attempt < MAX_RETRIES) {
         const backoffMs = BASE_BACKOFF_MS * 2 ** (attempt - 1);
-        console.warn(`[sync] Warning: Upload error, retrying. (${lastError.message})`);
+        console.warn(`[sync] Upload failed; retrying. ${lastError.message}`);
         await new Promise((resolve) => setTimeout(resolve, backoffMs));
       }
     } finally {
@@ -12650,7 +12649,7 @@ function applyFrameworkOverrides(frameworkMap, overrides) {
         testDir: dir,
         confidence: "high"
       });
-      console.log(`[config] ${override.framework}: dir added via dashboard override -> ${dir}`);
+      console.log(`[config] ${override.framework}: dashboard override added ${dir}.`);
     }
   }
 }
@@ -12661,7 +12660,7 @@ function applyTestDirExcludes(frameworkMap, excludes) {
       const configDir = config.testDir.replace(/^\.\//, "");
       if (configDir.startsWith(normalised)) {
         frameworkMap.delete(key);
-        console.log(`[config] ${config.framework}: excluded by testDirExcludes (${excludeDir})`);
+        console.log(`[config] ${config.framework}: excluded ${excludeDir}.`);
       }
     }
   }
@@ -12724,7 +12723,7 @@ function deduplicateCommitChanges(entry) {
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
-  console.log("[sync] Validating project access...");
+  console.log("[sync] Validating project access.");
   await validateProjectAccess(dashboardUrl, apiKey, projectId);
   const envLocalPath = import_path10.default.join(process.cwd(), ".env.local");
   if (import_fs4.default.existsSync(envLocalPath)) {
@@ -12732,22 +12731,22 @@ async function syncProject(options) {
   }
   const detectedRepoUrl = await getRepoUrl(process.cwd());
   if (detectedRepoUrl) {
-    console.log(`[sync] Detected repository URL: ${detectedRepoUrl}`);
+    console.log(`[sync] Repository: ${detectedRepoUrl}`);
   }
   const repoUrl = detectedRepoUrl ?? void 0;
-  console.log("[config] Fetching project config from dashboard...");
+  console.log("[config] Fetching project config.");
   let projectConfig = await fetchProjectConfig(dashboardUrl, apiKey, projectId);
   const overrideCount = projectConfig?.frameworkOverrides?.length ?? 0;
   if (projectConfig === null) {
-    console.log("[config] Warning: Could not reach dashboard config endpoint. Using auto-detected config");
+    console.warn("[config] Could not fetch project config; using auto-detected settings.");
   } else if (overrideCount > 0) {
-    console.log(`[config] Loaded project config from dashboard (${overrideCount} framework override(s))`);
+    console.log(`[config] Loaded project config (${overrideCount} framework override(s)).`);
   } else {
-    console.log("[config] No project overrides set. Using auto-detected config");
+    console.log("[config] No project overrides set; using auto-detected settings.");
   }
   const defaultBranch = projectConfig?.defaultBranch ?? await getDefaultBranch(process.cwd());
   console.log(`[sync] Default branch: ${defaultBranch}`);
-  console.log("[sync] Detecting frameworks...");
+  console.log("[sync] Detecting frameworks.");
   const detected = detectFrameworks(process.cwd());
   const frameworkMap = new Map(detected.map((d) => [mapKey(d.framework, d.testDir), d]));
   applyFrameworkOverrides(frameworkMap, projectConfig?.frameworkOverrides ?? []);
@@ -12757,36 +12756,36 @@ async function syncProject(options) {
     const primary = projectConfig?.primaryFramework;
     frameworkConfigs = [{ framework: primary ?? "unknown", testDir: "./tests", confidence: "low" }];
     console.log(
-      `[config] No frameworks remain after exclusions, falling back to: ${frameworkConfigs[0].framework}`
+      `[config] No frameworks matched after exclusions; using ${frameworkConfigs[0].framework}.`
     );
   }
   for (const { framework, testDir, confidence } of frameworkConfigs) {
-    console.log(`[sync]   ${framework} \u2192 ${testDir} (${confidence})`);
+    console.log(`[sync]   ${framework}: ${testDir} (${confidence})`);
   }
-  console.log("[sync] Parsing test specifications...");
+  console.log("[sync] Parsing test specifications.");
   const specs = parseAllSpecs(process.cwd(), frameworkConfigs);
   const totalTests = specs.reduce((sum, spec) => sum + spec.testCount, 0);
-  console.log(`[sync] Found ${specs.length} spec files with ${totalTests} tests`);
+  console.log(`[sync] Found ${specs.length} spec files and ${totalTests} tests.`);
   let lastSyncCommit = null;
   let isFirstSync = false;
   try {
     lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`[sync] Warning: Could not retrieve sync marker: ${error.message}`);
+      console.warn(`[sync] Could not retrieve sync marker: ${error.message}`);
     }
   }
   isFirstSync = !lastSyncCommit;
   if (isFirstSync) {
-    console.log("[sync] First sync detected - creating baseline");
+    console.log("[sync] First sync: creating baseline.");
   } else {
-    console.log(`[sync] Subsequent sync - last synced: ${lastSyncCommit.substring(0, 7)}`);
+    console.log(`[sync] Incremental sync from ${lastSyncCommit.substring(0, 7)}.`);
   }
-  console.log("[sync] Building git history...");
+  console.log("[sync] Building git history.");
   const sinceCommit = isFirstSync ? void 0 : lastSyncCommit;
   const sinceDate = isFirstSync ? new Date(Date.now() - MAX_FIRST_SYNC_DAYS * 864e5) : void 0;
   if (sinceDate) {
-    console.log(`[sync] First sync: limiting history to last ${MAX_FIRST_SYNC_DAYS} days`);
+    console.log(`[sync] First sync: scanning the last ${MAX_FIRST_SYNC_DAYS} days.`);
   }
   const history = await buildHistory(
     process.cwd(),
@@ -12797,19 +12796,19 @@ async function syncProject(options) {
     // never do full history anymore
     sinceDate
   );
-  console.log(`[sync] Built history for ${history.entries.length} commits`);
+  console.log(`[sync] Built history for ${history.entries.length} commits.`);
   if (history.errors.length > 0) {
-    console.warn(`[sync] Warning: ${history.errors.length} commits had processing issues:`);
+    console.warn(`[sync] ${history.errors.length} commits had processing issues:`);
     history.errors.slice(0, 5).forEach((error) => {
       console.warn(`[sync]   - ${error.commit.substring(0, 7)}: ${error.file} (${error.reason})`);
     });
     if (history.errors.length > 5) {
-      console.warn(`[sync]   ... and ${history.errors.length - 5} more`);
+      console.warn(`[sync]   and ${history.errors.length - 5} more.`);
     }
   }
   if (history.warnings.length > 0) {
     history.warnings.forEach((warning) => {
-      console.warn(`[sync] Warning: ${warning}`);
+      console.warn(`[sync] ${warning}`);
     });
   }
   const tags = {};
@@ -12830,7 +12829,7 @@ async function syncProject(options) {
     tags,
     parameterizedTestCount
   };
-  console.log("[sync] Syncing to dashboard...");
+  console.log("[sync] Syncing to dashboard.");
   const transformedSpecs = transformSpecsForPayload(specs);
   const transformedHistory = history.entries.map((entry) => {
     const deduplicatedChanges = deduplicateCommitChanges(entry);
@@ -12853,7 +12852,7 @@ async function syncProject(options) {
   const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
   const timestamp = (/* @__PURE__ */ new Date()).toISOString();
   if (totalChunks > 1) {
-    console.log(`[sync] Uploading in ${totalChunks} batches...`);
+    console.log(`[sync] Uploading ${totalChunks} batches.`);
   }
   for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
     const isLastChunk = chunkIndex === totalChunks - 1;
@@ -12872,11 +12871,11 @@ async function syncProject(options) {
       isLastChunk
     });
     if (totalChunks > 1) {
-      console.log(`[sync]   \u2192 ${chunkIndex + 1}/${totalChunks} batches uploaded`);
+      console.log(`[sync]   ${chunkIndex + 1}/${totalChunks} batches uploaded.`);
     }
     if (isLastChunk) {
       console.log(
-        `[sync] Done \u2014 ${specs.length} specs, ${totalTests} tests, ${history.entries.length} commits synced`
+        `[sync] Done: ${specs.length} specs, ${totalTests} tests, ${history.entries.length} commits synced.`
       );
       console.log(`[sync] Dashboard: ${new URL(`/dashboard/${projectId}`, dashboardUrl).toString()}`);
     } else {
@@ -12893,18 +12892,18 @@ async function syncProject(options) {
       lastHash = history.entries.length > 0 ? history.entries[history.entries.length - 1].commit.hash : await getLatestCommitHash(process.cwd());
     }
     if (!lastHash) {
-      console.log("[sync] Warning: Could not determine last commit hash");
+      console.warn("[sync] Could not determine the last commit hash.");
       return;
     }
     await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
     if (isFirstSync) {
-      console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests`);
+      console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests.`);
     } else {
-      console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}`);
+      console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}.`);
     }
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`[sync] Warning: Could not save sync marker: ${error.message}`);
+      console.warn(`[sync] Could not save sync marker: ${error.message}`);
     }
   }
 }
@@ -13120,7 +13119,7 @@ async function resolveSyncCredentials(ctx) {
 }
 async function runSync(ctx) {
   const { source, ...options } = await resolveSyncCredentials(ctx);
-  console.log(`[cli] Using ${source === "env" ? "environment" : "local project"} credentials`);
+  console.log(`[cli] Using ${source === "env" ? "environment" : "local project"} credentials.`);
   try {
     await syncProject(options);
   } catch (error) {
@@ -13144,18 +13143,18 @@ async function runLogin(ctx) {
     projectName,
     ...repoUrl ? { repoUrl } : {}
   });
-  console.log(`Open this URL to approve local sync:
+  console.log(`[login] Open this URL to approve local sync:
 ${session.approveUrl}`);
   if (!hasFlag(ctx.argv, "--no-open")) {
     try {
       openBrowser(session.approveUrl);
     } catch {
-      console.log("[login] Could not open a browser automatically.");
+      console.warn("[login] Could not open a browser automatically.");
     }
   }
   const expiresAt = new Date(session.expiresAt).getTime();
   const intervalMs = Math.max(1, session.pollIntervalSeconds ?? 2) * 1e3;
-  console.log("Waiting for browser approval...");
+  console.log("[login] Waiting for browser approval.");
   while (Date.now() < expiresAt) {
     await sleep(intervalMs);
     const result = await pollBrowserLogin(dashboardUrl, session.deviceCode);
@@ -13166,10 +13165,10 @@ ${session.approveUrl}`);
       };
       writeProjectConfig(linkedConfig, ctx.cwd);
       saveCredential(linkedConfig, session.deviceCode);
-      console.log(`Linked Test Chronicle project: ${linkedConfig.projectId}`);
-      console.log(`Wrote config: ${projectConfigPath(ctx.cwd)}`);
-      console.log(`Stored credential: ${credentialsPath()}`);
-      console.log("Run a sync locally:\n npx testchronicle@latest sync");
+      console.log(`[login] Linked project: ${linkedConfig.projectId}`);
+      console.log(`[login] Config saved: ${projectConfigPath(ctx.cwd)}`);
+      console.log(`[login] Credential saved: ${credentialsPath()}`);
+      console.log("[login] Next: npx testchronicle@latest sync");
       return;
     }
     throw new Error(`Login ${result.status}`);
@@ -13247,7 +13246,7 @@ async function main() {
     process.exitCode = 0;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error("Fatal error:", message);
+    console.error("Error:", message);
     process.exitCode = 1;
   }
 }
