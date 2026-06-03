@@ -4,21 +4,31 @@ import path from 'path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_DASHBOARD_URL, projectConfigPath, readProjectConfig, writeProjectConfig } from '../src/config';
 import { credentialsPath, removeCredential, saveCredential } from '../src/credentials';
-import { resolveSyncCredentials, runCli } from '../src/cli';
+import { cli, resolveSyncCredentials, runCli } from '../src/cli';
+import { pollBrowserLogin, startBrowserLogin } from '../src/cli-login';
 
 function tempDir(prefix: string): string {
     return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
 const originalConfigHome = process.env.TESTCHRONICLE_CONFIG_HOME;
+const originalDashboardUrl = process.env.CHRONICLE_DASHBOARD_URL;
+const originalArgv = process.argv;
 
 afterEach(() => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+    process.argv = originalArgv;
+    process.exitCode = undefined;
     if (originalConfigHome === undefined) {
         delete process.env.TESTCHRONICLE_CONFIG_HOME;
     } else {
         process.env.TESTCHRONICLE_CONFIG_HOME = originalConfigHome;
+    }
+    if (originalDashboardUrl === undefined) {
+        delete process.env.CHRONICLE_DASHBOARD_URL;
+    } else {
+        process.env.CHRONICLE_DASHBOARD_URL = originalDashboardUrl;
     }
 });
 
@@ -221,6 +231,42 @@ describe('CLI credential resolution', () => {
         );
     });
 
+    it('does not load app .env.local dashboard overrides during CLI startup', async () => {
+        const cwd = tempDir('tc-cli-ignore-dotenv-');
+        process.env.TESTCHRONICLE_CONFIG_HOME = tempDir('tc-cli-ignore-dotenv-creds-');
+        delete process.env.CHRONICLE_DASHBOARD_URL;
+        fs.writeFileSync(path.join(cwd, '.env.local'), 'CHRONICLE_DASHBOARD_URL=http://localhost:3000\n', 'utf8');
+        process.argv = ['node', 'cli.js', 'login', '--no-open'];
+        vi.spyOn(process, 'cwd').mockReturnValue(cwd);
+        const fetchSpy = vi
+            .fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                json: () =>
+                    Promise.resolve({
+                        deviceCode: 'tc_agent_secret',
+                        userCode: 'ABCD1234',
+                        approveUrl: 'https://www.testchronicle.com/cli/login?code=ABCD1234',
+                        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+                        pollIntervalSeconds: 1,
+                    }),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({ status: 'approved', projectId: 'linked-project' }),
+            });
+        vi.stubGlobal('fetch', fetchSpy);
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        await cli();
+
+        expect(fetchSpy.mock.calls[0][0].toString()).toBe(
+            'https://www.testchronicle.com/api/cli-login/start',
+        );
+    });
+
     it('does not print polling dots while waiting for browser approval', async () => {
         const cwd = tempDir('tc-cli-quiet-login-');
         process.env.TESTCHRONICLE_CONFIG_HOME = tempDir('tc-cli-quiet-login-creds-');
@@ -279,5 +325,27 @@ describe('CLI credential resolution', () => {
             '[logout] Credential removed.',
             `[logout] Config removed: ${projectConfigPath(cwd)}`,
         ]);
+    });
+
+    it('wraps login start network failures with the dashboard URL and cause code', async () => {
+        const error = new TypeError('fetch failed');
+        (error as Error & { cause?: { code: string } }).cause = { code: 'ECONNREFUSED' };
+        vi.stubGlobal('fetch', vi.fn().mockRejectedValue(error));
+
+        await expect(
+            startBrowserLogin('http://localhost:3000', { projectName: 'local-project' }),
+        ).rejects.toThrow(
+            'Could not reach Test Chronicle login at http://localhost:3000. Check --dashboard-url or CHRONICLE_DASHBOARD_URL. (ECONNREFUSED)',
+        );
+    });
+
+    it('wraps login poll network failures with the dashboard URL and cause code', async () => {
+        const error = new TypeError('fetch failed');
+        (error as Error & { cause?: { code: string } }).cause = { code: 'ECONNRESET' };
+        vi.stubGlobal('fetch', vi.fn().mockRejectedValue(error));
+
+        await expect(pollBrowserLogin('http://localhost:3000', 'tc_agent_secret')).rejects.toThrow(
+            'Could not reach Test Chronicle login status at http://localhost:3000. Check --dashboard-url or CHRONICLE_DASHBOARD_URL. (ECONNRESET)',
+        );
     });
 });

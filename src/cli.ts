@@ -1,7 +1,6 @@
 import { execFile } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { config as loadDotenv } from 'dotenv';
 import { syncProject, SyncOptions } from './sync';
 import {
     DEFAULT_DASHBOARD_URL,
@@ -243,7 +242,6 @@ export async function runCli(ctx: CliContext): Promise<void> {
 
 async function main() {
     try {
-        loadDotenv({ path: ['.env.local', '.env'], quiet: true });
         await runCli({
             argv: process.argv.slice(2),
             env: process.env,
