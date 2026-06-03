@@ -213,10 +213,10 @@ describe('CLI credential resolution', () => {
         });
         expect(consoleLog.mock.calls.flat()).toEqual(
             expect.arrayContaining([
-                'Waiting for browser approval...',
-                'Linked Test Chronicle project: linked-project',
-                `Wrote config: ${projectConfigPath(cwd)}`,
-                'Sync using: npx testchronicle@latest sync',
+                '[login] Waiting for browser approval.',
+                '[login] Linked project: linked-project',
+                `[login] Config saved: ${projectConfigPath(cwd)}`,
+                '[login] Next: npx testchronicle@latest sync',
             ]),
         );
     });
