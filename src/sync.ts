@@ -1,6 +1,3 @@
-import path from 'path';
-import fs from 'fs';
-import dotenv from 'dotenv';
 import { detectFrameworks } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash, getRepoUrl, getDefaultBranch, getRemoteBranchTip } from './git';
@@ -182,12 +179,6 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     // Validate API key and project ID early — fail fast before any expensive work
     console.log('[sync] Validating project access.');
     await validateProjectAccess(dashboardUrl, apiKey, projectId);
-
-    // Load .env.local from project directory if it exists
-    const envLocalPath = path.join(process.cwd(), '.env.local');
-    if (fs.existsSync(envLocalPath)) {
-        dotenv.config({ path: envLocalPath, debug: false, quiet: true });
-    }
 
     // Resolve repo URL: explicit option takes priority, then auto-detect from git remote
     const detectedRepoUrl = await getRepoUrl(process.cwd());
