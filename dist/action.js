@@ -54,327 +54,6 @@ var init_cjs_shims = __esm({
   }
 });
 
-// node_modules/.pnpm/dotenv@17.4.2/node_modules/dotenv/lib/main.js
-var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@17.4.2/node_modules/dotenv/lib/main.js"(exports2, module2) {
-    "use strict";
-    init_cjs_shims();
-    var fs3 = require("fs");
-    var path12 = require("path");
-    var os2 = require("os");
-    var crypto = require("crypto");
-    var TIPS = [
-      "\u25C8 encrypted .env [www.dotenvx.com]",
-      "\u25C8 secrets for agents [www.dotenvx.com]",
-      "\u2301 auth for agents [www.vestauth.com]",
-      "\u2318 custom filepath { path: '/custom/path/.env' }",
-      "\u2318 enable debugging { debug: true }",
-      "\u2318 override existing { override: true }",
-      "\u2318 suppress logs { quiet: true }",
-      "\u2318 multiple files { path: ['.env.local', '.env'] }"
-    ];
-    function _getRandomTip() {
-      return TIPS[Math.floor(Math.random() * TIPS.length)];
-    }
-    function parseBoolean(value) {
-      if (typeof value === "string") {
-        return !["false", "0", "no", "off", ""].includes(value.toLowerCase());
-      }
-      return Boolean(value);
-    }
-    function supportsAnsi() {
-      return process.stdout.isTTY;
-    }
-    function dim(text) {
-      return supportsAnsi() ? `\x1B[2m${text}\x1B[0m` : text;
-    }
-    var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
-    function parse(src) {
-      const obj = {};
-      let lines = src.toString();
-      lines = lines.replace(/\r\n?/mg, "\n");
-      let match2;
-      while ((match2 = LINE.exec(lines)) != null) {
-        const key = match2[1];
-        let value = match2[2] || "";
-        value = value.trim();
-        const maybeQuote = value[0];
-        value = value.replace(/^(['"`])([\s\S]*)\1$/mg, "$2");
-        if (maybeQuote === '"') {
-          value = value.replace(/\\n/g, "\n");
-          value = value.replace(/\\r/g, "\r");
-        }
-        obj[key] = value;
-      }
-      return obj;
-    }
-    function _parseVault(options) {
-      options = options || {};
-      const vaultPath = _vaultPath(options);
-      options.path = vaultPath;
-      const result = DotenvModule.configDotenv(options);
-      if (!result.parsed) {
-        const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
-        err.code = "MISSING_DATA";
-        throw err;
-      }
-      const keys = _dotenvKey(options).split(",");
-      const length = keys.length;
-      let decrypted;
-      for (let i2 = 0; i2 < length; i2++) {
-        try {
-          const key = keys[i2].trim();
-          const attrs = _instructions(result, key);
-          decrypted = DotenvModule.decrypt(attrs.ciphertext, attrs.key);
-          break;
-        } catch (error) {
-          if (i2 + 1 >= length) {
-            throw error;
-          }
-        }
-      }
-      return DotenvModule.parse(decrypted);
-    }
-    function _warn(message) {
-      console.error(`\u26A0 ${message}`);
-    }
-    function _debug(message) {
-      console.log(`\u2506 ${message}`);
-    }
-    function _log(message) {
-      console.log(`\u25C7 ${message}`);
-    }
-    function _dotenvKey(options) {
-      if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
-        return options.DOTENV_KEY;
-      }
-      if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
-        return process.env.DOTENV_KEY;
-      }
-      return "";
-    }
-    function _instructions(result, dotenvKey) {
-      let uri;
-      try {
-        uri = new URL(dotenvKey);
-      } catch (error) {
-        if (error.code === "ERR_INVALID_URL") {
-          const err = new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=development");
-          err.code = "INVALID_DOTENV_KEY";
-          throw err;
-        }
-        throw error;
-      }
-      const key = uri.password;
-      if (!key) {
-        const err = new Error("INVALID_DOTENV_KEY: Missing key part");
-        err.code = "INVALID_DOTENV_KEY";
-        throw err;
-      }
-      const environment = uri.searchParams.get("environment");
-      if (!environment) {
-        const err = new Error("INVALID_DOTENV_KEY: Missing environment part");
-        err.code = "INVALID_DOTENV_KEY";
-        throw err;
-      }
-      const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`;
-      const ciphertext = result.parsed[environmentKey];
-      if (!ciphertext) {
-        const err = new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: Cannot locate environment ${environmentKey} in your .env.vault file.`);
-        err.code = "NOT_FOUND_DOTENV_ENVIRONMENT";
-        throw err;
-      }
-      return { ciphertext, key };
-    }
-    function _vaultPath(options) {
-      let possibleVaultPath = null;
-      if (options && options.path && options.path.length > 0) {
-        if (Array.isArray(options.path)) {
-          for (const filepath of options.path) {
-            if (fs3.existsSync(filepath)) {
-              possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
-            }
-          }
-        } else {
-          possibleVaultPath = options.path.endsWith(".vault") ? options.path : `${options.path}.vault`;
-        }
-      } else {
-        possibleVaultPath = path12.resolve(process.cwd(), ".env.vault");
-      }
-      if (fs3.existsSync(possibleVaultPath)) {
-        return possibleVaultPath;
-      }
-      return null;
-    }
-    function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path12.join(os2.homedir(), envPath.slice(1)) : envPath;
-    }
-    function _configVault(options) {
-      const debug2 = parseBoolean(process.env.DOTENV_CONFIG_DEBUG || options && options.debug);
-      const quiet = parseBoolean(process.env.DOTENV_CONFIG_QUIET || options && options.quiet);
-      if (debug2 || !quiet) {
-        _log("loading env from encrypted .env.vault");
-      }
-      const parsed = DotenvModule._parseVault(options);
-      let processEnv = process.env;
-      if (options && options.processEnv != null) {
-        processEnv = options.processEnv;
-      }
-      DotenvModule.populate(processEnv, parsed, options);
-      return { parsed };
-    }
-    function configDotenv(options) {
-      const dotenvPath = path12.resolve(process.cwd(), ".env");
-      let encoding = "utf8";
-      let processEnv = process.env;
-      if (options && options.processEnv != null) {
-        processEnv = options.processEnv;
-      }
-      let debug2 = parseBoolean(processEnv.DOTENV_CONFIG_DEBUG || options && options.debug);
-      let quiet = parseBoolean(processEnv.DOTENV_CONFIG_QUIET || options && options.quiet);
-      if (options && options.encoding) {
-        encoding = options.encoding;
-      } else {
-        if (debug2) {
-          _debug("no encoding is specified (UTF-8 is used by default)");
-        }
-      }
-      let optionPaths = [dotenvPath];
-      if (options && options.path) {
-        if (!Array.isArray(options.path)) {
-          optionPaths = [_resolveHome(options.path)];
-        } else {
-          optionPaths = [];
-          for (const filepath of options.path) {
-            optionPaths.push(_resolveHome(filepath));
-          }
-        }
-      }
-      let lastError;
-      const parsedAll = {};
-      for (const path13 of optionPaths) {
-        try {
-          const parsed = DotenvModule.parse(fs3.readFileSync(path13, { encoding }));
-          DotenvModule.populate(parsedAll, parsed, options);
-        } catch (e) {
-          if (debug2) {
-            _debug(`failed to load ${path13} ${e.message}`);
-          }
-          lastError = e;
-        }
-      }
-      const populated = DotenvModule.populate(processEnv, parsedAll, options);
-      debug2 = parseBoolean(processEnv.DOTENV_CONFIG_DEBUG || debug2);
-      quiet = parseBoolean(processEnv.DOTENV_CONFIG_QUIET || quiet);
-      if (debug2 || !quiet) {
-        const keysCount = Object.keys(populated).length;
-        const shortPaths = [];
-        for (const filePath of optionPaths) {
-          try {
-            const relative = path12.relative(process.cwd(), filePath);
-            shortPaths.push(relative);
-          } catch (e) {
-            if (debug2) {
-              _debug(`failed to load ${filePath} ${e.message}`);
-            }
-            lastError = e;
-          }
-        }
-        _log(`injected env (${keysCount}) from ${shortPaths.join(",")} ${dim(`// tip: ${_getRandomTip()}`)}`);
-      }
-      if (lastError) {
-        return { parsed: parsedAll, error: lastError };
-      } else {
-        return { parsed: parsedAll };
-      }
-    }
-    function config(options) {
-      if (_dotenvKey(options).length === 0) {
-        return DotenvModule.configDotenv(options);
-      }
-      const vaultPath = _vaultPath(options);
-      if (!vaultPath) {
-        _warn(`you set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}`);
-        return DotenvModule.configDotenv(options);
-      }
-      return DotenvModule._configVault(options);
-    }
-    function decrypt(encrypted, keyStr) {
-      const key = Buffer.from(keyStr.slice(-64), "hex");
-      let ciphertext = Buffer.from(encrypted, "base64");
-      const nonce = ciphertext.subarray(0, 12);
-      const authTag = ciphertext.subarray(-16);
-      ciphertext = ciphertext.subarray(12, -16);
-      try {
-        const aesgcm = crypto.createDecipheriv("aes-256-gcm", key, nonce);
-        aesgcm.setAuthTag(authTag);
-        return `${aesgcm.update(ciphertext)}${aesgcm.final()}`;
-      } catch (error) {
-        const isRange = error instanceof RangeError;
-        const invalidKeyLength = error.message === "Invalid key length";
-        const decryptionFailed = error.message === "Unsupported state or unable to authenticate data";
-        if (isRange || invalidKeyLength) {
-          const err = new Error("INVALID_DOTENV_KEY: It must be 64 characters long (or more)");
-          err.code = "INVALID_DOTENV_KEY";
-          throw err;
-        } else if (decryptionFailed) {
-          const err = new Error("DECRYPTION_FAILED: Please check your DOTENV_KEY");
-          err.code = "DECRYPTION_FAILED";
-          throw err;
-        } else {
-          throw error;
-        }
-      }
-    }
-    function populate(processEnv, parsed, options = {}) {
-      const debug2 = Boolean(options && options.debug);
-      const override = Boolean(options && options.override);
-      const populated = {};
-      if (typeof parsed !== "object") {
-        const err = new Error("OBJECT_REQUIRED: Please check the processEnv argument being passed to populate");
-        err.code = "OBJECT_REQUIRED";
-        throw err;
-      }
-      for (const key of Object.keys(parsed)) {
-        if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
-          if (override === true) {
-            processEnv[key] = parsed[key];
-            populated[key] = parsed[key];
-          }
-          if (debug2) {
-            if (override === true) {
-              _debug(`"${key}" is already defined and WAS overwritten`);
-            } else {
-              _debug(`"${key}" is already defined and was NOT overwritten`);
-            }
-          }
-        } else {
-          processEnv[key] = parsed[key];
-          populated[key] = parsed[key];
-        }
-      }
-      return populated;
-    }
-    var DotenvModule = {
-      configDotenv,
-      _configVault,
-      _parseVault,
-      config,
-      decrypt,
-      parse,
-      populate
-    };
-    module2.exports.configDotenv = DotenvModule.configDotenv;
-    module2.exports._configVault = DotenvModule._configVault;
-    module2.exports._parseVault = DotenvModule._parseVault;
-    module2.exports.config = DotenvModule.config;
-    module2.exports.decrypt = DotenvModule.decrypt;
-    module2.exports.parse = DotenvModule.parse;
-    module2.exports.populate = DotenvModule.populate;
-    module2.exports = DotenvModule;
-  }
-});
-
 // node_modules/.pnpm/ms@2.1.3/node_modules/ms/index.js
 var require_ms = __commonJS({
   "node_modules/.pnpm/ms@2.1.3/node_modules/ms/index.js"(exports2, module2) {
@@ -1045,10 +724,10 @@ var require_src2 = __commonJS({
     var fs_1 = require("fs");
     var debug_1 = __importDefault(require_src());
     var log = debug_1.default("@kwsites/file-exists");
-    function check(path12, isFile, isDirectory) {
-      log(`checking %s`, path12);
+    function check(path11, isFile, isDirectory) {
+      log(`checking %s`, path11);
       try {
-        const stat = fs_1.statSync(path12);
+        const stat = fs_1.statSync(path11);
         if (stat.isFile() && isFile) {
           log(`[OK] path represents a file`);
           return true;
@@ -1068,8 +747,8 @@ var require_src2 = __commonJS({
         throw e;
       }
     }
-    function exists2(path12, type = exports2.READABLE) {
-      return check(path12, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
+    function exists2(path11, type = exports2.READABLE) {
+      return check(path11, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
     }
     exports2.exists = exists2;
     exports2.FILE = 1;
@@ -1139,9 +818,6 @@ init_cjs_shims();
 
 // src/sync.ts
 init_cjs_shims();
-var import_path10 = __toESM(require("path"));
-var import_fs4 = __toESM(require("fs"));
-var import_dotenv = __toESM(require_main());
 
 // src/core/index.ts
 init_cjs_shims();
@@ -7736,8 +7412,8 @@ function toLinesWithContent(input = "", trimmed2 = true, separator = "\n") {
 function forEachLineWithContent(input, callback) {
   return toLinesWithContent(input, true).map((line) => callback(line));
 }
-function folderExists(path12) {
-  return (0, import_file_exists.exists)(path12, import_file_exists.FOLDER);
+function folderExists(path11) {
+  return (0, import_file_exists.exists)(path11, import_file_exists.FOLDER);
 }
 function append(target, item) {
   if (Array.isArray(target)) {
@@ -8139,8 +7815,8 @@ function checkIsRepoRootTask() {
     commands,
     format: "utf-8",
     onError,
-    parser(path12) {
-      return /^\.(git)?$/.test(path12.trim());
+    parser(path11) {
+      return /^\.(git)?$/.test(path11.trim());
     }
   };
 }
@@ -8574,11 +8250,11 @@ function parseGrep(grep) {
   const paths = /* @__PURE__ */ new Set();
   const results = {};
   forEachLineWithContent(grep, (input) => {
-    const [path12, line, preview] = input.split(NULL);
-    paths.add(path12);
-    (results[path12] = results[path12] || []).push({
+    const [path11, line, preview] = input.split(NULL);
+    paths.add(path11);
+    (results[path11] = results[path11] || []).push({
       line: asNumber(line),
-      path: path12,
+      path: path11,
       preview
     });
   });
@@ -9340,14 +9016,14 @@ var init_hash_object = __esm2({
     init_task();
   }
 });
-function parseInit(bare, path12, text) {
+function parseInit(bare, path11, text) {
   const response = String(text).trim();
   let result;
   if (result = initResponseRegex.exec(response)) {
-    return new InitSummary(bare, path12, false, result[1]);
+    return new InitSummary(bare, path11, false, result[1]);
   }
   if (result = reInitResponseRegex.exec(response)) {
-    return new InitSummary(bare, path12, true, result[1]);
+    return new InitSummary(bare, path11, true, result[1]);
   }
   let gitDir = "";
   const tokens = response.split(" ");
@@ -9358,7 +9034,7 @@ function parseInit(bare, path12, text) {
       break;
     }
   }
-  return new InitSummary(bare, path12, /^re/i.test(response), gitDir);
+  return new InitSummary(bare, path11, /^re/i.test(response), gitDir);
 }
 var InitSummary;
 var initResponseRegex;
@@ -9367,9 +9043,9 @@ var init_InitSummary = __esm2({
   "src/lib/responses/InitSummary.ts"() {
     "use strict";
     InitSummary = class {
-      constructor(bare, path12, existing, gitDir) {
+      constructor(bare, path11, existing, gitDir) {
         this.bare = bare;
-        this.path = path12;
+        this.path = path11;
         this.existing = existing;
         this.gitDir = gitDir;
       }
@@ -9381,7 +9057,7 @@ var init_InitSummary = __esm2({
 function hasBareCommand(command) {
   return command.includes(bareCommand);
 }
-function initTask(bare = false, path12, customArgs) {
+function initTask(bare = false, path11, customArgs) {
   const commands = ["init", ...customArgs];
   if (bare && !hasBareCommand(commands)) {
     commands.splice(1, 0, bareCommand);
@@ -9390,7 +9066,7 @@ function initTask(bare = false, path12, customArgs) {
     commands,
     format: "utf-8",
     parser(text) {
-      return parseInit(commands.includes("--bare"), path12, text);
+      return parseInit(commands.includes("--bare"), path11, text);
     }
   };
 }
@@ -10205,12 +9881,12 @@ var init_FileStatusSummary = __esm2({
     "use strict";
     fromPathRegex = /^(.+)\0(.+)$/;
     FileStatusSummary = class {
-      constructor(path12, index, working_dir) {
-        this.path = path12;
+      constructor(path11, index, working_dir) {
+        this.path = path11;
         this.index = index;
         this.working_dir = working_dir;
         if (index === "R" || working_dir === "R") {
-          const detail = fromPathRegex.exec(path12) || [null, path12, path12];
+          const detail = fromPathRegex.exec(path11) || [null, path11, path11];
           this.from = detail[2] || "";
           this.path = detail[1] || "";
         }
@@ -10241,14 +9917,14 @@ function splitLine(result, lineStr) {
     default:
       return;
   }
-  function data(index, workingDir, path12) {
+  function data(index, workingDir, path11) {
     const raw = `${index}${workingDir}`;
     const handler = parsers6.get(raw);
     if (handler) {
-      handler(result, path12);
+      handler(result, path11);
     }
     if (raw !== "##" && raw !== "!!") {
-      result.files.push(new FileStatusSummary(path12, index, workingDir));
+      result.files.push(new FileStatusSummary(path11, index, workingDir));
     }
   }
 }
@@ -10599,9 +10275,9 @@ var init_simple_git_api = __esm2({
           next
         );
       }
-      hashObject(path12, write) {
+      hashObject(path11, write) {
         return this._runTask(
-          hashObjectTask(path12, write === true),
+          hashObjectTask(path11, write === true),
           trailingFunctionArgument(arguments)
         );
       }
@@ -10955,8 +10631,8 @@ var init_branch = __esm2({
   }
 });
 function toPath(input) {
-  const path12 = input.trim().replace(/^["']|["']$/g, "");
-  return path12 && (0, import_node_path2.normalize)(path12);
+  const path11 = input.trim().replace(/^["']|["']$/g, "");
+  return path11 && (0, import_node_path2.normalize)(path11);
 }
 var parseCheckIgnore;
 var init_CheckIgnore = __esm2({
@@ -11241,8 +10917,8 @@ __export(sub_module_exports, {
   subModuleTask: () => subModuleTask,
   updateSubModuleTask: () => updateSubModuleTask
 });
-function addSubModuleTask(repo, path12) {
-  return subModuleTask(["add", repo, path12]);
+function addSubModuleTask(repo, path11) {
+  return subModuleTask(["add", repo, path11]);
 }
 function initSubModuleTask(customArgs) {
   return subModuleTask(["init", ...customArgs]);
@@ -11556,8 +11232,8 @@ var require_git = __commonJS2({
       }
       return this._runTask(straightThroughStringTask2(command, this._trimmed), next);
     };
-    Git2.prototype.submoduleAdd = function(repo, path12, then) {
-      return this._runTask(addSubModuleTask2(repo, path12), trailingFunctionArgument2(arguments));
+    Git2.prototype.submoduleAdd = function(repo, path11, then) {
+      return this._runTask(addSubModuleTask2(repo, path11), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.submoduleUpdate = function(args, then) {
       return this._runTask(
@@ -12608,9 +12284,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 // src/sync.ts
 var MAX_FIRST_SYNC_DAYS = 365;
 function getChangeKey(change, specPath) {
-  const path12 = specPath ?? "";
+  const path11 = specPath ?? "";
   const oldName = change.oldName ?? "";
-  return `${path12}:${change.type}:${change.name}:${oldName}`;
+  return `${path11}:${change.type}:${change.name}:${oldName}`;
 }
 function mapKey(framework, testDir) {
   return `${framework}:${testDir}`;
@@ -12709,10 +12385,6 @@ async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
   console.log("[sync] Validating project access.");
   await validateProjectAccess(dashboardUrl, apiKey, projectId);
-  const envLocalPath = import_path10.default.join(process.cwd(), ".env.local");
-  if (import_fs4.default.existsSync(envLocalPath)) {
-    import_dotenv.default.config({ path: envLocalPath, debug: false, quiet: true });
-  }
   const detectedRepoUrl = await getRepoUrl(process.cwd());
   if (detectedRepoUrl) {
     console.log(`[sync] Repository: ${detectedRepoUrl}`);
