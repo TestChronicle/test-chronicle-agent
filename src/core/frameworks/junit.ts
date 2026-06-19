@@ -3,13 +3,15 @@ import { TestCase, SpecFile } from '../../types';
 import { hashId, lineNumberAt } from './common';
 import { IFrameworkParser } from '../base';
 
-const TEST_METHOD_RE = /@Test\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
+const TEST_METHOD_RE =
+    /@(Test|ParameterizedTest|RepeatedTest)\s*(?:\([^)]*\))?(?:\s*@[\w.]+(?:\([^)]*\))?)*\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 
 const CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 
 const IGNORE_RE = /@Ignore/;
 
 const TAG_RE = /@Tag\s*\(\s*"([^"]+)"\s*\)/g;
+const PARAMETERIZED_RE = /@(ParameterizedTest|RepeatedTest|ValueSource|EnumSource|CsvSource|CsvFileSource|MethodSource|ArgumentsSource)\b/;
 
 export function parseJUnitSpec(filePath: string, content: string, projectRoot: string): SpecFile {
     const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, '/');
@@ -21,7 +23,7 @@ export function parseJUnitSpec(filePath: string, content: string, projectRoot: s
     TEST_METHOD_RE.lastIndex = 0;
 
     while ((match = TEST_METHOD_RE.exec(content)) !== null) {
-        const testName = match[1];
+        const testName = match[2];
         const matchIndex = match.index;
         const line = lineNumberAt(content, matchIndex);
 
@@ -38,6 +40,9 @@ export function parseJUnitSpec(filePath: string, content: string, projectRoot: s
 
         // Extract tags from @Tag annotations
         const tags = extractJUnitTags(annotationBlock);
+        if (isParameterized(annotationBlock, match[0])) {
+            tags.push({ name: '@parameterized' });
+        }
 
         const id = hashId(`${relativePath}::${className}::${testName}`);
 
@@ -71,7 +76,7 @@ export function extractTestNames(content: string): string[] {
     TEST_METHOD_RE.lastIndex = 0;
 
     while ((match = TEST_METHOD_RE.exec(content)) !== null) {
-        const testName = match[1];
+        const testName = match[2];
         const matchIndex = match.index;
 
         // Scope the annotation block to between the previous closing brace and
@@ -128,6 +133,10 @@ function extractJUnitTags(annotationBlock: string): Array<{ name: string }> {
     return tags;
 }
 
+function isParameterized(annotationBlock: string, methodText: string): boolean {
+    return PARAMETERIZED_RE.test(annotationBlock) || PARAMETERIZED_RE.test(methodText);
+}
+
 export const junitParser: IFrameworkParser = {
     parseFile: parseJUnitSpec,
     extractTestNames,
@@ -135,7 +144,7 @@ export const junitParser: IFrameworkParser = {
     supportedFeatures: {
         tags: true,
         describes: false,
-        parameterized: false,
+        parameterized: true,
         lineNumbers: true,
         asyncTests: false,
     },

@@ -39,3 +39,11 @@ describe('JUnit parser — @Tag', () => {
         expect(spec.tests[0].tags).toEqual([{ name: 'smoke' }]);
     });
 });
+
+describe('JUnit parser - parameterized detection', () => {
+    it('tags @ParameterizedTest methods as parameterized', () => {
+        const spec = parseJUnitSpec(FILE, JUNIT.parameterized, ROOT);
+        expect(spec.tests).toHaveLength(1);
+        expect(spec.tests[0].tags).toContainEqual({ name: '@parameterized' });
+    });
+});

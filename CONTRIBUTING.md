@@ -38,7 +38,7 @@ test-chronicle-agent/
 │   ├── core/               # Test parsing
 │   │   ├── detector.ts     # Framework detection
 │   │   ├── parser.ts       # Parser dispatcher
-│   │   └── frameworks/     # Per-framework parsers (playwright, cypress, vitest, testng, junit)
+│   │   └── frameworks/     # Per-framework parsers (playwright, cypress, vitest, jest, pytest, testng, junit, cucumber)
 │   └── git/                # Git history tracking
 ├── test/                   # Test suite
 ├── action.yml              # GitHub Action manifest

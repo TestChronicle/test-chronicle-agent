@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { parsePlaywrightSpec } from '../../src/core/frameworks/playwright';
 import { parseVitestSpec } from '../../src/core/frameworks/vitest';
+import { parseJestSpec } from '../../src/core/frameworks/jest';
+import { parsePytestSpec } from '../../src/core/frameworks/pytest';
 import { parseCypressSpec } from '../../src/core/frameworks/cypress';
 import { parseTestNGSpec } from '../../src/core/frameworks/testng';
 import { parseJUnitSpec } from '../../src/core/frameworks/junit';
@@ -17,6 +19,14 @@ const fixtures: Array<{ label: string; spec: SpecFile }> = [
     {
         label: 'vitest',
         spec: parseVitestSpec('/project/src/math.spec.ts', SPEC_FILE.vitest, ROOT),
+    },
+    {
+        label: 'jest',
+        spec: parseJestSpec('/project/src/cart.test.ts', SPEC_FILE.jest, ROOT),
+    },
+    {
+        label: 'pytest',
+        spec: parsePytestSpec('/project/tests/test_cart.py', SPEC_FILE.pytest, ROOT),
     },
     {
         label: 'cypress',
@@ -61,6 +71,8 @@ describe('SpecFile output contract — shared across all parsers', () => {
     it('framework field matches the parser used', () => {
         expect(fixtures.find((f) => f.label === 'playwright')!.spec.framework).toBe('playwright');
         expect(fixtures.find((f) => f.label === 'vitest')!.spec.framework).toBe('vitest');
+        expect(fixtures.find((f) => f.label === 'jest')!.spec.framework).toBe('jest');
+        expect(fixtures.find((f) => f.label === 'pytest')!.spec.framework).toBe('pytest');
         expect(fixtures.find((f) => f.label === 'cypress')!.spec.framework).toBe('cypress');
         expect(fixtures.find((f) => f.label === 'testng')!.spec.framework).toBe('testng');
         expect(fixtures.find((f) => f.label === 'junit')!.spec.framework).toBe('junit');

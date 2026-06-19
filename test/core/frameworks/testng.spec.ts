@@ -39,3 +39,10 @@ describe('TestNG parser — groups as tags', () => {
         expect(spec.tests[0].tags).toEqual([{ name: 'smoke' }]);
     });
 });
+
+describe('TestNG parser - parameterized detection', () => {
+    it('tags dataProvider tests as parameterized', () => {
+        const spec = parseTestNGSpec(FILE, TESTNG.dataProvider, ROOT);
+        expect(spec.tests[0].tags).toContainEqual({ name: '@parameterized' });
+    });
+});

@@ -29,6 +29,14 @@ const SIGNATURES: Record<Exclude<Framework, 'unknown'>, FrameworkSignature> = {
         configFiles: ['vitest.config.ts', 'vitest.config.js'],
         packageDeps: ['vitest'],
     },
+    jest: {
+        configFiles: ['jest.config.ts', 'jest.config.js', 'jest.config.mjs', 'jest.config.cjs', 'jest.config.json'],
+        packageDeps: ['jest', '@jest/globals', 'ts-jest'],
+    },
+    pytest: {
+        configFiles: ['pytest.ini', 'pyproject.toml', 'setup.cfg', 'tox.ini'],
+        packageDeps: [],
+    },
     cucumber: {
         configFiles: ['cucumber.properties', 'cucumber.yml', 'cucumber.yaml'],
         packageDeps: ['@cucumber/cucumber', 'io.cucumber:cucumber-java'],
@@ -53,7 +61,7 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
     ][]) {
         for (const configFile of sig.configFiles) {
             const fullPath = path.join(projectPath, configFile);
-            if (existsSync(fullPath)) {
+            if (existsSync(fullPath) && configFileBelongsToFramework(framework, fullPath)) {
                 if (seen.has(framework)) break;
                 seen.add(framework);
                 results.push({
@@ -71,6 +79,8 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
         playwright: '**/playwright.config.{ts,js,mjs}',
         cypress: '**/cypress.config.{ts,js}',
         vitest: '**/vitest.config.{ts,js}',
+        jest: '**/jest.config.{ts,js,mjs,cjs,json}',
+        pytest: '**/{pytest.ini,pyproject.toml,setup.cfg,tox.ini}',
         cucumber: '**/*.feature',
     };
 
@@ -82,20 +92,21 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
             ignore: ['**/node_modules/**', '**/dist/**'],
             absolute: true,
         });
+        const frameworkMatches = matches.filter((match) => configFileBelongsToFramework(framework, match));
 
-        if (matches.length > 0) {
+        if (frameworkMatches.length > 0) {
             seen.add(framework);
 
             if (framework === 'cucumber') {
                 // Cucumber: find all distinct "features" root directories so that
                 // monorepos with multiple projects (e.g. ios + android) and multiple
                 // subdirectories (productDiscovery, confidenceToBy, …) are all captured.
-                const testDirs = findCucumberTestDirs(matches, projectPath);
+                const testDirs = findCucumberTestDirs(frameworkMatches, projectPath);
                 for (const testDir of testDirs) {
                     results.push({ framework, testDir, confidence: 'high' });
                 }
             } else {
-                const configPath = matches[0];
+                const configPath = frameworkMatches[0];
                 results.push({
                     framework,
                     testDir: extractTestDir(framework, configPath, projectPath),
@@ -108,6 +119,9 @@ export function detectFrameworks(projectPath: string): DetectionResult[] {
     // 3. Fall back to package.json dependency inspection for remaining frameworks
     const pkgResults = detectAllFromPackageJson(projectPath, seen);
     results.push(...pkgResults);
+
+    const buildFileResults = detectAllFromBuildFiles(projectPath, seen);
+    results.push(...buildFileResults);
 
     if (results.length === 0) {
         return [{ framework: 'unknown', testDir: './tests', confidence: 'low' }];
@@ -130,6 +144,10 @@ function extractTestDir(framework: Exclude<Framework, 'unknown'>, configPath: st
             return extractCypressTestDir(configPath, projectPath);
         case 'vitest':
             return extractVitestTestDir(configPath, projectPath);
+        case 'jest':
+            return extractJestTestDir(configPath, projectPath);
+        case 'pytest':
+            return extractPytestTestDir(configPath, projectPath);
         case 'cucumber':
             return extractCucumberTestDir(configPath, projectPath);
         default:
@@ -243,6 +261,14 @@ function extractCucumberTestDir(featureFilePath: string, projectPath: string): s
     return findCucumberTestDirs(featureFiles, projectPath)[0];
 }
 
+function extractJestTestDir(_configPath: string, _projectPath: string): string {
+    return '.';
+}
+
+function extractPytestTestDir(_configPath: string, _projectPath: string): string {
+    return '.';
+}
+
 function extractVitestTestDir(_configPath: string, _projectPath: string): string {
     // Vitest is designed for co-located tests scattered throughout the project.
     // Using '.' (project root) lets the **/*.test.ts glob find them all regardless
@@ -273,6 +299,23 @@ function guessTestDir(projectPath: string): string {
     return './tests';
 }
 
+function configFileBelongsToFramework(framework: Exclude<Framework, 'unknown'>, filePath: string): boolean {
+    if (framework !== 'pytest') return true;
+
+    const basename = path.basename(filePath);
+    if (basename === 'pytest.ini') return true;
+
+    try {
+        const content = readFileSync(filePath, 'utf-8');
+        if (basename === 'pyproject.toml') return /\[tool\.pytest\.ini_options\]/.test(content);
+        if (basename === 'setup.cfg' || basename === 'tox.ini') return /\[(?:tool:pytest|pytest)\]/.test(content);
+    } catch {
+        return false;
+    }
+
+    return false;
+}
+
 function detectAllFromPackageJson(projectPath: string, alreadySeen: Set<Framework>): DetectionResult[] {
     const pkgPath = path.join(projectPath, 'package.json');
     if (!existsSync(pkgPath)) return [];
@@ -301,6 +344,40 @@ function detectAllFromPackageJson(projectPath: string, alreadySeen: Set<Framewor
         }
     } catch {
         // Malformed package.json
+    }
+
+    return results;
+}
+
+function detectAllFromBuildFiles(projectPath: string, alreadySeen: Set<Framework>): DetectionResult[] {
+    const results: DetectionResult[] = [];
+    const buildFiles = globSync('**/{pom.xml,build.gradle,build.gradle.kts}', {
+        cwd: projectPath,
+        ignore: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/target/**'],
+        absolute: true,
+    });
+
+    let sawJUnit = false;
+    let sawTestNG = false;
+
+    for (const buildFile of buildFiles) {
+        try {
+            const content = readFileSync(buildFile, 'utf-8');
+            sawJUnit ||= /(?:junit:junit|org\.junit\.jupiter|org\.junit\.platform|junit-jupiter)/.test(content);
+            sawTestNG ||= /(?:org\.testng:testng|<groupId>\s*org\.testng\s*<\/groupId>|testng)/.test(content);
+        } catch {
+            // Ignore unreadable build files.
+        }
+    }
+
+    if (sawJUnit && !alreadySeen.has('junit')) {
+        alreadySeen.add('junit');
+        results.push({ framework: 'junit', testDir: guessTestDir(projectPath), confidence: 'medium' });
+    }
+
+    if (sawTestNG && !alreadySeen.has('testng')) {
+        alreadySeen.add('testng');
+        results.push({ framework: 'testng', testDir: guessTestDir(projectPath), confidence: 'medium' });
     }
 
     return results;
