@@ -1,8 +1,8 @@
 import { DashboardSyncConfig } from './types';
 /**
- * Validates that the API key and project ID are correct by hitting the config
- * endpoint early. Throws a descriptive error on auth failure or unknown project
- * so the sync fails fast before doing any expensive local work.
+ * Validates dashboard authentication by hitting the lightweight config endpoint
+ * early. A 404 from this endpoint is not treated as fatal because older
+ * dashboard deployments and projects without config may not expose config data.
  */
 export declare function validateProjectAccess(dashboardUrl: string, apiToken: string, projectId: string): Promise<void>;
 /**

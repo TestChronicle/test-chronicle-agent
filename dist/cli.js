@@ -729,10 +729,10 @@ var require_src2 = __commonJS({
     var fs_1 = require("fs");
     var debug_1 = __importDefault(require_src());
     var log = debug_1.default("@kwsites/file-exists");
-    function check(path14, isFile, isDirectory) {
-      log(`checking %s`, path14);
+    function check(path16, isFile, isDirectory) {
+      log(`checking %s`, path16);
       try {
-        const stat = fs_1.statSync(path14);
+        const stat = fs_1.statSync(path16);
         if (stat.isFile() && isFile) {
           log(`[OK] path represents a file`);
           return true;
@@ -752,8 +752,8 @@ var require_src2 = __commonJS({
         throw e;
       }
     }
-    function exists2(path14, type = exports2.READABLE) {
-      return check(path14, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
+    function exists2(path16, type = exports2.READABLE) {
+      return check(path16, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
     }
     exports2.exists = exists2;
     exports2.FILE = 1;
@@ -829,7 +829,7 @@ module.exports = __toCommonJS(cli_exports);
 init_cjs_shims();
 var import_child_process2 = require("child_process");
 var import_fs6 = __toESM(require("fs"));
-var import_path12 = __toESM(require("path"));
+var import_path14 = __toESM(require("path"));
 
 // src/sync.ts
 init_cjs_shims();
@@ -3869,6 +3869,14 @@ var SIGNATURES = {
     configFiles: ["vitest.config.ts", "vitest.config.js"],
     packageDeps: ["vitest"]
   },
+  jest: {
+    configFiles: ["jest.config.ts", "jest.config.js", "jest.config.mjs", "jest.config.cjs", "jest.config.json"],
+    packageDeps: ["jest", "@jest/globals", "ts-jest"]
+  },
+  pytest: {
+    configFiles: ["pytest.ini", "pyproject.toml", "setup.cfg", "tox.ini"],
+    packageDeps: []
+  },
   cucumber: {
     configFiles: ["cucumber.properties", "cucumber.yml", "cucumber.yaml"],
     packageDeps: ["@cucumber/cucumber", "io.cucumber:cucumber-java"]
@@ -3880,7 +3888,7 @@ function detectFrameworks(projectPath) {
   for (const [framework, sig] of Object.entries(SIGNATURES)) {
     for (const configFile of sig.configFiles) {
       const fullPath = import_path.default.join(projectPath, configFile);
-      if ((0, import_fs2.existsSync)(fullPath)) {
+      if ((0, import_fs2.existsSync)(fullPath) && configFileBelongsToFramework(framework, fullPath)) {
         if (seen.has(framework)) break;
         seen.add(framework);
         results.push({
@@ -3896,6 +3904,8 @@ function detectFrameworks(projectPath) {
     playwright: "**/playwright.config.{ts,js,mjs}",
     cypress: "**/cypress.config.{ts,js}",
     vitest: "**/vitest.config.{ts,js}",
+    jest: "**/jest.config.{ts,js,mjs,cjs,json}",
+    pytest: "**/{pytest.ini,pyproject.toml,setup.cfg,tox.ini}",
     cucumber: "**/*.feature"
   };
   for (const [framework, glob] of Object.entries(nestedConfigGlobs)) {
@@ -3905,15 +3915,16 @@ function detectFrameworks(projectPath) {
       ignore: ["**/node_modules/**", "**/dist/**"],
       absolute: true
     });
-    if (matches.length > 0) {
+    const frameworkMatches = matches.filter((match2) => configFileBelongsToFramework(framework, match2));
+    if (frameworkMatches.length > 0) {
       seen.add(framework);
       if (framework === "cucumber") {
-        const testDirs = findCucumberTestDirs(matches, projectPath);
+        const testDirs = findCucumberTestDirs(frameworkMatches, projectPath);
         for (const testDir of testDirs) {
           results.push({ framework, testDir, confidence: "high" });
         }
       } else {
-        const configPath = matches[0];
+        const configPath = frameworkMatches[0];
         results.push({
           framework,
           testDir: extractTestDir(framework, configPath, projectPath),
@@ -3924,6 +3935,8 @@ function detectFrameworks(projectPath) {
   }
   const pkgResults = detectAllFromPackageJson(projectPath, seen);
   results.push(...pkgResults);
+  const buildFileResults = detectAllFromBuildFiles(projectPath, seen);
+  results.push(...buildFileResults);
   if (results.length === 0) {
     return [{ framework: "unknown", testDir: "./tests", confidence: "low" }];
   }
@@ -3937,6 +3950,10 @@ function extractTestDir(framework, configPath, projectPath) {
       return extractCypressTestDir(configPath, projectPath);
     case "vitest":
       return extractVitestTestDir(configPath, projectPath);
+    case "jest":
+      return extractJestTestDir(configPath, projectPath);
+    case "pytest":
+      return extractPytestTestDir(configPath, projectPath);
     case "cucumber":
       return extractCucumberTestDir(configPath, projectPath);
     default:
@@ -4007,6 +4024,12 @@ function extractCucumberTestDir(featureFilePath, projectPath) {
   }
   return findCucumberTestDirs(featureFiles, projectPath)[0];
 }
+function extractJestTestDir(_configPath, _projectPath) {
+  return ".";
+}
+function extractPytestTestDir(_configPath, _projectPath) {
+  return ".";
+}
 function extractVitestTestDir(_configPath, _projectPath) {
   return ".";
 }
@@ -4029,6 +4052,19 @@ function guessTestDir(projectPath) {
     }
   }
   return "./tests";
+}
+function configFileBelongsToFramework(framework, filePath) {
+  if (framework !== "pytest") return true;
+  const basename = import_path.default.basename(filePath);
+  if (basename === "pytest.ini") return true;
+  try {
+    const content = (0, import_fs2.readFileSync)(filePath, "utf-8");
+    if (basename === "pyproject.toml") return /\[tool\.pytest\.ini_options\]/.test(content);
+    if (basename === "setup.cfg" || basename === "tox.ini") return /\[(?:tool:pytest|pytest)\]/.test(content);
+  } catch {
+    return false;
+  }
+  return false;
 }
 function detectAllFromPackageJson(projectPath, alreadySeen) {
   const pkgPath = import_path.default.join(projectPath, "package.json");
@@ -4055,11 +4091,38 @@ function detectAllFromPackageJson(projectPath, alreadySeen) {
   }
   return results;
 }
+function detectAllFromBuildFiles(projectPath, alreadySeen) {
+  const results = [];
+  const buildFiles = ts("**/{pom.xml,build.gradle,build.gradle.kts}", {
+    cwd: projectPath,
+    ignore: ["**/node_modules/**", "**/dist/**", "**/build/**", "**/target/**"],
+    absolute: true
+  });
+  let sawJUnit = false;
+  let sawTestNG = false;
+  for (const buildFile of buildFiles) {
+    try {
+      const content = (0, import_fs2.readFileSync)(buildFile, "utf-8");
+      sawJUnit || (sawJUnit = /(?:junit:junit|org\.junit\.jupiter|org\.junit\.platform|junit-jupiter)/.test(content));
+      sawTestNG || (sawTestNG = /(?:org\.testng:testng|<groupId>\s*org\.testng\s*<\/groupId>|testng)/.test(content));
+    } catch {
+    }
+  }
+  if (sawJUnit && !alreadySeen.has("junit")) {
+    alreadySeen.add("junit");
+    results.push({ framework: "junit", testDir: guessTestDir(projectPath), confidence: "medium" });
+  }
+  if (sawTestNG && !alreadySeen.has("testng")) {
+    alreadySeen.add("testng");
+    results.push({ framework: "testng", testDir: guessTestDir(projectPath), confidence: "medium" });
+  }
+  return results;
+}
 
 // src/core/parser.ts
 init_cjs_shims();
 var import_fs3 = require("fs");
-var import_path8 = __toESM(require("path"));
+var import_path10 = __toESM(require("path"));
 
 // node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/index.js
 init_cjs_shims();
@@ -6080,8 +6143,8 @@ function parsePlaywrightSpec(filePath, content, projectRoot) {
     const line = lineNumberAt(content, matchIndex);
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const tags = extractInlineTags(content, matchIndex);
-    const isParameterized = detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
-    if (isParameterized && !tags.some((t2) => t2.name === "@parameterized")) {
+    const isParameterized3 = detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
+    if (isParameterized3 && !tags.some((t2) => t2.name === "@parameterized")) {
       tags.push({ name: "@parameterized" });
     }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
@@ -6251,8 +6314,8 @@ function parseVitestSpec(filePath, content, projectRoot) {
     const parentDescribe = resolveParentDescribe(describeBlocks, matchIndex);
     const isTodo = /\.todo\s*\(/.test(content.substring(matchIndex, matchIndex + 50));
     const tags = isTodo ? [{ name: "@todo" }] : [];
-    const isParameterized = extractParameterizedDataFromEach(content.substring(Math.max(0, matchIndex - 500), matchIndex + 200)) !== null || detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
-    if (isParameterized) {
+    const isParameterized3 = extractParameterizedDataFromEach(content.substring(Math.max(0, matchIndex - 500), matchIndex + 200)) !== null || detectParameterizedLoop(content, matchIndex) || isLikelyParameterizedTest(testName);
+    if (isParameterized3) {
       tags.push({ name: "@parameterized" });
     }
     const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}`);
@@ -6300,15 +6363,221 @@ var vitestParser = {
   }
 };
 
-// src/core/frameworks/testng.ts
+// src/core/frameworks/jest.ts
 init_cjs_shims();
 var import_path5 = __toESM(require("path"));
+var DESCRIBE_RE4 = /describe(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
+var DESCRIBE_EACH_RE = /describe(?:\.(?:skip|only))?\.each\s*(?:\([\s\S]*?\)|`[\s\S]*?`)\s*\(\s*(['"`])([\s\S]*?)\1/g;
+var TEST_RE4 = /(?:^|[ \t]+)(?:test|it)(?:\.(?:concurrent|skip|only|failing|todo))*\s*\(\s*(['"`])([\s\S]*?)\1/gm;
+var TEST_EACH_RE = /(?:^|[ \t]+)(?:test|it)(?:\.(?:concurrent|skip|only|failing))*\.each\s*(?:\([\s\S]*?\)|`[\s\S]*?`)\s*\(\s*(['"`])([\s\S]*?)\1/gm;
+function parseJestSpec(filePath, content, projectRoot) {
+  const relativePath = import_path5.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const describeBlocks = findJestDescribeBlocks(content);
+  const tests = [];
+  for (const match2 of findJestTests(content)) {
+    const parentDescribe = resolveParentDescribe(describeBlocks, match2.index);
+    const tags = [];
+    if (/\.todo\s*\(/.test(match2.raw)) {
+      tags.push({ name: "@todo" });
+    }
+    const isParameterized3 = match2.parameterized || detectParameterizedLoop(content, match2.index) || isLikelyParameterizedTest(match2.name);
+    if (isParameterized3) {
+      tags.push({ name: "@parameterized" });
+    }
+    const id = hashId(`${relativePath}::${parentDescribe ?? ""}::${match2.name}`);
+    tests.push({
+      id,
+      name: match2.name,
+      fullName: parentDescribe ? `${parentDescribe} > ${match2.name}` : match2.name,
+      describe: parentDescribe,
+      tags,
+      line: lineNumberAt(content, match2.index)
+    });
+  }
+  return {
+    id: hashId(relativePath),
+    path: relativePath,
+    name: import_path5.default.basename(filePath),
+    framework: "jest",
+    tests,
+    testCount: tests.length,
+    lastModified: (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+function extractTestNames4(content) {
+  const describeBlocks = findJestDescribeBlocks(content);
+  return findJestTests(content).map((test) => {
+    const parentDescribe = resolveParentDescribe(describeBlocks, test.index);
+    return parentDescribe ? `${parentDescribe} > ${test.name}` : test.name;
+  });
+}
+function findJestDescribeBlocks(content) {
+  return [...findDescribeBlocks(content, DESCRIBE_RE4), ...findDescribeEachBlocks(content)].sort(
+    (a, b2) => a.start - b2.start
+  );
+}
+function findJestTests(content) {
+  const matches = [];
+  collectMatches(content, TEST_RE4, false, matches);
+  collectMatches(content, TEST_EACH_RE, true, matches);
+  return matches.sort((a, b2) => a.index - b2.index);
+}
+function collectMatches(content, regex, parameterized, matches) {
+  let match2;
+  regex.lastIndex = 0;
+  while ((match2 = regex.exec(content)) !== null) {
+    matches.push({
+      name: match2[2],
+      index: match2.index,
+      raw: match2[0],
+      parameterized
+    });
+  }
+}
+function findDescribeEachBlocks(content) {
+  const blocks = [];
+  let match2;
+  DESCRIBE_EACH_RE.lastIndex = 0;
+  while ((match2 = DESCRIBE_EACH_RE.exec(content)) !== null) {
+    const matchEnd = match2.index + match2[0].length;
+    const afterMatch = content.substring(matchEnd);
+    const arrowIndex = afterMatch.indexOf("=>");
+    const braceOffset = arrowIndex === -1 ? afterMatch.indexOf("{") : afterMatch.indexOf("{", arrowIndex);
+    if (braceOffset === -1) continue;
+    const braceStart = matchEnd + braceOffset;
+    const braceEnd = findMatchingBrace(content, braceStart);
+    if (braceEnd !== -1) {
+      blocks.push({ name: match2[2], start: braceStart, end: braceEnd });
+    }
+  }
+  return blocks;
+}
+var jestParser = {
+  parseFile: parseJestSpec,
+  extractTestNames: extractTestNames4,
+  filePatterns: [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.test.js",
+    "**/*.test.jsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.spec.js",
+    "**/*.spec.jsx"
+  ],
+  supportedFeatures: {
+    tags: true,
+    describes: true,
+    parameterized: true,
+    lineNumbers: true,
+    asyncTests: true
+  }
+};
+
+// src/core/frameworks/pytest.ts
+init_cjs_shims();
+var import_path6 = __toESM(require("path"));
+function parsePytestSpec(filePath, content, projectRoot) {
+  const relativePath = import_path6.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const tests = [];
+  const lines = content.split("\n");
+  const classStack = [];
+  for (let i2 = 0; i2 < lines.length; i2++) {
+    const line = lines[i2];
+    const trimmed2 = line.trim();
+    if (!trimmed2 || trimmed2.startsWith("#")) continue;
+    const indent = leadingWhitespace(line);
+    while (classStack.length > 0 && indent <= classStack[classStack.length - 1].indent) {
+      classStack.pop();
+    }
+    const classMatch = /^\s*class\s+([A-Za-z_]\w*)\b/.exec(line);
+    if (classMatch) {
+      classStack.push({ name: classMatch[1], indent });
+      continue;
+    }
+    const testMatch = /^\s*(?:async\s+)?def\s+(test_[A-Za-z0-9_]+)\s*\(/.exec(line);
+    if (!testMatch) continue;
+    const testName = testMatch[1];
+    const parentClass = classStack[classStack.length - 1]?.name;
+    const decoratorBlock = getDecoratorBlock(lines, i2);
+    const tags = extractPytestTags(decoratorBlock);
+    if (/@pytest\.mark\.parametrize\b/.test(decoratorBlock) && !tags.some((t2) => t2.name === "@parameterized")) {
+      tags.push({ name: "@parameterized" });
+    }
+    const id = hashId(`${relativePath}::${parentClass ?? ""}::${testName}`);
+    tests.push({
+      id,
+      name: testName,
+      fullName: parentClass ? `${parentClass} > ${testName}` : testName,
+      describe: parentClass,
+      tags,
+      line: i2 + 1
+    });
+  }
+  return {
+    id: hashId(relativePath),
+    path: relativePath,
+    name: import_path6.default.basename(filePath),
+    framework: "pytest",
+    tests,
+    testCount: tests.length,
+    lastModified: (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+function extractTestNames5(content) {
+  const spec = parsePytestSpec("/__pytest__/test_sample.py", content, "/__pytest__");
+  return spec.tests.map((test) => test.fullName);
+}
+function leadingWhitespace(line) {
+  return line.match(/^\s*/)?.[0].length ?? 0;
+}
+function getDecoratorBlock(lines, functionLine) {
+  const contiguous = [];
+  for (let i2 = functionLine - 1; i2 >= 0; i2--) {
+    const trimmed2 = lines[i2].trim();
+    if (!trimmed2) break;
+    contiguous.unshift(lines[i2]);
+  }
+  const firstDecorator = contiguous.findIndex((line) => line.trim().startsWith("@"));
+  return firstDecorator === -1 ? "" : contiguous.slice(firstDecorator).join("\n");
+}
+function extractPytestTags(decoratorBlock) {
+  const tags = [];
+  const seen = /* @__PURE__ */ new Set();
+  const markerRe = /@pytest\.mark\.([A-Za-z_]\w*)/g;
+  let match2;
+  while ((match2 = markerRe.exec(decoratorBlock)) !== null) {
+    const marker = match2[1];
+    if (marker === "parametrize") continue;
+    if (seen.has(marker)) continue;
+    seen.add(marker);
+    tags.push({ name: marker });
+  }
+  return tags;
+}
+var pytestParser = {
+  parseFile: parsePytestSpec,
+  extractTestNames: extractTestNames5,
+  filePatterns: ["**/test_*.py", "**/*_test.py"],
+  supportedFeatures: {
+    tags: true,
+    describes: true,
+    parameterized: true,
+    lineNumbers: true,
+    asyncTests: true
+  }
+};
+
+// src/core/frameworks/testng.ts
+init_cjs_shims();
+var import_path7 = __toESM(require("path"));
 var TEST_METHOD_RE = /@Test\s*(?:\([^)]*\))?\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 var CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 var ENABLED_RE = /enabled\s*=\s*(false|true)/;
 var GROUPS_RE = /groups\s*=\s*\{\s*"?([^}\"]+)"?\s*\}/;
+var PARAMETERIZED_RE = /\b(dataProvider|parameters)\s*=/i;
 function parseTestNGSpec(filePath, content, projectRoot) {
-  const relativePath = import_path5.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const relativePath = import_path7.default.relative(projectRoot, filePath).replace(/\\/g, "/");
   const className = extractClassName(content);
   const tests = [];
   let match2;
@@ -6319,6 +6588,9 @@ function parseTestNGSpec(filePath, content, projectRoot) {
     const line = lineNumberAt(content, matchIndex);
     const annotationText = match2[0];
     const tags = extractTestNGTags(annotationText);
+    if (isParameterized(annotationText)) {
+      tags.push({ name: "@parameterized" });
+    }
     const isEnabled = isTestEnabled(annotationText);
     if (!isEnabled) {
       continue;
@@ -6336,14 +6608,14 @@ function parseTestNGSpec(filePath, content, projectRoot) {
   return {
     id: hashId(relativePath),
     path: relativePath,
-    name: import_path5.default.basename(filePath),
+    name: import_path7.default.basename(filePath),
     framework: "testng",
     tests,
     testCount: tests.length,
     lastModified: (/* @__PURE__ */ new Date()).toISOString()
   };
 }
-function extractTestNames4(content) {
+function extractTestNames6(content) {
   const className = extractClassName(content);
   const names = [];
   let match2;
@@ -6379,14 +6651,17 @@ function extractTestNGTags(annotationText) {
   }
   return tags;
 }
+function isParameterized(annotationText) {
+  return PARAMETERIZED_RE.test(annotationText);
+}
 var testngParser = {
   parseFile: parseTestNGSpec,
-  extractTestNames: extractTestNames4,
+  extractTestNames: extractTestNames6,
   filePatterns: ["**/*Test.java", "**/*Tests.java", "**/*TestCase.java"],
   supportedFeatures: {
     tags: true,
     describes: false,
-    parameterized: false,
+    parameterized: true,
     lineNumbers: true,
     asyncTests: false
   }
@@ -6394,19 +6669,20 @@ var testngParser = {
 
 // src/core/frameworks/junit.ts
 init_cjs_shims();
-var import_path6 = __toESM(require("path"));
-var TEST_METHOD_RE2 = /@Test\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
+var import_path8 = __toESM(require("path"));
+var TEST_METHOD_RE2 = /@(Test|ParameterizedTest|RepeatedTest)\s*(?:\([^)]*\))?(?:\s*@[\w.]+(?:\([^)]*\))?)*\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 var CLASS_DECLARATION_RE2 = /(?:public\s+)?class\s+(\w+)/;
 var IGNORE_RE = /@Ignore/;
 var TAG_RE = /@Tag\s*\(\s*"([^"]+)"\s*\)/g;
+var PARAMETERIZED_RE2 = /@(ParameterizedTest|RepeatedTest|ValueSource|EnumSource|CsvSource|CsvFileSource|MethodSource|ArgumentsSource)\b/;
 function parseJUnitSpec(filePath, content, projectRoot) {
-  const relativePath = import_path6.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const relativePath = import_path8.default.relative(projectRoot, filePath).replace(/\\/g, "/");
   const className = extractClassName2(content);
   const tests = [];
   let match2;
   TEST_METHOD_RE2.lastIndex = 0;
   while ((match2 = TEST_METHOD_RE2.exec(content)) !== null) {
-    const testName = match2[1];
+    const testName = match2[2];
     const matchIndex = match2.index;
     const line = lineNumberAt(content, matchIndex);
     const prevBracePos = content.lastIndexOf("}", matchIndex - 1);
@@ -6416,6 +6692,9 @@ function parseJUnitSpec(filePath, content, projectRoot) {
       continue;
     }
     const tags = extractJUnitTags(annotationBlock);
+    if (isParameterized2(annotationBlock, match2[0])) {
+      tags.push({ name: "@parameterized" });
+    }
     const id = hashId(`${relativePath}::${className}::${testName}`);
     tests.push({
       id,
@@ -6429,20 +6708,20 @@ function parseJUnitSpec(filePath, content, projectRoot) {
   return {
     id: hashId(relativePath),
     path: relativePath,
-    name: import_path6.default.basename(filePath),
+    name: import_path8.default.basename(filePath),
     framework: "junit",
     tests,
     testCount: tests.length,
     lastModified: (/* @__PURE__ */ new Date()).toISOString()
   };
 }
-function extractTestNames5(content) {
+function extractTestNames7(content) {
   const className = extractClassName2(content);
   const names = [];
   let match2;
   TEST_METHOD_RE2.lastIndex = 0;
   while ((match2 = TEST_METHOD_RE2.exec(content)) !== null) {
-    const testName = match2[1];
+    const testName = match2[2];
     const matchIndex = match2.index;
     const prevBracePos2 = content.lastIndexOf("}", matchIndex - 1);
     const annotationBlockStart2 = prevBracePos2 !== -1 ? prevBracePos2 + 1 : 0;
@@ -6469,14 +6748,17 @@ function extractJUnitTags(annotationBlock) {
   }
   return tags;
 }
+function isParameterized2(annotationBlock, methodText) {
+  return PARAMETERIZED_RE2.test(annotationBlock) || PARAMETERIZED_RE2.test(methodText);
+}
 var junitParser = {
   parseFile: parseJUnitSpec,
-  extractTestNames: extractTestNames5,
+  extractTestNames: extractTestNames7,
   filePatterns: ["**/*Test.java", "**/*Tests.java", "**/*TestCase.java"],
   supportedFeatures: {
     tags: true,
     describes: false,
-    parameterized: false,
+    parameterized: true,
     lineNumbers: true,
     asyncTests: false
   }
@@ -6484,7 +6766,7 @@ var junitParser = {
 
 // src/core/frameworks/cucumber.ts
 init_cjs_shims();
-var import_path7 = __toESM(require("path"));
+var import_path9 = __toESM(require("path"));
 var FEATURE_RE = /^Feature:\s*(.+)/i;
 var SCENARIO_RE = /^\s*(?:Scenario|Example):\s*(.+)/i;
 var OUTLINE_RE = /^\s*(?:Scenario Outline|Scenario Template):\s*(.+)/i;
@@ -6492,7 +6774,7 @@ var EXAMPLES_RE = /^\s*(?:Examples|Scenarios)\s*:/i;
 var TAG_LINE_RE = /^\s*(@\S+(?:\s+@\S+)*)\s*$/;
 var DATA_ROW_RE = /^\s*\|/;
 function parseCucumberSpec(filePath, content, projectRoot) {
-  const relativePath = import_path7.default.relative(projectRoot, filePath).replace(/\\/g, "/");
+  const relativePath = import_path9.default.relative(projectRoot, filePath).replace(/\\/g, "/");
   const tests = [];
   const lines = content.split("\n");
   let featureName;
@@ -6613,14 +6895,14 @@ function parseCucumberSpec(filePath, content, projectRoot) {
   return {
     id: hashId(relativePath),
     path: relativePath,
-    name: import_path7.default.basename(filePath),
+    name: import_path9.default.basename(filePath),
     framework: "cucumber",
     tests,
     testCount: tests.length,
     lastModified: (/* @__PURE__ */ new Date()).toISOString()
   };
 }
-function extractTestNames6(content) {
+function extractTestNames8(content) {
   const lines = content.split("\n");
   const names = [];
   let featureName;
@@ -6703,7 +6985,7 @@ function extractTestNames6(content) {
 }
 var cucumberParser = {
   parseFile: parseCucumberSpec,
-  extractTestNames: extractTestNames6,
+  extractTestNames: extractTestNames8,
   filePatterns: ["**/*.feature"],
   supportedFeatures: {
     tags: true,
@@ -6719,6 +7001,8 @@ var PARSERS = {
   playwright: playwrightParser,
   cypress: cypressParser,
   vitest: vitestParser,
+  jest: jestParser,
+  pytest: pytestParser,
   testng: testngParser,
   junit: junitParser,
   cucumber: cucumberParser
@@ -6751,7 +7035,7 @@ function extractTestsWithLinesFromContent(content, framework) {
 function findSpecFiles(projectRoot, testDir, framework) {
   const parser4 = getParser(framework);
   if (!parser4) return [];
-  const baseDir = import_path8.default.resolve(projectRoot, testDir);
+  const baseDir = import_path10.default.resolve(projectRoot, testDir);
   return ts(parser4.filePatterns, {
     cwd: baseDir,
     absolute: true,
@@ -6764,7 +7048,7 @@ function isFrameworkSpecFile(filePath, framework) {
   if (!parser4) return false;
   const normalised = filePath.replace(/\\/g, "/");
   return parser4.filePatterns.some(
-    (pattern) => minimatch(normalised, pattern) || minimatch(import_path8.default.basename(normalised), pattern)
+    (pattern) => minimatch(normalised, pattern) || minimatch(import_path10.default.basename(normalised), pattern)
   );
 }
 function parseAllSpecs(projectRoot, frameworkConfigs) {
@@ -6780,7 +7064,7 @@ function parseAllSpecs(projectRoot, frameworkConfigs) {
       } catch {
         continue;
       }
-      const normalized = import_path8.default.normalize(filePath);
+      const normalized = import_path10.default.normalize(filePath);
       if (seen.has(normalized)) continue;
       seen.add(normalized);
       const content = (0, import_fs3.readFileSync)(filePath, "utf-8");
@@ -7427,8 +7711,8 @@ function toLinesWithContent(input = "", trimmed2 = true, separator = "\n") {
 function forEachLineWithContent(input, callback) {
   return toLinesWithContent(input, true).map((line) => callback(line));
 }
-function folderExists(path14) {
-  return (0, import_file_exists.exists)(path14, import_file_exists.FOLDER);
+function folderExists(path16) {
+  return (0, import_file_exists.exists)(path16, import_file_exists.FOLDER);
 }
 function append(target, item) {
   if (Array.isArray(target)) {
@@ -7830,8 +8114,8 @@ function checkIsRepoRootTask() {
     commands,
     format: "utf-8",
     onError,
-    parser(path14) {
-      return /^\.(git)?$/.test(path14.trim());
+    parser(path16) {
+      return /^\.(git)?$/.test(path16.trim());
     }
   };
 }
@@ -8265,11 +8549,11 @@ function parseGrep(grep) {
   const paths = /* @__PURE__ */ new Set();
   const results = {};
   forEachLineWithContent(grep, (input) => {
-    const [path14, line, preview] = input.split(NULL);
-    paths.add(path14);
-    (results[path14] = results[path14] || []).push({
+    const [path16, line, preview] = input.split(NULL);
+    paths.add(path16);
+    (results[path16] = results[path16] || []).push({
       line: asNumber(line),
-      path: path14,
+      path: path16,
       preview
     });
   });
@@ -9031,14 +9315,14 @@ var init_hash_object = __esm2({
     init_task();
   }
 });
-function parseInit(bare, path14, text) {
+function parseInit(bare, path16, text) {
   const response = String(text).trim();
   let result;
   if (result = initResponseRegex.exec(response)) {
-    return new InitSummary(bare, path14, false, result[1]);
+    return new InitSummary(bare, path16, false, result[1]);
   }
   if (result = reInitResponseRegex.exec(response)) {
-    return new InitSummary(bare, path14, true, result[1]);
+    return new InitSummary(bare, path16, true, result[1]);
   }
   let gitDir = "";
   const tokens = response.split(" ");
@@ -9049,7 +9333,7 @@ function parseInit(bare, path14, text) {
       break;
     }
   }
-  return new InitSummary(bare, path14, /^re/i.test(response), gitDir);
+  return new InitSummary(bare, path16, /^re/i.test(response), gitDir);
 }
 var InitSummary;
 var initResponseRegex;
@@ -9058,9 +9342,9 @@ var init_InitSummary = __esm2({
   "src/lib/responses/InitSummary.ts"() {
     "use strict";
     InitSummary = class {
-      constructor(bare, path14, existing, gitDir) {
+      constructor(bare, path16, existing, gitDir) {
         this.bare = bare;
-        this.path = path14;
+        this.path = path16;
         this.existing = existing;
         this.gitDir = gitDir;
       }
@@ -9072,7 +9356,7 @@ var init_InitSummary = __esm2({
 function hasBareCommand(command) {
   return command.includes(bareCommand);
 }
-function initTask(bare = false, path14, customArgs) {
+function initTask(bare = false, path16, customArgs) {
   const commands = ["init", ...customArgs];
   if (bare && !hasBareCommand(commands)) {
     commands.splice(1, 0, bareCommand);
@@ -9081,7 +9365,7 @@ function initTask(bare = false, path14, customArgs) {
     commands,
     format: "utf-8",
     parser(text) {
-      return parseInit(commands.includes("--bare"), path14, text);
+      return parseInit(commands.includes("--bare"), path16, text);
     }
   };
 }
@@ -9896,12 +10180,12 @@ var init_FileStatusSummary = __esm2({
     "use strict";
     fromPathRegex = /^(.+)\0(.+)$/;
     FileStatusSummary = class {
-      constructor(path14, index, working_dir) {
-        this.path = path14;
+      constructor(path16, index, working_dir) {
+        this.path = path16;
         this.index = index;
         this.working_dir = working_dir;
         if (index === "R" || working_dir === "R") {
-          const detail = fromPathRegex.exec(path14) || [null, path14, path14];
+          const detail = fromPathRegex.exec(path16) || [null, path16, path16];
           this.from = detail[2] || "";
           this.path = detail[1] || "";
         }
@@ -9932,14 +10216,14 @@ function splitLine(result, lineStr) {
     default:
       return;
   }
-  function data(index, workingDir, path14) {
+  function data(index, workingDir, path16) {
     const raw = `${index}${workingDir}`;
     const handler = parsers6.get(raw);
     if (handler) {
-      handler(result, path14);
+      handler(result, path16);
     }
     if (raw !== "##" && raw !== "!!") {
-      result.files.push(new FileStatusSummary(path14, index, workingDir));
+      result.files.push(new FileStatusSummary(path16, index, workingDir));
     }
   }
 }
@@ -10290,9 +10574,9 @@ var init_simple_git_api = __esm2({
           next
         );
       }
-      hashObject(path14, write) {
+      hashObject(path16, write) {
         return this._runTask(
-          hashObjectTask(path14, write === true),
+          hashObjectTask(path16, write === true),
           trailingFunctionArgument(arguments)
         );
       }
@@ -10646,8 +10930,8 @@ var init_branch = __esm2({
   }
 });
 function toPath(input) {
-  const path14 = input.trim().replace(/^["']|["']$/g, "");
-  return path14 && (0, import_node_path2.normalize)(path14);
+  const path16 = input.trim().replace(/^["']|["']$/g, "");
+  return path16 && (0, import_node_path2.normalize)(path16);
 }
 var parseCheckIgnore;
 var init_CheckIgnore = __esm2({
@@ -10932,8 +11216,8 @@ __export2(sub_module_exports, {
   subModuleTask: () => subModuleTask,
   updateSubModuleTask: () => updateSubModuleTask
 });
-function addSubModuleTask(repo, path14) {
-  return subModuleTask(["add", repo, path14]);
+function addSubModuleTask(repo, path16) {
+  return subModuleTask(["add", repo, path16]);
 }
 function initSubModuleTask(customArgs) {
   return subModuleTask(["init", ...customArgs]);
@@ -11247,8 +11531,8 @@ var require_git = __commonJS2({
       }
       return this._runTask(straightThroughStringTask2(command, this._trimmed), next);
     };
-    Git2.prototype.submoduleAdd = function(repo, path14, then) {
-      return this._runTask(addSubModuleTask2(repo, path14), trailingFunctionArgument2(arguments));
+    Git2.prototype.submoduleAdd = function(repo, path16, then) {
+      return this._runTask(addSubModuleTask2(repo, path16), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.submoduleUpdate = function(args, then) {
       return this._runTask(
@@ -11798,7 +12082,7 @@ init_git_response_error();
 var esm_default = gitInstanceFactory;
 
 // src/git/history.ts
-var import_path9 = __toESM(require("path"));
+var import_path11 = __toESM(require("path"));
 async function getLatestCommitHash(projectPath) {
   const git = esm_default(projectPath);
   try {
@@ -12000,7 +12284,7 @@ async function fetchCommitsWithFiles(git, logArgs, testDirs) {
 function isInTestDir(filePath, testDir) {
   if (testDir === ".") return true;
   const normalised = testDir.endsWith("/") ? testDir : testDir + "/";
-  return filePath.startsWith(normalised) || import_path9.default.dirname(filePath) + "/" === normalised;
+  return filePath.startsWith(normalised) || import_path11.default.dirname(filePath) + "/" === normalised;
 }
 function isInAnyTestDir(filePath, testDirs) {
   return testDirs.some((dir) => isInTestDir(filePath, dir));
@@ -12197,7 +12481,8 @@ async function validateProjectAccess(dashboardUrl, apiToken, projectId) {
       throw new Error("Invalid API key. Please check your API_KEY.");
     }
     if (response.status === 404) {
-      throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
+      console.warn("[sync] Could not validate project config access (404); continuing.");
+      return;
     }
     if (!response.ok) {
       console.warn(`[sync] Could not validate project access (${response.status}); continuing.`);
@@ -12299,9 +12584,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 // src/sync.ts
 var MAX_FIRST_SYNC_DAYS = 365;
 function getChangeKey(change, specPath) {
-  const path14 = specPath ?? "";
+  const path16 = specPath ?? "";
   const oldName = change.oldName ?? "";
-  return `${path14}:${change.type}:${change.name}:${oldName}`;
+  return `${path16}:${change.type}:${change.name}:${oldName}`;
 }
 function mapKey(framework, testDir) {
   return `${framework}:${testDir}`;
@@ -12582,14 +12867,14 @@ async function syncProject(options) {
 // src/config.ts
 init_cjs_shims();
 var import_fs4 = __toESM(require("fs"));
-var import_path10 = __toESM(require("path"));
+var import_path12 = __toESM(require("path"));
 var DEFAULT_DASHBOARD_URL = "https://www.testchronicle.com";
 var PROJECT_CONFIG_FILE = "testchronicle.config.json";
 function normaliseDashboardUrl(value) {
   return value.replace(/\/$/, "");
 }
 function projectConfigPath(projectDir = process.cwd()) {
-  return import_path10.default.join(projectDir, PROJECT_CONFIG_FILE);
+  return import_path12.default.join(projectDir, PROJECT_CONFIG_FILE);
 }
 function readProjectConfig(projectDir = process.cwd()) {
   const configPath = projectConfigPath(projectDir);
@@ -12628,19 +12913,19 @@ function dashboardUrlFromEnv(env) {
 init_cjs_shims();
 var import_fs5 = __toESM(require("fs"));
 var import_os = __toESM(require("os"));
-var import_path11 = __toESM(require("path"));
+var import_path13 = __toESM(require("path"));
 function appConfigDir() {
   if (process.env.TESTCHRONICLE_CONFIG_HOME) return process.env.TESTCHRONICLE_CONFIG_HOME;
   if (process.platform === "win32" && process.env.APPDATA) {
-    return import_path11.default.join(process.env.APPDATA, "TestChronicle");
+    return import_path13.default.join(process.env.APPDATA, "TestChronicle");
   }
   if (process.platform === "darwin") {
-    return import_path11.default.join(import_os.default.homedir(), "Library", "Application Support", "TestChronicle");
+    return import_path13.default.join(import_os.default.homedir(), "Library", "Application Support", "TestChronicle");
   }
-  return import_path11.default.join(process.env.XDG_CONFIG_HOME || import_path11.default.join(import_os.default.homedir(), ".config"), "testchronicle");
+  return import_path13.default.join(process.env.XDG_CONFIG_HOME || import_path13.default.join(import_os.default.homedir(), ".config"), "testchronicle");
 }
 function credentialsPath() {
-  return import_path11.default.join(appConfigDir(), "credentials.json");
+  return import_path13.default.join(appConfigDir(), "credentials.json");
 }
 function emptyStore() {
   return { credentials: [] };
@@ -12653,7 +12938,7 @@ function readStore() {
 }
 function writeStore(store) {
   const filePath = credentialsPath();
-  import_fs5.default.mkdirSync(import_path11.default.dirname(filePath), { recursive: true, mode: 448 });
+  import_fs5.default.mkdirSync(import_path13.default.dirname(filePath), { recursive: true, mode: 448 });
   import_fs5.default.writeFileSync(filePath, `${JSON.stringify(store, null, 2)}
 `, { encoding: "utf8", mode: 384 });
   try {
@@ -12836,7 +13121,7 @@ async function runSync(ctx) {
 async function runLogin(ctx) {
   const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
   const repoUrl = await getRepoUrl(ctx.cwd);
-  const projectName = import_path12.default.basename(ctx.cwd);
+  const projectName = import_path14.default.basename(ctx.cwd);
   const session = await startBrowserLogin(dashboardUrl, {
     projectName,
     ...repoUrl ? { repoUrl } : {}
