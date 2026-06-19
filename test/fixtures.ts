@@ -107,6 +107,21 @@ export const PARSER = {
         `})`,
     ].join('\n'),
 
+    jest: [
+        `describe('Cart', () => {`,
+        `    it('adds items', () => {})`,
+        `    test('removes items', () => {})`,
+        `})`,
+    ].join('\n'),
+
+    pytest: [
+        `class TestCart:`,
+        `    def test_adds_items(self):`,
+        `        assert True`,
+        `    def test_removes_items(self):`,
+        `        assert True`,
+    ].join('\n'),
+
     cypress: [
         `describe('Login', () => {`,
         `    it('shows the form', () => {})`,
@@ -141,6 +156,16 @@ export const SPEC_FILE = {
     ].join('\n'),
 
     vitest: [`describe('Math', () => {`, `    it('adds', () => {})`, `    it('subtracts', () => {})`, `})`].join('\n'),
+
+    jest: [`describe('Cart', () => {`, `    it('adds', () => {})`, `    test('removes', () => {})`, `})`].join('\n'),
+
+    pytest: [
+        `class TestCart:`,
+        `    def test_adds(self):`,
+        `        assert True`,
+        `    def test_removes(self):`,
+        `        assert True`,
+    ].join('\n'),
 
     cypress: [`describe('Home', () => {`, `    it('loads', () => {})`, `    specify('has title', () => {})`, `})`].join(
         '\n',

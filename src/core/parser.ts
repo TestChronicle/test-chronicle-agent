@@ -7,6 +7,8 @@ import { IFrameworkParser, FrameworkParserRegistry } from './base';
 import { playwrightParser } from './frameworks/playwright';
 import { cypressParser } from './frameworks/cypress';
 import { vitestParser } from './frameworks/vitest';
+import { jestParser } from './frameworks/jest';
+import { pytestParser } from './frameworks/pytest';
 import { testngParser } from './frameworks/testng';
 import { junitParser } from './frameworks/junit';
 import { cucumberParser } from './frameworks/cucumber';
@@ -15,6 +17,8 @@ const PARSERS: Record<Exclude<Framework, 'unknown'>, IFrameworkParser> = {
     playwright: playwrightParser,
     cypress: cypressParser,
     vitest: vitestParser,
+    jest: jestParser,
+    pytest: pytestParser,
     testng: testngParser,
     junit: junitParser,
     cucumber: cucumberParser,

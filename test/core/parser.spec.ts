@@ -16,6 +16,16 @@ describe('extractTestNamesFromContent', () => {
         expect(names).toEqual(['Math > adds numbers', 'Math > subtracts numbers']);
     });
 
+    it('extracts names from Jest content', () => {
+        const names = extractTestNamesFromContent(PARSER.jest, 'jest');
+        expect(names).toEqual(['Cart > adds items', 'Cart > removes items']);
+    });
+
+    it('extracts names from pytest content', () => {
+        const names = extractTestNamesFromContent(PARSER.pytest, 'pytest');
+        expect(names).toEqual(['TestCart > test_adds_items', 'TestCart > test_removes_items']);
+    });
+
     it('extracts names from Cypress content', () => {
         const names = extractTestNamesFromContent(PARSER.cypress, 'cypress');
         expect(names).toEqual(['Login > shows the form', 'Login > accepts valid credentials']);
@@ -74,6 +84,30 @@ describe('parseAllSpecs', () => {
             expect(specs[0].path).toBe('playwright/tests/components/auth/login.spec.ts');
             expect(specs[0].tests).toHaveLength(1);
             expect(specs[0].tests[0].name).toBe('logs in');
+        } finally {
+            fs.rmSync(projectRoot, { recursive: true, force: true });
+        }
+    });
+
+    it('routes overlapping spec filenames by the configured testDir', () => {
+        const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tc-parser-'));
+
+        try {
+            const jestRoot = path.join(projectRoot, 'packages', 'web', '__tests__');
+            const vitestRoot = path.join(projectRoot, 'packages', 'lib', 'src');
+            fs.mkdirSync(jestRoot, { recursive: true });
+            fs.mkdirSync(vitestRoot, { recursive: true });
+            fs.writeFileSync(path.join(jestRoot, 'auth.spec.ts'), "test('renders login', () => {})\n", 'utf-8');
+            fs.writeFileSync(path.join(vitestRoot, 'auth.spec.ts'), "test('validates token', () => {})\n", 'utf-8');
+
+            const specs = parseAllSpecs(projectRoot, [
+                { framework: 'jest', testDir: './packages/web', confidence: 'high' },
+                { framework: 'vitest', testDir: './packages/lib', confidence: 'high' },
+            ]);
+
+            expect(specs).toHaveLength(2);
+            expect(specs.find((spec) => spec.framework === 'jest')?.tests[0].name).toBe('renders login');
+            expect(specs.find((spec) => spec.framework === 'vitest')?.tests[0].name).toBe('validates token');
         } finally {
             fs.rmSync(projectRoot, { recursive: true, force: true });
         }

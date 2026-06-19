@@ -10,6 +10,7 @@ const CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 const ENABLED_RE = /enabled\s*=\s*(false|true)/;
 
 const GROUPS_RE = /groups\s*=\s*\{\s*"?([^}\"]+)"?\s*\}/;
+const PARAMETERIZED_RE = /\b(dataProvider|parameters)\s*=/i;
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
@@ -30,6 +31,9 @@ export function parseTestNGSpec(filePath: string, content: string, projectRoot: 
         // match[0] contains the full @Test(...) annotation and method signature
         const annotationText = match[0];
         const tags = extractTestNGTags(annotationText);
+        if (isParameterized(annotationText)) {
+            tags.push({ name: '@parameterized' });
+        }
         const isEnabled = isTestEnabled(annotationText);
 
         // Don't include disabled tests (they're skipped)
@@ -124,6 +128,10 @@ function extractTestNGTags(annotationText: string): Array<{ name: string }> {
     return tags;
 }
 
+function isParameterized(annotationText: string): boolean {
+    return PARAMETERIZED_RE.test(annotationText);
+}
+
 export const testngParser: IFrameworkParser = {
     parseFile: parseTestNGSpec,
     extractTestNames,
@@ -131,7 +139,7 @@ export const testngParser: IFrameworkParser = {
     supportedFeatures: {
         tags: true,
         describes: false,
-        parameterized: false,
+        parameterized: true,
         lineNumbers: true,
         asyncTests: false,
     },
