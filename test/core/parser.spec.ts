@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 import { describe, it, expect } from 'vitest';
 import { extractTestNamesFromContent, extractTestsWithLinesFromContent, parseAllSpecs } from '../../src/core/parser';
-import { PARSER } from '../fixtures';
+import { PARSER, PARSER_TEMP_FILES } from '../fixtures';
 
 describe('extractTestNamesFromContent', () => {
     it('extracts names from Playwright content', () => {
@@ -72,7 +72,7 @@ describe('parseAllSpecs', () => {
             fs.mkdirSync(path.join(testsRoot, 'components', 'auth'), { recursive: true });
             fs.writeFileSync(
                 path.join(testsRoot, 'components', 'auth', 'login.spec.ts'),
-                "test('logs in', async () => {})\n",
+                PARSER_TEMP_FILES.playwrightLogin,
                 'utf-8',
             );
 
@@ -97,8 +97,8 @@ describe('parseAllSpecs', () => {
             const vitestRoot = path.join(projectRoot, 'packages', 'lib', 'src');
             fs.mkdirSync(jestRoot, { recursive: true });
             fs.mkdirSync(vitestRoot, { recursive: true });
-            fs.writeFileSync(path.join(jestRoot, 'auth.spec.ts'), "test('renders login', () => {})\n", 'utf-8');
-            fs.writeFileSync(path.join(vitestRoot, 'auth.spec.ts'), "test('validates token', () => {})\n", 'utf-8');
+            fs.writeFileSync(path.join(jestRoot, 'auth.spec.ts'), PARSER_TEMP_FILES.jestLogin, 'utf-8');
+            fs.writeFileSync(path.join(vitestRoot, 'auth.spec.ts'), PARSER_TEMP_FILES.vitestToken, 'utf-8');
 
             const specs = parseAllSpecs(projectRoot, [
                 { framework: 'jest', testDir: './packages/web', confidence: 'high' },

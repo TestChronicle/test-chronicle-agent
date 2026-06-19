@@ -42,14 +42,7 @@ describe('JUnit parser — @Tag', () => {
 
 describe('JUnit parser - parameterized detection', () => {
     it('tags @ParameterizedTest methods as parameterized', () => {
-        const content = [
-            `public class LoginTest {`,
-            `    @ParameterizedTest`,
-            `    @ValueSource(strings = {"admin", "guest"})`,
-            `    public void canLoginAsRole(String role) {}`,
-            `}`,
-        ].join('\n');
-        const spec = parseJUnitSpec(FILE, content, ROOT);
+        const spec = parseJUnitSpec(FILE, JUNIT.parameterized, ROOT);
         expect(spec.tests).toHaveLength(1);
         expect(spec.tests[0].tags).toContainEqual({ name: '@parameterized' });
     });

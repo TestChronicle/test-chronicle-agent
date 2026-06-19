@@ -74,6 +74,47 @@ export const VITEST = {
 
 // ─── Cypress fixtures ─────────────────────────────────────────────────────────
 
+export const JEST = {
+    testCall: `test('returns true', () => {})`,
+    withDescribe: [`describe('AuthService', () => {`, `    it('logs in', () => {})`, `})`].join('\n'),
+    modifiers: [`test.concurrent('runs in parallel', () => {})`, `test.failing('known failure', () => {})`].join(
+        '\n',
+    ),
+    todo: `test.todo('not implemented')`,
+    each: [
+        `test.each([`,
+        `    [1, 2, 3],`,
+        `    [2, 3, 5],`,
+        `])('adds %i and %i', (a, b, expected) => {})`,
+    ].join('\n'),
+    describeEach: [
+        `describe.each([{ role: 'admin' }])('role $role', ({ role }) => {`,
+        `    test('can sign in', () => {})`,
+        `})`,
+    ].join('\n'),
+};
+
+export const PYTEST = {
+    functionTest: [`def test_login():`, `    assert True`].join('\n'),
+    classTest: [`class TestAuth:`, `    def test_login(self):`, `        assert True`].join('\n'),
+    asyncTest: [`async def test_async_login():`, `    assert True`].join('\n'),
+    markers: [`@pytest.mark.smoke`, `@pytest.mark.regression`, `def test_checkout():`, `    assert True`].join('\n'),
+    parametrize: [`@pytest.mark.parametrize("value", [1, 2, 3])`, `def test_value(value):`, `    assert value`].join(
+        '\n',
+    ),
+    multilineParametrize: [
+        `@pytest.mark.parametrize(`,
+        `    "value",`,
+        `    [1, 2, 3],`,
+        `)`,
+        `def test_value(value):`,
+        `    assert value`,
+    ].join('\n'),
+    lineNumber: [`import pytest`, ``, `@pytest.mark.smoke`, `def test_line_number():`, `    assert True`].join(
+        '\n',
+    ),
+};
+
 export const CYPRESS = {
     itCall: `it('should display the form', () => {})`,
     specifyCall: `specify('logs in with valid credentials', () => {})`,
@@ -146,6 +187,12 @@ export const PARSER = {
 };
 
 // ─── SpecFile contract fixtures ───────────────────────────────────────────────
+
+export const PARSER_TEMP_FILES = {
+    playwrightLogin: `test('logs in', async () => {})\n`,
+    jestLogin: `test('renders login', () => {})\n`,
+    vitestToken: `test('validates token', () => {})\n`,
+};
 
 export const SPEC_FILE = {
     playwright: [
@@ -228,6 +275,13 @@ export const TESTNG = {
         `    public void smokeTest() {}`,
         `}`,
     ].join('\n'),
+
+    dataProvider: [
+        `public class LoginTest {`,
+        `    @Test(dataProvider = "users")`,
+        `    public void shouldLogin(String user) {}`,
+        `}`,
+    ].join('\n'),
 };
 
 // ─── JUnit fixtures ───────────────────────────────────────────────────────────
@@ -263,6 +317,14 @@ export const JUNIT = {
     withTag: [`public class LoginTest {`, `    @Tag("smoke")`, `    @Test`, `    public void smokeTest() {}`, `}`].join(
         '\n',
     ),
+
+    parameterized: [
+        `public class LoginTest {`,
+        `    @ParameterizedTest`,
+        `    @ValueSource(strings = {"admin", "guest"})`,
+        `    public void canLoginAsRole(String role) {}`,
+        `}`,
+    ].join('\n'),
 };
 
 // ─── Common/utility fixtures ──────────────────────────────────────────────────
