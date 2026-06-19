@@ -1,12 +1,5 @@
 #!/usr/bin/env node
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
-
-/***/ 295:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
 "use strict";
-
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -22,10 +15,6 @@ var __esm = (fn, res) => function __init() {
 };
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-};
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -43,7 +32,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
 var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
@@ -540,8 +528,8 @@ var require_node = __commonJS({
   "node_modules/.pnpm/debug@4.4.3/node_modules/debug/src/node.js"(exports2, module2) {
     "use strict";
     init_cjs_shims();
-    var tty = __nccwpck_require__(18);
-    var util = __nccwpck_require__(23);
+    var tty = require("tty");
+    var util = require("util");
     exports2.init = init;
     exports2.log = log;
     exports2.formatArgs = formatArgs;
@@ -555,7 +543,7 @@ var require_node = __commonJS({
     );
     exports2.colors = [6, 2, 3, 4, 5, 1];
     try {
-      const supportsColor = __nccwpck_require__(795);
+      const supportsColor = require("supports-color");
       if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
         exports2.colors = [
           20,
@@ -733,13 +721,13 @@ var require_src2 = __commonJS({
       return mod && mod.__esModule ? mod : { "default": mod };
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var fs_1 = __nccwpck_require__(896);
+    var fs_1 = require("fs");
     var debug_1 = __importDefault(require_src());
     var log = debug_1.default("@kwsites/file-exists");
-    function check(path16, isFile, isDirectory) {
-      log(`checking %s`, path16);
+    function check(path13, isFile, isDirectory) {
+      log(`checking %s`, path13);
       try {
-        const stat = fs_1.statSync(path16);
+        const stat = fs_1.statSync(path13);
         if (stat.isFile() && isFile) {
           log(`[OK] path represents a file`);
           return true;
@@ -759,8 +747,8 @@ var require_src2 = __commonJS({
         throw e;
       }
     }
-    function exists2(path16, type = exports2.READABLE) {
-      return check(path16, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
+    function exists2(path13, type = exports2.READABLE) {
+      return check(path13, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
     }
     exports2.exists = exists2;
     exports2.FILE = 1;
@@ -774,11 +762,11 @@ var require_dist = __commonJS({
   "node_modules/.pnpm/@kwsites+file-exists@1.1.1/node_modules/@kwsites/file-exists/dist/index.js"(exports2) {
     "use strict";
     init_cjs_shims();
-    function __export3(m) {
+    function __export2(m) {
       for (var p2 in m) if (!exports2.hasOwnProperty(p2)) exports2[p2] = m[p2];
     }
     Object.defineProperty(exports2, "__esModule", { value: true });
-    __export3(require_src2());
+    __export2(require_src2());
   }
 });
 
@@ -825,18 +813,8 @@ var require_dist2 = __commonJS({
   }
 });
 
-// src/cli.ts
-var cli_exports = {};
-__export(cli_exports, {
-  cli: () => main,
-  resolveSyncCredentials: () => resolveSyncCredentials,
-  runCli: () => runCli
-});
-module.exports = __toCommonJS(cli_exports);
+// src/action.ts
 init_cjs_shims();
-var import_child_process2 = __nccwpck_require__(317);
-var import_fs6 = __toESM(__nccwpck_require__(896));
-var import_path14 = __toESM(__nccwpck_require__(928));
 
 // src/sync.ts
 init_cjs_shims();
@@ -846,20 +824,20 @@ init_cjs_shims();
 
 // src/core/detector.ts
 init_cjs_shims();
-var import_fs2 = __nccwpck_require__(896);
-var import_path = __toESM(__nccwpck_require__(928));
+var import_fs2 = require("fs");
+var import_path = __toESM(require("path"));
 
 // node_modules/.pnpm/glob@13.0.6/node_modules/glob/dist/esm/index.min.js
 init_cjs_shims();
-var import_node_url = __nccwpck_require__(16);
-var import_node_path = __nccwpck_require__(928);
-var import_node_url2 = __nccwpck_require__(16);
-var import_fs = __nccwpck_require__(896);
-var xi = __toESM(__nccwpck_require__(896), 1);
-var import_promises = __nccwpck_require__(943);
-var import_node_events = __nccwpck_require__(434);
-var import_node_stream = __toESM(__nccwpck_require__(203), 1);
-var import_node_string_decoder = __nccwpck_require__(193);
+var import_node_url = require("url");
+var import_node_path = require("path");
+var import_node_url2 = require("url");
+var import_fs = require("fs");
+var xi = __toESM(require("fs"), 1);
+var import_promises = require("fs/promises");
+var import_node_events = require("events");
+var import_node_stream = __toESM(require("stream"), 1);
+var import_node_string_decoder = require("string_decoder");
 var Gt = (n5, t2, e) => {
   let s = n5 instanceof RegExp ? ce(n5, e) : n5, i2 = t2 instanceof RegExp ? ce(t2, e) : t2, r2 = s !== null && i2 != null && ss(s, i2, e);
   return r2 && { start: r2[0], end: r2[1], pre: e.slice(0, r2[0]), body: e.slice(r2[0] + s.length, r2[1]), post: e.slice(r2[1] + i2.length) };
@@ -4128,8 +4106,8 @@ function detectAllFromBuildFiles(projectPath, alreadySeen) {
 
 // src/core/parser.ts
 init_cjs_shims();
-var import_fs3 = __nccwpck_require__(896);
-var import_path10 = __toESM(__nccwpck_require__(928));
+var import_fs3 = require("fs");
+var import_path10 = __toESM(require("path"));
 
 // node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/index.js
 init_cjs_shims();
@@ -5972,11 +5950,11 @@ minimatch.unescape = unescape;
 
 // src/core/frameworks/playwright.ts
 init_cjs_shims();
-var import_path2 = __toESM(__nccwpck_require__(928));
+var import_path2 = __toESM(require("path"));
 
 // src/core/frameworks/common.ts
 init_cjs_shims();
-var import_crypto = __nccwpck_require__(982);
+var import_crypto = require("crypto");
 function hashId(input) {
   return (0, import_crypto.createHash)("md5").update(input).digest("hex").substring(0, 8);
 }
@@ -6216,7 +6194,7 @@ var playwrightParser = {
 
 // src/core/frameworks/cypress.ts
 init_cjs_shims();
-var import_path3 = __toESM(__nccwpck_require__(928));
+var import_path3 = __toESM(require("path"));
 var DESCRIBE_RE2 = /describe\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE2 = /(?:^|[ \t]+)(?:it|specify|test)\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseCypressSpec(filePath, content, projectRoot) {
@@ -6305,7 +6283,7 @@ var cypressParser = {
 
 // src/core/frameworks/vitest.ts
 init_cjs_shims();
-var import_path4 = __toESM(__nccwpck_require__(928));
+var import_path4 = __toESM(require("path"));
 var DESCRIBE_RE3 = /describe\s*(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE3 = /(?:^|[ \t]+)(?:test|it)\s*(?:\.(?:skip|only|todo))?\s*\(\s*(['"`])([\s\S]*?)\1/gm;
 function parseVitestSpec(filePath, content, projectRoot) {
@@ -6372,7 +6350,7 @@ var vitestParser = {
 
 // src/core/frameworks/jest.ts
 init_cjs_shims();
-var import_path5 = __toESM(__nccwpck_require__(928));
+var import_path5 = __toESM(require("path"));
 var DESCRIBE_RE4 = /describe(?:\.(?:skip|only))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var DESCRIBE_EACH_RE = /describe(?:\.(?:skip|only))?\.each\s*(?:\([\s\S]*?\)|`[\s\S]*?`)\s*\(\s*(['"`])([\s\S]*?)\1/g;
 var TEST_RE4 = /(?:^|[ \t]+)(?:test|it)(?:\.(?:concurrent|skip|only|failing|todo))*\s*\(\s*(['"`])([\s\S]*?)\1/gm;
@@ -6483,7 +6461,7 @@ var jestParser = {
 
 // src/core/frameworks/pytest.ts
 init_cjs_shims();
-var import_path6 = __toESM(__nccwpck_require__(928));
+var import_path6 = __toESM(require("path"));
 function parsePytestSpec(filePath, content, projectRoot) {
   const relativePath = import_path6.default.relative(projectRoot, filePath).replace(/\\/g, "/");
   const tests = [];
@@ -6577,7 +6555,7 @@ var pytestParser = {
 
 // src/core/frameworks/testng.ts
 init_cjs_shims();
-var import_path7 = __toESM(__nccwpck_require__(928));
+var import_path7 = __toESM(require("path"));
 var TEST_METHOD_RE = /@Test\s*(?:\([^)]*\))?\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 var CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 var ENABLED_RE = /enabled\s*=\s*(false|true)/;
@@ -6676,7 +6654,7 @@ var testngParser = {
 
 // src/core/frameworks/junit.ts
 init_cjs_shims();
-var import_path8 = __toESM(__nccwpck_require__(928));
+var import_path8 = __toESM(require("path"));
 var TEST_METHOD_RE2 = /@(Test|ParameterizedTest|RepeatedTest)\s*(?:\([^)]*\))?(?:\s*@[\w.]+(?:\([^)]*\))?)*\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 var CLASS_DECLARATION_RE2 = /(?:public\s+)?class\s+(\w+)/;
 var IGNORE_RE = /@Ignore/;
@@ -6773,7 +6751,7 @@ var junitParser = {
 
 // src/core/frameworks/cucumber.ts
 init_cjs_shims();
-var import_path9 = __toESM(__nccwpck_require__(928));
+var import_path9 = __toESM(require("path"));
 var FEATURE_RE = /^Feature:\s*(.+)/i;
 var SCENARIO_RE = /^\s*(?:Scenario|Example):\s*(.+)/i;
 var OUTLINE_RE = /^\s*(?:Scenario Outline|Scenario Template):\s*(.+)/i;
@@ -7146,9 +7124,9 @@ function o(n5) {
 
 // node_modules/.pnpm/simple-git@3.36.0/node_modules/simple-git/dist/esm/index.js
 var import_debug = __toESM(require_src(), 1);
-var import_child_process = __nccwpck_require__(317);
+var import_child_process = require("child_process");
 var import_promise_deferred = __toESM(require_dist2(), 1);
-var import_node_path2 = __nccwpck_require__(928);
+var import_node_path2 = require("path");
 
 // node_modules/.pnpm/@simple-git+argv-parser@1.1.1/node_modules/@simple-git/argv-parser/dist/index.mjs
 init_cjs_shims();
@@ -7617,7 +7595,7 @@ function ne2(e, t2) {
 
 // node_modules/.pnpm/simple-git@3.36.0/node_modules/simple-git/dist/esm/index.js
 var import_promise_deferred2 = __toESM(require_dist2(), 1);
-var import_node_events2 = __nccwpck_require__(434);
+var import_node_events2 = require("events");
 var __defProp2 = Object.defineProperty;
 var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -7628,7 +7606,7 @@ var __esm2 = (fn, res) => function __init() {
 var __commonJS2 = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames2(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __export2 = (target, all) => {
+var __export = (target, all) => {
   for (var name in all)
     __defProp2(target, name, { get: all[name], enumerable: true });
 };
@@ -7640,7 +7618,7 @@ var __copyProps2 = (to, from, except, desc) => {
   }
   return to;
 };
-var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+var __toCommonJS = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
 var GitError;
 var init_git_error = __esm2({
   "src/lib/errors/git-error.ts"() {
@@ -7718,8 +7696,8 @@ function toLinesWithContent(input = "", trimmed2 = true, separator = "\n") {
 function forEachLineWithContent(input, callback) {
   return toLinesWithContent(input, true).map((line) => callback(line));
 }
-function folderExists(path16) {
-  return (0, import_file_exists.exists)(path16, import_file_exists.FOLDER);
+function folderExists(path13) {
+  return (0, import_file_exists.exists)(path13, import_file_exists.FOLDER);
 }
 function append(target, item) {
   if (Array.isArray(target)) {
@@ -8035,7 +8013,7 @@ var init_task_parser = __esm2({
   }
 });
 var utils_exports = {};
-__export2(utils_exports, {
+__export(utils_exports, {
   ExitCodes: () => ExitCodes,
   GitOutputStreams: () => GitOutputStreams,
   LineParser: () => LineParser,
@@ -8094,7 +8072,7 @@ var init_utils = __esm2({
   }
 });
 var check_is_repo_exports = {};
-__export2(check_is_repo_exports, {
+__export(check_is_repo_exports, {
   CheckRepoActions: () => CheckRepoActions,
   checkIsBareRepoTask: () => checkIsBareRepoTask,
   checkIsRepoRootTask: () => checkIsRepoRootTask,
@@ -8121,8 +8099,8 @@ function checkIsRepoRootTask() {
     commands,
     format: "utf-8",
     onError,
-    parser(path16) {
-      return /^\.(git)?$/.test(path16.trim());
+    parser(path13) {
+      return /^\.(git)?$/.test(path13.trim());
     }
   };
 }
@@ -8194,7 +8172,7 @@ var init_CleanSummary = __esm2({
   }
 });
 var task_exports = {};
-__export2(task_exports, {
+__export(task_exports, {
   EMPTY_COMMANDS: () => EMPTY_COMMANDS,
   adhocExecTask: () => adhocExecTask,
   configurationErrorTask: () => configurationErrorTask,
@@ -8252,7 +8230,7 @@ var init_task = __esm2({
   }
 });
 var clean_exports = {};
-__export2(clean_exports, {
+__export(clean_exports, {
   CONFIG_ERROR_INTERACTIVE_MODE: () => CONFIG_ERROR_INTERACTIVE_MODE,
   CONFIG_ERROR_MODE_REQUIRED: () => CONFIG_ERROR_MODE_REQUIRED,
   CONFIG_ERROR_UNKNOWN_OPTION: () => CONFIG_ERROR_UNKNOWN_OPTION,
@@ -8556,11 +8534,11 @@ function parseGrep(grep) {
   const paths = /* @__PURE__ */ new Set();
   const results = {};
   forEachLineWithContent(grep, (input) => {
-    const [path16, line, preview] = input.split(NULL);
-    paths.add(path16);
-    (results[path16] = results[path16] || []).push({
+    const [path13, line, preview] = input.split(NULL);
+    paths.add(path13);
+    (results[path13] = results[path13] || []).push({
       line: asNumber(line),
-      path: path16,
+      path: path13,
       preview
     });
   });
@@ -8631,7 +8609,7 @@ var init_grep = __esm2({
   }
 });
 var reset_exports = {};
-__export2(reset_exports, {
+__export(reset_exports, {
   ResetMode: () => ResetMode,
   getResetMode: () => getResetMode,
   resetTask: () => resetTask
@@ -9029,7 +9007,7 @@ var init_git_executor_chain = __esm2({
   }
 });
 var git_executor_exports = {};
-__export2(git_executor_exports, {
+__export(git_executor_exports, {
   GitExecutor: () => GitExecutor
 });
 var GitExecutor;
@@ -9322,14 +9300,14 @@ var init_hash_object = __esm2({
     init_task();
   }
 });
-function parseInit(bare, path16, text) {
+function parseInit(bare, path13, text) {
   const response = String(text).trim();
   let result;
   if (result = initResponseRegex.exec(response)) {
-    return new InitSummary(bare, path16, false, result[1]);
+    return new InitSummary(bare, path13, false, result[1]);
   }
   if (result = reInitResponseRegex.exec(response)) {
-    return new InitSummary(bare, path16, true, result[1]);
+    return new InitSummary(bare, path13, true, result[1]);
   }
   let gitDir = "";
   const tokens = response.split(" ");
@@ -9340,7 +9318,7 @@ function parseInit(bare, path16, text) {
       break;
     }
   }
-  return new InitSummary(bare, path16, /^re/i.test(response), gitDir);
+  return new InitSummary(bare, path13, /^re/i.test(response), gitDir);
 }
 var InitSummary;
 var initResponseRegex;
@@ -9349,9 +9327,9 @@ var init_InitSummary = __esm2({
   "src/lib/responses/InitSummary.ts"() {
     "use strict";
     InitSummary = class {
-      constructor(bare, path16, existing, gitDir) {
+      constructor(bare, path13, existing, gitDir) {
         this.bare = bare;
-        this.path = path16;
+        this.path = path13;
         this.existing = existing;
         this.gitDir = gitDir;
       }
@@ -9363,7 +9341,7 @@ var init_InitSummary = __esm2({
 function hasBareCommand(command) {
   return command.includes(bareCommand);
 }
-function initTask(bare = false, path16, customArgs) {
+function initTask(bare = false, path13, customArgs) {
   const commands = ["init", ...customArgs];
   if (bare && !hasBareCommand(commands)) {
     commands.splice(1, 0, bareCommand);
@@ -9372,7 +9350,7 @@ function initTask(bare = false, path16, customArgs) {
     commands,
     format: "utf-8",
     parser(text) {
-      return parseInit(commands.includes("--bare"), path16, text);
+      return parseInit(commands.includes("--bare"), path13, text);
     }
   };
 }
@@ -9598,7 +9576,7 @@ var init_parse_list_log_summary = __esm2({
   }
 });
 var diff_exports = {};
-__export2(diff_exports, {
+__export(diff_exports, {
   diffSummaryTask: () => diffSummaryTask,
   validateLogFormatConfig: () => validateLogFormatConfig
 });
@@ -10120,7 +10098,7 @@ var init_parse_push = __esm2({
   }
 });
 var push_exports = {};
-__export2(push_exports, {
+__export(push_exports, {
   pushTagsTask: () => pushTagsTask,
   pushTask: () => pushTask
 });
@@ -10187,12 +10165,12 @@ var init_FileStatusSummary = __esm2({
     "use strict";
     fromPathRegex = /^(.+)\0(.+)$/;
     FileStatusSummary = class {
-      constructor(path16, index, working_dir) {
-        this.path = path16;
+      constructor(path13, index, working_dir) {
+        this.path = path13;
         this.index = index;
         this.working_dir = working_dir;
         if (index === "R" || working_dir === "R") {
-          const detail = fromPathRegex.exec(path16) || [null, path16, path16];
+          const detail = fromPathRegex.exec(path13) || [null, path13, path13];
           this.from = detail[2] || "";
           this.path = detail[1] || "";
         }
@@ -10223,14 +10201,14 @@ function splitLine(result, lineStr) {
     default:
       return;
   }
-  function data(index, workingDir, path16) {
+  function data(index, workingDir, path13) {
     const raw = `${index}${workingDir}`;
     const handler = parsers6.get(raw);
     if (handler) {
-      handler(result, path16);
+      handler(result, path13);
     }
     if (raw !== "##" && raw !== "!!") {
-      result.files.push(new FileStatusSummary(path16, index, workingDir));
+      result.files.push(new FileStatusSummary(path13, index, workingDir));
     }
   }
 }
@@ -10514,7 +10492,7 @@ var init_clone = __esm2({
   }
 });
 var simple_git_api_exports = {};
-__export2(simple_git_api_exports, {
+__export(simple_git_api_exports, {
   SimpleGitApi: () => SimpleGitApi
 });
 var SimpleGitApi;
@@ -10581,9 +10559,9 @@ var init_simple_git_api = __esm2({
           next
         );
       }
-      hashObject(path16, write) {
+      hashObject(path13, write) {
         return this._runTask(
-          hashObjectTask(path16, write === true),
+          hashObjectTask(path13, write === true),
           trailingFunctionArgument(arguments)
         );
       }
@@ -10655,7 +10633,7 @@ var init_simple_git_api = __esm2({
   }
 });
 var scheduler_exports = {};
-__export2(scheduler_exports, {
+__export(scheduler_exports, {
   Scheduler: () => Scheduler
 });
 var createScheduledTask;
@@ -10713,7 +10691,7 @@ var init_scheduler = __esm2({
   }
 });
 var apply_patch_exports = {};
-__export2(apply_patch_exports, {
+__export(apply_patch_exports, {
   applyPatchTask: () => applyPatchTask
 });
 function applyPatchTask(patches, customArgs) {
@@ -10852,7 +10830,7 @@ var init_parse_branch = __esm2({
   }
 });
 var branch_exports = {};
-__export2(branch_exports, {
+__export(branch_exports, {
   branchLocalTask: () => branchLocalTask,
   branchTask: () => branchTask,
   containsDeleteBranchCommand: () => containsDeleteBranchCommand,
@@ -10937,8 +10915,8 @@ var init_branch = __esm2({
   }
 });
 function toPath(input) {
-  const path16 = input.trim().replace(/^["']|["']$/g, "");
-  return path16 && (0, import_node_path2.normalize)(path16);
+  const path13 = input.trim().replace(/^["']|["']$/g, "");
+  return path13 && (0, import_node_path2.normalize)(path13);
 }
 var parseCheckIgnore;
 var init_CheckIgnore = __esm2({
@@ -10950,7 +10928,7 @@ var init_CheckIgnore = __esm2({
   }
 });
 var check_ignore_exports = {};
-__export2(check_ignore_exports, {
+__export(check_ignore_exports, {
   checkIgnoreTask: () => checkIgnoreTask
 });
 function checkIgnoreTask(paths) {
@@ -11018,7 +10996,7 @@ var init_parse_fetch = __esm2({
   }
 });
 var fetch_exports = {};
-__export2(fetch_exports, {
+__export(fetch_exports, {
   fetchTask: () => fetchTask
 });
 function disallowedCommand(command) {
@@ -11062,7 +11040,7 @@ var init_parse_move = __esm2({
   }
 });
 var move_exports = {};
-__export2(move_exports, {
+__export(move_exports, {
   moveTask: () => moveTask
 });
 function moveTask(from, to) {
@@ -11080,7 +11058,7 @@ var init_move = __esm2({
   }
 });
 var pull_exports = {};
-__export2(pull_exports, {
+__export(pull_exports, {
   pullTask: () => pullTask
 });
 function pullTask(remote, branch, customArgs) {
@@ -11144,7 +11122,7 @@ var init_GetRemoteSummary = __esm2({
   }
 });
 var remote_exports = {};
-__export2(remote_exports, {
+__export(remote_exports, {
   addRemoteTask: () => addRemoteTask,
   getRemotesTask: () => getRemotesTask,
   listRemotesTask: () => listRemotesTask,
@@ -11190,7 +11168,7 @@ var init_remote = __esm2({
   }
 });
 var stash_list_exports = {};
-__export2(stash_list_exports, {
+__export(stash_list_exports, {
   stashListTask: () => stashListTask
 });
 function stashListTask(opt = {}, customArgs) {
@@ -11217,14 +11195,14 @@ var init_stash_list = __esm2({
   }
 });
 var sub_module_exports = {};
-__export2(sub_module_exports, {
+__export(sub_module_exports, {
   addSubModuleTask: () => addSubModuleTask,
   initSubModuleTask: () => initSubModuleTask,
   subModuleTask: () => subModuleTask,
   updateSubModuleTask: () => updateSubModuleTask
 });
-function addSubModuleTask(repo, path16) {
-  return subModuleTask(["add", repo, path16]);
+function addSubModuleTask(repo, path13) {
+  return subModuleTask(["add", repo, path13]);
 }
 function initSubModuleTask(customArgs) {
   return subModuleTask(["init", ...customArgs]);
@@ -11300,7 +11278,7 @@ var init_TagList = __esm2({
   }
 });
 var tag_exports = {};
-__export2(tag_exports, {
+__export(tag_exports, {
   addAnnotatedTagTask: () => addAnnotatedTagTask,
   addTagTask: () => addTagTask,
   tagListTask: () => tagListTask
@@ -11342,10 +11320,10 @@ var init_tag = __esm2({
 var require_git = __commonJS2({
   "src/git.js"(exports2, module2) {
     "use strict";
-    var { GitExecutor: GitExecutor2 } = (init_git_executor(), __toCommonJS2(git_executor_exports));
-    var { SimpleGitApi: SimpleGitApi2 } = (init_simple_git_api(), __toCommonJS2(simple_git_api_exports));
-    var { Scheduler: Scheduler2 } = (init_scheduler(), __toCommonJS2(scheduler_exports));
-    var { adhocExecTask: adhocExecTask2, configurationErrorTask: configurationErrorTask2 } = (init_task(), __toCommonJS2(task_exports));
+    var { GitExecutor: GitExecutor2 } = (init_git_executor(), __toCommonJS(git_executor_exports));
+    var { SimpleGitApi: SimpleGitApi2 } = (init_simple_git_api(), __toCommonJS(simple_git_api_exports));
+    var { Scheduler: Scheduler2 } = (init_scheduler(), __toCommonJS(scheduler_exports));
+    var { adhocExecTask: adhocExecTask2, configurationErrorTask: configurationErrorTask2 } = (init_task(), __toCommonJS(task_exports));
     var {
       asArray: asArray2,
       filterArray: filterArray2,
@@ -11356,39 +11334,39 @@ var require_git = __commonJS2({
       getTrailingOptions: getTrailingOptions2,
       trailingFunctionArgument: trailingFunctionArgument2,
       trailingOptionsArgument: trailingOptionsArgument2
-    } = (init_utils(), __toCommonJS2(utils_exports));
-    var { applyPatchTask: applyPatchTask2 } = (init_apply_patch(), __toCommonJS2(apply_patch_exports));
+    } = (init_utils(), __toCommonJS(utils_exports));
+    var { applyPatchTask: applyPatchTask2 } = (init_apply_patch(), __toCommonJS(apply_patch_exports));
     var {
       branchTask: branchTask2,
       branchLocalTask: branchLocalTask2,
       deleteBranchesTask: deleteBranchesTask2,
       deleteBranchTask: deleteBranchTask2
-    } = (init_branch(), __toCommonJS2(branch_exports));
-    var { checkIgnoreTask: checkIgnoreTask2 } = (init_check_ignore(), __toCommonJS2(check_ignore_exports));
-    var { checkIsRepoTask: checkIsRepoTask2 } = (init_check_is_repo(), __toCommonJS2(check_is_repo_exports));
-    var { cleanWithOptionsTask: cleanWithOptionsTask2, isCleanOptionsArray: isCleanOptionsArray2 } = (init_clean(), __toCommonJS2(clean_exports));
-    var { diffSummaryTask: diffSummaryTask2 } = (init_diff(), __toCommonJS2(diff_exports));
-    var { fetchTask: fetchTask2 } = (init_fetch(), __toCommonJS2(fetch_exports));
-    var { moveTask: moveTask2 } = (init_move(), __toCommonJS2(move_exports));
-    var { pullTask: pullTask2 } = (init_pull(), __toCommonJS2(pull_exports));
-    var { pushTagsTask: pushTagsTask2 } = (init_push(), __toCommonJS2(push_exports));
+    } = (init_branch(), __toCommonJS(branch_exports));
+    var { checkIgnoreTask: checkIgnoreTask2 } = (init_check_ignore(), __toCommonJS(check_ignore_exports));
+    var { checkIsRepoTask: checkIsRepoTask2 } = (init_check_is_repo(), __toCommonJS(check_is_repo_exports));
+    var { cleanWithOptionsTask: cleanWithOptionsTask2, isCleanOptionsArray: isCleanOptionsArray2 } = (init_clean(), __toCommonJS(clean_exports));
+    var { diffSummaryTask: diffSummaryTask2 } = (init_diff(), __toCommonJS(diff_exports));
+    var { fetchTask: fetchTask2 } = (init_fetch(), __toCommonJS(fetch_exports));
+    var { moveTask: moveTask2 } = (init_move(), __toCommonJS(move_exports));
+    var { pullTask: pullTask2 } = (init_pull(), __toCommonJS(pull_exports));
+    var { pushTagsTask: pushTagsTask2 } = (init_push(), __toCommonJS(push_exports));
     var {
       addRemoteTask: addRemoteTask2,
       getRemotesTask: getRemotesTask2,
       listRemotesTask: listRemotesTask2,
       remoteTask: remoteTask2,
       removeRemoteTask: removeRemoteTask2
-    } = (init_remote(), __toCommonJS2(remote_exports));
-    var { getResetMode: getResetMode2, resetTask: resetTask2 } = (init_reset(), __toCommonJS2(reset_exports));
-    var { stashListTask: stashListTask2 } = (init_stash_list(), __toCommonJS2(stash_list_exports));
+    } = (init_remote(), __toCommonJS(remote_exports));
+    var { getResetMode: getResetMode2, resetTask: resetTask2 } = (init_reset(), __toCommonJS(reset_exports));
+    var { stashListTask: stashListTask2 } = (init_stash_list(), __toCommonJS(stash_list_exports));
     var {
       addSubModuleTask: addSubModuleTask2,
       initSubModuleTask: initSubModuleTask2,
       subModuleTask: subModuleTask2,
       updateSubModuleTask: updateSubModuleTask2
-    } = (init_sub_module(), __toCommonJS2(sub_module_exports));
-    var { addAnnotatedTagTask: addAnnotatedTagTask2, addTagTask: addTagTask2, tagListTask: tagListTask2 } = (init_tag(), __toCommonJS2(tag_exports));
-    var { straightThroughBufferTask: straightThroughBufferTask2, straightThroughStringTask: straightThroughStringTask2 } = (init_task(), __toCommonJS2(task_exports));
+    } = (init_sub_module(), __toCommonJS(sub_module_exports));
+    var { addAnnotatedTagTask: addAnnotatedTagTask2, addTagTask: addTagTask2, tagListTask: tagListTask2 } = (init_tag(), __toCommonJS(tag_exports));
+    var { straightThroughBufferTask: straightThroughBufferTask2, straightThroughStringTask: straightThroughStringTask2 } = (init_task(), __toCommonJS(task_exports));
     function Git2(options, plugins) {
       this._plugins = plugins;
       this._executor = new GitExecutor2(
@@ -11538,8 +11516,8 @@ var require_git = __commonJS2({
       }
       return this._runTask(straightThroughStringTask2(command, this._trimmed), next);
     };
-    Git2.prototype.submoduleAdd = function(repo, path16, then) {
-      return this._runTask(addSubModuleTask2(repo, path16), trailingFunctionArgument2(arguments));
+    Git2.prototype.submoduleAdd = function(repo, path13, then) {
+      return this._runTask(addSubModuleTask2(repo, path13), trailingFunctionArgument2(arguments));
     };
     Git2.prototype.submoduleUpdate = function(args, then) {
       return this._runTask(
@@ -12089,7 +12067,7 @@ init_git_response_error();
 var esm_default = gitInstanceFactory;
 
 // src/git/history.ts
-var import_path11 = __toESM(__nccwpck_require__(928));
+var import_path11 = __toESM(require("path"));
 async function getLatestCommitHash(projectPath) {
   const git = esm_default(projectPath);
   try {
@@ -12591,9 +12569,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 // src/sync.ts
 var MAX_FIRST_SYNC_DAYS = 365;
 function getChangeKey(change, specPath) {
-  const path16 = specPath ?? "";
+  const path13 = specPath ?? "";
   const oldName = change.oldName ?? "";
-  return `${path16}:${change.type}:${change.name}:${oldName}`;
+  return `${path13}:${change.type}:${change.name}:${oldName}`;
 }
 function mapKey(framework, testDir) {
   return `${framework}:${testDir}`;
@@ -12871,536 +12849,32 @@ async function syncProject(options) {
   }
 }
 
-// src/config.ts
-init_cjs_shims();
-var import_fs4 = __toESM(__nccwpck_require__(896));
-var import_path12 = __toESM(__nccwpck_require__(928));
-var DEFAULT_DASHBOARD_URL = "https://www.testchronicle.com";
-var PROJECT_CONFIG_FILE = "testchronicle.config.json";
-function normaliseDashboardUrl(value) {
-  return value.replace(/\/$/, "");
-}
-function projectConfigPath(projectDir = process.cwd()) {
-  return import_path12.default.join(projectDir, PROJECT_CONFIG_FILE);
-}
-function readProjectConfig(projectDir = process.cwd()) {
-  const configPath = projectConfigPath(projectDir);
-  if (!import_fs4.default.existsSync(configPath)) return null;
-  const parsed = JSON.parse(import_fs4.default.readFileSync(configPath, "utf8"));
-  if (!parsed.projectId) {
-    throw new Error(`${PROJECT_CONFIG_FILE} must include projectId`);
-  }
-  return {
-    projectId: parsed.projectId
-  };
-}
-function writeProjectConfig(config, projectDir = process.cwd()) {
-  const payload = {
-    projectId: config.projectId
-  };
-  import_fs4.default.writeFileSync(projectConfigPath(projectDir), `${JSON.stringify(payload, null, 2)}
-`, "utf8");
-}
-function resolveEnvCredentials(env) {
-  const projectId = env.PROJECT_ID;
-  const apiKey = env.API_KEY;
-  if (!projectId || !apiKey) return null;
-  return {
-    projectId,
-    apiKey,
-    dashboardUrl: normaliseDashboardUrl(env.CHRONICLE_DASHBOARD_URL || DEFAULT_DASHBOARD_URL),
-    source: "env"
-  };
-}
-function dashboardUrlFromEnv(env) {
-  return normaliseDashboardUrl(env.CHRONICLE_DASHBOARD_URL || DEFAULT_DASHBOARD_URL);
-}
-
-// src/credentials.ts
-init_cjs_shims();
-var import_fs5 = __toESM(__nccwpck_require__(896));
-var import_os = __toESM(__nccwpck_require__(857));
-var import_path13 = __toESM(__nccwpck_require__(928));
-function appConfigDir() {
-  if (process.env.TESTCHRONICLE_CONFIG_HOME) return process.env.TESTCHRONICLE_CONFIG_HOME;
-  if (process.platform === "win32" && process.env.APPDATA) {
-    return import_path13.default.join(process.env.APPDATA, "TestChronicle");
-  }
-  if (process.platform === "darwin") {
-    return import_path13.default.join(import_os.default.homedir(), "Library", "Application Support", "TestChronicle");
-  }
-  return import_path13.default.join(process.env.XDG_CONFIG_HOME || import_path13.default.join(import_os.default.homedir(), ".config"), "testchronicle");
-}
-function credentialsPath() {
-  return import_path13.default.join(appConfigDir(), "credentials.json");
-}
-function emptyStore() {
-  return { credentials: [] };
-}
-function readStore() {
-  const filePath = credentialsPath();
-  if (!import_fs5.default.existsSync(filePath)) return emptyStore();
-  const parsed = JSON.parse(import_fs5.default.readFileSync(filePath, "utf8"));
-  return { credentials: Array.isArray(parsed.credentials) ? parsed.credentials : [] };
-}
-function writeStore(store) {
-  const filePath = credentialsPath();
-  import_fs5.default.mkdirSync(import_path13.default.dirname(filePath), { recursive: true, mode: 448 });
-  import_fs5.default.writeFileSync(filePath, `${JSON.stringify(store, null, 2)}
-`, { encoding: "utf8", mode: 384 });
+// src/action.ts
+async function run() {
   try {
-    import_fs5.default.chmodSync(filePath, 384);
-  } catch {
-  }
-}
-function credentialKey(config) {
-  return config.projectId;
-}
-function saveCredential(config, token) {
-  const store = readStore();
-  const key = credentialKey(config);
-  const next = {
-    projectId: config.projectId,
-    token,
-    createdAt: (/* @__PURE__ */ new Date()).toISOString()
-  };
-  store.credentials = store.credentials.filter((credential) => credentialKey(credential) !== key);
-  store.credentials.push(next);
-  writeStore(store);
-}
-function readCredential(config) {
-  const store = readStore();
-  return store.credentials.find((credential) => credentialKey(credential) === credentialKey(config))?.token ?? null;
-}
-function removeCredential(config) {
-  const store = readStore();
-  const before = store.credentials.length;
-  store.credentials = store.credentials.filter((credential) => credentialKey(credential) !== credentialKey(config));
-  if (store.credentials.length === before) return false;
-  writeStore(store);
-  return true;
-}
-function resolveLocalCredentials(config, dashboardUrl = DEFAULT_DASHBOARD_URL) {
-  const token = readCredential(config);
-  if (!token) return null;
-  return {
-    projectId: config.projectId,
-    dashboardUrl,
-    apiKey: token,
-    source: "local"
-  };
-}
-
-// src/cli-login.ts
-init_cjs_shims();
-function getCauseCode(error) {
-  const cause = error instanceof Error && "cause" in error ? error.cause : void 0;
-  if (!cause || typeof cause !== "object" || !("code" in cause)) return null;
-  const code = cause.code;
-  return typeof code === "string" && /^[A-Z0-9_]+$/.test(code) ? code : null;
-}
-function loginNetworkError(message, dashboardUrl, error) {
-  const code = getCauseCode(error);
-  const wrapped = new Error(
-    `${message} at ${dashboardUrl}. Check --dashboard-url or CHRONICLE_DASHBOARD_URL.${code ? ` (${code})` : ""}`
-  );
-  wrapped.cause = error;
-  return wrapped;
-}
-async function startBrowserLogin(dashboardUrl, request) {
-  let response;
-  try {
-    response = await fetch(new URL("/api/cli-login/start", dashboardUrl), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request)
-    });
-  } catch (error) {
-    throw loginNetworkError("Could not reach Test Chronicle login", dashboardUrl, error);
-  }
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new Error(`Failed to start login (${response.status})${body ? ` - ${body}` : ""}`);
-  }
-  return await response.json();
-}
-async function pollBrowserLogin(dashboardUrl, deviceCode) {
-  let response;
-  try {
-    response = await fetch(new URL("/api/cli-login/poll", dashboardUrl), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ deviceCode })
-    });
-  } catch (error) {
-    throw loginNetworkError("Could not reach Test Chronicle login status", dashboardUrl, error);
-  }
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new Error(`Failed to poll login (${response.status})${body ? ` - ${body}` : ""}`);
-  }
-  return await response.json();
-}
-
-// src/cli.ts
-function sleep(ms2) {
-  return new Promise((resolve) => setTimeout(resolve, ms2));
-}
-function getFlag(args, name) {
-  const index = args.indexOf(name);
-  if (index === -1) return null;
-  return args[index + 1] && !args[index + 1].startsWith("--") ? args[index + 1] : "";
-}
-function hasFlag(args, name) {
-  return args.includes(name);
-}
-function dashboardUrlFromArgsOrEnv(ctx) {
-  return (getFlag(ctx.argv, "--dashboard-url") || dashboardUrlFromEnv(ctx.env) || DEFAULT_DASHBOARD_URL).replace(
-    /\/$/,
-    ""
-  );
-}
-function printHelp() {
-  console.log(`Test Chronicle CLI
-
-Usage:
-  testchronicle login [--no-open]
-  testchronicle sync
-  testchronicle status
-  testchronicle logout [--remove-config]
-
-Environment overrides:
-  API_KEY, PROJECT_ID
-
-Local config:
-  ${PROJECT_CONFIG_FILE}`);
-}
-function openBrowser(url) {
-  const command = process.platform === "win32" ? { file: "cmd", args: ["/c", "start", "", url] } : process.platform === "darwin" ? { file: "open", args: [url] } : { file: "xdg-open", args: [url] };
-  const child = (0, import_child_process2.execFile)(command.file, command.args, { windowsHide: true }, () => {
-  });
-  child.unref();
-}
-async function resolveSyncCredentials(ctx) {
-  const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
-  const envCredentials = resolveEnvCredentials(ctx.env);
-  if (envCredentials) {
-    return {
-      ...envCredentials,
-      dashboardUrl
+    const apiKey = process.env["INPUT_API_KEY"];
+    const projectId = process.env["INPUT_PROJECT_ID"];
+    const dashboardUrl = process.env["INPUT_DASHBOARD_URL"];
+    if (!apiKey) {
+      throw new Error("API_KEY input is required");
+    }
+    if (!projectId) {
+      throw new Error("PROJECT_ID input is required");
+    }
+    console.log("[action] Starting Test Chronicle Agent.");
+    console.log(`[action] Project ID: ${projectId}`);
+    const options = {
+      projectId,
+      apiKey,
+      dashboardUrl: dashboardUrl || "https://www.testchronicle.com"
     };
-  }
-  const projectConfig = readProjectConfig(ctx.cwd);
-  if (!projectConfig) {
-    throw new Error(
-      `No Test Chronicle project is linked. Run "npx testchronicle@latest login" or set API_KEY and PROJECT_ID.`
-    );
-  }
-  const localCredentials = resolveLocalCredentials(projectConfig, dashboardUrl);
-  if (!localCredentials) {
-    throw new Error(
-      [
-        `Project ${projectConfig.projectId} is linked, but no local credential is stored.`,
-        'Run "npx testchronicle@latest login" to link this machine, or set API_KEY and PROJECT_ID.'
-      ].join("\n")
-    );
-  }
-  return localCredentials;
-}
-async function runSync(ctx) {
-  const { source, ...options } = await resolveSyncCredentials(ctx);
-  console.log(`[cli] Using ${source === "env" ? "environment" : "local project"} credentials.`);
-  try {
     await syncProject(options);
+    console.log("[action] Sync completed.");
+    process.exit(0);
   } catch (error) {
-    if (source === "local" && error instanceof Error && error.message.startsWith("Invalid API key")) {
-      throw new Error(
-        [
-          "Local project credential was rejected by the dashboard.",
-          'Run "npx testchronicle@latest login" again to refresh the local link.',
-          'If you are testing against a local dashboard, pass "--dashboard-url" or set CHRONICLE_DASHBOARD_URL.'
-        ].join("\n")
-      );
-    }
-    throw error;
+    console.error("[action] Sync failed:", error instanceof Error ? error.message : String(error));
+    process.exit(1);
   }
 }
-async function runLogin(ctx) {
-  const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
-  const repoUrl = await getRepoUrl(ctx.cwd);
-  const projectName = import_path14.default.basename(ctx.cwd);
-  const session = await startBrowserLogin(dashboardUrl, {
-    projectName,
-    ...repoUrl ? { repoUrl } : {}
-  });
-  console.log(`[login] Open this URL to approve local sync:
-${session.approveUrl}`);
-  if (!hasFlag(ctx.argv, "--no-open")) {
-    try {
-      openBrowser(session.approveUrl);
-    } catch {
-      console.warn("[login] Could not open a browser automatically.");
-    }
-  }
-  const expiresAt = new Date(session.expiresAt).getTime();
-  const intervalMs = Math.max(1, session.pollIntervalSeconds ?? 2) * 1e3;
-  console.log("[login] Waiting for browser approval.");
-  while (Date.now() < expiresAt) {
-    await sleep(intervalMs);
-    const result = await pollBrowserLogin(dashboardUrl, session.deviceCode);
-    if (result.status === "pending") continue;
-    if (result.status === "approved" && result.projectId) {
-      const linkedConfig = {
-        projectId: result.projectId
-      };
-      writeProjectConfig(linkedConfig, ctx.cwd);
-      saveCredential(linkedConfig, session.deviceCode);
-      console.log(`[login] Linked project: ${linkedConfig.projectId}`);
-      console.log(`[login] Config saved: ${projectConfigPath(ctx.cwd)}`);
-      console.log(`[login] Credential saved: ${credentialsPath()}`);
-      console.log("[login] Next: npx testchronicle@latest sync");
-      return;
-    }
-    throw new Error(`Login ${result.status}`);
-  }
-  throw new Error("Login expired before approval");
-}
-function runStatus(ctx) {
-  const dashboardUrl = dashboardUrlFromArgsOrEnv(ctx);
-  const hasDashboardOverride = !!ctx.env.CHRONICLE_DASHBOARD_URL || !!getFlag(ctx.argv, "--dashboard-url");
-  const envCredentials = resolveEnvCredentials(ctx.env);
-  if (envCredentials) {
-    console.log("Test Chronicle status");
-    console.log(`  Source: environment`);
-    console.log(`  Project: ${envCredentials.projectId}`);
-    if (hasDashboardOverride) console.log(`  Dashboard: ${dashboardUrl}`);
-    return;
-  }
-  const projectConfig = readProjectConfig(ctx.cwd);
-  if (!projectConfig) {
-    console.log("No Test Chronicle project linked.");
-    return;
-  }
-  const hasCredential = !!resolveLocalCredentials(projectConfig, dashboardUrl);
-  console.log("Test Chronicle status");
-  console.log(`  Source: local project`);
-  console.log(`  Project: ${projectConfig.projectId}`);
-  if (hasDashboardOverride) console.log(`  Dashboard: ${dashboardUrl}`);
-  console.log(`  Credential: ${hasCredential ? "stored" : "missing"}`);
-}
-function runLogout(ctx) {
-  const projectConfig = readProjectConfig(ctx.cwd);
-  if (!projectConfig) {
-    console.log("[logout] No Test Chronicle project linked.");
-    return;
-  }
-  const removed = removeCredential(projectConfig);
-  console.log(removed ? "[logout] Credential removed." : "[logout] No stored credential found.");
-  if (hasFlag(ctx.argv, "--remove-config")) {
-    const configPath = projectConfigPath(ctx.cwd);
-    if (import_fs6.default.existsSync(configPath)) {
-      import_fs6.default.unlinkSync(configPath);
-      console.log(`[logout] Config removed: ${configPath}`);
-    } else {
-      console.log("[logout] No local config found.");
-    }
-  }
-}
-async function runCli(ctx) {
-  const command = ctx.argv[0] ?? "sync";
-  switch (command) {
-    case "sync":
-      await runSync(ctx);
-      return;
-    case "login":
-      await runLogin(ctx);
-      return;
-    case "status":
-      runStatus(ctx);
-      return;
-    case "logout":
-      runLogout(ctx);
-      return;
-    case "--help":
-    case "-h":
-    case "help":
-      printHelp();
-      return;
-    default:
-      throw new Error(`Unknown command: ${command}`);
-  }
-}
-async function main() {
-  try {
-    await runCli({
-      argv: process.argv.slice(2),
-      env: process.env,
-      cwd: process.cwd()
-    });
-    process.exitCode = 0;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Error:", message);
-    process.exitCode = 1;
-  }
-}
-if (require.main === require.cache[eval('__filename')]) {
-  main();
-}
-// Annotate the CommonJS export names for ESM import in node:
-0 && (0);
-//# sourceMappingURL=cli.js.map
-
-/***/ }),
-
-/***/ 795:
-/***/ ((module) => {
-
-module.exports = eval("require")("supports-color");
-
-
-/***/ }),
-
-/***/ 317:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");
-
-/***/ }),
-
-/***/ 982:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("crypto");
-
-/***/ }),
-
-/***/ 434:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("events");
-
-/***/ }),
-
-/***/ 896:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs");
-
-/***/ }),
-
-/***/ 943:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");
-
-/***/ }),
-
-/***/ 857:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("os");
-
-/***/ }),
-
-/***/ 928:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("path");
-
-/***/ }),
-
-/***/ 203:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("stream");
-
-/***/ }),
-
-/***/ 193:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("string_decoder");
-
-/***/ }),
-
-/***/ 18:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("tty");
-
-/***/ }),
-
-/***/ 16:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("url");
-
-/***/ }),
-
-/***/ 23:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("util");
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId](module, module.exports, __nccwpck_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
-/************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(295);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
-/******/ })()
-;
+run();
+//# sourceMappingURL=action.js.map
