@@ -15,9 +15,9 @@ function makeAuthHeaders(apiToken: string): Record<string, string> {
 }
 
 /**
- * Validates that the API key and project ID are correct by hitting the config
- * endpoint early. Throws a descriptive error on auth failure or unknown project
- * so the sync fails fast before doing any expensive local work.
+ * Validates dashboard authentication by hitting the lightweight config endpoint
+ * early. A 404 from this endpoint is not treated as fatal because older
+ * dashboard deployments and projects without config may not expose config data.
  */
 export async function validateProjectAccess(dashboardUrl: string, apiToken: string, projectId: string): Promise<void> {
     const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
@@ -30,7 +30,8 @@ export async function validateProjectAccess(dashboardUrl: string, apiToken: stri
             throw new Error('Invalid API key. Please check your API_KEY.');
         }
         if (response.status === 404) {
-            throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
+            console.warn('[sync] Could not validate project config access (404); continuing.');
+            return;
         }
         if (!response.ok) {
             console.warn(`[sync] Could not validate project access (${response.status}); continuing.`);

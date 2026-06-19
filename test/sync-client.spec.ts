@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fetchProjectConfig } from '../src/sync-client';
+import { fetchProjectConfig, validateProjectAccess } from '../src/sync-client';
 
 const DASHBOARD_URL = 'https://example.com';
 const API_TOKEN = 'test-token';
@@ -18,6 +18,7 @@ function mockFetch(status: number, body: unknown) {
 
 afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
 });
 
 describe('fetchProjectConfig', () => {
@@ -75,5 +76,24 @@ describe('fetchProjectConfig', () => {
                 headers: expect.objectContaining({ Authorization: `Bearer ${API_TOKEN}` }),
             }),
         );
+    });
+});
+
+describe('validateProjectAccess', () => {
+    it('rejects invalid API keys', async () => {
+        mockFetch(401, { error: 'Unauthorized' });
+
+        await expect(validateProjectAccess(DASHBOARD_URL, API_TOKEN, PROJECT_ID)).rejects.toThrow(
+            'Invalid API key. Please check your API_KEY.',
+        );
+    });
+
+    it('continues when the config endpoint returns 404', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        mockFetch(404, { error: 'Not Found' });
+
+        await expect(validateProjectAccess(DASHBOARD_URL, API_TOKEN, PROJECT_ID)).resolves.toBeUndefined();
+
+        expect(warnSpy).toHaveBeenCalledWith('[sync] Could not validate project config access (404); continuing.');
     });
 });
