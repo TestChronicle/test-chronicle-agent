@@ -16,7 +16,7 @@ export interface ResolvedSyncCredentials {
 }
 
 function normaliseDashboardUrl(value: string): string {
-    return value.replace(/\/$/, '');
+    return value.trim().replace(/\/$/, '');
 }
 
 export function projectConfigPath(projectDir = process.cwd()): string {
@@ -33,20 +33,20 @@ export function readProjectConfig(projectDir = process.cwd()): ProjectLinkConfig
     }
 
     return {
-        projectId: parsed.projectId,
+        projectId: parsed.projectId.trim(),
     };
 }
 
 export function writeProjectConfig(config: ProjectLinkConfig, projectDir = process.cwd()): void {
     const payload: ProjectLinkConfig = {
-        projectId: config.projectId,
+        projectId: config.projectId.trim(),
     };
     fs.writeFileSync(projectConfigPath(projectDir), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
 }
 
 export function resolveEnvCredentials(env: NodeJS.ProcessEnv): ResolvedSyncCredentials | null {
-    const projectId = env.PROJECT_ID;
-    const apiKey = env.API_KEY;
+    const projectId = env.PROJECT_ID?.trim();
+    const apiKey = env.API_KEY?.trim();
     if (!projectId || !apiKey) return null;
 
     return {

@@ -12449,6 +12449,14 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
+function isProjectAccessError(errorBody) {
+  return /project not found|not in the key/i.test(errorBody);
+}
+function projectAccessError(projectId) {
+  return new Error(
+    `Project not found or not available to this API key: ${projectId}. Check that API_KEY belongs to the same team as PROJECT_ID.`
+  );
+}
 function makeAuthHeaders(apiToken) {
   return {
     "Content-Type": "application/json",
@@ -12466,7 +12474,11 @@ async function validateProjectAccess(dashboardUrl, apiToken, projectId) {
       throw new Error("Invalid API key. Please check your API_KEY.");
     }
     if (response.status === 404) {
-      console.warn("[sync] Could not validate project config access (404); continuing.");
+      const errorBody = await response.text().catch(() => "");
+      if (isProjectAccessError(errorBody)) {
+        throw projectAccessError(projectId);
+      }
+      console.warn("[sync] Could not fetch project config (404); using auto-detected settings.");
       return;
     }
     if (!response.ok) {
@@ -12500,13 +12512,22 @@ async function getSyncMarker(dashboardUrl, apiToken, projectId) {
       headers: makeAuthHeaders(apiToken)
     });
     if (!response.ok) {
-      if (response.status === 404) return null;
+      if (response.status === 401 || response.status === 403) {
+        throw new Error("Invalid API key. Please check your API_KEY.");
+      }
       const errorBody = await response.text().catch(() => "");
+      if (response.status === 404 && !isProjectAccessError(errorBody)) return null;
+      if (isProjectAccessError(errorBody)) {
+        throw projectAccessError(projectId);
+      }
       throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ""}`);
     }
     const data = await response.json();
     return data?.lastSyncedCommit || data?.commitHash || null;
   } catch (error) {
+    if (error instanceof Error && (error.message.startsWith("Invalid API key") || error.message.startsWith("Project not found"))) {
+      throw error;
+    }
     return null;
   }
 }
@@ -12543,6 +12564,12 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
       });
       if (!response.ok) {
         const errorBody = await response.text().catch(() => "");
+        if (response.status === 401 || response.status === 403) {
+          throw new Error("Invalid API key. Please check your API_KEY.");
+        }
+        if (isProjectAccessError(errorBody)) {
+          throw projectAccessError(payload.projectId);
+        }
         throw new Error(
           `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
         );
@@ -12550,6 +12577,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
       return response.json();
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
+      if (lastError.message.startsWith("Invalid API key") || lastError.message.startsWith("Project not found")) {
+        throw lastError;
+      }
       const isAbort = lastError.name === "AbortError";
       if (isAbort) {
         lastError = new Error(`Upload timed out after ${TIMEOUT_MS / 1e3}s`);
@@ -12852,9 +12882,9 @@ async function syncProject(options) {
 // src/action.ts
 async function run() {
   try {
-    const apiKey = process.env["INPUT_API_KEY"];
-    const projectId = process.env["INPUT_PROJECT_ID"];
-    const dashboardUrl = process.env["INPUT_DASHBOARD_URL"];
+    const apiKey = process.env["INPUT_API_KEY"]?.trim();
+    const projectId = process.env["INPUT_PROJECT_ID"]?.trim();
+    const dashboardUrl = process.env["INPUT_DASHBOARD_URL"]?.trim();
     if (!apiKey) {
       throw new Error("API_KEY input is required");
     }
