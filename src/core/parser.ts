@@ -12,6 +12,7 @@ import { pytestParser } from './frameworks/pytest';
 import { testngParser } from './frameworks/testng';
 import { junitParser } from './frameworks/junit';
 import { cucumberParser } from './frameworks/cucumber';
+import { hasPathPatternMagic, normaliseRepoPath, pathPatternSpecificity } from './pathPatterns';
 
 const PARSERS: Record<Exclude<Framework, 'unknown'>, IFrameworkParser> = {
     playwright: playwrightParser,
@@ -71,7 +72,19 @@ export function findSpecFiles(projectRoot: string, testDir: string, framework: F
     const parser = getParser(framework);
     if (!parser) return [];
 
-    const baseDir = path.resolve(projectRoot, testDir);
+    const normalisedTestDir = normaliseRepoPath(testDir);
+
+    if (hasPathPatternMagic(normalisedTestDir)) {
+        const filePatterns = parser.filePatterns.map((pattern) => `${normalisedTestDir}/${pattern}`);
+        return globSync(filePatterns, {
+            cwd: projectRoot,
+            absolute: true,
+            nodir: true,
+            ignore: ['**/node_modules/**'],
+        });
+    }
+
+    const baseDir = path.resolve(projectRoot, normalisedTestDir);
 
     return globSync(parser.filePatterns, {
         cwd: baseDir,
@@ -109,7 +122,9 @@ export function parseAllSpecs(projectRoot: string, frameworkConfigs: DetectionRe
 
     // Sort configs so most-specific (longest) testDirs are processed first,
     // ensuring the best framework match wins when testDirs overlap.
-    const sorted = [...frameworkConfigs].sort((a, b) => b.testDir.length - a.testDir.length);
+    const sorted = [...frameworkConfigs].sort(
+        (a, b) => pathPatternSpecificity(b.testDir) - pathPatternSpecificity(a.testDir),
+    );
 
     for (const { framework, testDir } of sorted) {
         if (framework === 'unknown') continue;

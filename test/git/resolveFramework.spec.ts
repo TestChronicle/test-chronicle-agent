@@ -43,4 +43,28 @@ describe('resolveFrameworkForFile', () => {
         expect(resolveFrameworkForFile('tests/foo.spec.ts', configs)).toBeNull();
         expect(resolveFrameworkForFile('e2e/login.spec.ts', configs)).toBe('playwright');
     });
+
+    it('matches files under wildcard override directories', () => {
+        const configs: DetectionResult[] = [{ framework: 'vitest', testDir: './libs/*', confidence: 'high' }];
+
+        expect(resolveFrameworkForFile('libs/auth/src/auth.spec.ts', configs)).toBe('vitest');
+        expect(resolveFrameworkForFile('libs/cart/cart.test.ts', configs)).toBe('vitest');
+    });
+
+    it('does not let wildcard override directories match unrelated paths', () => {
+        const configs: DetectionResult[] = [{ framework: 'vitest', testDir: './libs/*', confidence: 'high' }];
+
+        expect(resolveFrameworkForFile('apps/auth/src/auth.spec.ts', configs)).toBeNull();
+        expect(resolveFrameworkForFile('libs.spec.ts', configs)).toBeNull();
+    });
+
+    it('prefers a more specific literal override over a wildcard override', () => {
+        const configs: DetectionResult[] = [
+            { framework: 'vitest', testDir: './libs/*', confidence: 'high' },
+            { framework: 'jest', testDir: './libs/auth', confidence: 'high' },
+        ];
+
+        expect(resolveFrameworkForFile('libs/auth/src/auth.spec.ts', configs)).toBe('jest');
+        expect(resolveFrameworkForFile('libs/cart/src/cart.spec.ts', configs)).toBe('vitest');
+    });
 });

@@ -112,4 +112,53 @@ describe('parseAllSpecs', () => {
             fs.rmSync(projectRoot, { recursive: true, force: true });
         }
     });
+
+    it('parses Vitest tests under wildcard framework override directories', () => {
+        const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tc-parser-'));
+
+        try {
+            const authRoot = path.join(projectRoot, 'libs', 'auth', 'src');
+            const cartRoot = path.join(projectRoot, 'libs', 'cart', 'src');
+            fs.mkdirSync(authRoot, { recursive: true });
+            fs.mkdirSync(cartRoot, { recursive: true });
+            fs.writeFileSync(path.join(authRoot, 'auth.spec.ts'), PARSER_TEMP_FILES.vitestToken, 'utf-8');
+            fs.writeFileSync(path.join(cartRoot, 'cart.test.ts'), PARSER_TEMP_FILES.vitestToken, 'utf-8');
+
+            const specs = parseAllSpecs(projectRoot, [
+                { framework: 'vitest', testDir: './libs/*', confidence: 'high' },
+            ]);
+
+            expect(specs.map((spec) => spec.path).sort()).toEqual([
+                'libs/auth/src/auth.spec.ts',
+                'libs/cart/src/cart.test.ts',
+            ]);
+            expect(specs.every((spec) => spec.framework === 'vitest')).toBe(true);
+        } finally {
+            fs.rmSync(projectRoot, { recursive: true, force: true });
+        }
+    });
+
+    it('deduplicates overlapping literal and wildcard override directories using the most specific match', () => {
+        const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tc-parser-'));
+
+        try {
+            const authRoot = path.join(projectRoot, 'libs', 'auth', 'src');
+            const cartRoot = path.join(projectRoot, 'libs', 'cart', 'src');
+            fs.mkdirSync(authRoot, { recursive: true });
+            fs.mkdirSync(cartRoot, { recursive: true });
+            fs.writeFileSync(path.join(authRoot, 'auth.spec.ts'), PARSER_TEMP_FILES.jestLogin, 'utf-8');
+            fs.writeFileSync(path.join(cartRoot, 'cart.spec.ts'), PARSER_TEMP_FILES.vitestToken, 'utf-8');
+
+            const specs = parseAllSpecs(projectRoot, [
+                { framework: 'vitest', testDir: './libs/*', confidence: 'high' },
+                { framework: 'jest', testDir: './libs/auth', confidence: 'high' },
+            ]);
+
+            expect(specs).toHaveLength(2);
+            expect(specs.find((spec) => spec.path === 'libs/auth/src/auth.spec.ts')?.framework).toBe('jest');
+            expect(specs.find((spec) => spec.path === 'libs/cart/src/cart.spec.ts')?.framework).toBe('vitest');
+        } finally {
+            fs.rmSync(projectRoot, { recursive: true, force: true });
+        }
+    });
 });
