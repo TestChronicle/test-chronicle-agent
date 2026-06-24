@@ -1,5 +1,4 @@
 import simpleGit from 'simple-git';
-import path from 'path';
 import {
     Framework,
     GitFileChange,
@@ -12,6 +11,7 @@ import {
 } from '../types';
 import { extractTestNamesFromContent, extractTestsWithLinesFromContent, isFrameworkSpecFile } from '../core/parser';
 import { isSameTest } from '../core/frameworks/testDiff';
+import { matchesDirectoryPattern, normaliseRepoPath, pathPatternRoot, pathPatternSpecificity } from '../core/pathPatterns';
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
@@ -132,21 +132,23 @@ export async function buildHistory(
 
     const remoteRef = `origin/${defaultBranch}`;
 
-    const allTestDirs = frameworkConfigs
+    const testDirPatterns = frameworkConfigs
         .filter((c) => c.framework !== 'unknown')
-        .map((c) => c.testDir.replace(/^\.\//, ''));
+        .map((c) => normaliseRepoPath(c.testDir));
+    const pathspecRoots = [...new Set(testDirPatterns.map(pathPatternRoot))];
+    const gitPathspecs = pathspecRoots.every((root): root is string => root !== null) ? pathspecRoots : [];
 
     let logArgs: string[];
 
     if (sinceCommit) {
         logArgs =
-            allTestDirs.length > 0
-                ? [`${sinceCommit}..${remoteRef}`, '--', ...allTestDirs]
+            gitPathspecs.length > 0
+                ? [`${sinceCommit}..${remoteRef}`, '--', ...gitPathspecs]
                 : [`${sinceCommit}..${remoteRef}`];
     } else if (fullHistory) {
         logArgs = [remoteRef];
     } else {
-        logArgs = allTestDirs.length > 0 ? [remoteRef, '--', ...allTestDirs] : [remoteRef];
+        logArgs = gitPathspecs.length > 0 ? [remoteRef, '--', ...gitPathspecs] : [remoteRef];
     }
 
     // For first syncs (no sinceCommit), cap how far back we look
@@ -158,7 +160,7 @@ export async function buildHistory(
     // eliminating N individual diff-tree subprocess calls.
     let commits: CommitWithFiles[];
     try {
-        commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : allTestDirs);
+        commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : testDirPatterns);
     } catch (error) {
         if (error instanceof Error) {
             warnings.push(`Git log failed: ${error.message}`);
@@ -333,11 +335,7 @@ async function fetchCommitsWithFiles(
 }
 
 function isInTestDir(filePath: string, testDir: string): boolean {
-    // '.' means project root — all files belong to it
-    if (testDir === '.') return true;
-    // Normalise and ensure testDir ends with / to avoid prefix false positives
-    const normalised = testDir.endsWith('/') ? testDir : testDir + '/';
-    return filePath.startsWith(normalised) || path.dirname(filePath) + '/' === normalised;
+    return matchesDirectoryPattern(filePath, testDir);
 }
 
 function isInAnyTestDir(filePath: string, testDirs: string[]): boolean {
@@ -354,10 +352,11 @@ export function resolveFrameworkForFile(filePath: string, frameworkConfigs: Dete
 
     for (const { framework, testDir } of frameworkConfigs) {
         if (framework === 'unknown') continue;
-        const normalised = testDir.replace(/^\.\//, '');
+        const normalised = normaliseRepoPath(testDir);
         if (isInTestDir(filePath, normalised)) {
-            if (!bestMatch || normalised.length > bestMatch.testDirLength) {
-                bestMatch = { framework, testDirLength: normalised.length };
+            const specificity = pathPatternSpecificity(normalised);
+            if (!bestMatch || specificity > bestMatch.testDirLength) {
+                bestMatch = { framework, testDirLength: specificity };
             }
         }
     }

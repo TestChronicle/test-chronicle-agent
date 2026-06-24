@@ -4107,7 +4107,7 @@ function detectAllFromBuildFiles(projectPath, alreadySeen) {
 // src/core/parser.ts
 init_cjs_shims();
 var import_fs3 = require("fs");
-var import_path10 = __toESM(require("path"));
+var import_path11 = __toESM(require("path"));
 
 // node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/index.js
 init_cjs_shims();
@@ -6981,6 +6981,47 @@ var cucumberParser = {
   }
 };
 
+// src/core/pathPatterns.ts
+init_cjs_shims();
+var import_path10 = __toESM(require("path"));
+var GLOB_MAGIC_RE = /[*?[\]{}()!+@]/;
+function normaliseRepoPath(input) {
+  const normalised = input.trim().replace(/\\/g, "/").replace(/^\.\//, "").replace(/\/+$/, "");
+  return normalised || ".";
+}
+function hasPathPatternMagic(input) {
+  return GLOB_MAGIC_RE.test(normaliseRepoPath(input));
+}
+function patternToFileGlob(input) {
+  const pattern = normaliseRepoPath(input);
+  return pattern === "." ? "**" : `${pattern}/**`;
+}
+function matchesDirectoryPattern(filePath, pattern) {
+  const normalisedFile = normaliseRepoPath(filePath);
+  const normalisedPattern = normaliseRepoPath(pattern);
+  if (normalisedPattern === ".") return true;
+  if (hasPathPatternMagic(normalisedPattern)) {
+    return minimatch(normalisedFile, patternToFileGlob(normalisedPattern), { dot: true });
+  }
+  const withSlash = normalisedPattern.endsWith("/") ? normalisedPattern : `${normalisedPattern}/`;
+  return normalisedFile.startsWith(withSlash) || import_path10.default.posix.dirname(normalisedFile) === normalisedPattern;
+}
+function pathPatternSpecificity(pattern) {
+  return normaliseRepoPath(pattern).replace(/[*!?[\]{}()@+]/g, "").length;
+}
+function pathPatternRoot(input) {
+  const pattern = normaliseRepoPath(input);
+  if (pattern === ".") return ".";
+  const parts = pattern.split("/");
+  const staticParts = [];
+  for (const part of parts) {
+    if (GLOB_MAGIC_RE.test(part)) break;
+    staticParts.push(part);
+  }
+  if (staticParts.length === 0) return null;
+  return staticParts.join("/");
+}
+
 // src/core/parser.ts
 var PARSERS = {
   playwright: playwrightParser,
@@ -7020,7 +7061,17 @@ function extractTestsWithLinesFromContent(content, framework) {
 function findSpecFiles(projectRoot, testDir, framework) {
   const parser4 = getParser(framework);
   if (!parser4) return [];
-  const baseDir = import_path10.default.resolve(projectRoot, testDir);
+  const normalisedTestDir = normaliseRepoPath(testDir);
+  if (hasPathPatternMagic(normalisedTestDir)) {
+    const filePatterns = parser4.filePatterns.map((pattern) => `${normalisedTestDir}/${pattern}`);
+    return ts(filePatterns, {
+      cwd: projectRoot,
+      absolute: true,
+      nodir: true,
+      ignore: ["**/node_modules/**"]
+    });
+  }
+  const baseDir = import_path11.default.resolve(projectRoot, normalisedTestDir);
   return ts(parser4.filePatterns, {
     cwd: baseDir,
     absolute: true,
@@ -7033,13 +7084,15 @@ function isFrameworkSpecFile(filePath, framework) {
   if (!parser4) return false;
   const normalised = filePath.replace(/\\/g, "/");
   return parser4.filePatterns.some(
-    (pattern) => minimatch(normalised, pattern) || minimatch(import_path10.default.basename(normalised), pattern)
+    (pattern) => minimatch(normalised, pattern) || minimatch(import_path11.default.basename(normalised), pattern)
   );
 }
 function parseAllSpecs(projectRoot, frameworkConfigs) {
   const seen = /* @__PURE__ */ new Set();
   const allSpecs = [];
-  const sorted2 = [...frameworkConfigs].sort((a, b2) => b2.testDir.length - a.testDir.length);
+  const sorted2 = [...frameworkConfigs].sort(
+    (a, b2) => pathPatternSpecificity(b2.testDir) - pathPatternSpecificity(a.testDir)
+  );
   for (const { framework, testDir } of sorted2) {
     if (framework === "unknown") continue;
     const files = findSpecFiles(projectRoot, testDir, framework);
@@ -7049,7 +7102,7 @@ function parseAllSpecs(projectRoot, frameworkConfigs) {
       } catch {
         continue;
       }
-      const normalized = import_path10.default.normalize(filePath);
+      const normalized = import_path11.default.normalize(filePath);
       if (seen.has(normalized)) continue;
       seen.add(normalized);
       const content = (0, import_fs3.readFileSync)(filePath, "utf-8");
@@ -12067,7 +12120,6 @@ init_git_response_error();
 var esm_default = gitInstanceFactory;
 
 // src/git/history.ts
-var import_path11 = __toESM(require("path"));
 async function getLatestCommitHash(projectPath) {
   const git = esm_default(projectPath);
   try {
@@ -12131,21 +12183,23 @@ async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceC
   const errors = [];
   const warnings = [];
   const remoteRef = `origin/${defaultBranch}`;
-  const allTestDirs = frameworkConfigs.filter((c3) => c3.framework !== "unknown").map((c3) => c3.testDir.replace(/^\.\//, ""));
+  const testDirPatterns = frameworkConfigs.filter((c3) => c3.framework !== "unknown").map((c3) => normaliseRepoPath(c3.testDir));
+  const pathspecRoots = [...new Set(testDirPatterns.map(pathPatternRoot))];
+  const gitPathspecs = pathspecRoots.every((root) => root !== null) ? pathspecRoots : [];
   let logArgs;
   if (sinceCommit) {
-    logArgs = allTestDirs.length > 0 ? [`${sinceCommit}..${remoteRef}`, "--", ...allTestDirs] : [`${sinceCommit}..${remoteRef}`];
+    logArgs = gitPathspecs.length > 0 ? [`${sinceCommit}..${remoteRef}`, "--", ...gitPathspecs] : [`${sinceCommit}..${remoteRef}`];
   } else if (fullHistory) {
     logArgs = [remoteRef];
   } else {
-    logArgs = allTestDirs.length > 0 ? [remoteRef, "--", ...allTestDirs] : [remoteRef];
+    logArgs = gitPathspecs.length > 0 ? [remoteRef, "--", ...gitPathspecs] : [remoteRef];
   }
   if (sinceDate && !sinceCommit) {
     logArgs = [`--since=${sinceDate.toISOString()}`, ...logArgs];
   }
   let commits;
   try {
-    commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : allTestDirs);
+    commits = await fetchCommitsWithFiles(git, logArgs, fullHistory ? [] : testDirPatterns);
   } catch (error) {
     if (error instanceof Error) {
       warnings.push(`Git log failed: ${error.message}`);
@@ -12267,9 +12321,7 @@ async function fetchCommitsWithFiles(git, logArgs, testDirs) {
   return result.reverse();
 }
 function isInTestDir(filePath, testDir) {
-  if (testDir === ".") return true;
-  const normalised = testDir.endsWith("/") ? testDir : testDir + "/";
-  return filePath.startsWith(normalised) || import_path11.default.dirname(filePath) + "/" === normalised;
+  return matchesDirectoryPattern(filePath, testDir);
 }
 function isInAnyTestDir(filePath, testDirs) {
   return testDirs.some((dir) => isInTestDir(filePath, dir));
@@ -12278,10 +12330,11 @@ function resolveFrameworkForFile(filePath, frameworkConfigs) {
   let bestMatch = null;
   for (const { framework, testDir } of frameworkConfigs) {
     if (framework === "unknown") continue;
-    const normalised = testDir.replace(/^\.\//, "");
+    const normalised = normaliseRepoPath(testDir);
     if (isInTestDir(filePath, normalised)) {
-      if (!bestMatch || normalised.length > bestMatch.testDirLength) {
-        bestMatch = { framework, testDirLength: normalised.length };
+      const specificity = pathPatternSpecificity(normalised);
+      if (!bestMatch || specificity > bestMatch.testDirLength) {
+        bestMatch = { framework, testDirLength: specificity };
       }
     }
   }
