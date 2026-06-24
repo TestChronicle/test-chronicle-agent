@@ -1,6 +1,8 @@
 name: 🔄 Sync Tests to Chronicle
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
