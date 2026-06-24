@@ -12517,6 +12517,14 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
+function isProjectAccessError(errorBody) {
+  return /project not found|not in the key/i.test(errorBody);
+}
+function projectAccessError(projectId) {
+  return new Error(
+    `Project not found or not available to this API key: ${projectId}. Check that API_KEY belongs to the same team as PROJECT_ID.`
+  );
+}
 function makeAuthHeaders(apiToken) {
   return {
     "Content-Type": "application/json",
@@ -12534,7 +12542,12 @@ async function validateProjectAccess(dashboardUrl, apiToken, projectId) {
       throw new Error("Invalid API key. Please check your API_KEY.");
     }
     if (response.status === 404) {
-      throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
+      const errorBody = await response.text().catch(() => "");
+      if (isProjectAccessError(errorBody)) {
+        throw projectAccessError(projectId);
+      }
+      console.warn("[sync] Could not fetch project config (404); using auto-detected settings.");
+      return;
     }
     if (!response.ok) {
       console.warn(`[sync] Could not validate project access (${response.status}); continuing.`);
@@ -12567,13 +12580,22 @@ async function getSyncMarker(dashboardUrl, apiToken, projectId) {
       headers: makeAuthHeaders(apiToken)
     });
     if (!response.ok) {
-      if (response.status === 404) return null;
+      if (response.status === 401 || response.status === 403) {
+        throw new Error("Invalid API key. Please check your API_KEY.");
+      }
       const errorBody = await response.text().catch(() => "");
+      if (response.status === 404 && !isProjectAccessError(errorBody)) return null;
+      if (isProjectAccessError(errorBody)) {
+        throw projectAccessError(projectId);
+      }
       throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ""}`);
     }
     const data = await response.json();
     return data?.lastSyncedCommit || data?.commitHash || null;
   } catch (error) {
+    if (error instanceof Error && (error.message.startsWith("Invalid API key") || error.message.startsWith("Project not found"))) {
+      throw error;
+    }
     return null;
   }
 }
@@ -12610,6 +12632,12 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
       });
       if (!response.ok) {
         const errorBody = await response.text().catch(() => "");
+        if (response.status === 401 || response.status === 403) {
+          throw new Error("Invalid API key. Please check your API_KEY.");
+        }
+        if (isProjectAccessError(errorBody)) {
+          throw projectAccessError(payload.projectId);
+        }
         throw new Error(
           `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
         );
@@ -12617,6 +12645,9 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
       return response.json();
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
+      if (lastError.message.startsWith("Invalid API key") || lastError.message.startsWith("Project not found")) {
+        throw lastError;
+      }
       const isAbort = lastError.name === "AbortError";
       if (isAbort) {
         lastError = new Error(`Upload timed out after ${TIMEOUT_MS / 1e3}s`);
@@ -12923,7 +12954,7 @@ var import_path12 = __toESM(require("path"));
 var DEFAULT_DASHBOARD_URL = "https://www.testchronicle.com";
 var PROJECT_CONFIG_FILE = "testchronicle.config.json";
 function normaliseDashboardUrl(value) {
-  return value.replace(/\/$/, "");
+  return value.trim().replace(/\/$/, "");
 }
 function projectConfigPath(projectDir = process.cwd()) {
   return import_path12.default.join(projectDir, PROJECT_CONFIG_FILE);
@@ -12936,19 +12967,19 @@ function readProjectConfig(projectDir = process.cwd()) {
     throw new Error(`${PROJECT_CONFIG_FILE} must include projectId`);
   }
   return {
-    projectId: parsed.projectId
+    projectId: parsed.projectId.trim()
   };
 }
 function writeProjectConfig(config, projectDir = process.cwd()) {
   const payload = {
-    projectId: config.projectId
+    projectId: config.projectId.trim()
   };
   import_fs4.default.writeFileSync(projectConfigPath(projectDir), `${JSON.stringify(payload, null, 2)}
 `, "utf8");
 }
 function resolveEnvCredentials(env) {
-  const projectId = env.PROJECT_ID;
-  const apiKey = env.API_KEY;
+  const projectId = env.PROJECT_ID?.trim();
+  const apiKey = env.API_KEY?.trim();
   if (!projectId || !apiKey) return null;
   return {
     projectId,

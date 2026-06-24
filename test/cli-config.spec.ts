@@ -49,6 +49,13 @@ describe('CLI credential resolution', () => {
         expect(readProjectConfig(cwd)).toEqual({ projectId: 'local-project' });
     });
 
+    it('trims project IDs read from local config', () => {
+        const cwd = tempDir('tc-cli-read-trim-');
+        fs.writeFileSync(projectConfigPath(cwd), JSON.stringify({ projectId: ' local-project \n' }), 'utf8');
+
+        expect(readProjectConfig(cwd)).toEqual({ projectId: 'local-project' });
+    });
+
     it('tolerates legacy configs with dashboardUrl but ignores it', () => {
         const cwd = tempDir('tc-cli-legacy-');
         fs.writeFileSync(
@@ -72,6 +79,25 @@ describe('CLI credential resolution', () => {
                 API_KEY: 'env-token',
                 PROJECT_ID: 'env-project',
                 CHRONICLE_DASHBOARD_URL: 'https://env.example',
+            },
+        });
+
+        expect(result).toEqual({
+            apiKey: 'env-token',
+            projectId: 'env-project',
+            dashboardUrl: 'https://env.example',
+            source: 'env',
+        });
+    });
+
+    it('trims environment credentials copied from secret stores', async () => {
+        const result = await resolveSyncCredentials({
+            argv: [],
+            cwd: tempDir('tc-cli-env-trim-'),
+            env: {
+                API_KEY: ' env-token \n',
+                PROJECT_ID: ' env-project \n',
+                CHRONICLE_DASHBOARD_URL: ' https://env.example/ \n',
             },
         });
 

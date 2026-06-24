@@ -9,9 +9,9 @@ async function run() {
     try {
         // Get inputs from GitHub Actions
         // GitHub automatically sets INPUT_<INPUT_NAME> for each input (with hyphens replaced by underscores)
-        const apiKey = process.env['INPUT_API_KEY'];
-        const projectId = process.env['INPUT_PROJECT_ID'];
-        const dashboardUrl = process.env['INPUT_DASHBOARD_URL'];
+        const apiKey = process.env['INPUT_API_KEY']?.trim();
+        const projectId = process.env['INPUT_PROJECT_ID']?.trim();
+        const dashboardUrl = process.env['INPUT_DASHBOARD_URL']?.trim();
 
         if (!apiKey) {
             throw new Error('API_KEY input is required');

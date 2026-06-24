@@ -7,6 +7,16 @@ interface SyncMarkerResponse {
     commitHash?: string;
 }
 
+function isProjectAccessError(errorBody: string): boolean {
+    return /project not found|not in the key/i.test(errorBody);
+}
+
+function projectAccessError(projectId: string): Error {
+    return new Error(
+        `Project not found or not available to this API key: ${projectId}. Check that API_KEY belongs to the same team as PROJECT_ID.`,
+    );
+}
+
 function makeAuthHeaders(apiToken: string): Record<string, string> {
     return {
         'Content-Type': 'application/json',
@@ -15,9 +25,9 @@ function makeAuthHeaders(apiToken: string): Record<string, string> {
 }
 
 /**
- * Validates that the API key and project ID are correct by hitting the config
- * endpoint early. Throws a descriptive error on auth failure or unknown project
- * so the sync fails fast before doing any expensive local work.
+ * Validates dashboard authentication by hitting the lightweight config endpoint
+ * early. A 404 from this endpoint is not treated as fatal because older
+ * dashboard deployments and projects without config may not expose config data.
  */
 export async function validateProjectAccess(dashboardUrl: string, apiToken: string, projectId: string): Promise<void> {
     const url = new URL(`/api/projects/${projectId}/config`, dashboardUrl).toString();
@@ -30,7 +40,12 @@ export async function validateProjectAccess(dashboardUrl: string, apiToken: stri
             throw new Error('Invalid API key. Please check your API_KEY.');
         }
         if (response.status === 404) {
-            throw new Error(`Project not found: ${projectId}. Please check your PROJECT_ID.`);
+            const errorBody = await response.text().catch(() => '');
+            if (isProjectAccessError(errorBody)) {
+                throw projectAccessError(projectId);
+            }
+            console.warn('[sync] Could not fetch project config (404); using auto-detected settings.');
+            return;
         }
         if (!response.ok) {
             console.warn(`[sync] Could not validate project access (${response.status}); continuing.`);
@@ -84,16 +99,28 @@ export async function getSyncMarker(dashboardUrl: string, apiToken: string, proj
         });
 
         if (!response.ok) {
-            // 404 is expected on first sync
-            if (response.status === 404) return null;
+            if (response.status === 401 || response.status === 403) {
+                throw new Error('Invalid API key. Please check your API_KEY.');
+            }
             const errorBody = await response.text().catch(() => '');
+            // 404 is expected on first sync when no marker has been created yet.
+            if (response.status === 404 && !isProjectAccessError(errorBody)) return null;
+            if (isProjectAccessError(errorBody)) {
+                throw projectAccessError(projectId);
+            }
             throw new Error(`Failed with status ${response.status}${errorBody ? ` - ${errorBody}` : ''}`);
         }
 
         const data = (await response.json()) as SyncMarkerResponse;
         return data?.lastSyncedCommit || data?.commitHash || null;
     } catch (error) {
-        // On error, return null and let sync proceed with full history
+        if (
+            error instanceof Error &&
+            (error.message.startsWith('Invalid API key') || error.message.startsWith('Project not found'))
+        ) {
+            throw error;
+        }
+        // On network/unknown error, return null and let sync proceed with full history.
         return null;
     }
 }
@@ -162,6 +189,12 @@ export async function syncToDashboard(
 
             if (!response.ok) {
                 const errorBody = await response.text().catch(() => '');
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Invalid API key. Please check your API_KEY.');
+                }
+                if (isProjectAccessError(errorBody)) {
+                    throw projectAccessError(payload.projectId);
+                }
                 throw new Error(
                     `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ''}`,
                 );
@@ -170,6 +203,9 @@ export async function syncToDashboard(
             return response.json() as Promise<{ success: true; projectId: string; synced_at: string }>;
         } catch (err) {
             lastError = err instanceof Error ? err : new Error(String(err));
+            if (lastError.message.startsWith('Invalid API key') || lastError.message.startsWith('Project not found')) {
+                throw lastError;
+            }
             const isAbort = lastError.name === 'AbortError';
             if (isAbort) {
                 lastError = new Error(`Upload timed out after ${TIMEOUT_MS / 1000}s`);

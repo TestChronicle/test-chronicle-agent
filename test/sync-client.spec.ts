@@ -1,23 +1,27 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fetchProjectConfig } from '../src/sync-client';
+import { fetchProjectConfig, getSyncMarker, syncToDashboard, validateProjectAccess } from '../src/sync-client';
 
 const DASHBOARD_URL = 'https://example.com';
 const API_TOKEN = 'test-token';
 const PROJECT_ID = 'proj-123';
 
 function mockFetch(status: number, body: unknown) {
+    const text = typeof body === 'string' ? body : JSON.stringify(body);
     return vi.stubGlobal(
         'fetch',
         vi.fn().mockResolvedValue({
             ok: status >= 200 && status < 300,
             status,
+            statusText: status === 404 ? 'Not Found' : 'OK',
             json: () => Promise.resolve(body),
+            text: () => Promise.resolve(text),
         }),
     );
 }
 
 afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
 });
 
 describe('fetchProjectConfig', () => {
@@ -75,5 +79,70 @@ describe('fetchProjectConfig', () => {
                 headers: expect.objectContaining({ Authorization: `Bearer ${API_TOKEN}` }),
             }),
         );
+    });
+});
+
+describe('validateProjectAccess', () => {
+    it('rejects invalid API keys', async () => {
+        mockFetch(401, { error: 'Unauthorized' });
+
+        await expect(validateProjectAccess(DASHBOARD_URL, API_TOKEN, PROJECT_ID)).rejects.toThrow(
+            'Invalid API key. Please check your API_KEY.',
+        );
+    });
+
+    it('continues when the config endpoint returns 404 without a project access error', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        mockFetch(404, 'Not Found');
+
+        await expect(validateProjectAccess(DASHBOARD_URL, API_TOKEN, PROJECT_ID)).resolves.toBeUndefined();
+
+        expect(warnSpy).toHaveBeenCalledWith('[sync] Could not fetch project config (404); using auto-detected settings.');
+    });
+
+    it('rejects when the config endpoint returns a project access 404', async () => {
+        mockFetch(404, { error: "Project not found or not in the key's team" });
+
+        await expect(validateProjectAccess(DASHBOARD_URL, API_TOKEN, PROJECT_ID)).rejects.toThrow(
+            'Project not found or not available to this API key: proj-123.',
+        );
+    });
+});
+
+describe('getSyncMarker', () => {
+    it('returns null for a first sync marker 404', async () => {
+        mockFetch(404, 'Not Found');
+
+        await expect(getSyncMarker(DASHBOARD_URL, API_TOKEN, PROJECT_ID)).resolves.toBeNull();
+    });
+
+    it('rejects when the marker endpoint returns a project access 404', async () => {
+        mockFetch(404, { error: "Project not found or not in the key's team" });
+
+        await expect(getSyncMarker(DASHBOARD_URL, API_TOKEN, PROJECT_ID)).rejects.toThrow(
+            'Project not found or not available to this API key: proj-123.',
+        );
+    });
+});
+
+describe('syncToDashboard', () => {
+    const payload = {
+        projectId: PROJECT_ID,
+        specs: [],
+        history: [],
+        stats: {},
+        timestamp: '2026-06-19T00:00:00.000Z',
+        chunkIndex: 0,
+        isLastChunk: true,
+    };
+
+    it('rejects project access errors without retrying', async () => {
+        mockFetch(404, { error: "Project not found or not in the key's team" });
+
+        await expect(syncToDashboard(DASHBOARD_URL, API_TOKEN, payload)).rejects.toThrow(
+            'Project not found or not available to this API key: proj-123.',
+        );
+
+        expect(fetch).toHaveBeenCalledTimes(1);
     });
 });
