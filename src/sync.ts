@@ -1,3 +1,4 @@
+import packageJson from '../package.json';
 import { detectFrameworks } from './core';
 import { parseAllSpecs } from './core';
 import { buildHistory, getLatestCommitHash, getRepoUrl, getDefaultBranch, getRemoteBranchTip } from './git';
@@ -13,11 +14,38 @@ import { DetectionResult, TestChange, FrameworkOverride, CommitHistory, SpecFile
 /** Maximum number of days of history to fetch on a first sync. */
 const MAX_FIRST_SYNC_DAYS = 365;
 
+/** Dashboard sync payload contract version. */
+const PAYLOAD_SCHEMA_VERSION = '2026-07';
+
 // Configuration for sync operation
 export interface SyncOptions {
     projectId: string;
     apiKey: string;
     dashboardUrl: string;
+}
+
+type SyncSource = 'local_cli' | 'github_actions';
+
+function getSyncSource(env: NodeJS.ProcessEnv = process.env): SyncSource {
+    return env.GITHUB_ACTIONS === 'true' ? 'github_actions' : 'local_cli';
+}
+
+async function resolveLatestCommitHash(
+    projectPath: string,
+    branch: string,
+    transformedHistory: Array<{ commitHash: string }>,
+): Promise<string> {
+    const branchTip = await getRemoteBranchTip(projectPath, branch);
+    if (branchTip) return branchTip;
+
+    if (transformedHistory.length > 0) {
+        return transformedHistory[transformedHistory.length - 1].commitHash;
+    }
+
+    const localHead = await getLatestCommitHash(projectPath);
+    if (localHead) return localHead;
+
+    throw new Error('Could not determine latest commit hash for sync payload.');
 }
 
 /**
@@ -338,6 +366,14 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
     const timestamp = new Date().toISOString();
 
+    const latestCommitHash = await resolveLatestCommitHash(process.cwd(), defaultBranch, transformedHistory);
+    const commitRangeStart = transformedHistory.length > 0 ? transformedHistory[0].commitHash : latestCommitHash;
+    const commitRangeEnd =
+        transformedHistory.length > 0 ? transformedHistory[transformedHistory.length - 1].commitHash : latestCommitHash;
+    const syncId = `sync:${projectId}:${timestamp}`;
+    const source = getSyncSource();
+    const warnings = history.warnings;
+
     if (totalChunks > 1) {
         console.log(`[sync] Uploading ${totalChunks} batches.`);
     }
@@ -355,9 +391,19 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             history: historyChunk,
             stats: chunkIndex === 0 ? stats : {},
             timestamp,
+            syncId,
+            source,
+            agentVersion: packageJson.version,
+            payloadSchemaVersion: PAYLOAD_SCHEMA_VERSION,
+            branch: defaultBranch,
+            latestCommitHash,
+            commitRangeStart,
+            commitRangeEnd,
             ...(repoUrl ? { repoUrl } : {}),
             chunkIndex,
             isLastChunk,
+            expectedChunkCount: totalChunks,
+            warnings,
         });
 
         if (totalChunks > 1) {

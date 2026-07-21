@@ -161,9 +161,19 @@ export async function syncToDashboard(
         history: unknown[];
         stats: unknown;
         timestamp: string;
+        syncId: string;
+        source: 'local_cli' | 'github_actions';
+        agentVersion: string;
+        payloadSchemaVersion: string;
+        branch: string;
+        latestCommitHash: string;
+        commitRangeStart: string;
+        commitRangeEnd: string;
         repoUrl?: string;
         chunkIndex: number;
         isLastChunk: boolean;
+        expectedChunkCount: number;
+        warnings?: string[];
     },
 ): Promise<{ success: true; projectId: string; synced_at: string }> {
     const url = new URL(`/api/projects/${payload.projectId}/sync`, dashboardUrl).toString();

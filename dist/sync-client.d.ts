@@ -26,9 +26,19 @@ export declare function syncToDashboard(dashboardUrl: string, apiToken: string, 
     history: unknown[];
     stats: unknown;
     timestamp: string;
+    syncId: string;
+    source: 'local_cli' | 'github_actions';
+    agentVersion: string;
+    payloadSchemaVersion: string;
+    branch: string;
+    latestCommitHash: string;
+    commitRangeStart: string;
+    commitRangeEnd: string;
     repoUrl?: string;
     chunkIndex: number;
     isLastChunk: boolean;
+    expectedChunkCount: number;
+    warnings?: string[];
 }): Promise<{
     success: true;
     projectId: string;
