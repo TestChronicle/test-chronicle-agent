@@ -2,7 +2,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 295:
+/***/ 462:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -59,9 +59,9 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 
-// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.15_tsx@4.22.4_typescript@6.0.3/node_modules/tsup/assets/cjs_shims.js
+// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js
 var init_cjs_shims = __esm({
-  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.15_tsx@4.22.4_typescript@6.0.3/node_modules/tsup/assets/cjs_shims.js"() {
+  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js"() {
     "use strict";
   }
 });
@@ -555,7 +555,7 @@ var require_node = __commonJS({
     );
     exports2.colors = [6, 2, 3, 4, 5, 1];
     try {
-      const supportsColor = __nccwpck_require__(795);
+      const supportsColor = __nccwpck_require__(516);
       if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
         exports2.colors = [
           20,
@@ -844,7 +844,7 @@ init_cjs_shims();
 // package.json
 var package_default = {
   name: "testchronicle",
-  version: "0.1.0",
+  version: "0.1.19",
   description: "CLI agent for syncing test data to Test Chronicle",
   author: "Daniel Williams",
   license: "MIT",
@@ -891,7 +891,7 @@ var package_default = {
     "@vercel/ncc": "^0.44.0",
     tsup: "^8.5.1",
     tsx: "^4.21.0",
-    typescript: "^6.0.3",
+    typescript: "^7.0.2",
     vitest: "^4.1.6"
   },
   engines: {
@@ -13429,7 +13429,7 @@ if (require.main === require.cache[eval('__filename')]) {
 
 /***/ }),
 
-/***/ 795:
+/***/ 516:
 /***/ ((module) => {
 
 module.exports = eval("require")("supports-color");
@@ -13575,7 +13575,7 @@ module.exports = require("util");
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(295);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(462);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()

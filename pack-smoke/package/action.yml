@@ -1,0 +1,23 @@
+name: 'Test Chronicle Agent'
+description: 'CLI agent for syncing test data to test-chronicle dashboard'
+author: 'Daniel Williams'
+
+branding:
+  icon: 'activity'
+  color: 'green'
+
+inputs:
+  API_KEY:
+    description: 'Chronicle API key for authentication'
+    required: true
+  PROJECT_ID:
+    description: 'Project ID in Chronicle dashboard'
+    required: true
+
+outputs:
+  sync-status:
+    description: 'Status of the sync operation'
+
+runs:
+  using: 'node20'
+  main: 'dist/action.js'

@@ -52,9 +52,9 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 
-// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.15_tsx@4.22.4_typescript@6.0.3/node_modules/tsup/assets/cjs_shims.js
+// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js
 var init_cjs_shims = __esm({
-  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.15_tsx@4.22.4_typescript@6.0.3/node_modules/tsup/assets/cjs_shims.js"() {
+  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js"() {
     "use strict";
   }
 });
@@ -837,7 +837,7 @@ init_cjs_shims();
 // package.json
 var package_default = {
   name: "testchronicle",
-  version: "0.1.0",
+  version: "0.1.19",
   description: "CLI agent for syncing test data to Test Chronicle",
   author: "Daniel Williams",
   license: "MIT",
@@ -884,7 +884,7 @@ var package_default = {
     "@vercel/ncc": "^0.44.0",
     tsup: "^8.5.1",
     tsx: "^4.21.0",
-    typescript: "^6.0.3",
+    typescript: "^7.0.2",
     vitest: "^4.1.6"
   },
   engines: {
