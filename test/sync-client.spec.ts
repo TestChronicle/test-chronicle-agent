@@ -132,9 +132,45 @@ describe('syncToDashboard', () => {
         history: [],
         stats: {},
         timestamp: '2026-06-19T00:00:00.000Z',
+        syncId: 'sync:proj-123:2026-06-19T00:00:00.000Z',
+        source: 'local_cli' as const,
+        agentVersion: '0.1.0',
+        payloadSchemaVersion: '2026-07',
+        branch: 'main',
+        latestCommitHash: 'abcdef1234567890',
+        commitRangeStart: '1111111111111111',
+        commitRangeEnd: 'abcdef1234567890',
         chunkIndex: 0,
         isLastChunk: true,
+        expectedChunkCount: 1,
+        warnings: [],
     };
+
+    it('posts the strict v1 sync metadata contract', async () => {
+        const fetchSpy = vi.fn().mockResolvedValue({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
+            json: () => Promise.resolve({ success: true, projectId: PROJECT_ID, synced_at: payload.timestamp }),
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        await syncToDashboard(DASHBOARD_URL, API_TOKEN, payload);
+
+        const request = fetchSpy.mock.calls[0][1] as RequestInit;
+        const body = JSON.parse(request.body as string);
+        expect(body).toMatchObject({
+            syncId: payload.syncId,
+            source: 'local_cli',
+            agentVersion: '0.1.0',
+            payloadSchemaVersion: '2026-07',
+            branch: 'main',
+            latestCommitHash: payload.latestCommitHash,
+            commitRangeStart: payload.commitRangeStart,
+            commitRangeEnd: payload.commitRangeEnd,
+            expectedChunkCount: 1,
+        });
+    });
 
     it('rejects project access errors without retrying', async () => {
         mockFetch(404, { error: "Project not found or not in the key's team" });

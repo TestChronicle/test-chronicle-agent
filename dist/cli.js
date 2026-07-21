@@ -834,6 +834,69 @@ var import_path14 = __toESM(require("path"));
 // src/sync.ts
 init_cjs_shims();
 
+// package.json
+var package_default = {
+  name: "testchronicle",
+  version: "0.1.0",
+  description: "CLI agent for syncing test data to Test Chronicle",
+  author: "Daniel Williams",
+  license: "MIT",
+  keywords: [
+    "testing",
+    "test-management",
+    "ci-cd",
+    "github-action",
+    "test-sync",
+    "test-automation",
+    "testing-framework",
+    "quality-assurance"
+  ],
+  repository: {
+    type: "git",
+    url: "https://github.com/TestChronicle/test-chronicle-agent.git"
+  },
+  bin: {
+    testchronicle: "./dist/cli.js"
+  },
+  main: "./dist/index.js",
+  types: "./dist/index.d.ts",
+  files: [
+    "dist",
+    "action.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  scripts: {
+    dev: "tsx src/cli.ts",
+    build: "tsup && tsc -p tsconfig.build.json && ncc build dist/cli.js -o dist/cli-bundle --target es2020",
+    "bundle:cli": "ncc build dist/cli.js -o dist/cli-bundle --target es2020",
+    "pack:dry-run": "npm pack --dry-run",
+    test: "vitest run",
+    "test:watch": "vitest watch"
+  },
+  dependencies: {
+    glob: "^13.0.6",
+    minimatch: "10.2.5",
+    "simple-git": "^3.36.0"
+  },
+  devDependencies: {
+    "@types/node": "^26.0.0",
+    "@vercel/ncc": "^0.44.0",
+    tsup: "^8.5.1",
+    tsx: "^4.21.0",
+    typescript: "^6.0.3",
+    vitest: "^4.1.6"
+  },
+  engines: {
+    node: ">=18.0.0"
+  },
+  packageManager: "pnpm@11.0.0",
+  publishConfig: {
+    access: "public",
+    provenance: true
+  }
+};
+
 // src/core/index.ts
 init_cjs_shims();
 
@@ -12666,6 +12729,20 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
 
 // src/sync.ts
 var MAX_FIRST_SYNC_DAYS = 365;
+var PAYLOAD_SCHEMA_VERSION = "2026-07";
+function getSyncSource(env = process.env) {
+  return env.GITHUB_ACTIONS === "true" ? "github_actions" : "local_cli";
+}
+async function resolveLatestCommitHash(projectPath, branch, transformedHistory) {
+  const branchTip = await getRemoteBranchTip(projectPath, branch);
+  if (branchTip) return branchTip;
+  if (transformedHistory.length > 0) {
+    return transformedHistory[transformedHistory.length - 1].commitHash;
+  }
+  const localHead = await getLatestCommitHash(projectPath);
+  if (localHead) return localHead;
+  throw new Error("Could not determine latest commit hash for sync payload.");
+}
 function getChangeKey(change, specPath) {
   const path16 = specPath ?? "";
   const oldName = change.oldName ?? "";
@@ -12890,6 +12967,12 @@ async function syncProject(options) {
   const historyOldestFirst = [...transformedHistory].reverse();
   const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
   const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+  const latestCommitHash = await resolveLatestCommitHash(process.cwd(), defaultBranch, transformedHistory);
+  const commitRangeStart = transformedHistory.length > 0 ? transformedHistory[0].commitHash : latestCommitHash;
+  const commitRangeEnd = transformedHistory.length > 0 ? transformedHistory[transformedHistory.length - 1].commitHash : latestCommitHash;
+  const syncId = `sync:${projectId}:${timestamp}`;
+  const source = getSyncSource();
+  const warnings = history.warnings;
   if (totalChunks > 1) {
     console.log(`[sync] Uploading ${totalChunks} batches.`);
   }
@@ -12905,9 +12988,19 @@ async function syncProject(options) {
       history: historyChunk,
       stats: chunkIndex === 0 ? stats : {},
       timestamp,
+      syncId,
+      source,
+      agentVersion: package_default.version,
+      payloadSchemaVersion: PAYLOAD_SCHEMA_VERSION,
+      branch: defaultBranch,
+      latestCommitHash,
+      commitRangeStart,
+      commitRangeEnd,
       ...repoUrl ? { repoUrl } : {},
       chunkIndex,
-      isLastChunk
+      isLastChunk,
+      expectedChunkCount: totalChunks,
+      warnings
     });
     if (totalChunks > 1) {
       console.log(`[sync]   ${chunkIndex + 1}/${totalChunks} batches uploaded.`);
