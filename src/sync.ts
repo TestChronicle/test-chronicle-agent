@@ -1,7 +1,15 @@
 import packageJson from '../package.json';
 import { detectFrameworks } from './core';
 import { parseAllSpecs } from './core';
-import { buildHistory, getLatestCommitHash, getRepoUrl, getDefaultBranch, getRemoteBranchTip } from './git';
+import {
+    buildHistory,
+    getLatestCommitHash,
+    getRepoUrl,
+    getDefaultBranch,
+    getRemoteBranchTip,
+    getCurrentBranch,
+    isCommitReachableFromBranch,
+} from './git';
 import {
     getSyncMarker,
     saveSyncMarker,
@@ -46,6 +54,13 @@ async function resolveLatestCommitHash(
     if (localHead) return localHead;
 
     throw new Error('Could not determine latest commit hash for sync payload.');
+}
+
+async function resolveCurrentBranch(projectPath: string, defaultBranch: string, source: SyncSource): Promise<string> {
+    const githubRefName = source === 'github_actions' ? process.env.GITHUB_REF_NAME?.trim() : undefined;
+    if (githubRefName) return githubRefName;
+
+    return (await getCurrentBranch(projectPath)) ?? defaultBranch;
 }
 
 /**
@@ -229,6 +244,9 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     // Resolve the default branch: dashboard setting takes priority, then auto-detect from git
     const defaultBranch = projectConfig?.defaultBranch ?? (await getDefaultBranch(process.cwd()));
     console.log(`[sync] Default branch: ${defaultBranch}`);
+    const source = getSyncSource();
+    const currentBranch = await resolveCurrentBranch(process.cwd(), defaultBranch, source);
+    console.log(`[sync] Current branch: ${currentBranch}`);
 
     console.log('[sync] Detecting frameworks.');
     const detected = detectFrameworks(process.cwd());
@@ -264,6 +282,8 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     // Check if this is first sync or subsequent sync
     let lastSyncCommit: string | null = null;
     let isFirstSync = false;
+    let isRecoveringFromInvalidMarker = false;
+    const preflightWarnings: string[] = [];
 
     try {
         lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
@@ -273,8 +293,24 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         }
     }
 
+    if (lastSyncCommit) {
+        const markerIsReachable = await isCommitReachableFromBranch(process.cwd(), lastSyncCommit, defaultBranch);
+        if (!markerIsReachable) {
+            const warning = `Stored sync marker ${lastSyncCommit.substring(
+                0,
+                7,
+            )} is not reachable from origin/${defaultBranch}; running a bounded resync.`;
+            console.warn(`[sync] ${warning}`);
+            preflightWarnings.push(warning);
+            lastSyncCommit = null;
+            isRecoveringFromInvalidMarker = true;
+        }
+    }
+
     isFirstSync = !lastSyncCommit;
-    if (isFirstSync) {
+    if (isRecoveringFromInvalidMarker) {
+        console.log('[sync] Rebuilding bounded history from the repository default branch.');
+    } else if (isFirstSync) {
         console.log('[sync] First sync: creating baseline.');
     } else {
         console.log(`[sync] Incremental sync from ${lastSyncCommit!.substring(0, 7)}.`);
@@ -286,7 +322,8 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const sinceCommit = isFirstSync ? undefined : lastSyncCommit!;
     const sinceDate = isFirstSync ? new Date(Date.now() - MAX_FIRST_SYNC_DAYS * 86_400_000) : undefined;
     if (sinceDate) {
-        console.log(`[sync] First sync: scanning the last ${MAX_FIRST_SYNC_DAYS} days.`);
+        const mode = isRecoveringFromInvalidMarker ? 'Bounded resync' : 'First sync';
+        console.log(`[sync] ${mode}: scanning the last ${MAX_FIRST_SYNC_DAYS} days.`);
     }
     const history = await buildHistory(
         process.cwd(),
@@ -371,8 +408,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     const commitRangeEnd =
         transformedHistory.length > 0 ? transformedHistory[transformedHistory.length - 1].commitHash : latestCommitHash;
     const syncId = `sync:${projectId}:${timestamp}`;
-    const source = getSyncSource();
-    const warnings = history.warnings;
+    const warnings = [...preflightWarnings, ...history.warnings];
 
     if (totalChunks > 1) {
         console.log(`[sync] Uploading ${totalChunks} batches.`);
@@ -395,7 +431,8 @@ export async function syncProject(options: SyncOptions): Promise<void> {
             source,
             agentVersion: packageJson.version,
             payloadSchemaVersion: PAYLOAD_SCHEMA_VERSION,
-            branch: defaultBranch,
+            branch: currentBranch,
+            repositoryDefaultBranch: defaultBranch,
             latestCommitHash,
             commitRangeStart,
             commitRangeEnd,
@@ -449,7 +486,9 @@ export async function syncProject(options: SyncOptions): Promise<void> {
 
         await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
 
-        if (isFirstSync) {
+        if (isRecoveringFromInvalidMarker) {
+            console.log(`[sync] Rebuilt sync marker: ${lastHash.substring(0, 7)}.`);
+        } else if (isFirstSync) {
             console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests.`);
         } else {
             console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}.`);

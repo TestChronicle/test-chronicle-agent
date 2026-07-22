@@ -2,7 +2,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 295:
+/***/ 462:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -59,9 +59,9 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 
-// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.15_tsx@4.22.4_typescript@6.0.3/node_modules/tsup/assets/cjs_shims.js
+// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js
 var init_cjs_shims = __esm({
-  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.15_tsx@4.22.4_typescript@6.0.3/node_modules/tsup/assets/cjs_shims.js"() {
+  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js"() {
     "use strict";
   }
 });
@@ -555,7 +555,7 @@ var require_node = __commonJS({
     );
     exports2.colors = [6, 2, 3, 4, 5, 1];
     try {
-      const supportsColor = __nccwpck_require__(795);
+      const supportsColor = __nccwpck_require__(516);
       if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
         exports2.colors = [
           20,
@@ -891,7 +891,7 @@ var package_default = {
     "@vercel/ncc": "^0.44.0",
     tsup: "^8.5.1",
     tsx: "^4.21.0",
-    typescript: "^6.0.3",
+    typescript: "^7.0.2",
     vitest: "^4.1.6"
   },
   engines: {
@@ -12223,6 +12223,28 @@ async function getRemoteBranchTip(projectPath, branch) {
     return null;
   }
 }
+async function getCurrentBranch(projectPath) {
+  const git = esm_default(projectPath);
+  try {
+    const branch = await git.raw(["rev-parse", "--abbrev-ref", "HEAD"]);
+    const trimmed2 = branch.trim();
+    return trimmed2 && trimmed2 !== "HEAD" ? trimmed2 : null;
+  } catch {
+    return null;
+  }
+}
+async function isCommitReachableFromBranch(projectPath, commit, branch) {
+  const git = esm_default(projectPath);
+  const trimmedCommit = commit.trim();
+  if (!trimmedCommit) return false;
+  try {
+    await git.raw(["cat-file", "-e", `${trimmedCommit}^{commit}`]);
+    await git.raw(["merge-base", "--is-ancestor", trimmedCommit, `origin/${branch}`]);
+    return true;
+  } catch {
+    return false;
+  }
+}
 function normaliseRemoteUrl(raw) {
   const trimmed2 = raw.trim();
   const sshMatch = trimmed2.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
@@ -12750,6 +12772,11 @@ async function resolveLatestCommitHash(projectPath, branch, transformedHistory) 
   if (localHead) return localHead;
   throw new Error("Could not determine latest commit hash for sync payload.");
 }
+async function resolveCurrentBranch(projectPath, defaultBranch, source) {
+  const githubRefName = source === "github_actions" ? process.env.GITHUB_REF_NAME?.trim() : void 0;
+  if (githubRefName) return githubRefName;
+  return await getCurrentBranch(projectPath) ?? defaultBranch;
+}
 function getChangeKey(change, specPath) {
   const path16 = specPath ?? "";
   const oldName = change.oldName ?? "";
@@ -12869,6 +12896,9 @@ async function syncProject(options) {
   }
   const defaultBranch = projectConfig?.defaultBranch ?? await getDefaultBranch(process.cwd());
   console.log(`[sync] Default branch: ${defaultBranch}`);
+  const source = getSyncSource();
+  const currentBranch = await resolveCurrentBranch(process.cwd(), defaultBranch, source);
+  console.log(`[sync] Current branch: ${currentBranch}`);
   console.log("[sync] Detecting frameworks.");
   const detected = detectFrameworks(process.cwd());
   const frameworkMap = new Map(detected.map((d) => [mapKey(d.framework, d.testDir), d]));
@@ -12891,6 +12921,8 @@ async function syncProject(options) {
   console.log(`[sync] Found ${specs.length} spec files and ${totalTests} tests.`);
   let lastSyncCommit = null;
   let isFirstSync = false;
+  let isRecoveringFromInvalidMarker = false;
+  const preflightWarnings = [];
   try {
     lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
   } catch (error) {
@@ -12898,8 +12930,23 @@ async function syncProject(options) {
       console.warn(`[sync] Could not retrieve sync marker: ${error.message}`);
     }
   }
+  if (lastSyncCommit) {
+    const markerIsReachable = await isCommitReachableFromBranch(process.cwd(), lastSyncCommit, defaultBranch);
+    if (!markerIsReachable) {
+      const warning = `Stored sync marker ${lastSyncCommit.substring(
+        0,
+        7
+      )} is not reachable from origin/${defaultBranch}; running a bounded resync.`;
+      console.warn(`[sync] ${warning}`);
+      preflightWarnings.push(warning);
+      lastSyncCommit = null;
+      isRecoveringFromInvalidMarker = true;
+    }
+  }
   isFirstSync = !lastSyncCommit;
-  if (isFirstSync) {
+  if (isRecoveringFromInvalidMarker) {
+    console.log("[sync] Rebuilding bounded history from the repository default branch.");
+  } else if (isFirstSync) {
     console.log("[sync] First sync: creating baseline.");
   } else {
     console.log(`[sync] Incremental sync from ${lastSyncCommit.substring(0, 7)}.`);
@@ -12908,7 +12955,8 @@ async function syncProject(options) {
   const sinceCommit = isFirstSync ? void 0 : lastSyncCommit;
   const sinceDate = isFirstSync ? new Date(Date.now() - MAX_FIRST_SYNC_DAYS * 864e5) : void 0;
   if (sinceDate) {
-    console.log(`[sync] First sync: scanning the last ${MAX_FIRST_SYNC_DAYS} days.`);
+    const mode = isRecoveringFromInvalidMarker ? "Bounded resync" : "First sync";
+    console.log(`[sync] ${mode}: scanning the last ${MAX_FIRST_SYNC_DAYS} days.`);
   }
   const history = await buildHistory(
     process.cwd(),
@@ -12978,8 +13026,7 @@ async function syncProject(options) {
   const commitRangeStart = transformedHistory.length > 0 ? transformedHistory[0].commitHash : latestCommitHash;
   const commitRangeEnd = transformedHistory.length > 0 ? transformedHistory[transformedHistory.length - 1].commitHash : latestCommitHash;
   const syncId = `sync:${projectId}:${timestamp}`;
-  const source = getSyncSource();
-  const warnings = history.warnings;
+  const warnings = [...preflightWarnings, ...history.warnings];
   if (totalChunks > 1) {
     console.log(`[sync] Uploading ${totalChunks} batches.`);
   }
@@ -12999,7 +13046,8 @@ async function syncProject(options) {
       source,
       agentVersion: package_default.version,
       payloadSchemaVersion: PAYLOAD_SCHEMA_VERSION,
-      branch: defaultBranch,
+      branch: currentBranch,
+      repositoryDefaultBranch: defaultBranch,
       latestCommitHash,
       commitRangeStart,
       commitRangeEnd,
@@ -13035,7 +13083,9 @@ async function syncProject(options) {
       return;
     }
     await saveSyncMarker(dashboardUrl, apiKey, projectId, lastHash);
-    if (isFirstSync) {
+    if (isRecoveringFromInvalidMarker) {
+      console.log(`[sync] Rebuilt sync marker: ${lastHash.substring(0, 7)}.`);
+    } else if (isFirstSync) {
       console.log(`[sync] Created baseline: ${specs.length} files, ${totalTests} tests.`);
     } else {
       console.log(`[sync] Updated sync marker: ${lastHash.substring(0, 7)}.`);
@@ -13429,7 +13479,7 @@ if (require.main === require.cache[eval('__filename')]) {
 
 /***/ }),
 
-/***/ 795:
+/***/ 516:
 /***/ ((module) => {
 
 module.exports = eval("require")("supports-color");
@@ -13575,7 +13625,7 @@ module.exports = require("util");
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(295);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(462);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()

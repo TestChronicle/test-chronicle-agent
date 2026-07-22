@@ -31,6 +31,7 @@ export declare function syncToDashboard(dashboardUrl: string, apiToken: string, 
     agentVersion: string;
     payloadSchemaVersion: string;
     branch: string;
+    repositoryDefaultBranch: string;
     latestCommitHash: string;
     commitRangeStart: string;
     commitRangeEnd: string;

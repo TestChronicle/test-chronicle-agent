@@ -43,6 +43,43 @@ export async function getRemoteBranchTip(projectPath: string, branch: string): P
 }
 
 /**
+ * Returns the currently checked-out branch, or null when the repository is in
+ * detached HEAD state or the branch cannot be resolved.
+ */
+export async function getCurrentBranch(projectPath: string): Promise<string | null> {
+    const git = simpleGit(projectPath);
+    try {
+        const branch = await git.raw(['rev-parse', '--abbrev-ref', 'HEAD']);
+        const trimmed = branch.trim();
+        return trimmed && trimmed !== 'HEAD' ? trimmed : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Returns whether `commit` exists locally and is reachable from
+ * `origin/<branch>`.
+ */
+export async function isCommitReachableFromBranch(
+    projectPath: string,
+    commit: string,
+    branch: string,
+): Promise<boolean> {
+    const git = simpleGit(projectPath);
+    const trimmedCommit = commit.trim();
+    if (!trimmedCommit) return false;
+
+    try {
+        await git.raw(['cat-file', '-e', `${trimmedCommit}^{commit}`]);
+        await git.raw(['merge-base', '--is-ancestor', trimmedCommit, `origin/${branch}`]);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+/**
  * Normalises a git remote URL to a clean HTTPS URL without a trailing `.git`.
  * Supports SSH (`git@github.com:owner/repo.git`) and HTTPS forms.
  * Returns null when the URL cannot be parsed or belongs to an unrecognised host.

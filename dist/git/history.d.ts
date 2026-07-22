@@ -9,6 +9,16 @@ export declare function getLatestCommitHash(projectPath: string): Promise<string
  */
 export declare function getRemoteBranchTip(projectPath: string, branch: string): Promise<string | null>;
 /**
+ * Returns the currently checked-out branch, or null when the repository is in
+ * detached HEAD state or the branch cannot be resolved.
+ */
+export declare function getCurrentBranch(projectPath: string): Promise<string | null>;
+/**
+ * Returns whether `commit` exists locally and is reachable from
+ * `origin/<branch>`.
+ */
+export declare function isCommitReachableFromBranch(projectPath: string, commit: string, branch: string): Promise<boolean>;
+/**
  * Normalises a git remote URL to a clean HTTPS URL without a trailing `.git`.
  * Supports SSH (`git@github.com:owner/repo.git`) and HTTPS forms.
  * Returns null when the URL cannot be parsed or belongs to an unrecognised host.
