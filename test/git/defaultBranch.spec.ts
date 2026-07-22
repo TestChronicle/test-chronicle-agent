@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { getDefaultBranch, getRemoteBranchTip } from '../../src/git/history';
+import {
+    getCurrentBranch,
+    getDefaultBranch,
+    getRemoteBranchTip,
+    isCommitReachableFromBranch,
+} from '../../src/git/history';
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
@@ -54,5 +59,50 @@ describe('getRemoteBranchTip', () => {
         } finally {
             fs.rmSync(tmpDir, { recursive: true, force: true });
         }
+    });
+});
+
+describe('getCurrentBranch', () => {
+    it('returns the current branch name when the repository is on a branch', async () => {
+        const branch = await getCurrentBranch(process.cwd());
+        if (branch !== null) {
+            expect(branch.length).toBeGreaterThan(0);
+            expect(branch).not.toBe('HEAD');
+        }
+    });
+
+    it('returns null for a detached HEAD checkout', async () => {
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tc-detached-head-'));
+        try {
+            execSync('git init', { cwd: tmpDir, stdio: 'ignore' });
+            execSync('git -c user.email=test@example.com -c user.name=Test commit --allow-empty -m init', {
+                cwd: tmpDir,
+                stdio: 'ignore',
+            });
+            const hash = execSync('git rev-parse HEAD', { cwd: tmpDir, encoding: 'utf8' }).trim();
+            execSync(`git checkout --detach ${hash}`, { cwd: tmpDir, stdio: 'ignore' });
+
+            await expect(getCurrentBranch(tmpDir)).resolves.toBeNull();
+        } finally {
+            fs.rmSync(tmpDir, { recursive: true, force: true });
+        }
+    });
+});
+
+describe('isCommitReachableFromBranch', () => {
+    it('returns true for the remote default branch tip when it is available locally', async () => {
+        const branch = await getDefaultBranch(process.cwd());
+        const hash = await getRemoteBranchTip(process.cwd(), branch);
+        if (hash !== null) {
+            await expect(isCommitReachableFromBranch(process.cwd(), hash, branch)).resolves.toBe(true);
+        }
+    });
+
+    it('returns false for an unknown commit hash', async () => {
+        const branch = await getDefaultBranch(process.cwd());
+
+        await expect(
+            isCommitReachableFromBranch(process.cwd(), '0000000000000000000000000000000000000000', branch),
+        ).resolves.toBe(false);
     });
 });
