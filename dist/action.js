@@ -822,7 +822,7 @@ init_cjs_shims();
 // package.json
 var package_default = {
   name: "testchronicle",
-  version: "0.1.0",
+  version: "0.1.20",
   description: "CLI agent for syncing test data to Test Chronicle",
   author: "Daniel Williams",
   license: "MIT",
