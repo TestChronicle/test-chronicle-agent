@@ -71,6 +71,13 @@ See [Framework Support](https://www.testchronicle.com/#framework-support).
 - Test file changes from git history
 - Author information and timestamps
 
+Sync reads history from the locally available `origin/<defaultBranch>` reference.
+Use a full checkout (`fetch-depth: 0` in GitHub Actions) and fetch the default
+branch before syncing locally. The first sync scans the last 365 days; later
+syncs resume from the saved commit. History uploads run oldest-first in batches.
+If history cannot be read completely, sync stops without advancing the marker so
+the missing changes can be retried after the repository issue is resolved.
+
 ## License
 
 MIT. See [LICENSE](./LICENSE).

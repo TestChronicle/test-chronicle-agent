@@ -31,7 +31,7 @@ export function parseJUnitSpec(filePath: string, content: string, projectRoot: s
         // brace and this @Test, to avoid bleeding across method boundaries.
         const prevBracePos = content.lastIndexOf('}', matchIndex - 1);
         const annotationBlockStart = prevBracePos !== -1 ? prevBracePos + 1 : 0;
-        const annotationBlock = content.substring(annotationBlockStart, matchIndex);
+        const annotationBlock = content.substring(annotationBlockStart, matchIndex) + match[0];
 
         // Check if test is ignored
         if (IGNORE_RE.test(annotationBlock)) {
@@ -83,7 +83,7 @@ export function extractTestNames(content: string): string[] {
         // this @Test to avoid bleeding across method boundaries.
         const prevBracePos2 = content.lastIndexOf('}', matchIndex - 1);
         const annotationBlockStart2 = prevBracePos2 !== -1 ? prevBracePos2 + 1 : 0;
-        const annotationBlock2 = content.substring(annotationBlockStart2, matchIndex);
+        const annotationBlock2 = content.substring(annotationBlockStart2, matchIndex) + match[0];
         if (IGNORE_RE.test(annotationBlock2)) {
             continue; // Skip ignored tests
         }

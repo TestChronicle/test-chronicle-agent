@@ -18,6 +18,7 @@ import {
     validateProjectAccess,
 } from './sync-client';
 import { DetectionResult, TestChange, FrameworkOverride, CommitHistory, SpecFile } from './types';
+import { normaliseRepoPath } from './core/pathPatterns';
 
 /** Maximum number of days of history to fetch on a first sync. */
 const MAX_FIRST_SYNC_DAYS = 365;
@@ -120,10 +121,10 @@ function applyFrameworkOverrides(frameworkMap: Map<string, DetectionResult>, ove
  */
 function applyTestDirExcludes(frameworkMap: Map<string, DetectionResult>, excludes: string[]): void {
     for (const excludeDir of excludes) {
-        const normalised = excludeDir.replace(/^\.\//, '');
+        const normalised = normaliseRepoPath(excludeDir);
         for (const [key, config] of frameworkMap) {
-            const configDir = config.testDir.replace(/^\.\//, '');
-            if (configDir.startsWith(normalised)) {
+            const configDir = normaliseRepoPath(config.testDir);
+            if (normalised === '.' || configDir === normalised || configDir.startsWith(`${normalised}/`)) {
                 frameworkMap.delete(key);
                 console.log(`[config] ${config.framework}: excluded ${excludeDir}.`);
             }
@@ -285,13 +286,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     let isRecoveringFromInvalidMarker = false;
     const preflightWarnings: string[] = [];
 
-    try {
-        lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
-    } catch (error) {
-        if (error instanceof Error) {
-            console.warn(`[sync] Could not retrieve sync marker: ${error.message}`);
-        }
-    }
+    lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
 
     if (lastSyncCommit) {
         const markerIsReachable = await isCommitReachableFromBranch(process.cwd(), lastSyncCommit, defaultBranch);
@@ -351,8 +346,13 @@ export async function syncProject(options: SyncOptions): Promise<void> {
         });
     }
 
+    // Advancing the marker after an incomplete scan would permanently skip changes.
+    if (history.errors.length > 0 || history.warnings.length > 0) {
+        throw new Error('Git history could not be read completely. Resolve the reported issues and retry sync.');
+    }
+
     // Compute stats
-    const tags: Record<string, number> = {};
+    const tags: Record<string, number> = Object.create(null);
     let parameterizedTestCount = 0;
     specs.forEach((spec) => {
         spec.tests.forEach((test) => {
@@ -398,8 +398,8 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     //  - An intermediate sync marker is saved after each successful chunk so
     //    a re-run after interruption only re-uploads the remaining chunks
     const HISTORY_CHUNK_SIZE = 100;
-    // Reverse so index 0 = oldest commit; git log returns newest-first.
-    const historyOldestFirst = [...transformedHistory].reverse();
+    // buildHistory already returns commits oldest-first.
+    const historyOldestFirst = transformedHistory;
     const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
     const timestamp = new Date().toISOString();
 
@@ -469,15 +469,7 @@ export async function syncProject(options: SyncOptions): Promise<void> {
     // Always save the tip of origin/<defaultBranch> as the marker so that
     // unmerged feature-branch commits can never pollute future incremental syncs.
     try {
-        let lastHash: string | null = await getRemoteBranchTip(process.cwd(), defaultBranch);
-
-        if (!lastHash) {
-            // Fallback: use the last processed commit or local HEAD
-            lastHash =
-                history.entries.length > 0
-                    ? history.entries[history.entries.length - 1].commit.hash
-                    : await getLatestCommitHash(process.cwd());
-        }
+        const lastHash = latestCommitHash;
 
         if (!lastHash) {
             console.warn('[sync] Could not determine the last commit hash.');

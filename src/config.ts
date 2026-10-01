@@ -28,7 +28,7 @@ export function readProjectConfig(projectDir = process.cwd()): ProjectLinkConfig
     if (!fs.existsSync(configPath)) return null;
 
     const parsed = JSON.parse(fs.readFileSync(configPath, 'utf8')) as Partial<ProjectLinkConfig>;
-    if (!parsed.projectId) {
+    if (!parsed || typeof parsed.projectId !== 'string' || !parsed.projectId.trim()) {
         throw new Error(`${PROJECT_CONFIG_FILE} must include projectId`);
     }
 

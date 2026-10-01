@@ -47,6 +47,7 @@ export async function startBrowserLogin(
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(request),
+            signal: AbortSignal.timeout(30_000),
         });
     } catch (error) {
         throw loginNetworkError('Could not reach Test Chronicle login', dashboardUrl, error);
@@ -67,6 +68,7 @@ export async function pollBrowserLogin(dashboardUrl: string, deviceCode: string)
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ deviceCode }),
+            signal: AbortSignal.timeout(30_000),
         });
     } catch (error) {
         throw loginNetworkError('Could not reach Test Chronicle login status', dashboardUrl, error);

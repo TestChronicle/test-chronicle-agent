@@ -33,6 +33,11 @@ afterEach(() => {
 });
 
 describe('CLI credential resolution', () => {
+    it.each([null, {}, { projectId: 123 }, { projectId: '  ' }])('rejects invalid project config %j', (config) => {
+        const cwd = tempDir('tc-cli-invalid-');
+        fs.writeFileSync(projectConfigPath(cwd), JSON.stringify(config), 'utf8');
+        expect(() => readProjectConfig(cwd)).toThrow('must include projectId');
+    });
     it('writes only the project ID to local project config', () => {
         const cwd = tempDir('tc-cli-write-');
         writeProjectConfig({ projectId: 'local-project' }, cwd);

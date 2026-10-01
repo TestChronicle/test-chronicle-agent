@@ -6320,16 +6320,7 @@ function parseCypressSpec(filePath, content, projectRoot) {
   };
 }
 function extractTestNames2(content) {
-  const names = [];
-  const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE2);
-  let match2;
-  TEST_RE2.lastIndex = 0;
-  while ((match2 = TEST_RE2.exec(content)) !== null) {
-    const testName = match2[2];
-    const parentDescribe = resolveParentDescribe(describeBlocks, match2.index);
-    names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
-  }
-  return names;
+  return parseCypressSpec("/__history__/test.cy.ts", content, "/__history__").tests.map((test) => test.fullName);
 }
 var cypressParser = {
   parseFile: parseCypressSpec,
@@ -6622,7 +6613,7 @@ var import_path7 = __toESM(require("path"));
 var TEST_METHOD_RE = /@Test\s*(?:\([^)]*\))?\s+(?:public\s+)?(?:void|[\w<>]+)\s+(\w+)\s*\(/gm;
 var CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 var ENABLED_RE = /enabled\s*=\s*(false|true)/;
-var GROUPS_RE = /groups\s*=\s*\{\s*"?([^}\"]+)"?\s*\}/;
+var GROUPS_RE = /groups\s*=\s*(?:\{([^}]+)\}|"([^"]+)")/;
 var PARAMETERIZED_RE = /\b(dataProvider|parameters)\s*=/i;
 function parseTestNGSpec(filePath, content, projectRoot) {
   const relativePath = import_path7.default.relative(projectRoot, filePath).replace(/\\/g, "/");
@@ -6692,7 +6683,7 @@ function extractTestNGTags(annotationText) {
   const tags = [];
   const groupMatch = GROUPS_RE.exec(annotationText);
   if (groupMatch) {
-    const groups = groupMatch[1].split(",").map((g) => g.trim().replace(/^"|"$/g, "")).filter((g) => g.length > 0);
+    const groups = (groupMatch[1] ?? groupMatch[2]).split(",").map((g) => g.trim().replace(/^"|"$/g, "")).filter((g) => g.length > 0);
     groups.forEach((g) => {
       tags.push({ name: g });
     });
@@ -6735,7 +6726,7 @@ function parseJUnitSpec(filePath, content, projectRoot) {
     const line = lineNumberAt(content, matchIndex);
     const prevBracePos = content.lastIndexOf("}", matchIndex - 1);
     const annotationBlockStart = prevBracePos !== -1 ? prevBracePos + 1 : 0;
-    const annotationBlock = content.substring(annotationBlockStart, matchIndex);
+    const annotationBlock = content.substring(annotationBlockStart, matchIndex) + match2[0];
     if (IGNORE_RE.test(annotationBlock)) {
       continue;
     }
@@ -6773,7 +6764,7 @@ function extractTestNames7(content) {
     const matchIndex = match2.index;
     const prevBracePos2 = content.lastIndexOf("}", matchIndex - 1);
     const annotationBlockStart2 = prevBracePos2 !== -1 ? prevBracePos2 + 1 : 0;
-    const annotationBlock2 = content.substring(annotationBlockStart2, matchIndex);
+    const annotationBlock2 = content.substring(annotationBlockStart2, matchIndex) + match2[0];
     if (IGNORE_RE.test(annotationBlock2)) {
       continue;
     }
@@ -12230,7 +12221,17 @@ function normaliseRemoteUrl(raw) {
     return `https://${sshMatch[1]}/${sshMatch[2]}`;
   }
   if (trimmed2.startsWith("https://") || trimmed2.startsWith("http://")) {
-    return trimmed2.replace(/\.git$/, "").replace(/\/$/, "");
+    try {
+      const url = new URL(trimmed2);
+      url.username = "";
+      url.password = "";
+      url.search = "";
+      url.hash = "";
+      url.pathname = url.pathname.replace(/\/+$/, "").replace(/\.git$/, "");
+      return url.toString().replace(/\/$/, "");
+    } catch {
+      return null;
+    }
   }
   return null;
 }
@@ -12360,6 +12361,7 @@ async function fetchCommitsWithFiles(git, logArgs, testDirs) {
     "log",
     `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,
     "--name-status",
+    "--topo-order",
     "--diff-filter=ADRM",
     "-M",
     ...logArgs
@@ -12440,18 +12442,20 @@ function mapGitStatus(status) {
 async function buildSpecChanges(git, hash, fileChanges, frameworkConfigs, projectPath, errors) {
   const entries = [];
   for (const change of fileChanges) {
-    const framework = resolveFrameworkForFile(change.path, frameworkConfigs);
-    if (!framework || !isSpecFile(change.path, framework)) continue;
+    let framework = resolveFrameworkForFile(change.path, frameworkConfigs);
     let effectiveChange = change;
     if (change.status === "renamed" && change.oldPath) {
-      const oldFramework = resolveFrameworkForFile(change.oldPath, frameworkConfigs);
-      const newFramework = resolveFrameworkForFile(change.path, frameworkConfigs);
+      const resolvedOld = resolveFrameworkForFile(change.oldPath, frameworkConfigs);
+      const oldFramework = resolvedOld && isSpecFile(change.oldPath, resolvedOld) ? resolvedOld : null;
+      const newFramework = framework && isSpecFile(change.path, framework) ? framework : null;
       if (!oldFramework && newFramework) {
         effectiveChange = { path: change.path, status: "added" };
       } else if (oldFramework && !newFramework) {
         effectiveChange = { path: change.oldPath, status: "deleted" };
+        framework = oldFramework;
       }
     }
+    if (!framework || !isSpecFile(effectiveChange.path, framework)) continue;
     try {
       const entry = await buildSpecEntry(git, hash, effectiveChange, framework, projectPath);
       if (entry) entries.push(entry);
@@ -12587,6 +12591,12 @@ function diffTestNames(previous, current) {
 
 // src/sync-client.ts
 init_cjs_shims();
+var SyncHttpError = class extends Error {
+  constructor(message, status) {
+    super(message);
+    __publicField(this, "status", status);
+  }
+};
 function isProjectAccessError(errorBody) {
   return /project not found|not in the key/i.test(errorBody);
 }
@@ -12606,7 +12616,8 @@ async function validateProjectAccess(dashboardUrl, apiToken, projectId) {
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: makeAuthHeaders(apiToken)
+      headers: makeAuthHeaders(apiToken),
+      signal: AbortSignal.timeout(3e4)
     });
     if (response.status === 401 || response.status === 403) {
       throw new Error("Invalid API key. Please check your API_KEY.");
@@ -12634,7 +12645,8 @@ async function fetchProjectConfig(dashboardUrl, apiToken, projectId) {
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: makeAuthHeaders(apiToken)
+      headers: makeAuthHeaders(apiToken),
+      signal: AbortSignal.timeout(3e4)
     });
     if (!response.ok) return null;
     return await response.json();
@@ -12647,7 +12659,8 @@ async function getSyncMarker(dashboardUrl, apiToken, projectId) {
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: makeAuthHeaders(apiToken)
+      headers: makeAuthHeaders(apiToken),
+      signal: AbortSignal.timeout(3e4)
     });
     if (!response.ok) {
       if (response.status === 401 || response.status === 403) {
@@ -12674,7 +12687,8 @@ async function saveSyncMarker(dashboardUrl, apiToken, projectId, commitHash) {
   const response = await fetch(url, {
     method: "POST",
     headers: makeAuthHeaders(apiToken),
-    body: JSON.stringify({ commitHash })
+    body: JSON.stringify({ commitHash }),
+    signal: AbortSignal.timeout(3e4)
   });
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
@@ -12708,13 +12722,17 @@ async function syncToDashboard(dashboardUrl, apiToken, payload) {
         if (isProjectAccessError(errorBody)) {
           throw projectAccessError(payload.projectId);
         }
-        throw new Error(
-          `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`
+        throw new SyncHttpError(
+          `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ""}`,
+          response.status
         );
       }
-      return response.json();
+      return await response.json();
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
+      if (err instanceof SyncHttpError && err.status >= 400 && err.status < 500 && ![408, 429].includes(err.status)) {
+        throw err;
+      }
       if (lastError.message.startsWith("Invalid API key") || lastError.message.startsWith("Project not found")) {
         throw lastError;
       }
@@ -12787,10 +12805,10 @@ function applyFrameworkOverrides(frameworkMap, overrides) {
 }
 function applyTestDirExcludes(frameworkMap, excludes) {
   for (const excludeDir of excludes) {
-    const normalised = excludeDir.replace(/^\.\//, "");
+    const normalised = normaliseRepoPath(excludeDir);
     for (const [key, config] of frameworkMap) {
-      const configDir = config.testDir.replace(/^\.\//, "");
-      if (configDir.startsWith(normalised)) {
+      const configDir = normaliseRepoPath(config.testDir);
+      if (normalised === "." || configDir === normalised || configDir.startsWith(`${normalised}/`)) {
         frameworkMap.delete(key);
         console.log(`[config] ${config.framework}: excluded ${excludeDir}.`);
       }
@@ -12901,13 +12919,7 @@ async function syncProject(options) {
   let isFirstSync = false;
   let isRecoveringFromInvalidMarker = false;
   const preflightWarnings = [];
-  try {
-    lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.warn(`[sync] Could not retrieve sync marker: ${error.message}`);
-    }
-  }
+  lastSyncCommit = await getSyncMarker(dashboardUrl, apiKey, projectId);
   if (lastSyncCommit) {
     const markerIsReachable = await isCommitReachableFromBranch(process.cwd(), lastSyncCommit, defaultBranch);
     if (!markerIsReachable) {
@@ -12960,7 +12972,10 @@ async function syncProject(options) {
       console.warn(`[sync] ${warning}`);
     });
   }
-  const tags = {};
+  if (history.errors.length > 0 || history.warnings.length > 0) {
+    throw new Error("Git history could not be read completely. Resolve the reported issues and retry sync.");
+  }
+  const tags = /* @__PURE__ */ Object.create(null);
   let parameterizedTestCount = 0;
   specs.forEach((spec) => {
     spec.tests.forEach((test) => {
@@ -12997,7 +13012,7 @@ async function syncProject(options) {
     };
   });
   const HISTORY_CHUNK_SIZE = 100;
-  const historyOldestFirst = [...transformedHistory].reverse();
+  const historyOldestFirst = transformedHistory;
   const totalChunks = Math.max(1, Math.ceil(historyOldestFirst.length / HISTORY_CHUNK_SIZE));
   const timestamp = (/* @__PURE__ */ new Date()).toISOString();
   const latestCommitHash = await resolveLatestCommitHash(process.cwd(), defaultBranch, transformedHistory);
@@ -13052,10 +13067,7 @@ async function syncProject(options) {
     }
   }
   try {
-    let lastHash = await getRemoteBranchTip(process.cwd(), defaultBranch);
-    if (!lastHash) {
-      lastHash = history.entries.length > 0 ? history.entries[history.entries.length - 1].commit.hash : await getLatestCommitHash(process.cwd());
-    }
+    const lastHash = latestCommitHash;
     if (!lastHash) {
       console.warn("[sync] Could not determine the last commit hash.");
       return;

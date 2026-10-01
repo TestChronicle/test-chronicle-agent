@@ -83,19 +83,7 @@ export function parseCypressSpec(filePath: string, content: string, projectRoot:
 
 /** Extracts only the test names from content without building a full SpecFile. */
 export function extractTestNames(content: string): string[] {
-    const names: string[] = [];
-    const describeBlocks = findDescribeBlocks(content, DESCRIBE_RE);
-
-    let match: RegExpExecArray | null;
-    TEST_RE.lastIndex = 0;
-
-    while ((match = TEST_RE.exec(content)) !== null) {
-        const testName = match[2];
-        const parentDescribe = resolveParentDescribe(describeBlocks, match.index);
-        names.push(parentDescribe ? `${parentDescribe} > ${testName}` : testName);
-    }
-
-    return names;
+    return parseCypressSpec('/__history__/test.cy.ts', content, '/__history__').tests.map((test) => test.fullName);
 }
 
 export const cypressParser: IFrameworkParser = {
