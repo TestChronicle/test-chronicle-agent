@@ -39,16 +39,16 @@
   },
   "dependencies": {
     "glob": "^13.0.6",
-    "minimatch": "10.2.5",
-    "simple-git": "^3.36.0"
+    "minimatch": "10.2.6",
+    "simple-git": "^4.0.2"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
-    "@vercel/ncc": "^0.44.0",
+    "@vercel/ncc": "^0.45.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.6"
+    "vitest": "^5.0.2"
   },
   "engines": {
     "node": ">=18.0.0"
