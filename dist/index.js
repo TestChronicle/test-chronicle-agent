@@ -10,8 +10,8 @@ var __typeError = (msg) => {
   throw TypeError(msg);
 };
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __esm = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+var __esm = (fn2, res) => function __init() {
+  return fn2 && (res = (0, fn2[__getOwnPropNames(fn2)[0]])(fn2 = 0)), res;
 };
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
@@ -20,13 +20,13 @@ var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __copyProps = (to, from, except, desc) => {
+var __copyProps = (to2, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+      if (!__hasOwnProp.call(to2, key) && key !== except)
+        __defProp(to2, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
   }
-  return to;
+  return to2;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
   // If the importer is in node compatibility mode or this is not an ESM
@@ -52,9 +52,9 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 
-// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js
+// node_modules/.pnpm/tsup@8.5.1_postcss@8.5.28_tsx@4.23.15_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js
 var init_cjs_shims = __esm({
-  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.20_tsx@4.23.1_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js"() {
+  "node_modules/.pnpm/tsup@8.5.1_postcss@8.5.28_tsx@4.23.15_typescript@7.0.2/node_modules/tsup/assets/cjs_shims.js"() {
     "use strict";
   }
 });
@@ -65,11 +65,11 @@ var require_ms = __commonJS({
     "use strict";
     init_cjs_shims();
     var s = 1e3;
-    var m = s * 60;
-    var h2 = m * 60;
-    var d = h2 * 24;
-    var w = d * 7;
-    var y2 = d * 365.25;
+    var m2 = s * 60;
+    var h3 = m2 * 60;
+    var d2 = h3 * 24;
+    var w2 = d2 * 7;
+    var y2 = d2 * 365.25;
     module2.exports = function(val, options) {
       options = options || {};
       var type = typeof val;
@@ -105,23 +105,23 @@ var require_ms = __commonJS({
         case "weeks":
         case "week":
         case "w":
-          return n5 * w;
+          return n5 * w2;
         case "days":
         case "day":
         case "d":
-          return n5 * d;
+          return n5 * d2;
         case "hours":
         case "hour":
         case "hrs":
         case "hr":
         case "h":
-          return n5 * h2;
+          return n5 * h3;
         case "minutes":
         case "minute":
         case "mins":
         case "min":
         case "m":
-          return n5 * m;
+          return n5 * m2;
         case "seconds":
         case "second":
         case "secs":
@@ -138,41 +138,41 @@ var require_ms = __commonJS({
           return void 0;
       }
     }
-    function fmtShort(ms2) {
-      var msAbs = Math.abs(ms2);
-      if (msAbs >= d) {
-        return Math.round(ms2 / d) + "d";
+    function fmtShort(ms3) {
+      var msAbs = Math.abs(ms3);
+      if (msAbs >= d2) {
+        return Math.round(ms3 / d2) + "d";
       }
-      if (msAbs >= h2) {
-        return Math.round(ms2 / h2) + "h";
+      if (msAbs >= h3) {
+        return Math.round(ms3 / h3) + "h";
       }
-      if (msAbs >= m) {
-        return Math.round(ms2 / m) + "m";
-      }
-      if (msAbs >= s) {
-        return Math.round(ms2 / s) + "s";
-      }
-      return ms2 + "ms";
-    }
-    function fmtLong(ms2) {
-      var msAbs = Math.abs(ms2);
-      if (msAbs >= d) {
-        return plural(ms2, msAbs, d, "day");
-      }
-      if (msAbs >= h2) {
-        return plural(ms2, msAbs, h2, "hour");
-      }
-      if (msAbs >= m) {
-        return plural(ms2, msAbs, m, "minute");
+      if (msAbs >= m2) {
+        return Math.round(ms3 / m2) + "m";
       }
       if (msAbs >= s) {
-        return plural(ms2, msAbs, s, "second");
+        return Math.round(ms3 / s) + "s";
       }
-      return ms2 + " ms";
+      return ms3 + "ms";
     }
-    function plural(ms2, msAbs, n5, name) {
+    function fmtLong(ms3) {
+      var msAbs = Math.abs(ms3);
+      if (msAbs >= d2) {
+        return plural(ms3, msAbs, d2, "day");
+      }
+      if (msAbs >= h3) {
+        return plural(ms3, msAbs, h3, "hour");
+      }
+      if (msAbs >= m2) {
+        return plural(ms3, msAbs, m2, "minute");
+      }
+      if (msAbs >= s) {
+        return plural(ms3, msAbs, s, "second");
+      }
+      return ms3 + " ms";
+    }
+    function plural(ms3, msAbs, n5, name) {
       var isPlural = msAbs >= n5 * 1.5;
-      return Math.round(ms2 / n5) + " " + name + (isPlural ? "s" : "");
+      return Math.round(ms3 / n5) + " " + name + (isPlural ? "s" : "");
     }
   }
 });
@@ -199,8 +199,8 @@ var require_common = __commonJS({
       createDebug.formatters = {};
       function selectColor(namespace) {
         let hash = 0;
-        for (let i2 = 0; i2 < namespace.length; i2++) {
-          hash = (hash << 5) - hash + namespace.charCodeAt(i2);
+        for (let i = 0; i < namespace.length; i++) {
+          hash = (hash << 5) - hash + namespace.charCodeAt(i);
           hash |= 0;
         }
         return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
@@ -211,14 +211,14 @@ var require_common = __commonJS({
         let enableOverride = null;
         let namespacesCache;
         let enabledCache;
-        function debug2(...args) {
-          if (!debug2.enabled) {
+        function debug(...args) {
+          if (!debug.enabled) {
             return;
           }
-          const self = debug2;
+          const self = debug;
           const curr = Number(/* @__PURE__ */ new Date());
-          const ms2 = curr - (prevTime || curr);
-          self.diff = ms2;
+          const ms3 = curr - (prevTime || curr);
+          self.diff = ms3;
           self.prev = prevTime;
           self.curr = curr;
           prevTime = curr;
@@ -245,12 +245,12 @@ var require_common = __commonJS({
           const logFn = self.log || createDebug.log;
           logFn.apply(self, args);
         }
-        debug2.namespace = namespace;
-        debug2.useColors = createDebug.useColors();
-        debug2.color = createDebug.selectColor(namespace);
-        debug2.extend = extend;
-        debug2.destroy = createDebug.destroy;
-        Object.defineProperty(debug2, "enabled", {
+        debug.namespace = namespace;
+        debug.useColors = createDebug.useColors();
+        debug.color = createDebug.selectColor(namespace);
+        debug.extend = extend;
+        debug.destroy = createDebug.destroy;
+        Object.defineProperty(debug, "enabled", {
           enumerable: true,
           configurable: false,
           get: () => {
@@ -263,14 +263,14 @@ var require_common = __commonJS({
             }
             return enabledCache;
           },
-          set: (v2) => {
-            enableOverride = v2;
+          set: (v3) => {
+            enableOverride = v3;
           }
         });
         if (typeof createDebug.init === "function") {
-          createDebug.init(debug2);
+          createDebug.init(debug);
         }
-        return debug2;
+        return debug;
       }
       function extend(namespace, delimiter) {
         const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
@@ -283,11 +283,11 @@ var require_common = __commonJS({
         createDebug.names = [];
         createDebug.skips = [];
         const split = (typeof namespaces === "string" ? namespaces : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
-        for (const ns2 of split) {
-          if (ns2[0] === "-") {
-            createDebug.skips.push(ns2.slice(1));
+        for (const ns3 of split) {
+          if (ns3[0] === "-") {
+            createDebug.skips.push(ns3.slice(1));
           } else {
-            createDebug.names.push(ns2);
+            createDebug.names.push(ns3);
           }
         }
       }
@@ -333,8 +333,8 @@ var require_common = __commonJS({
             return false;
           }
         }
-        for (const ns2 of createDebug.names) {
-          if (matchesTemplate(name, ns2)) {
+        for (const ns3 of createDebug.names) {
+          if (matchesTemplate(name, ns3)) {
             return true;
           }
         }
@@ -460,11 +460,11 @@ var require_browser = __commonJS({
       if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
         return false;
       }
-      let m;
+      let m2;
       return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
       typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
       // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-      typeof navigator !== "undefined" && navigator.userAgent && (m = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
+      typeof navigator !== "undefined" && navigator.userAgent && (m2 = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m2[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
       typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
     }
     function formatArgs(args) {
@@ -518,9 +518,9 @@ var require_browser = __commonJS({
     }
     module2.exports = require_common()(exports2);
     var { formatters } = module2.exports;
-    formatters.j = function(v2) {
+    formatters.j = function(v3) {
       try {
-        return JSON.stringify(v2);
+        return JSON.stringify(v3);
       } catch (error) {
         return "[UnexpectedJSONParseError]: " + error.message;
       }
@@ -634,7 +634,7 @@ var require_node = __commonJS({
     exports2.inspectOpts = Object.keys(process.env).filter((key) => {
       return /^debug_/i.test(key);
     }).reduce((obj, key) => {
-      const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_3, k3) => {
+      const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_4, k3) => {
         return k3.toUpperCase();
       });
       let val = process.env[key];
@@ -684,22 +684,22 @@ var require_node = __commonJS({
     function load() {
       return process.env.DEBUG;
     }
-    function init(debug2) {
-      debug2.inspectOpts = {};
+    function init(debug) {
+      debug.inspectOpts = {};
       const keys = Object.keys(exports2.inspectOpts);
-      for (let i2 = 0; i2 < keys.length; i2++) {
-        debug2.inspectOpts[keys[i2]] = exports2.inspectOpts[keys[i2]];
+      for (let i = 0; i < keys.length; i++) {
+        debug.inspectOpts[keys[i]] = exports2.inspectOpts[keys[i]];
       }
     }
     module2.exports = require_common()(exports2);
     var { formatters } = module2.exports;
-    formatters.o = function(v2) {
+    formatters.o = function(v3) {
       this.inspectOpts.colors = this.useColors;
-      return util.inspect(v2, this.inspectOpts).split("\n").map((str) => str.trim()).join(" ");
+      return util.inspect(v3, this.inspectOpts).split("\n").map((str) => str.trim()).join(" ");
     };
-    formatters.O = function(v2) {
+    formatters.O = function(v3) {
       this.inspectOpts.colors = this.useColors;
-      return util.inspect(v2, this.inspectOpts);
+      return util.inspect(v3, this.inspectOpts);
     };
   }
 });
@@ -752,10 +752,10 @@ var require_src2 = __commonJS({
         throw e;
       }
     }
-    function exists2(path16, type = exports2.READABLE) {
+    function exists(path16, type = exports2.READABLE) {
       return check(path16, (type & exports2.FILE) > 0, (type & exports2.FOLDER) > 0);
     }
-    exports2.exists = exists2;
+    exports2.exists = exists;
     exports2.FILE = 1;
     exports2.FOLDER = 2;
     exports2.READABLE = exports2.FILE + exports2.FOLDER;
@@ -767,11 +767,11 @@ var require_dist = __commonJS({
   "node_modules/.pnpm/@kwsites+file-exists@1.1.1/node_modules/@kwsites/file-exists/dist/index.js"(exports2) {
     "use strict";
     init_cjs_shims();
-    function __export3(m) {
-      for (var p2 in m) if (!exports2.hasOwnProperty(p2)) exports2[p2] = m[p2];
+    function __export2(m2) {
+      for (var p2 in m2) if (!exports2.hasOwnProperty(p2)) exports2[p2] = m2[p2];
     }
     Object.defineProperty(exports2, "__esModule", { value: true });
-    __export3(require_src2());
+    __export2(require_src2());
   }
 });
 
@@ -782,7 +782,7 @@ var require_dist2 = __commonJS({
     init_cjs_shims();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createDeferred = exports2.deferred = void 0;
-    function deferred2() {
+    function deferred() {
       let done;
       let fail;
       let status = "pending";
@@ -812,9 +812,9 @@ var require_dist2 = __commonJS({
         }
       };
     }
-    exports2.deferred = deferred2;
-    exports2.createDeferred = deferred2;
-    exports2.default = deferred2;
+    exports2.deferred = deferred;
+    exports2.createDeferred = deferred;
+    exports2.default = deferred;
   }
 });
 
@@ -849,7 +849,7 @@ init_cjs_shims();
 
 // src/cli.ts
 init_cjs_shims();
-var import_child_process2 = require("child_process");
+var import_child_process = require("child_process");
 var import_fs6 = __toESM(require("fs"));
 var import_path14 = __toESM(require("path"));
 
@@ -859,7 +859,7 @@ init_cjs_shims();
 // package.json
 var package_default = {
   name: "testchronicle",
-  version: "0.1.0",
+  version: "0.1.21",
   description: "CLI agent for syncing test data to Test Chronicle",
   author: "Daniel Williams",
   license: "MIT",
@@ -898,16 +898,16 @@ var package_default = {
   },
   dependencies: {
     glob: "^13.0.6",
-    minimatch: "10.2.5",
-    "simple-git": "^3.36.0"
+    minimatch: "10.2.6",
+    "simple-git": "^4.0.2"
   },
   devDependencies: {
     "@types/node": "^26.0.0",
-    "@vercel/ncc": "^0.44.0",
+    "@vercel/ncc": "^0.45.0",
     tsup: "^8.5.1",
     tsx: "^4.21.0",
     typescript: "^7.0.2",
-    vitest: "^4.1.6"
+    vitest: "^5.0.2"
   },
   engines: {
     node: ">=18.0.0"
@@ -952,28 +952,28 @@ var import_node_events = require("events");
 var import_node_stream = __toESM(require("stream"), 1);
 var import_node_string_decoder = require("string_decoder");
 var Gt = (n5, t2, e) => {
-  let s = n5 instanceof RegExp ? ce(n5, e) : n5, i2 = t2 instanceof RegExp ? ce(t2, e) : t2, r2 = s !== null && i2 != null && ss(s, i2, e);
-  return r2 && { start: r2[0], end: r2[1], pre: e.slice(0, r2[0]), body: e.slice(r2[0] + s.length, r2[1]), post: e.slice(r2[1] + i2.length) };
+  let s = n5 instanceof RegExp ? ce(n5, e) : n5, i = t2 instanceof RegExp ? ce(t2, e) : t2, r2 = s !== null && i != null && ss(s, i, e);
+  return r2 && { start: r2[0], end: r2[1], pre: e.slice(0, r2[0]), body: e.slice(r2[0] + s.length, r2[1]), post: e.slice(r2[1] + i.length) };
 };
 var ce = (n5, t2) => {
   let e = t2.match(n5);
   return e ? e[0] : null;
 };
 var ss = (n5, t2, e) => {
-  let s, i2, r2, o2, h2, a = e.indexOf(n5), l = e.indexOf(t2, a + 1), u = a;
-  if (a >= 0 && l > 0) {
-    if (n5 === t2) return [a, l];
-    for (s = [], r2 = e.length; u >= 0 && !h2; ) {
-      if (u === a) s.push(u), a = e.indexOf(n5, u + 1);
+  let s, i, r2, o2, h3, a = e.indexOf(n5), l3 = e.indexOf(t2, a + 1), u2 = a;
+  if (a >= 0 && l3 > 0) {
+    if (n5 === t2) return [a, l3];
+    for (s = [], r2 = e.length; u2 >= 0 && !h3; ) {
+      if (u2 === a) s.push(u2), a = e.indexOf(n5, u2 + 1);
       else if (s.length === 1) {
         let c3 = s.pop();
-        c3 !== void 0 && (h2 = [c3, l]);
-      } else i2 = s.pop(), i2 !== void 0 && i2 < r2 && (r2 = i2, o2 = l), l = e.indexOf(t2, u + 1);
-      u = a < l && a >= 0 ? a : l;
+        c3 !== void 0 && (h3 = [c3, l3]);
+      } else i = s.pop(), i !== void 0 && i < r2 && (r2 = i, o2 = l3), l3 = e.indexOf(t2, u2 + 1);
+      u2 = a < l3 && a >= 0 ? a : l3;
     }
-    s.length && o2 !== void 0 && (h2 = [r2, o2]);
+    s.length && o2 !== void 0 && (h3 = [r2, o2]);
   }
-  return h2;
+  return h3;
 };
 var fe = "\0SLASH" + Math.random() + "\0";
 var ue = "\0OPEN" + Math.random() + "\0";
@@ -1004,10 +1004,10 @@ function me(n5) {
   if (!n5) return [""];
   let t2 = [], e = Gt("{", "}", n5);
   if (!e) return n5.split(",");
-  let { pre: s, body: i2, post: r2 } = e, o2 = s.split(",");
-  o2[o2.length - 1] += "{" + i2 + "}";
-  let h2 = me(r2);
-  return r2.length && (o2[o2.length - 1] += h2.shift(), o2.push.apply(o2, h2)), t2.push.apply(t2, o2), t2;
+  let { pre: s, body: i, post: r2 } = e, o2 = s.split(",");
+  o2[o2.length - 1] += "{" + i + "}";
+  let h3 = me(r2);
+  return r2.length && (o2[o2.length - 1] += h3.shift(), o2.push.apply(o2, h3)), t2.push.apply(t2, o2), t2;
 }
 function ge(n5, t2 = {}) {
   if (!n5) return [];
@@ -1027,44 +1027,44 @@ function bs(n5, t2) {
   return n5 >= t2;
 }
 function ht(n5, t2, e) {
-  let s = [], i2 = Gt("{", "}", n5);
-  if (!i2) return [n5];
-  let r2 = i2.pre, o2 = i2.post.length ? ht(i2.post, t2, false) : [""];
-  if (/\$$/.test(i2.pre)) for (let h2 = 0; h2 < o2.length && h2 < t2; h2++) {
-    let a = r2 + "{" + i2.body + "}" + o2[h2];
+  let s = [], i = Gt("{", "}", n5);
+  if (!i) return [n5];
+  let r2 = i.pre, o2 = i.post.length ? ht(i.post, t2, false) : [""];
+  if (/\$$/.test(i.pre)) for (let h3 = 0; h3 < o2.length && h3 < t2; h3++) {
+    let a = r2 + "{" + i.body + "}" + o2[h3];
     s.push(a);
   }
   else {
-    let h2 = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(i2.body), a = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(i2.body), l = h2 || a, u = i2.body.indexOf(",") >= 0;
-    if (!l && !u) return i2.post.match(/,(?!,).*\}/) ? (n5 = i2.pre + "{" + i2.body + qt + i2.post, ht(n5, t2, true)) : [n5];
+    let h3 = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(i.body), a = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(i.body), l3 = h3 || a, u2 = i.body.indexOf(",") >= 0;
+    if (!l3 && !u2) return i.post.match(/,(?!,).*\}/) ? (n5 = i.pre + "{" + i.body + qt + i.post, ht(n5, t2, true)) : [n5];
     let c3;
-    if (l) c3 = i2.body.split(/\.\./);
-    else if (c3 = me(i2.body), c3.length === 1 && c3[0] !== void 0 && (c3 = ht(c3[0], t2, false).map(gs), c3.length === 1)) return o2.map((f) => i2.pre + c3[0] + f);
-    let d;
-    if (l && c3[0] !== void 0 && c3[1] !== void 0) {
-      let f = Ht(c3[0]), m = Ht(c3[1]), p2 = Math.max(c3[0].length, c3[1].length), w = c3.length === 3 && c3[2] !== void 0 ? Math.abs(Ht(c3[2])) : 1, g = ys;
-      m < f && (w *= -1, g = bs);
-      let E2 = c3.some(ws);
-      d = [];
-      for (let y2 = f; g(y2, m); y2 += w) {
-        let b2;
-        if (a) b2 = String.fromCharCode(y2), b2 === "\\" && (b2 = "");
-        else if (b2 = String(y2), E2) {
-          let z2 = p2 - b2.length;
-          if (z2 > 0) {
-            let $2 = new Array(z2 + 1).join("0");
-            y2 < 0 ? b2 = "-" + $2 + b2.slice(1) : b2 = $2 + b2;
+    if (l3) c3 = i.body.split(/\.\./);
+    else if (c3 = me(i.body), c3.length === 1 && c3[0] !== void 0 && (c3 = ht(c3[0], t2, false).map(gs), c3.length === 1)) return o2.map((f3) => i.pre + c3[0] + f3);
+    let d2;
+    if (l3 && c3[0] !== void 0 && c3[1] !== void 0) {
+      let f3 = Ht(c3[0]), m2 = Ht(c3[1]), p2 = Math.max(c3[0].length, c3[1].length), w2 = c3.length === 3 && c3[2] !== void 0 ? Math.abs(Ht(c3[2])) : 1, g2 = ys;
+      m2 < f3 && (w2 *= -1, g2 = bs);
+      let E3 = c3.some(ws);
+      d2 = [];
+      for (let y2 = f3; g2(y2, m2); y2 += w2) {
+        let b3;
+        if (a) b3 = String.fromCharCode(y2), b3 === "\\" && (b3 = "");
+        else if (b3 = String(y2), E3) {
+          let z3 = p2 - b3.length;
+          if (z3 > 0) {
+            let $3 = new Array(z3 + 1).join("0");
+            y2 < 0 ? b3 = "-" + $3 + b3.slice(1) : b3 = $3 + b3;
           }
         }
-        d.push(b2);
+        d2.push(b3);
       }
     } else {
-      d = [];
-      for (let f = 0; f < c3.length; f++) d.push.apply(d, ht(c3[f], t2, false));
+      d2 = [];
+      for (let f3 = 0; f3 < c3.length; f3++) d2.push.apply(d2, ht(c3[f3], t2, false));
     }
-    for (let f = 0; f < d.length; f++) for (let m = 0; m < o2.length && s.length < t2; m++) {
-      let p2 = r2 + d[f] + o2[m];
-      (!e || l || p2) && s.push(p2);
+    for (let f3 = 0; f3 < d2.length; f3++) for (let m2 = 0; m2 < o2.length && s.length < t2; m2++) {
+      let p2 = r2 + d2[f3] + o2[m2];
+      (!e || l3 || p2) && s.push(p2);
     }
   }
   return s;
@@ -1080,15 +1080,15 @@ var we = (n5) => n5.join("");
 var ye = (n5, t2) => {
   let e = t2;
   if (n5.charAt(e) !== "[") throw new Error("not in a brace expression");
-  let s = [], i2 = [], r2 = e + 1, o2 = false, h2 = false, a = false, l = false, u = e, c3 = "";
+  let s = [], i = [], r2 = e + 1, o2 = false, h3 = false, a = false, l3 = false, u2 = e, c3 = "";
   t: for (; r2 < n5.length; ) {
     let p2 = n5.charAt(r2);
     if ((p2 === "!" || p2 === "^") && r2 === e + 1) {
-      l = true, r2++;
+      l3 = true, r2++;
       continue;
     }
     if (p2 === "]" && o2 && !a) {
-      u = r2 + 1;
+      u2 = r2 + 1;
       break;
     }
     if (o2 = true, p2 === "\\" && !a) {
@@ -1096,9 +1096,9 @@ var ye = (n5, t2) => {
       continue;
     }
     if (p2 === "[" && !a) {
-      for (let [w, [g, S2, E2]] of Object.entries(Ss)) if (n5.startsWith(w, r2)) {
+      for (let [w2, [g2, S3, E3]] of Object.entries(Ss)) if (n5.startsWith(w2, r2)) {
         if (c3) return ["$.", false, n5.length - e, true];
-        r2 += w.length, E2 ? i2.push(g) : s.push(g), h2 = h2 || S2;
+        r2 += w2.length, E3 ? i.push(g2) : s.push(g2), h3 = h3 || S3;
         continue t;
       }
     }
@@ -1116,14 +1116,14 @@ var ye = (n5, t2) => {
     }
     s.push(lt(p2)), r2++;
   }
-  if (u < r2) return ["", false, 0, false];
-  if (!s.length && !i2.length) return ["$.", false, n5.length - e, true];
-  if (i2.length === 0 && s.length === 1 && /^\\?.$/.test(s[0]) && !l) {
+  if (u2 < r2) return ["", false, 0, false];
+  if (!s.length && !i.length) return ["$.", false, n5.length - e, true];
+  if (i.length === 0 && s.length === 1 && /^\\?.$/.test(s[0]) && !l3) {
     let p2 = s[0].length === 2 ? s[0].slice(-1) : s[0];
-    return [Es(p2), false, u - e, false];
+    return [Es(p2), false, u2 - e, false];
   }
-  let d = "[" + (l ? "^" : "") + we(s) + "]", f = "[" + (l ? "" : "^") + we(i2) + "]";
-  return [s.length && i2.length ? "(" + d + "|" + f + ")" : s.length ? d : f, h2, u - e, true];
+  let d2 = "[" + (l3 ? "^" : "") + we(s) + "]", f3 = "[" + (l3 ? "" : "^") + we(i) + "]";
+  return [s.length && i.length ? "(" + d2 + "|" + f3 + ")" : s.length ? d2 : f3, h3, u2 - e, true];
 };
 var W = (n5, { windowsPathsNoEscape: t2 = false, magicalBraces: e = true } = {}) => e ? t2 ? n5.replace(/\[([^\/\\])\]/g, "$1") : n5.replace(/((?!\\).|^)\[([^\/\\])\]/g, "$1$2").replace(/\\([^\/])/g, "$1") : t2 ? n5.replace(/\[([^\/\\{}])\]/g, "$1") : n5.replace(/((?!\\).|^)\[([^\/\\{}])\]/g, "$1$2").replace(/\\([^\/{}])/g, "$1");
 var xs = /* @__PURE__ */ new Set(["!", "?", "+", "*", "@"]);
@@ -1200,16 +1200,16 @@ var Q = (_a = class {
     return e;
   }
   static fromGlob(t2, e = {}) {
-    var _a13;
+    var _a12;
     let s = new _a(null, void 0, e);
-    return __privateMethod(_a13 = _a, _n_static, i_fn).call(_a13, t2, s, 0, e), s;
+    return __privateMethod(_a12 = _a, _n_static, i_fn).call(_a12, t2, s, 0, e), s;
   }
   toMMPattern() {
     if (this !== __privateGet(this, _t)) return __privateGet(this, _t).toMMPattern();
-    let t2 = this.toString(), [e, s, i2, r2] = this.toRegExpSource();
-    if (!(i2 || __privateGet(this, _s) || __privateGet(this, _h).nocase && !__privateGet(this, _h).nocaseMagicOnly && t2.toUpperCase() !== t2.toLowerCase())) return s;
-    let h2 = (__privateGet(this, _h).nocase ? "i" : "") + (r2 ? "u" : "");
-    return Object.assign(new RegExp(`^${e}$`, h2), { _src: e, _glob: t2 });
+    let t2 = this.toString(), [e, s, i, r2] = this.toRegExpSource();
+    if (!(i || __privateGet(this, _s) || __privateGet(this, _h).nocase && !__privateGet(this, _h).nocaseMagicOnly && t2.toUpperCase() !== t2.toLowerCase())) return s;
+    let h3 = (__privateGet(this, _h).nocase ? "i" : "") + (r2 ? "u" : "");
+    return Object.assign(new RegExp(`^${e}$`, h3), { _src: e, _glob: t2 });
   }
   get options() {
     return __privateGet(this, _h);
@@ -1217,32 +1217,32 @@ var Q = (_a = class {
   toRegExpSource(t2) {
     let e = t2 ?? !!__privateGet(this, _h).dot;
     if (__privateGet(this, _t) === this && __privateMethod(this, _n_instances, a_fn).call(this), !this.type) {
-      let a = this.isStart() && this.isEnd() && !__privateGet(this, _r).some((f) => typeof f != "string"), l = __privateGet(this, _r).map((f) => {
-        var _a13;
-        let [m, p2, w, g] = typeof f == "string" ? __privateMethod(_a13 = _a, _n_static, E_fn).call(_a13, f, __privateGet(this, _s), a) : f.toRegExpSource(t2);
-        return __privateSet(this, _s, __privateGet(this, _s) || w), __privateSet(this, _n, __privateGet(this, _n) || g), m;
-      }).join(""), u = "";
+      let a = this.isStart() && this.isEnd() && !__privateGet(this, _r).some((f3) => typeof f3 != "string"), l3 = __privateGet(this, _r).map((f3) => {
+        var _a12;
+        let [m2, p2, w2, g2] = typeof f3 == "string" ? __privateMethod(_a12 = _a, _n_static, E_fn).call(_a12, f3, __privateGet(this, _s), a) : f3.toRegExpSource(t2);
+        return __privateSet(this, _s, __privateGet(this, _s) || w2), __privateSet(this, _n, __privateGet(this, _n) || g2), m2;
+      }).join(""), u2 = "";
       if (this.isStart() && typeof __privateGet(this, _r)[0] == "string" && !(__privateGet(this, _r).length === 1 && Ts.has(__privateGet(this, _r)[0]))) {
-        let m = Cs, p2 = e && m.has(l.charAt(0)) || l.startsWith("\\.") && m.has(l.charAt(2)) || l.startsWith("\\.\\.") && m.has(l.charAt(4)), w = !e && !t2 && m.has(l.charAt(0));
-        u = p2 ? vs : w ? Ct : "";
+        let m2 = Cs, p2 = e && m2.has(l3.charAt(0)) || l3.startsWith("\\.") && m2.has(l3.charAt(2)) || l3.startsWith("\\.\\.") && m2.has(l3.charAt(4)), w2 = !e && !t2 && m2.has(l3.charAt(0));
+        u2 = p2 ? vs : w2 ? Ct : "";
       }
       let c3 = "";
-      return this.isEnd() && __privateGet(__privateGet(this, _t), _c) && __privateGet(this, _o)?.type === "!" && (c3 = "(?:$|\\/)"), [u + l + c3, W(l), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
+      return this.isEnd() && __privateGet(__privateGet(this, _t), _c) && __privateGet(this, _o)?.type === "!" && (c3 = "(?:$|\\/)"), [u2 + l3 + c3, W(l3), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
     }
-    let s = this.type === "*" || this.type === "+", i2 = this.type === "!" ? "(?:(?!(?:" : "(?:", r2 = __privateMethod(this, _n_instances, d_fn).call(this, e);
+    let s = this.type === "*" || this.type === "+", i = this.type === "!" ? "(?:(?!(?:" : "(?:", r2 = __privateMethod(this, _n_instances, d_fn).call(this, e);
     if (this.isStart() && this.isEnd() && !r2 && this.type !== "!") {
       let a = this.toString();
       return __privateSet(this, _r, [a]), this.type = null, __privateSet(this, _s, void 0), [a, W(this.toString()), false, false];
     }
     let o2 = !s || t2 || e || !Ct ? "" : __privateMethod(this, _n_instances, d_fn).call(this, true);
     o2 === r2 && (o2 = ""), o2 && (r2 = `(?:${r2})(?:${o2})*?`);
-    let h2 = "";
-    if (this.type === "!" && __privateGet(this, _f)) h2 = (this.isStart() && !e ? Ct : "") + Ee;
+    let h3 = "";
+    if (this.type === "!" && __privateGet(this, _f)) h3 = (this.isStart() && !e ? Ct : "") + Ee;
     else {
       let a = this.type === "!" ? "))" + (this.isStart() && !e && !t2 ? Ct : "") + Se + ")" : this.type === "@" ? ")" : this.type === "?" ? ")?" : this.type === "+" && o2 ? ")" : this.type === "*" && o2 ? ")?" : `)${this.type}`;
-      h2 = i2 + r2 + a;
+      h3 = i + r2 + a;
     }
-    return [h2, W(r2), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
+    return [h3, W(r2), __privateSet(this, _s, !!__privateGet(this, _s)), __privateGet(this, _n)];
   }
 }, _t = new WeakMap(), _s = new WeakMap(), _n = new WeakMap(), _r = new WeakMap(), _o = new WeakMap(), _S = new WeakMap(), _w = new WeakMap(), _c = new WeakMap(), _h = new WeakMap(), _u = new WeakMap(), _f = new WeakMap(), _n_instances = new WeakSet(), a_fn = function() {
   if (this !== __privateGet(this, _t)) throw new Error("should only call on root");
@@ -1253,105 +1253,105 @@ var Q = (_a = class {
     if (t2.type !== "!") continue;
     let e = t2, s = __privateGet(e, _o);
     for (; s; ) {
-      for (let i2 = __privateGet(e, _S) + 1; !s.type && i2 < __privateGet(s, _r).length; i2++) for (let r2 of __privateGet(t2, _r)) {
+      for (let i = __privateGet(e, _S) + 1; !s.type && i < __privateGet(s, _r).length; i++) for (let r2 of __privateGet(t2, _r)) {
         if (typeof r2 == "string") throw new Error("string part in extglob AST??");
-        r2.copyIn(__privateGet(s, _r)[i2]);
+        r2.copyIn(__privateGet(s, _r)[i]);
       }
       e = s, s = __privateGet(e, _o);
     }
   }
   return this;
-}, _n_static = new WeakSet(), i_fn = function(t2, e, s, i2) {
-  var _a13, _b5;
-  let r2 = false, o2 = false, h2 = -1, a = false;
+}, _n_static = new WeakSet(), i_fn = function(t2, e, s, i) {
+  var _a12, _b5;
+  let r2 = false, o2 = false, h3 = -1, a = false;
   if (e.type === null) {
-    let f = s, m = "";
-    for (; f < t2.length; ) {
-      let p2 = t2.charAt(f++);
+    let f3 = s, m2 = "";
+    for (; f3 < t2.length; ) {
+      let p2 = t2.charAt(f3++);
       if (r2 || p2 === "\\") {
-        r2 = !r2, m += p2;
+        r2 = !r2, m2 += p2;
         continue;
       }
       if (o2) {
-        f === h2 + 1 ? (p2 === "^" || p2 === "!") && (a = true) : p2 === "]" && !(f === h2 + 2 && a) && (o2 = false), m += p2;
+        f3 === h3 + 1 ? (p2 === "^" || p2 === "!") && (a = true) : p2 === "]" && !(f3 === h3 + 2 && a) && (o2 = false), m2 += p2;
         continue;
       } else if (p2 === "[") {
-        o2 = true, h2 = f, a = false, m += p2;
+        o2 = true, h3 = f3, a = false, m2 += p2;
         continue;
       }
-      if (!i2.noext && be(p2) && t2.charAt(f) === "(") {
-        e.push(m), m = "";
-        let w = new _a(p2, e);
-        f = __privateMethod(_a13 = _a, _n_static, i_fn).call(_a13, t2, w, f, i2), e.push(w);
+      if (!i.noext && be(p2) && t2.charAt(f3) === "(") {
+        e.push(m2), m2 = "";
+        let w2 = new _a(p2, e);
+        f3 = __privateMethod(_a12 = _a, _n_static, i_fn).call(_a12, t2, w2, f3, i), e.push(w2);
         continue;
       }
-      m += p2;
+      m2 += p2;
     }
-    return e.push(m), f;
+    return e.push(m2), f3;
   }
-  let l = s + 1, u = new _a(null, e), c3 = [], d = "";
-  for (; l < t2.length; ) {
-    let f = t2.charAt(l++);
-    if (r2 || f === "\\") {
-      r2 = !r2, d += f;
+  let l3 = s + 1, u2 = new _a(null, e), c3 = [], d2 = "";
+  for (; l3 < t2.length; ) {
+    let f3 = t2.charAt(l3++);
+    if (r2 || f3 === "\\") {
+      r2 = !r2, d2 += f3;
       continue;
     }
     if (o2) {
-      l === h2 + 1 ? (f === "^" || f === "!") && (a = true) : f === "]" && !(l === h2 + 2 && a) && (o2 = false), d += f;
+      l3 === h3 + 1 ? (f3 === "^" || f3 === "!") && (a = true) : f3 === "]" && !(l3 === h3 + 2 && a) && (o2 = false), d2 += f3;
       continue;
-    } else if (f === "[") {
-      o2 = true, h2 = l, a = false, d += f;
-      continue;
-    }
-    if (be(f) && t2.charAt(l) === "(") {
-      u.push(d), d = "";
-      let m = new _a(f, u);
-      u.push(m), l = __privateMethod(_b5 = _a, _n_static, i_fn).call(_b5, t2, m, l, i2);
+    } else if (f3 === "[") {
+      o2 = true, h3 = l3, a = false, d2 += f3;
       continue;
     }
-    if (f === "|") {
-      u.push(d), d = "", c3.push(u), u = new _a(null, e);
+    if (be(f3) && t2.charAt(l3) === "(") {
+      u2.push(d2), d2 = "";
+      let m2 = new _a(f3, u2);
+      u2.push(m2), l3 = __privateMethod(_b5 = _a, _n_static, i_fn).call(_b5, t2, m2, l3, i);
       continue;
     }
-    if (f === ")") return d === "" && __privateGet(e, _r).length === 0 && __privateSet(e, _f, true), u.push(d), d = "", e.push(...c3, u), l;
-    d += f;
+    if (f3 === "|") {
+      u2.push(d2), d2 = "", c3.push(u2), u2 = new _a(null, e);
+      continue;
+    }
+    if (f3 === ")") return d2 === "" && __privateGet(e, _r).length === 0 && __privateSet(e, _f, true), u2.push(d2), d2 = "", e.push(...c3, u2), l3;
+    d2 += f3;
   }
-  return e.type = null, __privateSet(e, _s, void 0), __privateSet(e, _r, [t2.substring(s - 1)]), l;
+  return e.type = null, __privateSet(e, _s, void 0), __privateSet(e, _r, [t2.substring(s - 1)]), l3;
 }, d_fn = function(t2) {
   return __privateGet(this, _r).map((e) => {
     if (typeof e == "string") throw new Error("string type in extglob ast??");
-    let [s, i2, r2, o2] = e.toRegExpSource(t2);
+    let [s, i, r2, o2] = e.toRegExpSource(t2);
     return __privateSet(this, _n, __privateGet(this, _n) || o2), s;
   }).filter((e) => !(this.isStart() && this.isEnd()) || !!e).join("|");
 }, E_fn = function(t2, e, s = false) {
-  let i2 = false, r2 = "", o2 = false, h2 = false;
+  let i = false, r2 = "", o2 = false, h3 = false;
   for (let a = 0; a < t2.length; a++) {
-    let l = t2.charAt(a);
-    if (i2) {
-      i2 = false, r2 += (As.has(l) ? "\\" : "") + l;
+    let l3 = t2.charAt(a);
+    if (i) {
+      i = false, r2 += (As.has(l3) ? "\\" : "") + l3;
       continue;
     }
-    if (l === "*") {
-      if (h2) continue;
-      h2 = true, r2 += s && /^[*]+$/.test(t2) ? Ee : Se, e = true;
+    if (l3 === "*") {
+      if (h3) continue;
+      h3 = true, r2 += s && /^[*]+$/.test(t2) ? Ee : Se, e = true;
       continue;
-    } else h2 = false;
-    if (l === "\\") {
-      a === t2.length - 1 ? r2 += "\\\\" : i2 = true;
+    } else h3 = false;
+    if (l3 === "\\") {
+      a === t2.length - 1 ? r2 += "\\\\" : i = true;
       continue;
     }
-    if (l === "[") {
-      let [u, c3, d, f] = ye(t2, a);
-      if (d) {
-        r2 += u, o2 = o2 || c3, a += d - 1, e = e || f;
+    if (l3 === "[") {
+      let [u2, c3, d2, f3] = ye(t2, a);
+      if (d2) {
+        r2 += u2, o2 = o2 || c3, a += d2 - 1, e = e || f3;
         continue;
       }
     }
-    if (l === "?") {
+    if (l3 === "?") {
       r2 += Kt, e = true;
       continue;
     }
-    r2 += ks(l);
+    r2 += ks(l3);
   }
   return [r2, W(t2), !!e, o2];
 }, __privateAdd(_a, _n_static), _a);
@@ -1411,21 +1411,21 @@ var N = (n5, t2 = {}) => Object.assign({}, n5, t2);
 var Zs = (n5) => {
   if (!n5 || typeof n5 != "object" || !Object.keys(n5).length) return O;
   let t2 = O;
-  return Object.assign((s, i2, r2 = {}) => t2(s, i2, N(n5, r2)), { Minimatch: class extends t2.Minimatch {
-    constructor(i2, r2 = {}) {
-      super(i2, N(n5, r2));
+  return Object.assign((s, i, r2 = {}) => t2(s, i, N(n5, r2)), { Minimatch: class extends t2.Minimatch {
+    constructor(i, r2 = {}) {
+      super(i, N(n5, r2));
     }
-    static defaults(i2) {
-      return t2.defaults(N(n5, i2)).Minimatch;
+    static defaults(i) {
+      return t2.defaults(N(n5, i)).Minimatch;
     }
   }, AST: class extends t2.AST {
-    constructor(i2, r2, o2 = {}) {
-      super(i2, r2, N(n5, o2));
+    constructor(i, r2, o2 = {}) {
+      super(i, r2, N(n5, o2));
     }
-    static fromGlob(i2, r2 = {}) {
-      return t2.AST.fromGlob(i2, N(n5, r2));
+    static fromGlob(i, r2 = {}) {
+      return t2.AST.fromGlob(i, N(n5, r2));
     }
-  }, unescape: (s, i2 = {}) => t2.unescape(s, N(n5, i2)), escape: (s, i2 = {}) => t2.escape(s, N(n5, i2)), filter: (s, i2 = {}) => t2.filter(s, N(n5, i2)), defaults: (s) => t2.defaults(N(n5, s)), makeRe: (s, i2 = {}) => t2.makeRe(s, N(n5, i2)), braceExpand: (s, i2 = {}) => t2.braceExpand(s, N(n5, i2)), match: (s, i2, r2 = {}) => t2.match(s, i2, N(n5, r2)), sep: t2.sep, GLOBSTAR: A });
+  }, unescape: (s, i = {}) => t2.unescape(s, N(n5, i)), escape: (s, i = {}) => t2.escape(s, N(n5, i)), filter: (s, i = {}) => t2.filter(s, N(n5, i)), defaults: (s) => t2.defaults(N(n5, s)), makeRe: (s, i = {}) => t2.makeRe(s, N(n5, i)), braceExpand: (s, i = {}) => t2.braceExpand(s, N(n5, i)), match: (s, i, r2 = {}) => t2.match(s, i, N(n5, r2)), sep: t2.sep, GLOBSTAR: A });
 };
 O.defaults = Zs;
 var ke = (n5, t2 = {}) => (at(n5), t2.nobrace || !/\{(?:(?!\{).)*\}/.test(n5) ? [n5] : ge(n5, { max: t2.braceExpandMax }));
@@ -1434,7 +1434,7 @@ var Qs = (n5, t2 = {}) => new D(n5, t2).makeRe();
 O.makeRe = Qs;
 var ti = (n5, t2, e = {}) => {
   let s = new D(t2, e);
-  return n5 = n5.filter((i2) => s.match(i2)), s.options.nonull && !n5.length && n5.push(t2), n5;
+  return n5 = n5.filter((i) => s.match(i)), s.options.nonull && !n5.length && n5.push(t2), n5;
 };
 O.match = ti;
 var ve = /[?*]|[+@!]\(.*?\)|\[|\]/;
@@ -1482,22 +1482,22 @@ var D = class {
     this.parseNegate(), this.globSet = [...new Set(this.braceExpand())], e.debug && (this.debug = (...r2) => console.error(...r2)), this.debug(this.pattern, this.globSet);
     let s = this.globSet.map((r2) => this.slashSplit(r2));
     this.globParts = this.preprocess(s), this.debug(this.pattern, this.globParts);
-    let i2 = this.globParts.map((r2, o2, h2) => {
+    let i = this.globParts.map((r2, o2, h3) => {
       if (this.isWindows && this.windowsNoMagicRoot) {
-        let a = r2[0] === "" && r2[1] === "" && (r2[2] === "?" || !ve.test(r2[2])) && !ve.test(r2[3]), l = /^[a-z]:/i.test(r2[0]);
-        if (a) return [...r2.slice(0, 4), ...r2.slice(4).map((u) => this.parse(u))];
-        if (l) return [r2[0], ...r2.slice(1).map((u) => this.parse(u))];
+        let a = r2[0] === "" && r2[1] === "" && (r2[2] === "?" || !ve.test(r2[2])) && !ve.test(r2[3]), l3 = /^[a-z]:/i.test(r2[0]);
+        if (a) return [...r2.slice(0, 4), ...r2.slice(4).map((u2) => this.parse(u2))];
+        if (l3) return [r2[0], ...r2.slice(1).map((u2) => this.parse(u2))];
       }
       return r2.map((a) => this.parse(a));
     });
-    if (this.debug(this.pattern, i2), this.set = i2.filter((r2) => r2.indexOf(false) === -1), this.isWindows) for (let r2 = 0; r2 < this.set.length; r2++) {
+    if (this.debug(this.pattern, i), this.set = i.filter((r2) => r2.indexOf(false) === -1), this.isWindows) for (let r2 = 0; r2 < this.set.length; r2++) {
       let o2 = this.set[r2];
       o2[0] === "" && o2[1] === "" && this.globParts[r2][2] === "?" && typeof o2[3] == "string" && /^[a-z]:$/i.test(o2[3]) && (o2[2] = "?");
     }
     this.debug(this.pattern, this.set);
   }
   preprocess(t2) {
-    if (this.options.noglobstar) for (let s = 0; s < t2.length; s++) for (let i2 = 0; i2 < t2[s].length; i2++) t2[s][i2] === "**" && (t2[s][i2] = "*");
+    if (this.options.noglobstar) for (let s = 0; s < t2.length; s++) for (let i = 0; i < t2[s].length; i++) t2[s][i] === "**" && (t2[s][i] = "*");
     let { optimizationLevel: e = 1 } = this.options;
     return e >= 2 ? (t2 = this.firstPhasePreProcess(t2), t2 = this.secondPhasePreProcess(t2)) : e >= 1 ? t2 = this.levelOneOptimize(t2) : t2 = this.adjascentGlobstarOptimize(t2), t2;
   }
@@ -1505,17 +1505,17 @@ var D = class {
     return t2.map((e) => {
       let s = -1;
       for (; (s = e.indexOf("**", s + 1)) !== -1; ) {
-        let i2 = s;
-        for (; e[i2 + 1] === "**"; ) i2++;
-        i2 !== s && e.splice(s, i2 - s);
+        let i = s;
+        for (; e[i + 1] === "**"; ) i++;
+        i !== s && e.splice(s, i - s);
       }
       return e;
     });
   }
   levelOneOptimize(t2) {
-    return t2.map((e) => (e = e.reduce((s, i2) => {
+    return t2.map((e) => (e = e.reduce((s, i) => {
       let r2 = s[s.length - 1];
-      return i2 === "**" && r2 === "**" ? s : i2 === ".." && r2 && r2 !== ".." && r2 !== "." && r2 !== "**" ? (s.pop(), s) : (s.push(i2), s);
+      return i === "**" && r2 === "**" ? s : i === ".." && r2 && r2 !== ".." && r2 !== "." && r2 !== "**" ? (s.pop(), s) : (s.push(i), s);
     }, []), e.length === 0 ? [""] : e));
   }
   levelTwoFileOptimize(t2) {
@@ -1523,16 +1523,16 @@ var D = class {
     let e = false;
     do {
       if (e = false, !this.preserveMultipleSlashes) {
-        for (let i2 = 1; i2 < t2.length - 1; i2++) {
-          let r2 = t2[i2];
-          i2 === 1 && r2 === "" && t2[0] === "" || (r2 === "." || r2 === "") && (e = true, t2.splice(i2, 1), i2--);
+        for (let i = 1; i < t2.length - 1; i++) {
+          let r2 = t2[i];
+          i === 1 && r2 === "" && t2[0] === "" || (r2 === "." || r2 === "") && (e = true, t2.splice(i, 1), i--);
         }
         t2[0] === "." && t2.length === 2 && (t2[1] === "." || t2[1] === "") && (e = true, t2.pop());
       }
       let s = 0;
       for (; (s = t2.indexOf("..", s + 1)) !== -1; ) {
-        let i2 = t2[s - 1];
-        i2 && i2 !== "." && i2 !== ".." && i2 !== "**" && (e = true, t2.splice(s - 1, 2), s -= 2);
+        let i = t2[s - 1];
+        i && i !== "." && i !== ".." && i !== "**" && (e = true, t2.splice(s - 1, 2), s -= 2);
       }
     } while (e);
     return t2.length === 0 ? [""] : t2;
@@ -1542,21 +1542,21 @@ var D = class {
     do {
       e = false;
       for (let s of t2) {
-        let i2 = -1;
-        for (; (i2 = s.indexOf("**", i2 + 1)) !== -1; ) {
-          let o2 = i2;
+        let i = -1;
+        for (; (i = s.indexOf("**", i + 1)) !== -1; ) {
+          let o2 = i;
           for (; s[o2 + 1] === "**"; ) o2++;
-          o2 > i2 && s.splice(i2 + 1, o2 - i2);
-          let h2 = s[i2 + 1], a = s[i2 + 2], l = s[i2 + 3];
-          if (h2 !== ".." || !a || a === "." || a === ".." || !l || l === "." || l === "..") continue;
-          e = true, s.splice(i2, 1);
-          let u = s.slice(0);
-          u[i2] = "**", t2.push(u), i2--;
+          o2 > i && s.splice(i + 1, o2 - i);
+          let h3 = s[i + 1], a = s[i + 2], l3 = s[i + 3];
+          if (h3 !== ".." || !a || a === "." || a === ".." || !l3 || l3 === "." || l3 === "..") continue;
+          e = true, s.splice(i, 1);
+          let u2 = s.slice(0);
+          u2[i] = "**", t2.push(u2), i--;
         }
         if (!this.preserveMultipleSlashes) {
           for (let o2 = 1; o2 < s.length - 1; o2++) {
-            let h2 = s[o2];
-            o2 === 1 && h2 === "" && s[0] === "" || (h2 === "." || h2 === "") && (e = true, s.splice(o2, 1), o2--);
+            let h3 = s[o2];
+            o2 === 1 && h3 === "" && s[0] === "" || (h3 === "." || h3 === "") && (e = true, s.splice(o2, 1), o2--);
           }
           s[0] === "." && s.length === 2 && (s[1] === "." || s[1] === "") && (e = true, s.pop());
         }
@@ -1575,75 +1575,75 @@ var D = class {
   }
   secondPhasePreProcess(t2) {
     for (let e = 0; e < t2.length - 1; e++) for (let s = e + 1; s < t2.length; s++) {
-      let i2 = this.partsMatch(t2[e], t2[s], !this.preserveMultipleSlashes);
-      if (i2) {
-        t2[e] = [], t2[s] = i2;
+      let i = this.partsMatch(t2[e], t2[s], !this.preserveMultipleSlashes);
+      if (i) {
+        t2[e] = [], t2[s] = i;
         break;
       }
     }
     return t2.filter((e) => e.length);
   }
   partsMatch(t2, e, s = false) {
-    let i2 = 0, r2 = 0, o2 = [], h2 = "";
-    for (; i2 < t2.length && r2 < e.length; ) if (t2[i2] === e[r2]) o2.push(h2 === "b" ? e[r2] : t2[i2]), i2++, r2++;
-    else if (s && t2[i2] === "**" && e[r2] === t2[i2 + 1]) o2.push(t2[i2]), i2++;
-    else if (s && e[r2] === "**" && t2[i2] === e[r2 + 1]) o2.push(e[r2]), r2++;
-    else if (t2[i2] === "*" && e[r2] && (this.options.dot || !e[r2].startsWith(".")) && e[r2] !== "**") {
-      if (h2 === "b") return false;
-      h2 = "a", o2.push(t2[i2]), i2++, r2++;
-    } else if (e[r2] === "*" && t2[i2] && (this.options.dot || !t2[i2].startsWith(".")) && t2[i2] !== "**") {
-      if (h2 === "a") return false;
-      h2 = "b", o2.push(e[r2]), i2++, r2++;
+    let i = 0, r2 = 0, o2 = [], h3 = "";
+    for (; i < t2.length && r2 < e.length; ) if (t2[i] === e[r2]) o2.push(h3 === "b" ? e[r2] : t2[i]), i++, r2++;
+    else if (s && t2[i] === "**" && e[r2] === t2[i + 1]) o2.push(t2[i]), i++;
+    else if (s && e[r2] === "**" && t2[i] === e[r2 + 1]) o2.push(e[r2]), r2++;
+    else if (t2[i] === "*" && e[r2] && (this.options.dot || !e[r2].startsWith(".")) && e[r2] !== "**") {
+      if (h3 === "b") return false;
+      h3 = "a", o2.push(t2[i]), i++, r2++;
+    } else if (e[r2] === "*" && t2[i] && (this.options.dot || !t2[i].startsWith(".")) && t2[i] !== "**") {
+      if (h3 === "a") return false;
+      h3 = "b", o2.push(e[r2]), i++, r2++;
     } else return false;
     return t2.length === e.length && o2;
   }
   parseNegate() {
     if (this.nonegate) return;
     let t2 = this.pattern, e = false, s = 0;
-    for (let i2 = 0; i2 < t2.length && t2.charAt(i2) === "!"; i2++) e = !e, s++;
+    for (let i = 0; i < t2.length && t2.charAt(i) === "!"; i++) e = !e, s++;
     s && (this.pattern = t2.slice(s)), this.negate = e;
   }
   matchOne(t2, e, s = false) {
-    let i2 = this.options;
+    let i = this.options;
     if (this.isWindows) {
-      let p2 = typeof t2[0] == "string" && /^[a-z]:$/i.test(t2[0]), w = !p2 && t2[0] === "" && t2[1] === "" && t2[2] === "?" && /^[a-z]:$/i.test(t2[3]), g = typeof e[0] == "string" && /^[a-z]:$/i.test(e[0]), S2 = !g && e[0] === "" && e[1] === "" && e[2] === "?" && typeof e[3] == "string" && /^[a-z]:$/i.test(e[3]), E2 = w ? 3 : p2 ? 0 : void 0, y2 = S2 ? 3 : g ? 0 : void 0;
-      if (typeof E2 == "number" && typeof y2 == "number") {
-        let [b2, z2] = [t2[E2], e[y2]];
-        b2.toLowerCase() === z2.toLowerCase() && (e[y2] = b2, y2 > E2 ? e = e.slice(y2) : E2 > y2 && (t2 = t2.slice(E2)));
+      let p2 = typeof t2[0] == "string" && /^[a-z]:$/i.test(t2[0]), w2 = !p2 && t2[0] === "" && t2[1] === "" && t2[2] === "?" && /^[a-z]:$/i.test(t2[3]), g2 = typeof e[0] == "string" && /^[a-z]:$/i.test(e[0]), S3 = !g2 && e[0] === "" && e[1] === "" && e[2] === "?" && typeof e[3] == "string" && /^[a-z]:$/i.test(e[3]), E3 = w2 ? 3 : p2 ? 0 : void 0, y2 = S3 ? 3 : g2 ? 0 : void 0;
+      if (typeof E3 == "number" && typeof y2 == "number") {
+        let [b3, z3] = [t2[E3], e[y2]];
+        b3.toLowerCase() === z3.toLowerCase() && (e[y2] = b3, y2 > E3 ? e = e.slice(y2) : E3 > y2 && (t2 = t2.slice(E3)));
       }
     }
     let { optimizationLevel: r2 = 1 } = this.options;
     r2 >= 2 && (t2 = this.levelTwoFileOptimize(t2)), this.debug("matchOne", this, { file: t2, pattern: e }), this.debug("matchOne", t2.length, e.length);
-    for (var o2 = 0, h2 = 0, a = t2.length, l = e.length; o2 < a && h2 < l; o2++, h2++) {
+    for (var o2 = 0, h3 = 0, a = t2.length, l3 = e.length; o2 < a && h3 < l3; o2++, h3++) {
       this.debug("matchOne loop");
-      var u = e[h2], c3 = t2[o2];
-      if (this.debug(e, u, c3), u === false) return false;
-      if (u === A) {
-        this.debug("GLOBSTAR", [e, u, c3]);
-        var d = o2, f = h2 + 1;
-        if (f === l) {
-          for (this.debug("** at the end"); o2 < a; o2++) if (t2[o2] === "." || t2[o2] === ".." || !i2.dot && t2[o2].charAt(0) === ".") return false;
+      var u2 = e[h3], c3 = t2[o2];
+      if (this.debug(e, u2, c3), u2 === false) return false;
+      if (u2 === A) {
+        this.debug("GLOBSTAR", [e, u2, c3]);
+        var d2 = o2, f3 = h3 + 1;
+        if (f3 === l3) {
+          for (this.debug("** at the end"); o2 < a; o2++) if (t2[o2] === "." || t2[o2] === ".." || !i.dot && t2[o2].charAt(0) === ".") return false;
           return true;
         }
-        for (; d < a; ) {
-          var m = t2[d];
+        for (; d2 < a; ) {
+          var m2 = t2[d2];
           if (this.debug(`
-globstar while`, t2, d, e, f, m), this.matchOne(t2.slice(d), e.slice(f), s)) return this.debug("globstar found match!", d, a, m), true;
-          if (m === "." || m === ".." || !i2.dot && m.charAt(0) === ".") {
-            this.debug("dot detected!", t2, d, e, f);
+globstar while`, t2, d2, e, f3, m2), this.matchOne(t2.slice(d2), e.slice(f3), s)) return this.debug("globstar found match!", d2, a, m2), true;
+          if (m2 === "." || m2 === ".." || !i.dot && m2.charAt(0) === ".") {
+            this.debug("dot detected!", t2, d2, e, f3);
             break;
           }
-          this.debug("globstar swallow a segment, and continue"), d++;
+          this.debug("globstar swallow a segment, and continue"), d2++;
         }
         return !!(s && (this.debug(`
->>> no match, partial?`, t2, d, e, f), d === a));
+>>> no match, partial?`, t2, d2, e, f3), d2 === a));
       }
       let p2;
-      if (typeof u == "string" ? (p2 = c3 === u, this.debug("string match", u, c3, p2)) : (p2 = u.test(c3), this.debug("pattern match", u, c3, p2)), !p2) return false;
+      if (typeof u2 == "string" ? (p2 = c3 === u2, this.debug("string match", u2, c3, p2)) : (p2 = u2.test(c3), this.debug("pattern match", u2, c3, p2)), !p2) return false;
     }
-    if (o2 === a && h2 === l) return true;
+    if (o2 === a && h3 === l3) return true;
     if (o2 === a) return s;
-    if (h2 === l) return o2 === a - 1 && t2[o2] === "";
+    if (h3 === l3) return o2 === a - 1 && t2[o2] === "";
     throw new Error("wtf?");
   }
   braceExpand() {
@@ -1654,35 +1654,35 @@ globstar while`, t2, d, e, f, m), this.matchOne(t2.slice(d), e.slice(f), s)) ret
     let e = this.options;
     if (t2 === "**") return A;
     if (t2 === "") return "";
-    let s, i2 = null;
-    (s = t2.match(js)) ? i2 = e.dot ? zs : Is : (s = t2.match(Rs)) ? i2 = (e.nocase ? e.dot ? Ms : Ds : e.dot ? Fs : Os)(s[1]) : (s = t2.match(Bs)) ? i2 = (e.nocase ? e.dot ? $s : Us : e.dot ? Gs : Hs)(s) : (s = t2.match(Ns)) ? i2 = e.dot ? Ls : _s2 : (s = t2.match(Ws)) && (i2 = Ps);
+    let s, i = null;
+    (s = t2.match(js)) ? i = e.dot ? zs : Is : (s = t2.match(Rs)) ? i = (e.nocase ? e.dot ? Ms : Ds : e.dot ? Fs : Os)(s[1]) : (s = t2.match(Bs)) ? i = (e.nocase ? e.dot ? $s : Us : e.dot ? Gs : Hs)(s) : (s = t2.match(Ns)) ? i = e.dot ? Ls : _s2 : (s = t2.match(Ws)) && (i = Ps);
     let r2 = Q.fromGlob(t2, this.options).toMMPattern();
-    return i2 && typeof r2 == "object" && Reflect.defineProperty(r2, "test", { value: i2 }), r2;
+    return i && typeof r2 == "object" && Reflect.defineProperty(r2, "test", { value: i }), r2;
   }
   makeRe() {
     if (this.regexp || this.regexp === false) return this.regexp;
     let t2 = this.set;
     if (!t2.length) return this.regexp = false, this.regexp;
-    let e = this.options, s = e.noglobstar ? Vs : e.dot ? Ys : Xs, i2 = new Set(e.nocase ? ["i"] : []), r2 = t2.map((a) => {
-      let l = a.map((c3) => {
-        if (c3 instanceof RegExp) for (let d of c3.flags.split("")) i2.add(d);
+    let e = this.options, s = e.noglobstar ? Vs : e.dot ? Ys : Xs, i = new Set(e.nocase ? ["i"] : []), r2 = t2.map((a) => {
+      let l3 = a.map((c3) => {
+        if (c3 instanceof RegExp) for (let d2 of c3.flags.split("")) i.add(d2);
         return typeof c3 == "string" ? ei(c3) : c3 === A ? A : c3._src;
       });
-      l.forEach((c3, d) => {
-        let f = l[d + 1], m = l[d - 1];
-        c3 !== A || m === A || (m === void 0 ? f !== void 0 && f !== A ? l[d + 1] = "(?:\\/|" + s + "\\/)?" + f : l[d] = s : f === void 0 ? l[d - 1] = m + "(?:\\/|\\/" + s + ")?" : f !== A && (l[d - 1] = m + "(?:\\/|\\/" + s + "\\/)" + f, l[d + 1] = A));
+      l3.forEach((c3, d2) => {
+        let f3 = l3[d2 + 1], m2 = l3[d2 - 1];
+        c3 !== A || m2 === A || (m2 === void 0 ? f3 !== void 0 && f3 !== A ? l3[d2 + 1] = "(?:\\/|" + s + "\\/)?" + f3 : l3[d2] = s : f3 === void 0 ? l3[d2 - 1] = m2 + "(?:\\/|\\/" + s + ")?" : f3 !== A && (l3[d2 - 1] = m2 + "(?:\\/|\\/" + s + "\\/)" + f3, l3[d2 + 1] = A));
       });
-      let u = l.filter((c3) => c3 !== A);
-      if (this.partial && u.length >= 1) {
+      let u2 = l3.filter((c3) => c3 !== A);
+      if (this.partial && u2.length >= 1) {
         let c3 = [];
-        for (let d = 1; d <= u.length; d++) c3.push(u.slice(0, d).join("/"));
+        for (let d2 = 1; d2 <= u2.length; d2++) c3.push(u2.slice(0, d2).join("/"));
         return "(?:" + c3.join("|") + ")";
       }
-      return u.join("/");
-    }).join("|"), [o2, h2] = t2.length > 1 ? ["(?:", ")"] : ["", ""];
-    r2 = "^" + o2 + r2 + h2 + "$", this.partial && (r2 = "^(?:\\/|" + o2 + r2.slice(1, -1) + h2 + ")$"), this.negate && (r2 = "^(?!" + r2 + ").+$");
+      return u2.join("/");
+    }).join("|"), [o2, h3] = t2.length > 1 ? ["(?:", ")"] : ["", ""];
+    r2 = "^" + o2 + r2 + h3 + "$", this.partial && (r2 = "^(?:\\/|" + o2 + r2.slice(1, -1) + h3 + ")$"), this.negate && (r2 = "^(?!" + r2 + ").+$");
     try {
-      this.regexp = new RegExp(r2, [...i2].join(""));
+      this.regexp = new RegExp(r2, [...i].join(""));
     } catch {
       this.regexp = false;
     }
@@ -1697,15 +1697,15 @@ globstar while`, t2, d, e, f, m), this.matchOne(t2.slice(d), e.slice(f), s)) ret
     if (t2 === "/" && e) return true;
     let s = this.options;
     this.isWindows && (t2 = t2.split("\\").join("/"));
-    let i2 = this.slashSplit(t2);
-    this.debug(this.pattern, "split", i2);
+    let i = this.slashSplit(t2);
+    this.debug(this.pattern, "split", i);
     let r2 = this.set;
     this.debug(this.pattern, "set", r2);
-    let o2 = i2[i2.length - 1];
-    if (!o2) for (let h2 = i2.length - 2; !o2 && h2 >= 0; h2--) o2 = i2[h2];
-    for (let h2 = 0; h2 < r2.length; h2++) {
-      let a = r2[h2], l = i2;
-      if (s.matchBase && a.length === 1 && (l = [o2]), this.matchOne(l, a, e)) return s.flipNegate ? true : !this.negate;
+    let o2 = i[i.length - 1];
+    if (!o2) for (let h3 = i.length - 2; !o2 && h3 >= 0; h3--) o2 = i[h3];
+    for (let h3 = 0; h3 < r2.length; h3++) {
+      let a = r2[h3], l3 = i;
+      if (s.matchBase && a.length === 1 && (l3 = [o2]), this.matchOne(l3, a, e)) return s.flipNegate ? true : !this.negate;
     }
     return s.flipNegate ? false : this.negate;
   }
@@ -1840,35 +1840,35 @@ var ft = (_c2 = class {
     });
     __privateAdd(this, _L, (t2, e, s) => {
     });
-    __privateAdd(this, _I, (t2, e, s, i2) => {
-      if (s || i2) throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");
+    __privateAdd(this, _I, (t2, e, s, i) => {
+      if (s || i) throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");
       return 0;
     });
     __publicField(this, _a3, "LRUCache");
-    let { max: e = 0, ttl: s, ttlResolution: i2 = 1, ttlAutopurge: r2, updateAgeOnGet: o2, updateAgeOnHas: h2, allowStale: a, dispose: l, onInsert: u, disposeAfter: c3, noDisposeOnSet: d, noUpdateTTL: f, maxSize: m = 0, maxEntrySize: p2 = 0, sizeCalculation: w, fetchMethod: g, memoMethod: S2, noDeleteOnFetchRejection: E2, noDeleteOnStaleGet: y2, allowStaleOnFetchRejection: b2, allowStaleOnFetchAbort: z2, ignoreFetchAbort: $2, perf: J2 } = t2;
-    if (J2 !== void 0 && typeof J2?.now != "function") throw new TypeError("perf option must have a now() method if specified");
-    if (__privateSet(this, _c3, J2 ?? si), e !== 0 && !q(e)) throw new TypeError("max option must be a nonnegative integer");
-    let Z2 = e ? De(e) : Array;
-    if (!Z2) throw new Error("invalid max value: " + e);
-    if (__privateSet(this, _t3, e), __privateSet(this, _s3, m), this.maxEntrySize = p2 || __privateGet(this, _s3), this.sizeCalculation = w, this.sizeCalculation) {
+    let { max: e = 0, ttl: s, ttlResolution: i = 1, ttlAutopurge: r2, updateAgeOnGet: o2, updateAgeOnHas: h3, allowStale: a, dispose: l3, onInsert: u2, disposeAfter: c3, noDisposeOnSet: d2, noUpdateTTL: f3, maxSize: m2 = 0, maxEntrySize: p2 = 0, sizeCalculation: w2, fetchMethod: g2, memoMethod: S3, noDeleteOnFetchRejection: E3, noDeleteOnStaleGet: y2, allowStaleOnFetchRejection: b3, allowStaleOnFetchAbort: z3, ignoreFetchAbort: $3, perf: J3 } = t2;
+    if (J3 !== void 0 && typeof J3?.now != "function") throw new TypeError("perf option must have a now() method if specified");
+    if (__privateSet(this, _c3, J3 ?? si), e !== 0 && !q(e)) throw new TypeError("max option must be a nonnegative integer");
+    let Z3 = e ? De(e) : Array;
+    if (!Z3) throw new Error("invalid max value: " + e);
+    if (__privateSet(this, _t3, e), __privateSet(this, _s3, m2), this.maxEntrySize = p2 || __privateGet(this, _s3), this.sizeCalculation = w2, this.sizeCalculation) {
       if (!__privateGet(this, _s3) && !this.maxEntrySize) throw new TypeError("cannot set sizeCalculation without setting maxSize or maxEntrySize");
       if (typeof this.sizeCalculation != "function") throw new TypeError("sizeCalculation set to non-function");
     }
-    if (S2 !== void 0 && typeof S2 != "function") throw new TypeError("memoMethod must be a function if defined");
-    if (__privateSet(this, _w2, S2), g !== void 0 && typeof g != "function") throw new TypeError("fetchMethod must be a function if specified");
-    if (__privateSet(this, _S2, g), __privateSet(this, _A, !!g), __privateSet(this, _f2, /* @__PURE__ */ new Map()), __privateSet(this, _a4, new Array(e).fill(void 0)), __privateSet(this, _i, new Array(e).fill(void 0)), __privateSet(this, _d, new Z2(e)), __privateSet(this, _E, new Z2(e)), __privateSet(this, _b2, 0), __privateSet(this, _p, 0), __privateSet(this, _R, ri.create(e)), __privateSet(this, _h2, 0), __privateSet(this, _u2, 0), typeof l == "function" && __privateSet(this, _n2, l), typeof u == "function" && __privateSet(this, _r2, u), typeof c3 == "function" ? (__privateSet(this, _o2, c3), __privateSet(this, _m, [])) : (__privateSet(this, _o2, void 0), __privateSet(this, _m, void 0)), __privateSet(this, _x, !!__privateGet(this, _n2)), __privateSet(this, __, !!__privateGet(this, _r2)), __privateSet(this, _e, !!__privateGet(this, _o2)), this.noDisposeOnSet = !!d, this.noUpdateTTL = !!f, this.noDeleteOnFetchRejection = !!E2, this.allowStaleOnFetchRejection = !!b2, this.allowStaleOnFetchAbort = !!z2, this.ignoreFetchAbort = !!$2, this.maxEntrySize !== 0) {
+    if (S3 !== void 0 && typeof S3 != "function") throw new TypeError("memoMethod must be a function if defined");
+    if (__privateSet(this, _w2, S3), g2 !== void 0 && typeof g2 != "function") throw new TypeError("fetchMethod must be a function if specified");
+    if (__privateSet(this, _S2, g2), __privateSet(this, _A, !!g2), __privateSet(this, _f2, /* @__PURE__ */ new Map()), __privateSet(this, _a4, new Array(e).fill(void 0)), __privateSet(this, _i, new Array(e).fill(void 0)), __privateSet(this, _d, new Z3(e)), __privateSet(this, _E, new Z3(e)), __privateSet(this, _b2, 0), __privateSet(this, _p, 0), __privateSet(this, _R, ri.create(e)), __privateSet(this, _h2, 0), __privateSet(this, _u2, 0), typeof l3 == "function" && __privateSet(this, _n2, l3), typeof u2 == "function" && __privateSet(this, _r2, u2), typeof c3 == "function" ? (__privateSet(this, _o2, c3), __privateSet(this, _m, [])) : (__privateSet(this, _o2, void 0), __privateSet(this, _m, void 0)), __privateSet(this, _x, !!__privateGet(this, _n2)), __privateSet(this, __, !!__privateGet(this, _r2)), __privateSet(this, _e, !!__privateGet(this, _o2)), this.noDisposeOnSet = !!d2, this.noUpdateTTL = !!f3, this.noDeleteOnFetchRejection = !!E3, this.allowStaleOnFetchRejection = !!b3, this.allowStaleOnFetchAbort = !!z3, this.ignoreFetchAbort = !!$3, this.maxEntrySize !== 0) {
       if (__privateGet(this, _s3) !== 0 && !q(__privateGet(this, _s3))) throw new TypeError("maxSize must be a positive integer if specified");
       if (!q(this.maxEntrySize)) throw new TypeError("maxEntrySize must be a positive integer if specified");
       __privateMethod(this, _Me_instances, G_fn).call(this);
     }
-    if (this.allowStale = !!a, this.noDeleteOnStaleGet = !!y2, this.updateAgeOnGet = !!o2, this.updateAgeOnHas = !!h2, this.ttlResolution = q(i2) || i2 === 0 ? i2 : 1, this.ttlAutopurge = !!r2, this.ttl = s || 0, this.ttl) {
+    if (this.allowStale = !!a, this.noDeleteOnStaleGet = !!y2, this.updateAgeOnGet = !!o2, this.updateAgeOnHas = !!h3, this.ttlResolution = q(i) || i === 0 ? i : 1, this.ttlAutopurge = !!r2, this.ttl = s || 0, this.ttl) {
       if (!q(this.ttl)) throw new TypeError("ttl must be a positive integer if specified");
       __privateMethod(this, _Me_instances, M_fn).call(this);
     }
     if (__privateGet(this, _t3) === 0 && this.ttl === 0 && __privateGet(this, _s3) === 0) throw new TypeError("At least one of max, maxSize, or ttl is required");
     if (!this.ttlAutopurge && !__privateGet(this, _t3) && !__privateGet(this, _s3)) {
-      let $t = "LRU_CACHE_UNBOUNDED";
-      ii($t) && (Oe.add($t), Fe("TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.", "UnboundedCacheWarning", $t, _c2));
+      let $t2 = "LRU_CACHE_UNBOUNDED";
+      ii($t2) && (Oe.add($t2), Fe("TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.", "UnboundedCacheWarning", $t2, _c2));
     }
   }
   get perf() {
@@ -1880,23 +1880,23 @@ var ft = (_c2 = class {
     }, get tail() {
       return __privateGet(t2, _p);
     }, free: __privateGet(t2, _R), isBackgroundFetch: (e) => {
-      var _a13;
-      return __privateMethod(_a13 = t2, _Me_instances, l_fn).call(_a13, e);
-    }, backgroundFetch: (e, s, i2, r2) => {
-      var _a13;
-      return __privateMethod(_a13 = t2, _Me_instances, U_fn).call(_a13, e, s, i2, r2);
+      var _a12;
+      return __privateMethod(_a12 = t2, _Me_instances, l_fn).call(_a12, e);
+    }, backgroundFetch: (e, s, i, r2) => {
+      var _a12;
+      return __privateMethod(_a12 = t2, _Me_instances, U_fn).call(_a12, e, s, i, r2);
     }, moveToTail: (e) => {
-      var _a13;
-      return __privateMethod(_a13 = t2, _Me_instances, W_fn).call(_a13, e);
+      var _a12;
+      return __privateMethod(_a12 = t2, _Me_instances, W_fn).call(_a12, e);
     }, indexes: (e) => {
-      var _a13;
-      return __privateMethod(_a13 = t2, _Me_instances, F_fn).call(_a13, e);
+      var _a12;
+      return __privateMethod(_a12 = t2, _Me_instances, F_fn).call(_a12, e);
     }, rindexes: (e) => {
-      var _a13;
-      return __privateMethod(_a13 = t2, _Me_instances, D_fn).call(_a13, e);
+      var _a12;
+      return __privateMethod(_a12 = t2, _Me_instances, D_fn).call(_a12, e);
     }, isStale: (e) => {
-      var _a13;
-      return __privateGet(_a13 = t2, _v).call(_a13, e);
+      var _a12;
+      return __privateGet(_a12 = t2, _v).call(_a12, e);
     } };
   }
   get max() {
@@ -1958,19 +1958,19 @@ var ft = (_c2 = class {
   }
   find(t2, e = {}) {
     for (let s of __privateMethod(this, _Me_instances, F_fn).call(this)) {
-      let i2 = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      let i = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
       if (r2 !== void 0 && t2(r2, __privateGet(this, _a4)[s], this)) return this.get(__privateGet(this, _a4)[s], e);
     }
   }
   forEach(t2, e = this) {
     for (let s of __privateMethod(this, _Me_instances, F_fn).call(this)) {
-      let i2 = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      let i = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
       r2 !== void 0 && t2.call(e, r2, __privateGet(this, _a4)[s], this);
     }
   }
   rforEach(t2, e = this) {
     for (let s of __privateMethod(this, _Me_instances, D_fn).call(this)) {
-      let i2 = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      let i = __privateGet(this, _i)[s], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
       r2 !== void 0 && t2.call(e, r2, __privateGet(this, _a4)[s], this);
     }
   }
@@ -1982,13 +1982,13 @@ var ft = (_c2 = class {
   info(t2) {
     let e = __privateGet(this, _f2).get(t2);
     if (e === void 0) return;
-    let s = __privateGet(this, _i)[e], i2 = __privateMethod(this, _Me_instances, l_fn).call(this, s) ? s.__staleWhileFetching : s;
-    if (i2 === void 0) return;
-    let r2 = { value: i2 };
+    let s = __privateGet(this, _i)[e], i = __privateMethod(this, _Me_instances, l_fn).call(this, s) ? s.__staleWhileFetching : s;
+    if (i === void 0) return;
+    let r2 = { value: i };
     if (__privateGet(this, _g) && __privateGet(this, _T)) {
-      let o2 = __privateGet(this, _g)[e], h2 = __privateGet(this, _T)[e];
-      if (o2 && h2) {
-        let a = o2 - (__privateGet(this, _c3).now() - h2);
+      let o2 = __privateGet(this, _g)[e], h3 = __privateGet(this, _T)[e];
+      if (o2 && h3) {
+        let a = o2 - (__privateGet(this, _c3).now() - h3);
         r2.ttl = a, r2.start = Date.now();
       }
     }
@@ -1997,13 +1997,13 @@ var ft = (_c2 = class {
   dump() {
     let t2 = [];
     for (let e of __privateMethod(this, _Me_instances, F_fn).call(this, { allowStale: true })) {
-      let s = __privateGet(this, _a4)[e], i2 = __privateGet(this, _i)[e], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__staleWhileFetching : i2;
+      let s = __privateGet(this, _a4)[e], i = __privateGet(this, _i)[e], r2 = __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__staleWhileFetching : i;
       if (r2 === void 0 || s === void 0) continue;
       let o2 = { value: r2 };
       if (__privateGet(this, _g) && __privateGet(this, _T)) {
         o2.ttl = __privateGet(this, _g)[e];
-        let h2 = __privateGet(this, _c3).now() - __privateGet(this, _T)[e];
-        o2.start = Math.floor(Date.now() - h2);
+        let h3 = __privateGet(this, _c3).now() - __privateGet(this, _T)[e];
+        o2.start = Math.floor(Date.now() - h3);
       }
       __privateGet(this, _C) && (o2.size = __privateGet(this, _C)[e]), t2.unshift([s, o2]);
     }
@@ -2013,44 +2013,44 @@ var ft = (_c2 = class {
     this.clear();
     for (let [e, s] of t2) {
       if (s.start) {
-        let i2 = Date.now() - s.start;
-        s.start = __privateGet(this, _c3).now() - i2;
+        let i = Date.now() - s.start;
+        s.start = __privateGet(this, _c3).now() - i;
       }
       this.set(e, s.value, s);
     }
   }
   set(t2, e, s = {}) {
-    var _a13, _b5, _c7, _d4;
+    var _a12, _b5, _c7, _d4;
     if (e === void 0) return this.delete(t2), this;
-    let { ttl: i2 = this.ttl, start: r2, noDisposeOnSet: o2 = this.noDisposeOnSet, sizeCalculation: h2 = this.sizeCalculation, status: a } = s, { noUpdateTTL: l = this.noUpdateTTL } = s, u = __privateGet(this, _I).call(this, t2, e, s.size || 0, h2);
-    if (this.maxEntrySize && u > this.maxEntrySize) return a && (a.set = "miss", a.maxEntrySizeExceeded = true), __privateMethod(this, _Me_instances, O_fn).call(this, t2, "set"), this;
+    let { ttl: i = this.ttl, start: r2, noDisposeOnSet: o2 = this.noDisposeOnSet, sizeCalculation: h3 = this.sizeCalculation, status: a } = s, { noUpdateTTL: l3 = this.noUpdateTTL } = s, u2 = __privateGet(this, _I).call(this, t2, e, s.size || 0, h3);
+    if (this.maxEntrySize && u2 > this.maxEntrySize) return a && (a.set = "miss", a.maxEntrySizeExceeded = true), __privateMethod(this, _Me_instances, O_fn).call(this, t2, "set"), this;
     let c3 = __privateGet(this, _h2) === 0 ? void 0 : __privateGet(this, _f2).get(t2);
-    if (c3 === void 0) c3 = __privateGet(this, _h2) === 0 ? __privateGet(this, _p) : __privateGet(this, _R).length !== 0 ? __privateGet(this, _R).pop() : __privateGet(this, _h2) === __privateGet(this, _t3) ? __privateMethod(this, _Me_instances, B_fn).call(this, false) : __privateGet(this, _h2), __privateGet(this, _a4)[c3] = t2, __privateGet(this, _i)[c3] = e, __privateGet(this, _f2).set(t2, c3), __privateGet(this, _d)[__privateGet(this, _p)] = c3, __privateGet(this, _E)[c3] = __privateGet(this, _p), __privateSet(this, _p, c3), __privateWrapper(this, _h2)._++, __privateGet(this, _L).call(this, c3, u, a), a && (a.set = "add"), l = false, __privateGet(this, __) && ((_a13 = __privateGet(this, _r2)) == null ? void 0 : _a13.call(this, e, t2, "add"));
+    if (c3 === void 0) c3 = __privateGet(this, _h2) === 0 ? __privateGet(this, _p) : __privateGet(this, _R).length !== 0 ? __privateGet(this, _R).pop() : __privateGet(this, _h2) === __privateGet(this, _t3) ? __privateMethod(this, _Me_instances, B_fn).call(this, false) : __privateGet(this, _h2), __privateGet(this, _a4)[c3] = t2, __privateGet(this, _i)[c3] = e, __privateGet(this, _f2).set(t2, c3), __privateGet(this, _d)[__privateGet(this, _p)] = c3, __privateGet(this, _E)[c3] = __privateGet(this, _p), __privateSet(this, _p, c3), __privateWrapper(this, _h2)._++, __privateGet(this, _L).call(this, c3, u2, a), a && (a.set = "add"), l3 = false, __privateGet(this, __) && ((_a12 = __privateGet(this, _r2)) == null ? void 0 : _a12.call(this, e, t2, "add"));
     else {
       __privateMethod(this, _Me_instances, W_fn).call(this, c3);
-      let d = __privateGet(this, _i)[c3];
-      if (e !== d) {
-        if (__privateGet(this, _A) && __privateMethod(this, _Me_instances, l_fn).call(this, d)) {
-          d.__abortController.abort(new Error("replaced"));
-          let { __staleWhileFetching: f } = d;
-          f !== void 0 && !o2 && (__privateGet(this, _x) && ((_b5 = __privateGet(this, _n2)) == null ? void 0 : _b5.call(this, f, t2, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([f, t2, "set"]));
-        } else o2 || (__privateGet(this, _x) && ((_c7 = __privateGet(this, _n2)) == null ? void 0 : _c7.call(this, d, t2, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([d, t2, "set"]));
-        if (__privateGet(this, _P).call(this, c3), __privateGet(this, _L).call(this, c3, u, a), __privateGet(this, _i)[c3] = e, a) {
+      let d2 = __privateGet(this, _i)[c3];
+      if (e !== d2) {
+        if (__privateGet(this, _A) && __privateMethod(this, _Me_instances, l_fn).call(this, d2)) {
+          d2.__abortController.abort(new Error("replaced"));
+          let { __staleWhileFetching: f3 } = d2;
+          f3 !== void 0 && !o2 && (__privateGet(this, _x) && ((_b5 = __privateGet(this, _n2)) == null ? void 0 : _b5.call(this, f3, t2, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([f3, t2, "set"]));
+        } else o2 || (__privateGet(this, _x) && ((_c7 = __privateGet(this, _n2)) == null ? void 0 : _c7.call(this, d2, t2, "set")), __privateGet(this, _e) && __privateGet(this, _m)?.push([d2, t2, "set"]));
+        if (__privateGet(this, _P).call(this, c3), __privateGet(this, _L).call(this, c3, u2, a), __privateGet(this, _i)[c3] = e, a) {
           a.set = "replace";
-          let f = d && __privateMethod(this, _Me_instances, l_fn).call(this, d) ? d.__staleWhileFetching : d;
-          f !== void 0 && (a.oldValue = f);
+          let f3 = d2 && __privateMethod(this, _Me_instances, l_fn).call(this, d2) ? d2.__staleWhileFetching : d2;
+          f3 !== void 0 && (a.oldValue = f3);
         }
       } else a && (a.set = "update");
-      __privateGet(this, __) && this.onInsert?.(e, t2, e === d ? "update" : "replace");
+      __privateGet(this, __) && this.onInsert?.(e, t2, e === d2 ? "update" : "replace");
     }
-    if (i2 !== 0 && !__privateGet(this, _g) && __privateMethod(this, _Me_instances, M_fn).call(this), __privateGet(this, _g) && (l || __privateGet(this, _j).call(this, c3, i2, r2), a && __privateGet(this, _N).call(this, a, c3)), !o2 && __privateGet(this, _e) && __privateGet(this, _m)) {
-      let d = __privateGet(this, _m), f;
-      for (; f = d?.shift(); ) (_d4 = __privateGet(this, _o2)) == null ? void 0 : _d4.call(this, ...f);
+    if (i !== 0 && !__privateGet(this, _g) && __privateMethod(this, _Me_instances, M_fn).call(this), __privateGet(this, _g) && (l3 || __privateGet(this, _j).call(this, c3, i, r2), a && __privateGet(this, _N).call(this, a, c3)), !o2 && __privateGet(this, _e) && __privateGet(this, _m)) {
+      let d2 = __privateGet(this, _m), f3;
+      for (; f3 = d2?.shift(); ) (_d4 = __privateGet(this, _o2)) == null ? void 0 : _d4.call(this, ...f3);
     }
     return this;
   }
   pop() {
-    var _a13;
+    var _a12;
     try {
       for (; __privateGet(this, _h2); ) {
         let t2 = __privateGet(this, _i)[__privateGet(this, _b2)];
@@ -2061,44 +2061,44 @@ var ft = (_c2 = class {
     } finally {
       if (__privateGet(this, _e) && __privateGet(this, _m)) {
         let t2 = __privateGet(this, _m), e;
-        for (; e = t2?.shift(); ) (_a13 = __privateGet(this, _o2)) == null ? void 0 : _a13.call(this, ...e);
+        for (; e = t2?.shift(); ) (_a12 = __privateGet(this, _o2)) == null ? void 0 : _a12.call(this, ...e);
       }
     }
   }
   has(t2, e = {}) {
-    let { updateAgeOnHas: s = this.updateAgeOnHas, status: i2 } = e, r2 = __privateGet(this, _f2).get(t2);
+    let { updateAgeOnHas: s = this.updateAgeOnHas, status: i } = e, r2 = __privateGet(this, _f2).get(t2);
     if (r2 !== void 0) {
       let o2 = __privateGet(this, _i)[r2];
       if (__privateMethod(this, _Me_instances, l_fn).call(this, o2) && o2.__staleWhileFetching === void 0) return false;
-      if (__privateGet(this, _v).call(this, r2)) i2 && (i2.has = "stale", __privateGet(this, _N).call(this, i2, r2));
-      else return s && __privateGet(this, _k).call(this, r2), i2 && (i2.has = "hit", __privateGet(this, _N).call(this, i2, r2)), true;
-    } else i2 && (i2.has = "miss");
+      if (__privateGet(this, _v).call(this, r2)) i && (i.has = "stale", __privateGet(this, _N).call(this, i, r2));
+      else return s && __privateGet(this, _k).call(this, r2), i && (i.has = "hit", __privateGet(this, _N).call(this, i, r2)), true;
+    } else i && (i.has = "miss");
     return false;
   }
   peek(t2, e = {}) {
-    let { allowStale: s = this.allowStale } = e, i2 = __privateGet(this, _f2).get(t2);
-    if (i2 === void 0 || !s && __privateGet(this, _v).call(this, i2)) return;
-    let r2 = __privateGet(this, _i)[i2];
+    let { allowStale: s = this.allowStale } = e, i = __privateGet(this, _f2).get(t2);
+    if (i === void 0 || !s && __privateGet(this, _v).call(this, i)) return;
+    let r2 = __privateGet(this, _i)[i];
     return __privateMethod(this, _Me_instances, l_fn).call(this, r2) ? r2.__staleWhileFetching : r2;
   }
   async fetch(t2, e = {}) {
-    let { allowStale: s = this.allowStale, updateAgeOnGet: i2 = this.updateAgeOnGet, noDeleteOnStaleGet: r2 = this.noDeleteOnStaleGet, ttl: o2 = this.ttl, noDisposeOnSet: h2 = this.noDisposeOnSet, size: a = 0, sizeCalculation: l = this.sizeCalculation, noUpdateTTL: u = this.noUpdateTTL, noDeleteOnFetchRejection: c3 = this.noDeleteOnFetchRejection, allowStaleOnFetchRejection: d = this.allowStaleOnFetchRejection, ignoreFetchAbort: f = this.ignoreFetchAbort, allowStaleOnFetchAbort: m = this.allowStaleOnFetchAbort, context: p2, forceRefresh: w = false, status: g, signal: S2 } = e;
-    if (!__privateGet(this, _A)) return g && (g.fetch = "get"), this.get(t2, { allowStale: s, updateAgeOnGet: i2, noDeleteOnStaleGet: r2, status: g });
-    let E2 = { allowStale: s, updateAgeOnGet: i2, noDeleteOnStaleGet: r2, ttl: o2, noDisposeOnSet: h2, size: a, sizeCalculation: l, noUpdateTTL: u, noDeleteOnFetchRejection: c3, allowStaleOnFetchRejection: d, allowStaleOnFetchAbort: m, ignoreFetchAbort: f, status: g, signal: S2 }, y2 = __privateGet(this, _f2).get(t2);
+    let { allowStale: s = this.allowStale, updateAgeOnGet: i = this.updateAgeOnGet, noDeleteOnStaleGet: r2 = this.noDeleteOnStaleGet, ttl: o2 = this.ttl, noDisposeOnSet: h3 = this.noDisposeOnSet, size: a = 0, sizeCalculation: l3 = this.sizeCalculation, noUpdateTTL: u2 = this.noUpdateTTL, noDeleteOnFetchRejection: c3 = this.noDeleteOnFetchRejection, allowStaleOnFetchRejection: d2 = this.allowStaleOnFetchRejection, ignoreFetchAbort: f3 = this.ignoreFetchAbort, allowStaleOnFetchAbort: m2 = this.allowStaleOnFetchAbort, context: p2, forceRefresh: w2 = false, status: g2, signal: S3 } = e;
+    if (!__privateGet(this, _A)) return g2 && (g2.fetch = "get"), this.get(t2, { allowStale: s, updateAgeOnGet: i, noDeleteOnStaleGet: r2, status: g2 });
+    let E3 = { allowStale: s, updateAgeOnGet: i, noDeleteOnStaleGet: r2, ttl: o2, noDisposeOnSet: h3, size: a, sizeCalculation: l3, noUpdateTTL: u2, noDeleteOnFetchRejection: c3, allowStaleOnFetchRejection: d2, allowStaleOnFetchAbort: m2, ignoreFetchAbort: f3, status: g2, signal: S3 }, y2 = __privateGet(this, _f2).get(t2);
     if (y2 === void 0) {
-      g && (g.fetch = "miss");
-      let b2 = __privateMethod(this, _Me_instances, U_fn).call(this, t2, y2, E2, p2);
-      return b2.__returned = b2;
+      g2 && (g2.fetch = "miss");
+      let b3 = __privateMethod(this, _Me_instances, U_fn).call(this, t2, y2, E3, p2);
+      return b3.__returned = b3;
     } else {
-      let b2 = __privateGet(this, _i)[y2];
-      if (__privateMethod(this, _Me_instances, l_fn).call(this, b2)) {
-        let Z2 = s && b2.__staleWhileFetching !== void 0;
-        return g && (g.fetch = "inflight", Z2 && (g.returnedStale = true)), Z2 ? b2.__staleWhileFetching : b2.__returned = b2;
+      let b3 = __privateGet(this, _i)[y2];
+      if (__privateMethod(this, _Me_instances, l_fn).call(this, b3)) {
+        let Z3 = s && b3.__staleWhileFetching !== void 0;
+        return g2 && (g2.fetch = "inflight", Z3 && (g2.returnedStale = true)), Z3 ? b3.__staleWhileFetching : b3.__returned = b3;
       }
-      let z2 = __privateGet(this, _v).call(this, y2);
-      if (!w && !z2) return g && (g.fetch = "hit"), __privateMethod(this, _Me_instances, W_fn).call(this, y2), i2 && __privateGet(this, _k).call(this, y2), g && __privateGet(this, _N).call(this, g, y2), b2;
-      let $2 = __privateMethod(this, _Me_instances, U_fn).call(this, t2, y2, E2, p2), J2 = $2.__staleWhileFetching !== void 0 && s;
-      return g && (g.fetch = z2 ? "stale" : "refresh", J2 && z2 && (g.returnedStale = true)), J2 ? $2.__staleWhileFetching : $2.__returned = $2;
+      let z3 = __privateGet(this, _v).call(this, y2);
+      if (!w2 && !z3) return g2 && (g2.fetch = "hit"), __privateMethod(this, _Me_instances, W_fn).call(this, y2), i && __privateGet(this, _k).call(this, y2), g2 && __privateGet(this, _N).call(this, g2, y2), b3;
+      let $3 = __privateMethod(this, _Me_instances, U_fn).call(this, t2, y2, E3, p2), J3 = $3.__staleWhileFetching !== void 0 && s;
+      return g2 && (g2.fetch = z3 ? "stale" : "refresh", J3 && z3 && (g2.returnedStale = true)), J3 ? $3.__staleWhileFetching : $3.__returned = $3;
     }
   }
   async forceFetch(t2, e = {}) {
@@ -2109,16 +2109,16 @@ var ft = (_c2 = class {
   memo(t2, e = {}) {
     let s = __privateGet(this, _w2);
     if (!s) throw new Error("no memoMethod provided to constructor");
-    let { context: i2, forceRefresh: r2, ...o2 } = e, h2 = this.get(t2, o2);
-    if (!r2 && h2 !== void 0) return h2;
-    let a = s(t2, h2, { options: o2, context: i2 });
+    let { context: i, forceRefresh: r2, ...o2 } = e, h3 = this.get(t2, o2);
+    if (!r2 && h3 !== void 0) return h3;
+    let a = s(t2, h3, { options: o2, context: i });
     return this.set(t2, a, o2), a;
   }
   get(t2, e = {}) {
-    let { allowStale: s = this.allowStale, updateAgeOnGet: i2 = this.updateAgeOnGet, noDeleteOnStaleGet: r2 = this.noDeleteOnStaleGet, status: o2 } = e, h2 = __privateGet(this, _f2).get(t2);
-    if (h2 !== void 0) {
-      let a = __privateGet(this, _i)[h2], l = __privateMethod(this, _Me_instances, l_fn).call(this, a);
-      return o2 && __privateGet(this, _N).call(this, o2, h2), __privateGet(this, _v).call(this, h2) ? (o2 && (o2.get = "stale"), l ? (o2 && s && a.__staleWhileFetching !== void 0 && (o2.returnedStale = true), s ? a.__staleWhileFetching : void 0) : (r2 || __privateMethod(this, _Me_instances, O_fn).call(this, t2, "expire"), o2 && s && (o2.returnedStale = true), s ? a : void 0)) : (o2 && (o2.get = "hit"), l ? a.__staleWhileFetching : (__privateMethod(this, _Me_instances, W_fn).call(this, h2), i2 && __privateGet(this, _k).call(this, h2), a));
+    let { allowStale: s = this.allowStale, updateAgeOnGet: i = this.updateAgeOnGet, noDeleteOnStaleGet: r2 = this.noDeleteOnStaleGet, status: o2 } = e, h3 = __privateGet(this, _f2).get(t2);
+    if (h3 !== void 0) {
+      let a = __privateGet(this, _i)[h3], l3 = __privateMethod(this, _Me_instances, l_fn).call(this, a);
+      return o2 && __privateGet(this, _N).call(this, o2, h3), __privateGet(this, _v).call(this, h3) ? (o2 && (o2.get = "stale"), l3 ? (o2 && s && a.__staleWhileFetching !== void 0 && (o2.returnedStale = true), s ? a.__staleWhileFetching : void 0) : (r2 || __privateMethod(this, _Me_instances, O_fn).call(this, t2, "expire"), o2 && s && (o2.returnedStale = true), s ? a : void 0)) : (o2 && (o2.get = "hit"), l3 ? a.__staleWhileFetching : (__privateMethod(this, _Me_instances, W_fn).call(this, h3), i && __privateGet(this, _k).call(this, h3), a));
     } else o2 && (o2.get = "miss");
   }
   delete(t2) {
@@ -2131,61 +2131,61 @@ var ft = (_c2 = class {
   let t2 = new Tt(__privateGet(this, _t3)), e = new Tt(__privateGet(this, _t3));
   __privateSet(this, _g, t2), __privateSet(this, _T, e);
   let s = this.ttlAutopurge ? new Array(__privateGet(this, _t3)) : void 0;
-  __privateSet(this, _y, s), __privateSet(this, _j, (o2, h2, a = __privateGet(this, _c3).now()) => {
-    if (e[o2] = h2 !== 0 ? a : 0, t2[o2] = h2, s?.[o2] && (clearTimeout(s[o2]), s[o2] = void 0), h2 !== 0 && s) {
-      let l = setTimeout(() => {
+  __privateSet(this, _y, s), __privateSet(this, _j, (o2, h3, a = __privateGet(this, _c3).now()) => {
+    if (e[o2] = h3 !== 0 ? a : 0, t2[o2] = h3, s?.[o2] && (clearTimeout(s[o2]), s[o2] = void 0), h3 !== 0 && s) {
+      let l3 = setTimeout(() => {
         __privateGet(this, _v).call(this, o2) && __privateMethod(this, _Me_instances, O_fn).call(this, __privateGet(this, _a4)[o2], "expire");
-      }, h2 + 1);
-      l.unref && l.unref(), s[o2] = l;
+      }, h3 + 1);
+      l3.unref && l3.unref(), s[o2] = l3;
     }
   }), __privateSet(this, _k, (o2) => {
     e[o2] = t2[o2] !== 0 ? __privateGet(this, _c3).now() : 0;
-  }), __privateSet(this, _N, (o2, h2) => {
-    if (t2[h2]) {
-      let a = t2[h2], l = e[h2];
-      if (!a || !l) return;
-      o2.ttl = a, o2.start = l, o2.now = i2 || r2();
-      let u = o2.now - l;
-      o2.remainingTTL = a - u;
+  }), __privateSet(this, _N, (o2, h3) => {
+    if (t2[h3]) {
+      let a = t2[h3], l3 = e[h3];
+      if (!a || !l3) return;
+      o2.ttl = a, o2.start = l3, o2.now = i || r2();
+      let u2 = o2.now - l3;
+      o2.remainingTTL = a - u2;
     }
   });
-  let i2 = 0, r2 = () => {
+  let i = 0, r2 = () => {
     let o2 = __privateGet(this, _c3).now();
     if (this.ttlResolution > 0) {
-      i2 = o2;
-      let h2 = setTimeout(() => i2 = 0, this.ttlResolution);
-      h2.unref && h2.unref();
+      i = o2;
+      let h3 = setTimeout(() => i = 0, this.ttlResolution);
+      h3.unref && h3.unref();
     }
     return o2;
   };
   this.getRemainingTTL = (o2) => {
-    let h2 = __privateGet(this, _f2).get(o2);
-    if (h2 === void 0) return 0;
-    let a = t2[h2], l = e[h2];
-    if (!a || !l) return 1 / 0;
-    let u = (i2 || r2()) - l;
-    return a - u;
+    let h3 = __privateGet(this, _f2).get(o2);
+    if (h3 === void 0) return 0;
+    let a = t2[h3], l3 = e[h3];
+    if (!a || !l3) return 1 / 0;
+    let u2 = (i || r2()) - l3;
+    return a - u2;
   }, __privateSet(this, _v, (o2) => {
-    let h2 = e[o2], a = t2[o2];
-    return !!a && !!h2 && (i2 || r2()) - h2 > a;
+    let h3 = e[o2], a = t2[o2];
+    return !!a && !!h3 && (i || r2()) - h3 > a;
   });
 }, _k = new WeakMap(), _N = new WeakMap(), _j = new WeakMap(), _v = new WeakMap(), G_fn = function() {
   let t2 = new Tt(__privateGet(this, _t3));
   __privateSet(this, _u2, 0), __privateSet(this, _C, t2), __privateSet(this, _P, (e) => {
     __privateSet(this, _u2, __privateGet(this, _u2) - t2[e]), t2[e] = 0;
-  }), __privateSet(this, _I, (e, s, i2, r2) => {
+  }), __privateSet(this, _I, (e, s, i, r2) => {
     if (__privateMethod(this, _Me_instances, l_fn).call(this, s)) return 0;
-    if (!q(i2)) if (r2) {
+    if (!q(i)) if (r2) {
       if (typeof r2 != "function") throw new TypeError("sizeCalculation must be a function");
-      if (i2 = r2(s, e), !q(i2)) throw new TypeError("sizeCalculation return invalid (expect positive integer)");
+      if (i = r2(s, e), !q(i)) throw new TypeError("sizeCalculation return invalid (expect positive integer)");
     } else throw new TypeError("invalid size value (must be positive integer). When maxSize or maxEntrySize is used, sizeCalculation or size must be set.");
-    return i2;
-  }), __privateSet(this, _L, (e, s, i2) => {
+    return i;
+  }), __privateSet(this, _L, (e, s, i) => {
     if (t2[e] = s, __privateGet(this, _s3)) {
       let r2 = __privateGet(this, _s3) - t2[e];
       for (; __privateGet(this, _u2) > r2; ) __privateMethod(this, _Me_instances, B_fn).call(this, true);
     }
-    __privateSet(this, _u2, __privateGet(this, _u2) + t2[e]), i2 && (i2.entrySize = s, i2.totalCalculatedSize = __privateGet(this, _u2));
+    __privateSet(this, _u2, __privateGet(this, _u2) + t2[e]), i && (i.entrySize = s, i.totalCalculatedSize = __privateGet(this, _u2));
   });
 }, _P = new WeakMap(), _L = new WeakMap(), _I = new WeakMap(), F_fn = function* ({ allowStale: t2 = this.allowStale } = {}) {
   if (__privateGet(this, _h2)) for (let e = __privateGet(this, _p); !(!__privateMethod(this, _Me_instances, z_fn).call(this, e) || ((t2 || !__privateGet(this, _v).call(this, e)) && (yield e), e === __privateGet(this, _b2))); ) e = __privateGet(this, _E)[e];
@@ -2194,33 +2194,33 @@ var ft = (_c2 = class {
 }, z_fn = function(t2) {
   return t2 !== void 0 && __privateGet(this, _f2).get(__privateGet(this, _a4)[t2]) === t2;
 }, B_fn = function(t2) {
-  var _a13;
-  let e = __privateGet(this, _b2), s = __privateGet(this, _a4)[e], i2 = __privateGet(this, _i)[e];
-  return __privateGet(this, _A) && __privateMethod(this, _Me_instances, l_fn).call(this, i2) ? i2.__abortController.abort(new Error("evicted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, i2, s, "evict")), __privateGet(this, _e) && __privateGet(this, _m)?.push([i2, s, "evict"])), __privateGet(this, _P).call(this, e), __privateGet(this, _y)?.[e] && (clearTimeout(__privateGet(this, _y)[e]), __privateGet(this, _y)[e] = void 0), t2 && (__privateGet(this, _a4)[e] = void 0, __privateGet(this, _i)[e] = void 0, __privateGet(this, _R).push(e)), __privateGet(this, _h2) === 1 ? (__privateSet(this, _b2, __privateSet(this, _p, 0)), __privateGet(this, _R).length = 0) : __privateSet(this, _b2, __privateGet(this, _d)[e]), __privateGet(this, _f2).delete(s), __privateWrapper(this, _h2)._--, e;
-}, U_fn = function(t2, e, s, i2) {
+  var _a12;
+  let e = __privateGet(this, _b2), s = __privateGet(this, _a4)[e], i = __privateGet(this, _i)[e];
+  return __privateGet(this, _A) && __privateMethod(this, _Me_instances, l_fn).call(this, i) ? i.__abortController.abort(new Error("evicted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a12 = __privateGet(this, _n2)) == null ? void 0 : _a12.call(this, i, s, "evict")), __privateGet(this, _e) && __privateGet(this, _m)?.push([i, s, "evict"])), __privateGet(this, _P).call(this, e), __privateGet(this, _y)?.[e] && (clearTimeout(__privateGet(this, _y)[e]), __privateGet(this, _y)[e] = void 0), t2 && (__privateGet(this, _a4)[e] = void 0, __privateGet(this, _i)[e] = void 0, __privateGet(this, _R).push(e)), __privateGet(this, _h2) === 1 ? (__privateSet(this, _b2, __privateSet(this, _p, 0)), __privateGet(this, _R).length = 0) : __privateSet(this, _b2, __privateGet(this, _d)[e]), __privateGet(this, _f2).delete(s), __privateWrapper(this, _h2)._--, e;
+}, U_fn = function(t2, e, s, i) {
   let r2 = e === void 0 ? void 0 : __privateGet(this, _i)[e];
   if (__privateMethod(this, _Me_instances, l_fn).call(this, r2)) return r2;
-  let o2 = new At(), { signal: h2 } = s;
-  h2?.addEventListener("abort", () => o2.abort(h2.reason), { signal: o2.signal });
-  let a = { signal: o2.signal, options: s, context: i2 }, l = (p2, w = false) => {
-    let { aborted: g } = o2.signal, S2 = s.ignoreFetchAbort && p2 !== void 0, E2 = s.ignoreFetchAbort || !!(s.allowStaleOnFetchAbort && p2 !== void 0);
-    if (s.status && (g && !w ? (s.status.fetchAborted = true, s.status.fetchError = o2.signal.reason, S2 && (s.status.fetchAbortIgnored = true)) : s.status.fetchResolved = true), g && !S2 && !w) return c3(o2.signal.reason, E2);
-    let y2 = f, b2 = __privateGet(this, _i)[e];
-    return (b2 === f || S2 && w && b2 === void 0) && (p2 === void 0 ? y2.__staleWhileFetching !== void 0 ? __privateGet(this, _i)[e] = y2.__staleWhileFetching : __privateMethod(this, _Me_instances, O_fn).call(this, t2, "fetch") : (s.status && (s.status.fetchUpdated = true), this.set(t2, p2, a.options))), p2;
-  }, u = (p2) => (s.status && (s.status.fetchRejected = true, s.status.fetchError = p2), c3(p2, false)), c3 = (p2, w) => {
-    let { aborted: g } = o2.signal, S2 = g && s.allowStaleOnFetchAbort, E2 = S2 || s.allowStaleOnFetchRejection, y2 = E2 || s.noDeleteOnFetchRejection, b2 = f;
-    if (__privateGet(this, _i)[e] === f && (!y2 || !w && b2.__staleWhileFetching === void 0 ? __privateMethod(this, _Me_instances, O_fn).call(this, t2, "fetch") : S2 || (__privateGet(this, _i)[e] = b2.__staleWhileFetching)), E2) return s.status && b2.__staleWhileFetching !== void 0 && (s.status.returnedStale = true), b2.__staleWhileFetching;
-    if (b2.__returned === b2) throw p2;
-  }, d = (p2, w) => {
-    var _a13;
-    let g = (_a13 = __privateGet(this, _S2)) == null ? void 0 : _a13.call(this, t2, r2, a);
-    g && g instanceof Promise && g.then((S2) => p2(S2 === void 0 ? void 0 : S2), w), o2.signal.addEventListener("abort", () => {
-      (!s.ignoreFetchAbort || s.allowStaleOnFetchAbort) && (p2(void 0), s.allowStaleOnFetchAbort && (p2 = (S2) => l(S2, true)));
+  let o2 = new At(), { signal: h3 } = s;
+  h3?.addEventListener("abort", () => o2.abort(h3.reason), { signal: o2.signal });
+  let a = { signal: o2.signal, options: s, context: i }, l3 = (p2, w2 = false) => {
+    let { aborted: g2 } = o2.signal, S3 = s.ignoreFetchAbort && p2 !== void 0, E3 = s.ignoreFetchAbort || !!(s.allowStaleOnFetchAbort && p2 !== void 0);
+    if (s.status && (g2 && !w2 ? (s.status.fetchAborted = true, s.status.fetchError = o2.signal.reason, S3 && (s.status.fetchAbortIgnored = true)) : s.status.fetchResolved = true), g2 && !S3 && !w2) return c3(o2.signal.reason, E3);
+    let y2 = f3, b3 = __privateGet(this, _i)[e];
+    return (b3 === f3 || S3 && w2 && b3 === void 0) && (p2 === void 0 ? y2.__staleWhileFetching !== void 0 ? __privateGet(this, _i)[e] = y2.__staleWhileFetching : __privateMethod(this, _Me_instances, O_fn).call(this, t2, "fetch") : (s.status && (s.status.fetchUpdated = true), this.set(t2, p2, a.options))), p2;
+  }, u2 = (p2) => (s.status && (s.status.fetchRejected = true, s.status.fetchError = p2), c3(p2, false)), c3 = (p2, w2) => {
+    let { aborted: g2 } = o2.signal, S3 = g2 && s.allowStaleOnFetchAbort, E3 = S3 || s.allowStaleOnFetchRejection, y2 = E3 || s.noDeleteOnFetchRejection, b3 = f3;
+    if (__privateGet(this, _i)[e] === f3 && (!y2 || !w2 && b3.__staleWhileFetching === void 0 ? __privateMethod(this, _Me_instances, O_fn).call(this, t2, "fetch") : S3 || (__privateGet(this, _i)[e] = b3.__staleWhileFetching)), E3) return s.status && b3.__staleWhileFetching !== void 0 && (s.status.returnedStale = true), b3.__staleWhileFetching;
+    if (b3.__returned === b3) throw p2;
+  }, d2 = (p2, w2) => {
+    var _a12;
+    let g2 = (_a12 = __privateGet(this, _S2)) == null ? void 0 : _a12.call(this, t2, r2, a);
+    g2 && g2 instanceof Promise && g2.then((S3) => p2(S3 === void 0 ? void 0 : S3), w2), o2.signal.addEventListener("abort", () => {
+      (!s.ignoreFetchAbort || s.allowStaleOnFetchAbort) && (p2(void 0), s.allowStaleOnFetchAbort && (p2 = (S3) => l3(S3, true)));
     });
   };
   s.status && (s.status.fetchDispatched = true);
-  let f = new Promise(d).then(l, u), m = Object.assign(f, { __abortController: o2, __staleWhileFetching: r2, __returned: void 0 });
-  return e === void 0 ? (this.set(t2, m, { ...a.options, status: void 0 }), e = __privateGet(this, _f2).get(t2)) : __privateGet(this, _i)[e] = m, m;
+  let f3 = new Promise(d2).then(l3, u2), m2 = Object.assign(f3, { __abortController: o2, __staleWhileFetching: r2, __returned: void 0 });
+  return e === void 0 ? (this.set(t2, m2, { ...a.options, status: void 0 }), e = __privateGet(this, _f2).get(t2)) : __privateGet(this, _i)[e] = m2, m2;
 }, l_fn = function(t2) {
   if (!__privateGet(this, _A)) return false;
   let e = t2;
@@ -2230,38 +2230,38 @@ var ft = (_c2 = class {
 }, W_fn = function(t2) {
   t2 !== __privateGet(this, _p) && (t2 === __privateGet(this, _b2) ? __privateSet(this, _b2, __privateGet(this, _d)[t2]) : __privateMethod(this, _Me_instances, $_fn).call(this, __privateGet(this, _E)[t2], __privateGet(this, _d)[t2]), __privateMethod(this, _Me_instances, $_fn).call(this, __privateGet(this, _p), t2), __privateSet(this, _p, t2));
 }, O_fn = function(t2, e) {
-  var _a13, _b5;
+  var _a12, _b5;
   let s = false;
   if (__privateGet(this, _h2) !== 0) {
-    let i2 = __privateGet(this, _f2).get(t2);
-    if (i2 !== void 0) if (__privateGet(this, _y)?.[i2] && (clearTimeout(__privateGet(this, _y)?.[i2]), __privateGet(this, _y)[i2] = void 0), s = true, __privateGet(this, _h2) === 1) __privateMethod(this, _Me_instances, H_fn).call(this, e);
+    let i = __privateGet(this, _f2).get(t2);
+    if (i !== void 0) if (__privateGet(this, _y)?.[i] && (clearTimeout(__privateGet(this, _y)?.[i]), __privateGet(this, _y)[i] = void 0), s = true, __privateGet(this, _h2) === 1) __privateMethod(this, _Me_instances, H_fn).call(this, e);
     else {
-      __privateGet(this, _P).call(this, i2);
-      let r2 = __privateGet(this, _i)[i2];
-      if (__privateMethod(this, _Me_instances, l_fn).call(this, r2) ? r2.__abortController.abort(new Error("deleted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, r2, t2, e)), __privateGet(this, _e) && __privateGet(this, _m)?.push([r2, t2, e])), __privateGet(this, _f2).delete(t2), __privateGet(this, _a4)[i2] = void 0, __privateGet(this, _i)[i2] = void 0, i2 === __privateGet(this, _p)) __privateSet(this, _p, __privateGet(this, _E)[i2]);
-      else if (i2 === __privateGet(this, _b2)) __privateSet(this, _b2, __privateGet(this, _d)[i2]);
+      __privateGet(this, _P).call(this, i);
+      let r2 = __privateGet(this, _i)[i];
+      if (__privateMethod(this, _Me_instances, l_fn).call(this, r2) ? r2.__abortController.abort(new Error("deleted")) : (__privateGet(this, _x) || __privateGet(this, _e)) && (__privateGet(this, _x) && ((_a12 = __privateGet(this, _n2)) == null ? void 0 : _a12.call(this, r2, t2, e)), __privateGet(this, _e) && __privateGet(this, _m)?.push([r2, t2, e])), __privateGet(this, _f2).delete(t2), __privateGet(this, _a4)[i] = void 0, __privateGet(this, _i)[i] = void 0, i === __privateGet(this, _p)) __privateSet(this, _p, __privateGet(this, _E)[i]);
+      else if (i === __privateGet(this, _b2)) __privateSet(this, _b2, __privateGet(this, _d)[i]);
       else {
-        let o2 = __privateGet(this, _E)[i2];
-        __privateGet(this, _d)[o2] = __privateGet(this, _d)[i2];
-        let h2 = __privateGet(this, _d)[i2];
-        __privateGet(this, _E)[h2] = __privateGet(this, _E)[i2];
+        let o2 = __privateGet(this, _E)[i];
+        __privateGet(this, _d)[o2] = __privateGet(this, _d)[i];
+        let h3 = __privateGet(this, _d)[i];
+        __privateGet(this, _E)[h3] = __privateGet(this, _E)[i];
       }
-      __privateWrapper(this, _h2)._--, __privateGet(this, _R).push(i2);
+      __privateWrapper(this, _h2)._--, __privateGet(this, _R).push(i);
     }
   }
   if (__privateGet(this, _e) && __privateGet(this, _m)?.length) {
-    let i2 = __privateGet(this, _m), r2;
-    for (; r2 = i2?.shift(); ) (_b5 = __privateGet(this, _o2)) == null ? void 0 : _b5.call(this, ...r2);
+    let i = __privateGet(this, _m), r2;
+    for (; r2 = i?.shift(); ) (_b5 = __privateGet(this, _o2)) == null ? void 0 : _b5.call(this, ...r2);
   }
   return s;
 }, H_fn = function(t2) {
-  var _a13, _b5;
+  var _a12, _b5;
   for (let e of __privateMethod(this, _Me_instances, D_fn).call(this, { allowStale: true })) {
     let s = __privateGet(this, _i)[e];
     if (__privateMethod(this, _Me_instances, l_fn).call(this, s)) s.__abortController.abort(new Error("deleted"));
     else {
-      let i2 = __privateGet(this, _a4)[e];
-      __privateGet(this, _x) && ((_a13 = __privateGet(this, _n2)) == null ? void 0 : _a13.call(this, s, i2, t2)), __privateGet(this, _e) && __privateGet(this, _m)?.push([s, i2, t2]);
+      let i = __privateGet(this, _a4)[e];
+      __privateGet(this, _x) && ((_a12 = __privateGet(this, _n2)) == null ? void 0 : _a12.call(this, s, i, t2)), __privateGet(this, _e) && __privateGet(this, _m)?.push([s, i, t2]);
     }
   }
   if (__privateGet(this, _f2).clear(), __privateGet(this, _i).fill(void 0), __privateGet(this, _a4).fill(void 0), __privateGet(this, _g) && __privateGet(this, _T)) {
@@ -2336,7 +2336,7 @@ var te = class extends Mt {
     this.src.removeListener("error", this.proxyErrors), super.unpipe();
   }
   constructor(t2, e, s) {
-    super(t2, e, s), this.proxyErrors = (i2) => this.dest.emit("error", i2), t2.on("error", this.proxyErrors);
+    super(t2, e, s), this.proxyErrors = (i) => this.dest.emit("error", i), t2.on("error", this.proxyErrors);
   }
 };
 var di = (n5) => !!n5.objectMode;
@@ -2409,13 +2409,13 @@ var V = class extends import_node_events.EventEmitter {
     if (this[G]) throw new Error("write after end");
     if (this[x]) return this.emit("error", Object.assign(new Error("Cannot call write after a stream was destroyed"), { code: "ERR_STREAM_DESTROYED" })), true;
     typeof e == "function" && (s = e, e = "utf8"), e || (e = "utf8");
-    let i2 = this[B] ? mt : li;
+    let i = this[B] ? mt : li;
     if (!this[k] && !Buffer.isBuffer(t2)) {
       if (ui(t2)) t2 = Buffer.from(t2.buffer, t2.byteOffset, t2.byteLength);
       else if (fi(t2)) t2 = Buffer.from(t2);
       else if (typeof t2 != "string") throw new Error("Non-contiguous data written to non-objectMode stream");
     }
-    return this[k] ? (this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t2) : this[Yt](t2), this[T] !== 0 && this.emit("readable"), s && i2(s), this[v]) : t2.length ? (typeof t2 == "string" && !(e === this[P] && !this[et]?.lastNeed) && (t2 = Buffer.from(t2, e)), Buffer.isBuffer(t2) && this[P] && (t2 = this[et].write(t2)), this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t2) : this[Yt](t2), this[T] !== 0 && this.emit("readable"), s && i2(s), this[v]) : (this[T] !== 0 && this.emit("readable"), s && i2(s), this[v]);
+    return this[k] ? (this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t2) : this[Yt](t2), this[T] !== 0 && this.emit("readable"), s && i(s), this[v]) : t2.length ? (typeof t2 == "string" && !(e === this[P] && !this[et]?.lastNeed) && (t2 = Buffer.from(t2, e)), Buffer.isBuffer(t2) && this[P] && (t2 = this[et].write(t2)), this[v] && this[T] !== 0 && this[Ot](true), this[v] ? this.emit("data", t2) : this[Yt](t2), this[T] !== 0 && this.emit("readable"), s && i(s), this[v]) : (this[T] !== 0 && this.emit("readable"), s && i(s), this[v]);
   }
   read(t2) {
     if (this[x]) return null;
@@ -2487,8 +2487,8 @@ var V = class extends import_node_events.EventEmitter {
     else if (t2 === "readable" && this[T] !== 0) super.emit("readable");
     else if (ci(t2) && this[K]) super.emit(t2), this.removeAllListeners(t2);
     else if (t2 === "error" && this[ut]) {
-      let i2 = e;
-      this[B] ? mt(() => i2.call(this, this[ut])) : i2.call(this, this[ut]);
+      let i = e;
+      this[B] ? mt(() => i.call(this, this[ut])) : i.call(this, this[ut]);
     }
     return s;
   }
@@ -2529,8 +2529,8 @@ var V = class extends import_node_events.EventEmitter {
       let r2 = super.emit(t2);
       return this.removeAllListeners(t2), r2;
     }
-    let i2 = super.emit(t2, ...e);
-    return this[H](), i2;
+    let i = super.emit(t2, ...e);
+    return this[H](), i;
   }
   [Jt](t2) {
     for (let s of this[F]) s.dest.write(t2) === false && this.pause();
@@ -2575,18 +2575,18 @@ var V = class extends import_node_events.EventEmitter {
     let t2 = false, e = async () => (this.pause(), t2 = true, { value: void 0, done: true });
     return { next: () => {
       if (t2) return e();
-      let i2 = this.read();
-      if (i2 !== null) return Promise.resolve({ done: false, value: i2 });
+      let i = this.read();
+      if (i !== null) return Promise.resolve({ done: false, value: i });
       if (this[G]) return e();
-      let r2, o2, h2 = (c3) => {
-        this.off("data", a), this.off("end", l), this.off(x, u), e(), o2(c3);
+      let r2, o2, h3 = (c3) => {
+        this.off("data", a), this.off("end", l3), this.off(x, u2), e(), o2(c3);
       }, a = (c3) => {
-        this.off("error", h2), this.off("end", l), this.off(x, u), this.pause(), r2({ value: c3, done: !!this[G] });
-      }, l = () => {
-        this.off("error", h2), this.off("data", a), this.off(x, u), e(), r2({ done: true, value: void 0 });
-      }, u = () => h2(new Error("stream destroyed"));
-      return new Promise((c3, d) => {
-        o2 = d, r2 = c3, this.once(x, u), this.once("error", h2), this.once("end", l), this.once("data", a);
+        this.off("error", h3), this.off("end", l3), this.off(x, u2), this.pause(), r2({ value: c3, done: !!this[G] });
+      }, l3 = () => {
+        this.off("error", h3), this.off("data", a), this.off(x, u2), e(), r2({ done: true, value: void 0 });
+      }, u2 = () => h3(new Error("stream destroyed"));
+      return new Promise((c3, d2) => {
+        o2 = d2, r2 = c3, this.once(x, u2), this.once("error", h3), this.once("end", l3), this.once("data", a);
       });
     }, throw: e, return: e, [Symbol.asyncIterator]() {
       return this;
@@ -2597,8 +2597,8 @@ var V = class extends import_node_events.EventEmitter {
     this[M] = false;
     let t2 = false, e = () => (this.pause(), this.off(Xt, e), this.off(x, e), this.off("end", e), t2 = true, { done: true, value: void 0 }), s = () => {
       if (t2) return e();
-      let i2 = this.read();
-      return i2 === null ? e() : { done: false, value: i2 };
+      let i = this.read();
+      return i === null ? e() : { done: false, value: i };
     };
     return this.once("end", e), this.once(Xt, e), this.once(x, e), { next: s, throw: e, return: e, [Symbol.iterator]() {
       return this;
@@ -2667,7 +2667,7 @@ var ne = class extends ft {
 var Ye = /* @__PURE__ */ Symbol("PathScurry setAsCwd");
 var _t5, _s5, _n4, _r4, _o4, _S3, _w3, _c5, _h4, _u3, _f4, _a6, _i3, _d3, _E2, _b4, _p3, _R2, _m3, _C2, _T2, _g3, _y2, _x2, _A2, _e4, __2, _M, _k3, _R_instances, N_fn, j_fn, v_fn, G_fn2, P_fn, L_fn, I_fn, F_fn2, D_fn2, z_fn2, B_fn2, U_fn2, l_fn2, $_fn2, _W, _O, H_fn2, _q2, _a7;
 var R = (_a7 = class {
-  constructor(t2, e = L, s, i2, r2, o2, h2) {
+  constructor(t2, e = L, s, i, r2, o2, h3) {
     __privateAdd(this, _R_instances);
     __publicField(this, "name");
     __publicField(this, "root");
@@ -2707,7 +2707,7 @@ var R = (_a7 = class {
     __privateAdd(this, _W, []);
     __privateAdd(this, _O, false);
     __privateAdd(this, _q2);
-    this.name = t2, __privateSet(this, _C2, r2 ? _t4(t2) : bt(t2)), __privateSet(this, _e4, e & Fi), this.nocase = r2, this.roots = i2, this.root = s || this, __privateSet(this, __2, o2), __privateSet(this, _g3, h2.fullpath), __privateSet(this, _x2, h2.relative), __privateSet(this, _A2, h2.relativePosix), this.parent = h2.parent, this.parent ? __privateSet(this, _t5, __privateGet(this.parent, _t5)) : __privateSet(this, _t5, Ue(h2.fs));
+    this.name = t2, __privateSet(this, _C2, r2 ? _t4(t2) : bt(t2)), __privateSet(this, _e4, e & Fi), this.nocase = r2, this.roots = i, this.root = s || this, __privateSet(this, __2, o2), __privateSet(this, _g3, h3.fullpath), __privateSet(this, _x2, h3.relative), __privateSet(this, _A2, h3.relativePosix), this.parent = h3.parent, this.parent ? __privateSet(this, _t5, __privateGet(this.parent, _t5)) : __privateSet(this, _t5, Ue(h3.fs));
   }
   get dev() {
     return __privateGet(this, _s5);
@@ -2776,10 +2776,10 @@ var R = (_a7 = class {
     return __privateGet(this, __2);
   }
   resolve(t2) {
-    var _a13;
+    var _a12;
     if (!t2) return this;
-    let e = this.getRootString(t2), i2 = t2.substring(e.length).split(this.splitSep);
-    return e ? __privateMethod(_a13 = this.getRoot(e), _R_instances, N_fn).call(_a13, i2) : __privateMethod(this, _R_instances, N_fn).call(this, i2);
+    let e = this.getRootString(t2), i = t2.substring(e.length).split(this.splitSep);
+    return e ? __privateMethod(_a12 = this.getRoot(e), _R_instances, N_fn).call(_a12, i) : __privateMethod(this, _R_instances, N_fn).call(this, i);
   }
   children() {
     let t2 = __privateGet(this, __2).get(this);
@@ -2790,10 +2790,10 @@ var R = (_a7 = class {
   child(t2, e) {
     if (t2 === "" || t2 === ".") return this;
     if (t2 === "..") return this.parent || this;
-    let s = this.children(), i2 = this.nocase ? _t4(t2) : bt(t2);
-    for (let a of s) if (__privateGet(a, _C2) === i2) return a;
-    let r2 = this.parent ? this.sep : "", o2 = __privateGet(this, _g3) ? __privateGet(this, _g3) + r2 + t2 : void 0, h2 = this.newChild(t2, L, { ...e, parent: this, fullpath: o2 });
-    return this.canReaddir() || __privateSet(h2, _e4, __privateGet(h2, _e4) | j), s.push(h2), h2;
+    let s = this.children(), i = this.nocase ? _t4(t2) : bt(t2);
+    for (let a of s) if (__privateGet(a, _C2) === i) return a;
+    let r2 = this.parent ? this.sep : "", o2 = __privateGet(this, _g3) ? __privateGet(this, _g3) + r2 + t2 : void 0, h3 = this.newChild(t2, L, { ...e, parent: this, fullpath: o2 });
+    return this.canReaddir() || __privateSet(h3, _e4, __privateGet(h3, _e4) | j), s.push(h3), h3;
   }
   relative() {
     if (this.isCWD) return "";
@@ -2816,15 +2816,15 @@ var R = (_a7 = class {
     if (__privateGet(this, _g3) !== void 0) return __privateGet(this, _g3);
     let t2 = this.name, e = this.parent;
     if (!e) return __privateSet(this, _g3, this.name);
-    let i2 = e.fullpath() + (e.parent ? this.sep : "") + t2;
-    return __privateSet(this, _g3, i2);
+    let i = e.fullpath() + (e.parent ? this.sep : "") + t2;
+    return __privateSet(this, _g3, i);
   }
   fullpathPosix() {
     if (__privateGet(this, _y2) !== void 0) return __privateGet(this, _y2);
     if (this.sep === "/") return __privateSet(this, _y2, this.fullpath());
     if (!this.parent) {
-      let i2 = this.fullpath().replace(/\\/g, "/");
-      return /^[a-z]:\//i.test(i2) ? __privateSet(this, _y2, `//?/${i2}`) : __privateSet(this, _y2, i2);
+      let i = this.fullpath().replace(/\\/g, "/");
+      return /^[a-z]:\//i.test(i) ? __privateSet(this, _y2, `//?/${i}`) : __privateSet(this, _y2, i);
     }
     let t2 = this.parent, e = t2.fullpathPosix(), s = e + (!e || !t2.parent ? "" : "/") + this.name;
     return __privateSet(this, _y2, s);
@@ -2936,11 +2936,11 @@ var R = (_a7 = class {
     }
     if (__privateGet(this, _W).push(t2), __privateGet(this, _O)) return;
     __privateSet(this, _O, true);
-    let i2 = this.fullpath();
-    __privateGet(this, _t5).readdir(i2, { withFileTypes: true }, (r2, o2) => {
+    let i = this.fullpath();
+    __privateGet(this, _t5).readdir(i, { withFileTypes: true }, (r2, o2) => {
       if (r2) __privateMethod(this, _R_instances, I_fn).call(this, r2.code), s.provisional = 0;
       else {
-        for (let h2 of o2) __privateMethod(this, _R_instances, z_fn2).call(this, h2, s);
+        for (let h3 of o2) __privateMethod(this, _R_instances, z_fn2).call(this, h3, s);
         __privateMethod(this, _R_instances, j_fn).call(this, s);
       }
       __privateMethod(this, _R_instances, H_fn2).call(this, s.slice(0, s.provisional));
@@ -2955,12 +2955,12 @@ var R = (_a7 = class {
     else {
       let s = () => {
       };
-      __privateSet(this, _q2, new Promise((i2) => s = i2));
+      __privateSet(this, _q2, new Promise((i) => s = i));
       try {
-        for (let i2 of await __privateGet(this, _t5).promises.readdir(e, { withFileTypes: true })) __privateMethod(this, _R_instances, z_fn2).call(this, i2, t2);
+        for (let i of await __privateGet(this, _t5).promises.readdir(e, { withFileTypes: true })) __privateMethod(this, _R_instances, z_fn2).call(this, i, t2);
         __privateMethod(this, _R_instances, j_fn).call(this, t2);
-      } catch (i2) {
-        __privateMethod(this, _R_instances, I_fn).call(this, i2.code), t2.provisional = 0;
+      } catch (i) {
+        __privateMethod(this, _R_instances, I_fn).call(this, i.code), t2.provisional = 0;
       }
       __privateSet(this, _q2, void 0), s();
     }
@@ -3008,28 +3008,28 @@ var R = (_a7 = class {
   [Ye](t2) {
     if (t2 === this) return;
     t2.isCWD = false, this.isCWD = true;
-    let e = /* @__PURE__ */ new Set([]), s = [], i2 = this;
-    for (; i2 && i2.parent; ) e.add(i2), __privateSet(i2, _x2, s.join(this.sep)), __privateSet(i2, _A2, s.join("/")), i2 = i2.parent, s.push("..");
-    for (i2 = t2; i2 && i2.parent && !e.has(i2); ) __privateSet(i2, _x2, void 0), __privateSet(i2, _A2, void 0), i2 = i2.parent;
+    let e = /* @__PURE__ */ new Set([]), s = [], i = this;
+    for (; i && i.parent; ) e.add(i), __privateSet(i, _x2, s.join(this.sep)), __privateSet(i, _A2, s.join("/")), i = i.parent, s.push("..");
+    for (i = t2; i && i.parent && !e.has(i); ) __privateSet(i, _x2, void 0), __privateSet(i, _A2, void 0), i = i.parent;
   }
 }, _t5 = new WeakMap(), _s5 = new WeakMap(), _n4 = new WeakMap(), _r4 = new WeakMap(), _o4 = new WeakMap(), _S3 = new WeakMap(), _w3 = new WeakMap(), _c5 = new WeakMap(), _h4 = new WeakMap(), _u3 = new WeakMap(), _f4 = new WeakMap(), _a6 = new WeakMap(), _i3 = new WeakMap(), _d3 = new WeakMap(), _E2 = new WeakMap(), _b4 = new WeakMap(), _p3 = new WeakMap(), _R2 = new WeakMap(), _m3 = new WeakMap(), _C2 = new WeakMap(), _T2 = new WeakMap(), _g3 = new WeakMap(), _y2 = new WeakMap(), _x2 = new WeakMap(), _A2 = new WeakMap(), _e4 = new WeakMap(), __2 = new WeakMap(), _M = new WeakMap(), _k3 = new WeakMap(), _R_instances = new WeakSet(), N_fn = function(t2) {
   let e = this;
   for (let s of t2) e = e.child(s);
   return e;
 }, j_fn = function(t2) {
-  var _a13;
+  var _a12;
   __privateSet(this, _e4, __privateGet(this, _e4) | se);
   for (let e = t2.provisional; e < t2.length; e++) {
     let s = t2[e];
-    s && __privateMethod(_a13 = s, _R_instances, v_fn).call(_a13);
+    s && __privateMethod(_a12 = s, _R_instances, v_fn).call(_a12);
   }
 }, v_fn = function() {
   __privateGet(this, _e4) & j || (__privateSet(this, _e4, (__privateGet(this, _e4) | j) & gt), __privateMethod(this, _R_instances, G_fn2).call(this));
 }, G_fn2 = function() {
-  var _a13;
+  var _a12;
   let t2 = this.children();
   t2.provisional = 0;
-  for (let e of t2) __privateMethod(_a13 = e, _R_instances, v_fn).call(_a13);
+  for (let e of t2) __privateMethod(_a12 = e, _R_instances, v_fn).call(_a12);
 }, P_fn = function() {
   __privateSet(this, _e4, __privateGet(this, _e4) | Lt), __privateMethod(this, _R_instances, L_fn).call(this);
 }, L_fn = function() {
@@ -3039,28 +3039,28 @@ var R = (_a7 = class {
 }, I_fn = function(t2 = "") {
   t2 === "ENOTDIR" || t2 === "EPERM" ? __privateMethod(this, _R_instances, L_fn).call(this) : t2 === "ENOENT" ? __privateMethod(this, _R_instances, v_fn).call(this) : this.children().provisional = 0;
 }, F_fn2 = function(t2 = "") {
-  var _a13;
-  t2 === "ENOTDIR" ? __privateMethod(_a13 = this.parent, _R_instances, L_fn).call(_a13) : t2 === "ENOENT" && __privateMethod(this, _R_instances, v_fn).call(this);
+  var _a12;
+  t2 === "ENOTDIR" ? __privateMethod(_a12 = this.parent, _R_instances, L_fn).call(_a12) : t2 === "ENOENT" && __privateMethod(this, _R_instances, v_fn).call(this);
 }, D_fn2 = function(t2 = "") {
-  var _a13;
+  var _a12;
   let e = __privateGet(this, _e4);
-  e |= Nt, t2 === "ENOENT" && (e |= j), (t2 === "EINVAL" || t2 === "UNKNOWN") && (e &= gt), __privateSet(this, _e4, e), t2 === "ENOTDIR" && this.parent && __privateMethod(_a13 = this.parent, _R_instances, L_fn).call(_a13);
+  e |= Nt, t2 === "ENOENT" && (e |= j), (t2 === "EINVAL" || t2 === "UNKNOWN") && (e &= gt), __privateSet(this, _e4, e), t2 === "ENOTDIR" && this.parent && __privateMethod(_a12 = this.parent, _R_instances, L_fn).call(_a12);
 }, z_fn2 = function(t2, e) {
   return __privateMethod(this, _R_instances, U_fn2).call(this, t2, e) || __privateMethod(this, _R_instances, B_fn2).call(this, t2, e);
 }, B_fn2 = function(t2, e) {
-  let s = ie(t2), i2 = this.newChild(t2.name, s, { parent: this }), r2 = __privateGet(i2, _e4) & _;
-  return r2 !== U && r2 !== X && r2 !== L && __privateSet(i2, _e4, __privateGet(i2, _e4) | yt), e.unshift(i2), e.provisional++, i2;
+  let s = ie(t2), i = this.newChild(t2.name, s, { parent: this }), r2 = __privateGet(i, _e4) & _;
+  return r2 !== U && r2 !== X && r2 !== L && __privateSet(i, _e4, __privateGet(i, _e4) | yt), e.unshift(i), e.provisional++, i;
 }, U_fn2 = function(t2, e) {
   for (let s = e.provisional; s < e.length; s++) {
-    let i2 = e[s];
-    if ((this.nocase ? _t4(t2.name) : bt(t2.name)) === __privateGet(i2, _C2)) return __privateMethod(this, _R_instances, l_fn2).call(this, t2, i2, s, e);
+    let i = e[s];
+    if ((this.nocase ? _t4(t2.name) : bt(t2.name)) === __privateGet(i, _C2)) return __privateMethod(this, _R_instances, l_fn2).call(this, t2, i, s, e);
   }
-}, l_fn2 = function(t2, e, s, i2) {
+}, l_fn2 = function(t2, e, s, i) {
   let r2 = e.name;
-  return __privateSet(e, _e4, __privateGet(e, _e4) & gt | ie(t2)), r2 !== t2.name && (e.name = t2.name), s !== i2.provisional && (s === i2.length - 1 ? i2.pop() : i2.splice(s, 1), i2.unshift(e)), i2.provisional++, e;
+  return __privateSet(e, _e4, __privateGet(e, _e4) & gt | ie(t2)), r2 !== t2.name && (e.name = t2.name), s !== i.provisional && (s === i.length - 1 ? i.pop() : i.splice(s, 1), i.unshift(e)), i.provisional++, e;
 }, $_fn2 = function(t2) {
-  let { atime: e, atimeMs: s, birthtime: i2, birthtimeMs: r2, blksize: o2, blocks: h2, ctime: a, ctimeMs: l, dev: u, gid: c3, ino: d, mode: f, mtime: m, mtimeMs: p2, nlink: w, rdev: g, size: S2, uid: E2 } = t2;
-  __privateSet(this, _b4, e), __privateSet(this, _a6, s), __privateSet(this, _m3, i2), __privateSet(this, _E2, r2), __privateSet(this, _c5, o2), __privateSet(this, _f4, h2), __privateSet(this, _R2, a), __privateSet(this, _d3, l), __privateSet(this, _s5, u), __privateSet(this, _S3, c3), __privateSet(this, _h4, d), __privateSet(this, _n4, f), __privateSet(this, _p3, m), __privateSet(this, _i3, p2), __privateSet(this, _r4, w), __privateSet(this, _w3, g), __privateSet(this, _u3, S2), __privateSet(this, _o4, E2);
+  let { atime: e, atimeMs: s, birthtime: i, birthtimeMs: r2, blksize: o2, blocks: h3, ctime: a, ctimeMs: l3, dev: u2, gid: c3, ino: d2, mode: f3, mtime: m2, mtimeMs: p2, nlink: w2, rdev: g2, size: S3, uid: E3 } = t2;
+  __privateSet(this, _b4, e), __privateSet(this, _a6, s), __privateSet(this, _m3, i), __privateSet(this, _E2, r2), __privateSet(this, _c5, o2), __privateSet(this, _f4, h3), __privateSet(this, _R2, a), __privateSet(this, _d3, l3), __privateSet(this, _s5, u2), __privateSet(this, _S3, c3), __privateSet(this, _h4, d2), __privateSet(this, _n4, f3), __privateSet(this, _p3, m2), __privateSet(this, _i3, p2), __privateSet(this, _r4, w2), __privateSet(this, _w3, g2), __privateSet(this, _u3, S3), __privateSet(this, _o4, E3);
   let y2 = ie(t2);
   __privateSet(this, _e4, __privateGet(this, _e4) & gt | y2 | je), y2 !== L && y2 !== U && y2 !== X && __privateSet(this, _e4, __privateGet(this, _e4) | yt);
 }, _W = new WeakMap(), _O = new WeakMap(), H_fn2 = function(t2) {
@@ -3069,8 +3069,8 @@ var R = (_a7 = class {
   __privateGet(this, _W).length = 0, e.forEach((s) => s(null, t2));
 }, _q2 = new WeakMap(), _a7);
 var Pt = class n extends R {
-  constructor(t2, e = L, s, i2, r2, o2, h2) {
-    super(t2, e, s, i2, r2, o2, h2);
+  constructor(t2, e = L, s, i, r2, o2, h3) {
+    super(t2, e, s, i, r2, o2, h3);
     __publicField(this, "sep", "\\");
     __publicField(this, "splitSep", Oi);
   }
@@ -3090,8 +3090,8 @@ var Pt = class n extends R {
   }
 };
 var jt = class n2 extends R {
-  constructor(t2, e = L, s, i2, r2, o2, h2) {
-    super(t2, e, s, i2, r2, o2, h2);
+  constructor(t2, e = L, s, i, r2, o2, h3) {
+    super(t2, e, s, i, r2, o2, h3);
     __publicField(this, "splitSep", "/");
     __publicField(this, "sep", "/");
   }
@@ -3107,7 +3107,7 @@ var jt = class n2 extends R {
 };
 var _t6, _s6, _n5, _r5, _a8;
 var It = (_a8 = class {
-  constructor(t2 = process.cwd(), e, s, { nocase: i2, childrenCacheSize: r2 = 16 * 1024, fs: o2 = wt } = {}) {
+  constructor(t2 = process.cwd(), e, s, { nocase: i, childrenCacheSize: r2 = 16 * 1024, fs: o2 = wt } = {}) {
     __publicField(this, "root");
     __publicField(this, "rootPath");
     __publicField(this, "roots");
@@ -3118,17 +3118,17 @@ var It = (_a8 = class {
     __publicField(this, "nocase");
     __privateAdd(this, _r5);
     __privateSet(this, _r5, Ue(o2)), (t2 instanceof URL || t2.startsWith("file://")) && (t2 = (0, import_node_url2.fileURLToPath)(t2));
-    let h2 = e.resolve(t2);
-    this.roots = /* @__PURE__ */ Object.create(null), this.rootPath = this.parseRootPath(h2), __privateSet(this, _t6, new Wt()), __privateSet(this, _s6, new Wt()), __privateSet(this, _n5, new ne(r2));
-    let a = h2.substring(this.rootPath.length).split(s);
-    if (a.length === 1 && !a[0] && a.pop(), i2 === void 0) throw new TypeError("must provide nocase setting to PathScurryBase ctor");
-    this.nocase = i2, this.root = this.newRoot(__privateGet(this, _r5)), this.roots[this.rootPath] = this.root;
-    let l = this.root, u = a.length - 1, c3 = e.sep, d = this.rootPath, f = false;
-    for (let m of a) {
-      let p2 = u--;
-      l = l.child(m, { relative: new Array(p2).fill("..").join(c3), relativePosix: new Array(p2).fill("..").join("/"), fullpath: d += (f ? "" : c3) + m }), f = true;
+    let h3 = e.resolve(t2);
+    this.roots = /* @__PURE__ */ Object.create(null), this.rootPath = this.parseRootPath(h3), __privateSet(this, _t6, new Wt()), __privateSet(this, _s6, new Wt()), __privateSet(this, _n5, new ne(r2));
+    let a = h3.substring(this.rootPath.length).split(s);
+    if (a.length === 1 && !a[0] && a.pop(), i === void 0) throw new TypeError("must provide nocase setting to PathScurryBase ctor");
+    this.nocase = i, this.root = this.newRoot(__privateGet(this, _r5)), this.roots[this.rootPath] = this.root;
+    let l3 = this.root, u2 = a.length - 1, c3 = e.sep, d2 = this.rootPath, f3 = false;
+    for (let m2 of a) {
+      let p2 = u2--;
+      l3 = l3.child(m2, { relative: new Array(p2).fill("..").join(c3), relativePosix: new Array(p2).fill("..").join("/"), fullpath: d2 += (f3 ? "" : c3) + m2 }), f3 = true;
     }
-    this.cwd = l;
+    this.cwd = l3;
   }
   depth(t2 = this.cwd) {
     return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.depth();
@@ -3144,8 +3144,8 @@ var It = (_a8 = class {
     }
     let s = __privateGet(this, _t6).get(e);
     if (s !== void 0) return s;
-    let i2 = this.cwd.resolve(e).fullpath();
-    return __privateGet(this, _t6).set(e, i2), i2;
+    let i = this.cwd.resolve(e).fullpath();
+    return __privateGet(this, _t6).set(e, i), i;
   }
   resolvePosix(...t2) {
     let e = "";
@@ -3155,8 +3155,8 @@ var It = (_a8 = class {
     }
     let s = __privateGet(this, _s6).get(e);
     if (s !== void 0) return s;
-    let i2 = this.cwd.resolve(e).fullpathPosix();
-    return __privateGet(this, _s6).set(e, i2), i2;
+    let i = this.cwd.resolve(e).fullpathPosix();
+    return __privateGet(this, _s6).set(e, i), i;
   }
   relative(t2 = this.cwd) {
     return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.relative();
@@ -3174,14 +3174,14 @@ var It = (_a8 = class {
     typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
     let { withFileTypes: s } = e;
     if (t2.canReaddir()) {
-      let i2 = await t2.readdir();
-      return s ? i2 : i2.map((r2) => r2.name);
+      let i = await t2.readdir();
+      return s ? i : i.map((r2) => r2.name);
     } else return [];
   }
   readdirSync(t2 = this.cwd, e = { withFileTypes: true }) {
     typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
     let { withFileTypes: s = true } = e;
-    return t2.canReaddir() ? s ? t2.readdirSync() : t2.readdirSync().map((i2) => i2.name) : [];
+    return t2.canReaddir() ? s ? t2.readdirSync() : t2.readdirSync().map((i) => i.name) : [];
   }
   async lstat(t2 = this.cwd) {
     return typeof t2 == "string" && (t2 = this.cwd.resolve(t2)), t2.lstat();
@@ -3211,44 +3211,44 @@ var It = (_a8 = class {
   }
   async walk(t2 = this.cwd, e = {}) {
     typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
-    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = [];
-    (!r2 || r2(t2)) && h2.push(s ? t2 : t2.fullpath());
-    let a = /* @__PURE__ */ new Set(), l = (c3, d) => {
-      a.add(c3), c3.readdirCB((f, m) => {
-        if (f) return d(f);
-        let p2 = m.length;
-        if (!p2) return d();
-        let w = () => {
-          --p2 === 0 && d();
+    let { withFileTypes: s = true, follow: i = false, filter: r2, walkFilter: o2 } = e, h3 = [];
+    (!r2 || r2(t2)) && h3.push(s ? t2 : t2.fullpath());
+    let a = /* @__PURE__ */ new Set(), l3 = (c3, d2) => {
+      a.add(c3), c3.readdirCB((f3, m2) => {
+        if (f3) return d2(f3);
+        let p2 = m2.length;
+        if (!p2) return d2();
+        let w2 = () => {
+          --p2 === 0 && d2();
         };
-        for (let g of m) (!r2 || r2(g)) && h2.push(s ? g : g.fullpath()), i2 && g.isSymbolicLink() ? g.realpath().then((S2) => S2?.isUnknown() ? S2.lstat() : S2).then((S2) => S2?.shouldWalk(a, o2) ? l(S2, w) : w()) : g.shouldWalk(a, o2) ? l(g, w) : w();
+        for (let g2 of m2) (!r2 || r2(g2)) && h3.push(s ? g2 : g2.fullpath()), i && g2.isSymbolicLink() ? g2.realpath().then((S3) => S3?.isUnknown() ? S3.lstat() : S3).then((S3) => S3?.shouldWalk(a, o2) ? l3(S3, w2) : w2()) : g2.shouldWalk(a, o2) ? l3(g2, w2) : w2();
       }, true);
-    }, u = t2;
-    return new Promise((c3, d) => {
-      l(u, (f) => {
-        if (f) return d(f);
-        c3(h2);
+    }, u2 = t2;
+    return new Promise((c3, d2) => {
+      l3(u2, (f3) => {
+        if (f3) return d2(f3);
+        c3(h3);
       });
     });
   }
   walkSync(t2 = this.cwd, e = {}) {
     typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
-    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = [];
-    (!r2 || r2(t2)) && h2.push(s ? t2 : t2.fullpath());
+    let { withFileTypes: s = true, follow: i = false, filter: r2, walkFilter: o2 } = e, h3 = [];
+    (!r2 || r2(t2)) && h3.push(s ? t2 : t2.fullpath());
     let a = /* @__PURE__ */ new Set([t2]);
-    for (let l of a) {
-      let u = l.readdirSync();
-      for (let c3 of u) {
-        (!r2 || r2(c3)) && h2.push(s ? c3 : c3.fullpath());
-        let d = c3;
+    for (let l3 of a) {
+      let u2 = l3.readdirSync();
+      for (let c3 of u2) {
+        (!r2 || r2(c3)) && h3.push(s ? c3 : c3.fullpath());
+        let d2 = c3;
         if (c3.isSymbolicLink()) {
-          if (!(i2 && (d = c3.realpathSync()))) continue;
-          d.isUnknown() && d.lstatSync();
+          if (!(i && (d2 = c3.realpathSync()))) continue;
+          d2.isUnknown() && d2.lstatSync();
         }
-        d.shouldWalk(a, o2) && a.add(d);
+        d2.shouldWalk(a, o2) && a.add(d2);
       }
     }
-    return h2;
+    return h3;
   }
   [Symbol.asyncIterator]() {
     return this.iterate();
@@ -3261,86 +3261,86 @@ var It = (_a8 = class {
   }
   *iterateSync(t2 = this.cwd, e = {}) {
     typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
-    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e;
+    let { withFileTypes: s = true, follow: i = false, filter: r2, walkFilter: o2 } = e;
     (!r2 || r2(t2)) && (yield s ? t2 : t2.fullpath());
-    let h2 = /* @__PURE__ */ new Set([t2]);
-    for (let a of h2) {
-      let l = a.readdirSync();
-      for (let u of l) {
-        (!r2 || r2(u)) && (yield s ? u : u.fullpath());
-        let c3 = u;
-        if (u.isSymbolicLink()) {
-          if (!(i2 && (c3 = u.realpathSync()))) continue;
+    let h3 = /* @__PURE__ */ new Set([t2]);
+    for (let a of h3) {
+      let l3 = a.readdirSync();
+      for (let u2 of l3) {
+        (!r2 || r2(u2)) && (yield s ? u2 : u2.fullpath());
+        let c3 = u2;
+        if (u2.isSymbolicLink()) {
+          if (!(i && (c3 = u2.realpathSync()))) continue;
           c3.isUnknown() && c3.lstatSync();
         }
-        c3.shouldWalk(h2, o2) && h2.add(c3);
+        c3.shouldWalk(h3, o2) && h3.add(c3);
       }
     }
   }
   stream(t2 = this.cwd, e = {}) {
     typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
-    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = new V({ objectMode: true });
-    (!r2 || r2(t2)) && h2.write(s ? t2 : t2.fullpath());
-    let a = /* @__PURE__ */ new Set(), l = [t2], u = 0, c3 = () => {
-      let d = false;
-      for (; !d; ) {
-        let f = l.shift();
-        if (!f) {
-          u === 0 && h2.end();
+    let { withFileTypes: s = true, follow: i = false, filter: r2, walkFilter: o2 } = e, h3 = new V({ objectMode: true });
+    (!r2 || r2(t2)) && h3.write(s ? t2 : t2.fullpath());
+    let a = /* @__PURE__ */ new Set(), l3 = [t2], u2 = 0, c3 = () => {
+      let d2 = false;
+      for (; !d2; ) {
+        let f3 = l3.shift();
+        if (!f3) {
+          u2 === 0 && h3.end();
           return;
         }
-        u++, a.add(f);
-        let m = (w, g, S2 = false) => {
-          if (w) return h2.emit("error", w);
-          if (i2 && !S2) {
-            let E2 = [];
-            for (let y2 of g) y2.isSymbolicLink() && E2.push(y2.realpath().then((b2) => b2?.isUnknown() ? b2.lstat() : b2));
-            if (E2.length) {
-              Promise.all(E2).then(() => m(null, g, true));
+        u2++, a.add(f3);
+        let m2 = (w2, g2, S3 = false) => {
+          if (w2) return h3.emit("error", w2);
+          if (i && !S3) {
+            let E3 = [];
+            for (let y2 of g2) y2.isSymbolicLink() && E3.push(y2.realpath().then((b3) => b3?.isUnknown() ? b3.lstat() : b3));
+            if (E3.length) {
+              Promise.all(E3).then(() => m2(null, g2, true));
               return;
             }
           }
-          for (let E2 of g) E2 && (!r2 || r2(E2)) && (h2.write(s ? E2 : E2.fullpath()) || (d = true));
-          u--;
-          for (let E2 of g) {
-            let y2 = E2.realpathCached() || E2;
-            y2.shouldWalk(a, o2) && l.push(y2);
+          for (let E3 of g2) E3 && (!r2 || r2(E3)) && (h3.write(s ? E3 : E3.fullpath()) || (d2 = true));
+          u2--;
+          for (let E3 of g2) {
+            let y2 = E3.realpathCached() || E3;
+            y2.shouldWalk(a, o2) && l3.push(y2);
           }
-          d && !h2.flowing ? h2.once("drain", c3) : p2 || c3();
+          d2 && !h3.flowing ? h3.once("drain", c3) : p2 || c3();
         }, p2 = true;
-        f.readdirCB(m, true), p2 = false;
+        f3.readdirCB(m2, true), p2 = false;
       }
     };
-    return c3(), h2;
+    return c3(), h3;
   }
   streamSync(t2 = this.cwd, e = {}) {
     typeof t2 == "string" ? t2 = this.cwd.resolve(t2) : t2 instanceof R || (e = t2, t2 = this.cwd);
-    let { withFileTypes: s = true, follow: i2 = false, filter: r2, walkFilter: o2 } = e, h2 = new V({ objectMode: true }), a = /* @__PURE__ */ new Set();
-    (!r2 || r2(t2)) && h2.write(s ? t2 : t2.fullpath());
-    let l = [t2], u = 0, c3 = () => {
-      let d = false;
-      for (; !d; ) {
-        let f = l.shift();
-        if (!f) {
-          u === 0 && h2.end();
+    let { withFileTypes: s = true, follow: i = false, filter: r2, walkFilter: o2 } = e, h3 = new V({ objectMode: true }), a = /* @__PURE__ */ new Set();
+    (!r2 || r2(t2)) && h3.write(s ? t2 : t2.fullpath());
+    let l3 = [t2], u2 = 0, c3 = () => {
+      let d2 = false;
+      for (; !d2; ) {
+        let f3 = l3.shift();
+        if (!f3) {
+          u2 === 0 && h3.end();
           return;
         }
-        u++, a.add(f);
-        let m = f.readdirSync();
-        for (let p2 of m) (!r2 || r2(p2)) && (h2.write(s ? p2 : p2.fullpath()) || (d = true));
-        u--;
-        for (let p2 of m) {
-          let w = p2;
+        u2++, a.add(f3);
+        let m2 = f3.readdirSync();
+        for (let p2 of m2) (!r2 || r2(p2)) && (h3.write(s ? p2 : p2.fullpath()) || (d2 = true));
+        u2--;
+        for (let p2 of m2) {
+          let w2 = p2;
           if (p2.isSymbolicLink()) {
-            if (!(i2 && (w = p2.realpathSync()))) continue;
-            w.isUnknown() && w.lstatSync();
+            if (!(i && (w2 = p2.realpathSync()))) continue;
+            w2.isUnknown() && w2.lstatSync();
           }
-          w.shouldWalk(a, o2) && l.push(w);
+          w2.shouldWalk(a, o2) && l3.push(w2);
         }
       }
-      d && !h2.flowing && h2.once("drain", c3);
+      d2 && !h3.flowing && h3.once("drain", c3);
     };
-    return c3(), h2;
+    return c3(), h3;
   }
   chdir(t2 = this.cwd) {
     let e = this.cwd;
@@ -3353,7 +3353,7 @@ var it = class extends It {
     super(t2, import_node_path.win32, "\\", { ...e, nocase: s });
     __publicField(this, "sep", "\\");
     this.nocase = s;
-    for (let i2 = this.cwd; i2; i2 = i2.parent) i2.nocase = this.nocase;
+    for (let i = this.cwd; i; i = i.parent) i.nocase = this.nocase;
   }
   parseRootPath(t2) {
     return import_node_path.win32.parse(t2).root.toUpperCase();
@@ -3395,7 +3395,7 @@ var Mi = (n5) => n5.length >= 1;
 var Ni = /* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom");
 var _t7, _s7, _n6, _r6, _o5, _S4, _w4, _c6, _h5, _u4, _a9;
 var nt = (_a9 = class {
-  constructor(t2, e, s, i2) {
+  constructor(t2, e, s, i) {
     __privateAdd(this, _t7);
     __privateAdd(this, _s7);
     __privateAdd(this, _n6);
@@ -3411,17 +3411,17 @@ var nt = (_a9 = class {
     if (!Mi(e)) throw new TypeError("empty glob list");
     if (e.length !== t2.length) throw new TypeError("mismatched pattern list and glob list lengths");
     if (this.length = t2.length, s < 0 || s >= this.length) throw new TypeError("index out of range");
-    if (__privateSet(this, _t7, t2), __privateSet(this, _s7, e), __privateSet(this, _n6, s), __privateSet(this, _r6, i2), __privateGet(this, _n6) === 0) {
+    if (__privateSet(this, _t7, t2), __privateSet(this, _s7, e), __privateSet(this, _n6, s), __privateSet(this, _r6, i), __privateGet(this, _n6) === 0) {
       if (this.isUNC()) {
-        let [r2, o2, h2, a, ...l] = __privateGet(this, _t7), [u, c3, d, f, ...m] = __privateGet(this, _s7);
-        l[0] === "" && (l.shift(), m.shift());
-        let p2 = [r2, o2, h2, a, ""].join("/"), w = [u, c3, d, f, ""].join("/");
-        __privateSet(this, _t7, [p2, ...l]), __privateSet(this, _s7, [w, ...m]), this.length = __privateGet(this, _t7).length;
+        let [r2, o2, h3, a, ...l3] = __privateGet(this, _t7), [u2, c3, d2, f3, ...m2] = __privateGet(this, _s7);
+        l3[0] === "" && (l3.shift(), m2.shift());
+        let p2 = [r2, o2, h3, a, ""].join("/"), w2 = [u2, c3, d2, f3, ""].join("/");
+        __privateSet(this, _t7, [p2, ...l3]), __privateSet(this, _s7, [w2, ...m2]), this.length = __privateGet(this, _t7).length;
       } else if (this.isDrive() || this.isAbsolute()) {
-        let [r2, ...o2] = __privateGet(this, _t7), [h2, ...a] = __privateGet(this, _s7);
+        let [r2, ...o2] = __privateGet(this, _t7), [h3, ...a] = __privateGet(this, _s7);
         o2[0] === "" && (o2.shift(), a.shift());
-        let l = r2 + "/", u = h2 + "/";
-        __privateSet(this, _t7, [l, ...o2]), __privateSet(this, _s7, [u, ...a]), this.length = __privateGet(this, _t7).length;
+        let l3 = r2 + "/", u2 = h3 + "/";
+        __privateSet(this, _t7, [l3, ...o2]), __privateSet(this, _s7, [u2, ...a]), this.length = __privateGet(this, _t7).length;
       }
     }
   }
@@ -3474,36 +3474,36 @@ var nt = (_a9 = class {
 }, _t7 = new WeakMap(), _s7 = new WeakMap(), _n6 = new WeakMap(), _r6 = new WeakMap(), _o5 = new WeakMap(), _S4 = new WeakMap(), _w4 = new WeakMap(), _c6 = new WeakMap(), _h5 = new WeakMap(), _u4 = new WeakMap(), _a9);
 var _i4 = typeof process == "object" && process && typeof process.platform == "string" ? process.platform : "linux";
 var ot = class {
-  constructor(t2, { nobrace: e, nocase: s, noext: i2, noglobstar: r2, platform: o2 = _i4 }) {
+  constructor(t2, { nobrace: e, nocase: s, noext: i, noglobstar: r2, platform: o2 = _i4 }) {
     __publicField(this, "relative");
     __publicField(this, "relativeChildren");
     __publicField(this, "absolute");
     __publicField(this, "absoluteChildren");
     __publicField(this, "platform");
     __publicField(this, "mmopts");
-    this.relative = [], this.absolute = [], this.relativeChildren = [], this.absoluteChildren = [], this.platform = o2, this.mmopts = { dot: true, nobrace: e, nocase: s, noext: i2, noglobstar: r2, optimizationLevel: 2, platform: o2, nocomment: true, nonegate: true };
-    for (let h2 of t2) this.add(h2);
+    this.relative = [], this.absolute = [], this.relativeChildren = [], this.absoluteChildren = [], this.platform = o2, this.mmopts = { dot: true, nobrace: e, nocase: s, noext: i, noglobstar: r2, optimizationLevel: 2, platform: o2, nocomment: true, nonegate: true };
+    for (let h3 of t2) this.add(h3);
   }
   add(t2) {
     let e = new D(t2, this.mmopts);
     for (let s = 0; s < e.set.length; s++) {
-      let i2 = e.set[s], r2 = e.globParts[s];
-      if (!i2 || !r2) throw new Error("invalid pattern object");
-      for (; i2[0] === "." && r2[0] === "."; ) i2.shift(), r2.shift();
-      let o2 = new nt(i2, r2, 0, this.platform), h2 = new D(o2.globString(), this.mmopts), a = r2[r2.length - 1] === "**", l = o2.isAbsolute();
-      l ? this.absolute.push(h2) : this.relative.push(h2), a && (l ? this.absoluteChildren.push(h2) : this.relativeChildren.push(h2));
+      let i = e.set[s], r2 = e.globParts[s];
+      if (!i || !r2) throw new Error("invalid pattern object");
+      for (; i[0] === "." && r2[0] === "."; ) i.shift(), r2.shift();
+      let o2 = new nt(i, r2, 0, this.platform), h3 = new D(o2.globString(), this.mmopts), a = r2[r2.length - 1] === "**", l3 = o2.isAbsolute();
+      l3 ? this.absolute.push(h3) : this.relative.push(h3), a && (l3 ? this.absoluteChildren.push(h3) : this.relativeChildren.push(h3));
     }
   }
   ignored(t2) {
-    let e = t2.fullpath(), s = `${e}/`, i2 = t2.relative() || ".", r2 = `${i2}/`;
-    for (let o2 of this.relative) if (o2.match(i2) || o2.match(r2)) return true;
+    let e = t2.fullpath(), s = `${e}/`, i = t2.relative() || ".", r2 = `${i}/`;
+    for (let o2 of this.relative) if (o2.match(i) || o2.match(r2)) return true;
     for (let o2 of this.absolute) if (o2.match(e) || o2.match(s)) return true;
     return false;
   }
   childrenIgnored(t2) {
     let e = t2.fullpath() + "/", s = (t2.relative() || ".") + "/";
-    for (let i2 of this.relativeChildren) if (i2.match(s)) return true;
-    for (let i2 of this.absoluteChildren) if (i2.match(e)) return true;
+    for (let i of this.relativeChildren) if (i.match(s)) return true;
+    for (let i of this.absoluteChildren) if (i.match(e)) return true;
     return false;
   }
 };
@@ -3519,8 +3519,8 @@ var oe = class n3 {
     return this.store.get(t2.fullpath())?.has(e.globString());
   }
   storeWalked(t2, e) {
-    let s = t2.fullpath(), i2 = this.store.get(s);
-    i2 ? i2.add(e.globString()) : this.store.set(s, /* @__PURE__ */ new Set([e.globString()]));
+    let s = t2.fullpath(), i = this.store.get(s);
+    i ? i.add(e.globString()) : this.store.set(s, /* @__PURE__ */ new Set([e.globString()]));
   }
 };
 var he = class {
@@ -3528,8 +3528,8 @@ var he = class {
     __publicField(this, "store", /* @__PURE__ */ new Map());
   }
   add(t2, e, s) {
-    let i2 = (e ? 2 : 0) | (s ? 1 : 0), r2 = this.store.get(t2);
-    this.store.set(t2, r2 === void 0 ? i2 : i2 & r2);
+    let i = (e ? 2 : 0) | (s ? 1 : 0), r2 = this.store.get(t2);
+    this.store.set(t2, r2 === void 0 ? i : i & r2);
   }
   entries() {
     return [...this.store.entries()].map(([t2, e]) => [t2, !!(e & 2), !!(e & 1)]);
@@ -3542,7 +3542,7 @@ var ae = class {
   add(t2, e) {
     if (!t2.canReaddir()) return;
     let s = this.store.get(t2);
-    s ? s.find((i2) => i2.globString() === e.globString()) || s.push(e) : this.store.set(t2, [e]);
+    s ? s.find((i) => i.globString() === e.globString()) || s.push(e) : this.store.set(t2, [e]);
   }
   get(t2) {
     let e = this.store.get(t2);
@@ -3569,39 +3569,39 @@ var Et = class n4 {
   }
   processPatterns(t2, e) {
     this.patterns = e;
-    let s = e.map((i2) => [t2, i2]);
-    for (let [i2, r2] of s) {
-      this.hasWalkedCache.storeWalked(i2, r2);
-      let o2 = r2.root(), h2 = r2.isAbsolute() && this.opts.absolute !== false;
+    let s = e.map((i) => [t2, i]);
+    for (let [i, r2] of s) {
+      this.hasWalkedCache.storeWalked(i, r2);
+      let o2 = r2.root(), h3 = r2.isAbsolute() && this.opts.absolute !== false;
       if (o2) {
-        i2 = i2.resolve(o2 === "/" && this.opts.root !== void 0 ? this.opts.root : o2);
+        i = i.resolve(o2 === "/" && this.opts.root !== void 0 ? this.opts.root : o2);
         let c3 = r2.rest();
         if (c3) r2 = c3;
         else {
-          this.matches.add(i2, true, false);
+          this.matches.add(i, true, false);
           continue;
         }
       }
-      if (i2.isENOENT()) continue;
-      let a, l, u = false;
-      for (; typeof (a = r2.pattern()) == "string" && (l = r2.rest()); ) i2 = i2.resolve(a), r2 = l, u = true;
-      if (a = r2.pattern(), l = r2.rest(), u) {
-        if (this.hasWalkedCache.hasWalked(i2, r2)) continue;
-        this.hasWalkedCache.storeWalked(i2, r2);
+      if (i.isENOENT()) continue;
+      let a, l3, u2 = false;
+      for (; typeof (a = r2.pattern()) == "string" && (l3 = r2.rest()); ) i = i.resolve(a), r2 = l3, u2 = true;
+      if (a = r2.pattern(), l3 = r2.rest(), u2) {
+        if (this.hasWalkedCache.hasWalked(i, r2)) continue;
+        this.hasWalkedCache.storeWalked(i, r2);
       }
       if (typeof a == "string") {
         let c3 = a === ".." || a === "" || a === ".";
-        this.matches.add(i2.resolve(a), h2, c3);
+        this.matches.add(i.resolve(a), h3, c3);
         continue;
       } else if (a === A) {
-        (!i2.isSymbolicLink() || this.follow || r2.checkFollowGlobstar()) && this.subwalks.add(i2, r2);
-        let c3 = l?.pattern(), d = l?.rest();
-        if (!l || (c3 === "" || c3 === ".") && !d) this.matches.add(i2, h2, c3 === "" || c3 === ".");
+        (!i.isSymbolicLink() || this.follow || r2.checkFollowGlobstar()) && this.subwalks.add(i, r2);
+        let c3 = l3?.pattern(), d2 = l3?.rest();
+        if (!l3 || (c3 === "" || c3 === ".") && !d2) this.matches.add(i, h3, c3 === "" || c3 === ".");
         else if (c3 === "..") {
-          let f = i2.parent || i2;
-          d ? this.hasWalkedCache.hasWalked(f, d) || this.subwalks.add(f, d) : this.matches.add(f, h2, true);
+          let f3 = i.parent || i;
+          d2 ? this.hasWalkedCache.hasWalked(f3, d2) || this.subwalks.add(f3, d2) : this.matches.add(f3, h3, true);
         }
-      } else a instanceof RegExp && this.subwalks.add(i2, r2);
+      } else a instanceof RegExp && this.subwalks.add(i, r2);
     }
     return this;
   }
@@ -3612,28 +3612,28 @@ var Et = class n4 {
     return new n4(this.opts, this.hasWalkedCache);
   }
   filterEntries(t2, e) {
-    let s = this.subwalks.get(t2), i2 = this.child();
+    let s = this.subwalks.get(t2), i = this.child();
     for (let r2 of e) for (let o2 of s) {
-      let h2 = o2.isAbsolute(), a = o2.pattern(), l = o2.rest();
-      a === A ? i2.testGlobstar(r2, o2, l, h2) : a instanceof RegExp ? i2.testRegExp(r2, a, l, h2) : i2.testString(r2, a, l, h2);
+      let h3 = o2.isAbsolute(), a = o2.pattern(), l3 = o2.rest();
+      a === A ? i.testGlobstar(r2, o2, l3, h3) : a instanceof RegExp ? i.testRegExp(r2, a, l3, h3) : i.testString(r2, a, l3, h3);
     }
-    return i2;
+    return i;
   }
-  testGlobstar(t2, e, s, i2) {
-    if ((this.dot || !t2.name.startsWith(".")) && (e.hasMore() || this.matches.add(t2, i2, false), t2.canReaddir() && (this.follow || !t2.isSymbolicLink() ? this.subwalks.add(t2, e) : t2.isSymbolicLink() && (s && e.checkFollowGlobstar() ? this.subwalks.add(t2, s) : e.markFollowGlobstar() && this.subwalks.add(t2, e)))), s) {
+  testGlobstar(t2, e, s, i) {
+    if ((this.dot || !t2.name.startsWith(".")) && (e.hasMore() || this.matches.add(t2, i, false), t2.canReaddir() && (this.follow || !t2.isSymbolicLink() ? this.subwalks.add(t2, e) : t2.isSymbolicLink() && (s && e.checkFollowGlobstar() ? this.subwalks.add(t2, s) : e.markFollowGlobstar() && this.subwalks.add(t2, e)))), s) {
       let r2 = s.pattern();
-      if (typeof r2 == "string" && r2 !== ".." && r2 !== "" && r2 !== ".") this.testString(t2, r2, s.rest(), i2);
+      if (typeof r2 == "string" && r2 !== ".." && r2 !== "" && r2 !== ".") this.testString(t2, r2, s.rest(), i);
       else if (r2 === "..") {
         let o2 = t2.parent || t2;
         this.subwalks.add(o2, s);
-      } else r2 instanceof RegExp && this.testRegExp(t2, r2, s.rest(), i2);
+      } else r2 instanceof RegExp && this.testRegExp(t2, r2, s.rest(), i);
     }
   }
-  testRegExp(t2, e, s, i2) {
-    e.test(t2.name) && (s ? this.subwalks.add(t2, s) : this.matches.add(t2, i2, false));
+  testRegExp(t2, e, s, i) {
+    e.test(t2.name) && (s ? this.subwalks.add(t2, s) : this.matches.add(t2, i, false));
   }
-  testString(t2, e, s, i2) {
-    t2.isNamed(e) && (s ? this.subwalks.add(t2, s) : this.matches.add(t2, i2, false));
+  testString(t2, e, s, i) {
+    t2.isNamed(e) && (s ? this.subwalks.add(t2, s) : this.matches.add(t2, i, false));
   }
 };
 var Li = (n5, t2) => typeof n5 == "string" ? new ot([n5], t2) : Array.isArray(n5) ? new ot(n5, t2) : n5;
@@ -3654,8 +3654,8 @@ var zt = (_a10 = class {
     __publicField(this, "maxDepth");
     __publicField(this, "includeChildMatches");
     if (this.patterns = t2, this.path = e, this.opts = s, __privateSet(this, _n7, !s.posix && s.platform === "win32" ? "\\" : "/"), this.includeChildMatches = s.includeChildMatches !== false, (s.ignore || !this.includeChildMatches) && (__privateSet(this, _s8, Li(s.ignore ?? [], s)), !this.includeChildMatches && typeof __privateGet(this, _s8).add != "function")) {
-      let i2 = "cannot ignore child matches, ignore lacks add() method.";
-      throw new Error(i2);
+      let i = "cannot ignore child matches, ignore lacks add() method.";
+      throw new Error(i);
     }
     this.maxDepth = s.maxDepth || 1 / 0, s.signal && (this.signal = s.signal, this.signal.addEventListener("abort", () => {
       __privateGet(this, _t8).length = 0;
@@ -3712,84 +3712,84 @@ var zt = (_a10 = class {
     }
     let s = this.opts.absolute === void 0 ? e : this.opts.absolute;
     this.seen.add(t2);
-    let i2 = this.opts.mark && t2.isDirectory() ? __privateGet(this, _n7) : "";
+    let i = this.opts.mark && t2.isDirectory() ? __privateGet(this, _n7) : "";
     if (this.opts.withFileTypes) this.matchEmit(t2);
     else if (s) {
       let r2 = this.opts.posix ? t2.fullpathPosix() : t2.fullpath();
-      this.matchEmit(r2 + i2);
+      this.matchEmit(r2 + i);
     } else {
       let r2 = this.opts.posix ? t2.relativePosix() : t2.relative(), o2 = this.opts.dotRelative && !r2.startsWith(".." + __privateGet(this, _n7)) ? "." + __privateGet(this, _n7) : "";
-      this.matchEmit(r2 ? o2 + r2 + i2 : "." + i2);
+      this.matchEmit(r2 ? o2 + r2 + i : "." + i);
     }
   }
   async match(t2, e, s) {
-    let i2 = await this.matchCheck(t2, s);
-    i2 && this.matchFinish(i2, e);
+    let i = await this.matchCheck(t2, s);
+    i && this.matchFinish(i, e);
   }
   matchSync(t2, e, s) {
-    let i2 = this.matchCheckSync(t2, s);
-    i2 && this.matchFinish(i2, e);
+    let i = this.matchCheckSync(t2, s);
+    i && this.matchFinish(i, e);
   }
   walkCB(t2, e, s) {
     this.signal?.aborted && s(), this.walkCB2(t2, e, new Et(this.opts), s);
   }
-  walkCB2(t2, e, s, i2) {
-    if (__privateMethod(this, _zt_instances, o_fn).call(this, t2)) return i2();
-    if (this.signal?.aborted && i2(), this.paused) {
-      this.onResume(() => this.walkCB2(t2, e, s, i2));
+  walkCB2(t2, e, s, i) {
+    if (__privateMethod(this, _zt_instances, o_fn).call(this, t2)) return i();
+    if (this.signal?.aborted && i(), this.paused) {
+      this.onResume(() => this.walkCB2(t2, e, s, i));
       return;
     }
     s.processPatterns(t2, e);
     let r2 = 1, o2 = () => {
-      --r2 === 0 && i2();
+      --r2 === 0 && i();
     };
-    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || (r2++, this.match(h2, a, l).then(() => o2()));
-    for (let h2 of s.subwalkTargets()) {
-      if (this.maxDepth !== 1 / 0 && h2.depth() >= this.maxDepth) continue;
+    for (let [h3, a, l3] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h3) || (r2++, this.match(h3, a, l3).then(() => o2()));
+    for (let h3 of s.subwalkTargets()) {
+      if (this.maxDepth !== 1 / 0 && h3.depth() >= this.maxDepth) continue;
       r2++;
-      let a = h2.readdirCached();
-      h2.calledReaddir() ? this.walkCB3(h2, a, s, o2) : h2.readdirCB((l, u) => this.walkCB3(h2, u, s, o2), true);
+      let a = h3.readdirCached();
+      h3.calledReaddir() ? this.walkCB3(h3, a, s, o2) : h3.readdirCB((l3, u2) => this.walkCB3(h3, u2, s, o2), true);
     }
     o2();
   }
-  walkCB3(t2, e, s, i2) {
+  walkCB3(t2, e, s, i) {
     s = s.filterEntries(t2, e);
     let r2 = 1, o2 = () => {
-      --r2 === 0 && i2();
+      --r2 === 0 && i();
     };
-    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || (r2++, this.match(h2, a, l).then(() => o2()));
-    for (let [h2, a] of s.subwalks.entries()) r2++, this.walkCB2(h2, a, s.child(), o2);
+    for (let [h3, a, l3] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h3) || (r2++, this.match(h3, a, l3).then(() => o2()));
+    for (let [h3, a] of s.subwalks.entries()) r2++, this.walkCB2(h3, a, s.child(), o2);
     o2();
   }
   walkCBSync(t2, e, s) {
     this.signal?.aborted && s(), this.walkCB2Sync(t2, e, new Et(this.opts), s);
   }
-  walkCB2Sync(t2, e, s, i2) {
-    if (__privateMethod(this, _zt_instances, o_fn).call(this, t2)) return i2();
-    if (this.signal?.aborted && i2(), this.paused) {
-      this.onResume(() => this.walkCB2Sync(t2, e, s, i2));
+  walkCB2Sync(t2, e, s, i) {
+    if (__privateMethod(this, _zt_instances, o_fn).call(this, t2)) return i();
+    if (this.signal?.aborted && i(), this.paused) {
+      this.onResume(() => this.walkCB2Sync(t2, e, s, i));
       return;
     }
     s.processPatterns(t2, e);
     let r2 = 1, o2 = () => {
-      --r2 === 0 && i2();
+      --r2 === 0 && i();
     };
-    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || this.matchSync(h2, a, l);
-    for (let h2 of s.subwalkTargets()) {
-      if (this.maxDepth !== 1 / 0 && h2.depth() >= this.maxDepth) continue;
+    for (let [h3, a, l3] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h3) || this.matchSync(h3, a, l3);
+    for (let h3 of s.subwalkTargets()) {
+      if (this.maxDepth !== 1 / 0 && h3.depth() >= this.maxDepth) continue;
       r2++;
-      let a = h2.readdirSync();
-      this.walkCB3Sync(h2, a, s, o2);
+      let a = h3.readdirSync();
+      this.walkCB3Sync(h3, a, s, o2);
     }
     o2();
   }
-  walkCB3Sync(t2, e, s, i2) {
+  walkCB3Sync(t2, e, s, i) {
     s = s.filterEntries(t2, e);
     let r2 = 1, o2 = () => {
-      --r2 === 0 && i2();
+      --r2 === 0 && i();
     };
-    for (let [h2, a, l] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h2) || this.matchSync(h2, a, l);
-    for (let [h2, a] of s.subwalks.entries()) r2++, this.walkCB2Sync(h2, a, s.child(), o2);
+    for (let [h3, a, l3] of s.matches.entries()) __privateMethod(this, _zt_instances, r_fn).call(this, h3) || this.matchSync(h3, a, l3);
+    for (let [h3, a] of s.subwalks.entries()) r2++, this.walkCB2Sync(h3, a, s.child(), o2);
     o2();
   }
 }, _t8 = new WeakMap(), _s8 = new WeakMap(), _n7 = new WeakMap(), _zt_instances = new WeakSet(), r_fn = function(t2) {
@@ -3882,11 +3882,11 @@ var I = class {
       this.scurry = new a(this.cwd, { nocase: e.nocase, fs: e.fs });
     }
     this.nocase = this.scurry.nocase;
-    let s = this.platform === "darwin" || this.platform === "win32", i2 = { braceExpandMax: 1e4, ...e, dot: this.dot, matchBase: this.matchBase, nobrace: this.nobrace, nocase: this.nocase, nocaseMagicOnly: s, nocomment: true, noext: this.noext, nonegate: true, optimizationLevel: 2, platform: this.platform, windowsPathsNoEscape: this.windowsPathsNoEscape, debug: !!this.opts.debug }, r2 = this.pattern.map((a) => new D(a, i2)), [o2, h2] = r2.reduce((a, l) => (a[0].push(...l.set), a[1].push(...l.globParts), a), [[], []]);
-    this.patterns = o2.map((a, l) => {
-      let u = h2[l];
-      if (!u) throw new Error("invalid pattern object");
-      return new nt(a, u, 0, this.platform);
+    let s = this.platform === "darwin" || this.platform === "win32", i = { braceExpandMax: 1e4, ...e, dot: this.dot, matchBase: this.matchBase, nobrace: this.nobrace, nocase: this.nocase, nocaseMagicOnly: s, nocomment: true, noext: this.noext, nonegate: true, optimizationLevel: 2, platform: this.platform, windowsPathsNoEscape: this.windowsPathsNoEscape, debug: !!this.opts.debug }, r2 = this.pattern.map((a) => new D(a, i)), [o2, h3] = r2.reduce((a, l3) => (a[0].push(...l3.set), a[1].push(...l3.globParts), a), [[], []]);
+    this.patterns = o2.map((a, l3) => {
+      let u2 = h3[l3];
+      if (!u2) throw new Error("invalid pattern object");
+      return new nt(a, u2, 0, this.platform);
     });
   }
   async walk() {
@@ -4091,8 +4091,8 @@ function findCucumberFeaturesDir(featureFilePath, projectPath) {
   const relDir = import_path.default.relative(projectPath, import_path.default.dirname(featureFilePath));
   const parts = relDir.split(import_path.default.sep);
   let lastFeaturesIdx = -1;
-  for (let i2 = 0; i2 < parts.length; i2++) {
-    if (parts[i2] === "features") lastFeaturesIdx = i2;
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i] === "features") lastFeaturesIdx = i;
   }
   if (lastFeaturesIdx >= 0) {
     return import_path.default.join(projectPath, ...parts.slice(0, lastFeaturesIdx + 1));
@@ -4222,17 +4222,17 @@ init_cjs_shims();
 var import_fs3 = require("fs");
 var import_path11 = __toESM(require("path"));
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/index.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/index.js
 init_cjs_shims();
 
-// node_modules/.pnpm/brace-expansion@5.0.6/node_modules/brace-expansion/dist/esm/index.js
+// node_modules/.pnpm/brace-expansion@5.0.12/node_modules/brace-expansion/dist/esm/index.js
 init_cjs_shims();
 
 // node_modules/.pnpm/balanced-match@4.0.4/node_modules/balanced-match/dist/esm/index.js
 init_cjs_shims();
-var balanced = (a, b2, str) => {
+var balanced = (a, b3, str) => {
   const ma = a instanceof RegExp ? maybeMatch(a, str) : a;
-  const mb = b2 instanceof RegExp ? maybeMatch(b2, str) : b2;
+  const mb = b3 instanceof RegExp ? maybeMatch(b3, str) : b3;
   const r2 = ma !== null && mb != null && range(ma, mb, str);
   return r2 && {
     start: r2[0],
@@ -4243,24 +4243,24 @@ var balanced = (a, b2, str) => {
   };
 };
 var maybeMatch = (reg, str) => {
-  const m = str.match(reg);
-  return m ? m[0] : null;
+  const m2 = str.match(reg);
+  return m2 ? m2[0] : null;
 };
-var range = (a, b2, str) => {
+var range = (a, b3, str) => {
   let begs, beg, left, right = void 0, result;
   let ai2 = str.indexOf(a);
-  let bi2 = str.indexOf(b2, ai2 + 1);
-  let i2 = ai2;
+  let bi2 = str.indexOf(b3, ai2 + 1);
+  let i = ai2;
   if (ai2 >= 0 && bi2 > 0) {
-    if (a === b2) {
+    if (a === b3) {
       return [ai2, bi2];
     }
     begs = [];
     left = str.length;
-    while (i2 >= 0 && !result) {
-      if (i2 === ai2) {
-        begs.push(i2);
-        ai2 = str.indexOf(a, i2 + 1);
+    while (i >= 0 && !result) {
+      if (i === ai2) {
+        begs.push(i);
+        ai2 = str.indexOf(a, i + 1);
       } else if (begs.length === 1) {
         const r2 = begs.pop();
         if (r2 !== void 0)
@@ -4271,9 +4271,9 @@ var range = (a, b2, str) => {
           left = beg;
           right = bi2;
         }
-        bi2 = str.indexOf(b2, i2 + 1);
+        bi2 = str.indexOf(b3, i + 1);
       }
-      i2 = ai2 < bi2 && ai2 >= 0 ? ai2 : bi2;
+      i = ai2 < bi2 && ai2 >= 0 ? ai2 : bi2;
     }
     if (begs.length && right !== void 0) {
       result = [left, right];
@@ -4282,7 +4282,7 @@ var range = (a, b2, str) => {
   return result;
 };
 
-// node_modules/.pnpm/brace-expansion@5.0.6/node_modules/brace-expansion/dist/esm/index.js
+// node_modules/.pnpm/brace-expansion@5.0.12/node_modules/brace-expansion/dist/esm/index.js
 var escSlash = "\0SLASH" + Math.random() + "\0";
 var escOpen = "\0OPEN" + Math.random() + "\0";
 var escClose = "\0CLOSE" + Math.random() + "\0";
@@ -4299,6 +4299,9 @@ var closePattern = /\\}/g;
 var commaPattern = /\\,/g;
 var periodPattern = /\\\./g;
 var EXPANSION_MAX = 1e5;
+var EXPANSION_MAX_LENGTH = 4e6;
+var EXPANSION_MAX_DEPTH = 1e3;
+var EXPANSION_MAX_REWRITES = 1e3;
 function numeric(str) {
   return !isNaN(str) ? parseInt(str, 10) : str.charCodeAt(0);
 }
@@ -4308,36 +4311,44 @@ function escapeBraces(str) {
 function unescapeBraces(str) {
   return str.replace(escSlashPattern, "\\").replace(escOpenPattern, "{").replace(escClosePattern, "}").replace(escCommaPattern, ",").replace(escPeriodPattern, ".");
 }
+function pushAll(target, items) {
+  for (let i = 0; i < items.length; i++) {
+    target.push(items[i]);
+  }
+}
 function parseCommaParts(str) {
-  if (!str) {
-    return [""];
-  }
   const parts = [];
-  const m = balanced("{", "}", str);
-  if (!m) {
-    return str.split(",");
+  let carry = "";
+  for (; ; ) {
+    const m2 = balanced("{", "}", str);
+    if (!m2) {
+      const tail = str.split(",");
+      tail[0] = carry + tail[0];
+      pushAll(parts, tail);
+      return parts;
+    }
+    const { pre, body, post } = m2;
+    const p2 = pre.split(",");
+    p2[0] = carry + p2[0];
+    p2[p2.length - 1] += "{" + body + "}";
+    if (!post.length) {
+      pushAll(parts, p2);
+      return parts;
+    }
+    carry = p2.pop();
+    pushAll(parts, p2);
+    str = post;
   }
-  const { pre, body, post } = m;
-  const p2 = pre.split(",");
-  p2[p2.length - 1] += "{" + body + "}";
-  const postParts = parseCommaParts(post);
-  if (post.length) {
-    ;
-    p2[p2.length - 1] += postParts.shift();
-    p2.push.apply(p2, postParts);
-  }
-  parts.push.apply(parts, p2);
-  return parts;
 }
 function expand(str, options = {}) {
   if (!str) {
     return [];
   }
-  const { max = EXPANSION_MAX } = options;
+  const { max = EXPANSION_MAX, maxLength = EXPANSION_MAX_LENGTH, maxDepth = EXPANSION_MAX_DEPTH, maxRewrites = EXPANSION_MAX_REWRITES } = options;
   if (str.slice(0, 2) === "{}") {
     str = "\\{\\}" + str.slice(2);
   }
-  return expand_(escapeBraces(str), max, true).map(unescapeBraces);
+  return expand_(escapeBraces(str), max, maxLength, maxDepth, 0, maxRewrites, true).map(unescapeBraces);
 }
 function embrace(str) {
   return "{" + str + "}";
@@ -4345,104 +4356,161 @@ function embrace(str) {
 function isPadded(el) {
   return /^-?0\d/.test(el);
 }
-function lte(i2, y2) {
-  return i2 <= y2;
+function lte(i, y2) {
+  return i <= y2;
 }
-function gte(i2, y2) {
-  return i2 >= y2;
+function gte(i, y2) {
+  return i >= y2;
 }
-function expand_(str, max, isTop) {
-  const expansions = [];
-  const m = balanced("{", "}", str);
-  if (!m)
-    return [str];
-  const pre = m.pre;
-  const post = m.post.length ? expand_(m.post, max, false) : [""];
-  if (/\$$/.test(m.pre)) {
-    for (let k3 = 0; k3 < post.length && k3 < max; k3++) {
-      const expansion = pre + "{" + m.body + "}" + post[k3];
-      expansions.push(expansion);
-    }
-  } else {
-    const isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m.body);
-    const isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m.body);
-    const isSequence = isNumericSequence || isAlphaSequence;
-    const isOptions = m.body.indexOf(",") >= 0;
-    if (!isSequence && !isOptions) {
-      if (m.post.match(/,(?!,).*\}/)) {
-        str = m.pre + "{" + m.body + escClose + m.post;
-        return expand_(str, max, true);
-      }
-      return [str];
-    }
-    let n5;
-    if (isSequence) {
-      n5 = m.body.split(/\.\./);
-    } else {
-      n5 = parseCommaParts(m.body);
-      if (n5.length === 1 && n5[0] !== void 0) {
-        n5 = expand_(n5[0], max, false).map(embrace);
-        if (n5.length === 1) {
-          return post.map((p2) => m.pre + n5[0] + p2);
-        }
-      }
-    }
-    let N3;
-    if (isSequence && n5[0] !== void 0 && n5[1] !== void 0) {
-      const x3 = numeric(n5[0]);
-      const y2 = numeric(n5[1]);
-      const width = Math.max(n5[0].length, n5[1].length);
-      let incr = n5.length === 3 && n5[2] !== void 0 ? Math.max(Math.abs(numeric(n5[2])), 1) : 1;
-      let test = lte;
-      const reverse = y2 < x3;
-      if (reverse) {
-        incr *= -1;
-        test = gte;
-      }
-      const pad = n5.some(isPadded);
-      N3 = [];
-      for (let i2 = x3; test(i2, y2) && N3.length < max; i2 += incr) {
-        let c3;
-        if (isAlphaSequence) {
-          c3 = String.fromCharCode(i2);
-          if (c3 === "\\") {
-            c3 = "";
-          }
-        } else {
-          c3 = String(i2);
-          if (pad) {
-            const need = width - c3.length;
-            if (need > 0) {
-              const z2 = new Array(need + 1).join("0");
-              if (i2 < 0) {
-                c3 = "-" + z2 + c3.slice(1);
-              } else {
-                c3 = z2 + c3;
-              }
-            }
-          }
-        }
-        N3.push(c3);
-      }
-    } else {
-      N3 = [];
-      for (let j3 = 0; j3 < n5.length; j3++) {
-        N3.push.apply(N3, expand_(n5[j3], max, false));
-      }
-    }
-    for (let j3 = 0; j3 < N3.length; j3++) {
-      for (let k3 = 0; k3 < post.length && expansions.length < max; k3++) {
-        const expansion = pre + N3[j3] + post[k3];
-        if (!isTop || isSequence || expansion) {
-          expansions.push(expansion);
-        }
-      }
+function combine(acc, pre, values, max, maxLength, dropEmpties) {
+  const out = [];
+  let length = 0;
+  for (let a = 0; a < acc.length; a++) {
+    for (let v3 = 0; v3 < values.length; v3++) {
+      if (out.length >= max)
+        return out;
+      const expansion = acc[a] + pre + values[v3];
+      if (dropEmpties && !expansion)
+        continue;
+      if (length + expansion.length > maxLength)
+        return out;
+      out.push(expansion);
+      length += expansion.length;
     }
   }
-  return expansions;
+  return out;
+}
+function expandSequence(body, isAlphaSequence, max, maxLength) {
+  const n5 = body.split(/\.\./);
+  const N4 = [];
+  if (n5[0] === void 0 || n5[1] === void 0) {
+    return N4;
+  }
+  const x4 = numeric(n5[0]);
+  const y2 = numeric(n5[1]);
+  const width = Math.max(n5[0].length, n5[1].length);
+  let incr = n5.length === 3 && n5[2] !== void 0 ? Math.max(Math.abs(numeric(n5[2])), 1) : 1;
+  let test = lte;
+  const reverse = y2 < x4;
+  if (reverse) {
+    incr *= -1;
+    test = gte;
+  }
+  const pad = n5.some(isPadded);
+  let length = 0;
+  for (let i = x4; test(i, y2) && N4.length < max; i += incr) {
+    let c3;
+    if (isAlphaSequence) {
+      c3 = String.fromCharCode(i);
+      if (c3 === "\\") {
+        c3 = "";
+      }
+    } else {
+      c3 = String(i);
+      if (pad) {
+        const need = width - c3.length;
+        if (need > 0) {
+          const z3 = new Array(need + 1).join("0");
+          if (i < 0) {
+            c3 = "-" + z3 + c3.slice(1);
+          } else {
+            c3 = z3 + c3;
+          }
+        }
+      }
+    }
+    if (length + c3.length > maxLength)
+      break;
+    N4.push(c3);
+    length += c3.length;
+  }
+  return N4;
+}
+function expand_(str, max, maxLength, maxDepth, depth, maxRewrites, isTop) {
+  if (depth > maxDepth) {
+    return [str];
+  }
+  let acc = [""];
+  let rewrites = 0;
+  let dropEmpties = false;
+  let firstGroup = true;
+  for (; ; ) {
+    const m2 = balanced("{", "}", str);
+    if (!m2) {
+      return combine(acc, str, [""], max, maxLength, dropEmpties);
+    }
+    const pre = m2.pre;
+    if (/\$$/.test(pre)) {
+      acc = combine(acc, pre + "{" + m2.body + "}", [""], max, maxLength, dropEmpties && !m2.post.length);
+      firstGroup = false;
+      if (!m2.post.length)
+        break;
+      str = m2.post;
+      continue;
+    }
+    const isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m2.body);
+    const isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m2.body);
+    const isSequence = isNumericSequence || isAlphaSequence;
+    const isOptions = m2.body.indexOf(",") >= 0;
+    if (!isSequence && !isOptions) {
+      if (rewrites < maxRewrites && m2.post.match(/,(?!,).*\}/)) {
+        rewrites++;
+        str = m2.pre + "{" + m2.body + escClose + m2.post;
+        isTop = true;
+        continue;
+      }
+      return combine(acc, pre + "{" + m2.body + "}" + m2.post, [""], max, maxLength, dropEmpties);
+    }
+    if (firstGroup) {
+      dropEmpties = isTop && !isSequence;
+      firstGroup = false;
+    }
+    let values;
+    if (isSequence) {
+      values = expandSequence(m2.body, isAlphaSequence, max, maxLength);
+    } else {
+      let n5 = parseCommaParts(m2.body);
+      if (n5.length === 1 && n5[0] !== void 0) {
+        n5 = expand_(n5[0], max, maxLength, maxDepth, depth + 1, maxRewrites, false).map(embrace);
+        if (n5.length === 1) {
+          acc = combine(acc, pre + n5[0], [""], max, maxLength, dropEmpties && !m2.post.length);
+          if (!m2.post.length)
+            break;
+          str = m2.post;
+          continue;
+        }
+      }
+      let dropsEmpties = dropEmpties && !m2.post.length && !pre;
+      for (let d2 = 0; dropsEmpties && d2 < acc.length; d2++) {
+        if (acc[d2]) {
+          dropsEmpties = false;
+        }
+      }
+      values = [];
+      let valuesLength = 0;
+      outer: for (let j4 = 0; j4 < n5.length; j4++) {
+        const expanded = expand_(n5[j4], max, maxLength, maxDepth, depth + 1, maxRewrites, false);
+        for (let k3 = 0; k3 < expanded.length; k3++) {
+          const v3 = expanded[k3];
+          if (dropsEmpties && !v3)
+            continue;
+          if (values.length >= max || valuesLength + v3.length > maxLength) {
+            break outer;
+          }
+          values.push(v3);
+          valuesLength += v3.length;
+        }
+      }
+    }
+    acc = combine(acc, pre, values, max, maxLength, dropEmpties && !m2.post.length);
+    if (!m2.post.length)
+      break;
+    str = m2.post;
+  }
+  return acc;
 }
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/assert-valid-pattern.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/assert-valid-pattern.js
 init_cjs_shims();
 var MAX_PATTERN_LENGTH = 1024 * 64;
 var assertValidPattern = (pattern) => {
@@ -4454,10 +4522,10 @@ var assertValidPattern = (pattern) => {
   }
 };
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/ast.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/ast.js
 init_cjs_shims();
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/brace-expressions.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/brace-expressions.js
 init_cjs_shims();
 var posixClasses = {
   "[:alnum:]": ["\\p{L}\\p{Nl}\\p{Nd}", true],
@@ -4485,44 +4553,44 @@ var parseClass = (glob, position) => {
   }
   const ranges = [];
   const negs = [];
-  let i2 = pos + 1;
+  let i = pos + 1;
   let sawStart = false;
   let uflag = false;
   let escaping = false;
   let negate = false;
   let endPos = pos;
   let rangeStart = "";
-  WHILE: while (i2 < glob.length) {
-    const c3 = glob.charAt(i2);
-    if ((c3 === "!" || c3 === "^") && i2 === pos + 1) {
+  WHILE: while (i < glob.length) {
+    const c3 = glob.charAt(i);
+    if ((c3 === "!" || c3 === "^") && i === pos + 1) {
       negate = true;
-      i2++;
+      i++;
       continue;
     }
     if (c3 === "]" && sawStart && !escaping) {
-      endPos = i2 + 1;
+      endPos = i + 1;
       break;
     }
     sawStart = true;
     if (c3 === "\\") {
       if (!escaping) {
         escaping = true;
-        i2++;
+        i++;
         continue;
       }
     }
     if (c3 === "[" && !escaping) {
-      for (const [cls, [unip, u, neg]] of Object.entries(posixClasses)) {
-        if (glob.startsWith(cls, i2)) {
+      for (const [cls, [unip, u2, neg]] of Object.entries(posixClasses)) {
+        if (glob.startsWith(cls, i)) {
           if (rangeStart) {
             return ["$.", false, glob.length - pos, true];
           }
-          i2 += cls.length;
+          i += cls.length;
           if (neg)
             negs.push(unip);
           else
             ranges.push(unip);
-          uflag = uflag || u;
+          uflag = uflag || u2;
           continue WHILE;
         }
       }
@@ -4535,23 +4603,23 @@ var parseClass = (glob, position) => {
         ranges.push(braceEscape(c3));
       }
       rangeStart = "";
-      i2++;
+      i++;
       continue;
     }
-    if (glob.startsWith("-]", i2 + 1)) {
+    if (glob.startsWith("-]", i + 1)) {
       ranges.push(braceEscape(c3 + "-"));
-      i2 += 2;
+      i += 2;
       continue;
     }
-    if (glob.startsWith("-", i2 + 1)) {
+    if (glob.startsWith("-", i + 1)) {
       rangeStart = c3;
-      i2 += 2;
+      i += 2;
       continue;
     }
     ranges.push(braceEscape(c3));
-    i2++;
+    i++;
   }
-  if (endPos < i2) {
+  if (endPos < i) {
     return ["", false, 0, false];
   }
   if (!ranges.length && !negs.length) {
@@ -4567,7 +4635,7 @@ var parseClass = (glob, position) => {
   return [comb, uflag, endPos - pos, true];
 };
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/unescape.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/unescape.js
 init_cjs_shims();
 var unescape = (s, { windowsPathsNoEscape = false, magicalBraces = true } = {}) => {
   if (magicalBraces) {
@@ -4576,7 +4644,7 @@ var unescape = (s, { windowsPathsNoEscape = false, magicalBraces = true } = {}) 
   return windowsPathsNoEscape ? s.replace(/\[([^/\\{}])\]/g, "$1") : s.replace(/((?!\\).|^)\[([^/\\{}])\]/g, "$1$2").replace(/\\([^/{}])/g, "$1");
 };
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/ast.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/ast.js
 var _a11;
 var types = /* @__PURE__ */ new Set(["!", "?", "+", "*", "@"]);
 var isExtglobType = (c3) => types.has(c3);
@@ -4724,8 +4792,8 @@ var AST = class {
     if (__privateGet(this, _parentIndex) === 0)
       return true;
     const p2 = __privateGet(this, _parent);
-    for (let i2 = 0; i2 < __privateGet(this, _parentIndex); i2++) {
-      const pp = __privateGet(p2, _parts)[i2];
+    for (let i = 0; i < __privateGet(this, _parentIndex); i++) {
+      const pp = __privateGet(p2, _parts)[i];
       if (!(pp instanceof _a11 && pp.type === "!")) {
         return false;
       }
@@ -4758,9 +4826,9 @@ var AST = class {
     return c3;
   }
   static fromGlob(pattern, options = {}) {
-    var _a13;
+    var _a12;
     const ast = new _a11(null, void 0, options);
-    __privateMethod(_a13 = _a11, _AST_static, parseAST_fn).call(_a13, pattern, ast, 0, options, 0);
+    __privateMethod(_a12 = _a11, _AST_static, parseAST_fn).call(_a12, pattern, ast, 0, options, 0);
     return ast;
   }
   // returns the regular expression if there's magic, or the unescaped
@@ -4769,14 +4837,14 @@ var AST = class {
     if (this !== __privateGet(this, _root))
       return __privateGet(this, _root).toMMPattern();
     const glob = this.toString();
-    const [re2, body, hasMagic, uflag] = this.toRegExpSource();
+    const [re3, body, hasMagic, uflag] = this.toRegExpSource();
     const anyMagic = hasMagic || __privateGet(this, _hasMagic) || __privateGet(this, _options).nocase && !__privateGet(this, _options).nocaseMagicOnly && glob.toUpperCase() !== glob.toLowerCase();
     if (!anyMagic) {
       return body;
     }
     const flags = (__privateGet(this, _options).nocase ? "i" : "") + (uflag ? "u" : "");
-    return Object.assign(new RegExp(`^${re2}$`, flags), {
-      _src: re2,
+    return Object.assign(new RegExp(`^${re3}$`, flags), {
+      _src: re3,
       _glob: glob
     });
   }
@@ -4861,11 +4929,11 @@ var AST = class {
     if (!isExtglobAST(this)) {
       const noEmpty = this.isStart() && this.isEnd() && !__privateGet(this, _parts).some((s) => typeof s !== "string");
       const src = __privateGet(this, _parts).map((p2) => {
-        var _a13;
-        const [re2, _3, hasMagic, uflag] = typeof p2 === "string" ? __privateMethod(_a13 = _a11, _AST_static, parseGlob_fn).call(_a13, p2, __privateGet(this, _hasMagic), noEmpty) : p2.toRegExpSource(allowDot);
+        var _a12;
+        const [re3, _4, hasMagic, uflag] = typeof p2 === "string" ? __privateMethod(_a12 = _a11, _AST_static, parseGlob_fn).call(_a12, p2, __privateGet(this, _hasMagic), noEmpty) : p2.toRegExpSource(allowDot);
         __privateSet(this, _hasMagic, __privateGet(this, _hasMagic) || hasMagic);
         __privateSet(this, _uflag, __privateGet(this, _uflag) || uflag);
-        return re2;
+        return re3;
       }).join("");
       let start2 = "";
       if (this.isStart()) {
@@ -4901,10 +4969,10 @@ var AST = class {
     let body = __privateMethod(this, _AST_instances, partsToRegExp_fn).call(this, dot);
     if (this.isStart() && this.isEnd() && !body && this.type !== "!") {
       const s = this.toString();
-      const me2 = this;
-      __privateSet(me2, _parts, [s]);
-      me2.type = null;
-      __privateSet(me2, _hasMagic, void 0);
+      const me3 = this;
+      __privateSet(me3, _parts, [s]);
+      me3.type = null;
+      __privateSet(me3, _hasMagic, void 0);
       return [s, unescape(this.toString()), false, false];
     }
     let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot ? "" : __privateMethod(this, _AST_instances, partsToRegExp_fn).call(this, true);
@@ -4958,12 +5026,12 @@ fillNegs_fn = function() {
     let p2 = n5;
     let pp = __privateGet(p2, _parent);
     while (pp) {
-      for (let i2 = __privateGet(p2, _parentIndex) + 1; !pp.type && i2 < __privateGet(pp, _parts).length; i2++) {
+      for (let i = __privateGet(p2, _parentIndex) + 1; !pp.type && i < __privateGet(pp, _parts).length; i++) {
         for (const part of __privateGet(n5, _parts)) {
           if (typeof part === "string") {
             throw new Error("string part in extglob AST??");
           }
-          part.copyIn(__privateGet(pp, _parts)[i2]);
+          part.copyIn(__privateGet(pp, _parts)[i]);
         }
       }
       p2 = pp;
@@ -4974,82 +5042,82 @@ fillNegs_fn = function() {
 };
 _AST_static = new WeakSet();
 parseAST_fn = function(str, ast, pos, opt, extDepth) {
-  var _a13, _b5, _c7, _d4;
+  var _a12, _b5, _c7, _d4;
   const maxDepth = opt.maxExtglobRecursion ?? 2;
   let escaping = false;
   let inBrace = false;
   let braceStart = -1;
   let braceNeg = false;
   if (ast.type === null) {
-    let i3 = pos;
+    let i2 = pos;
     let acc2 = "";
-    while (i3 < str.length) {
-      const c3 = str.charAt(i3++);
+    while (i2 < str.length) {
+      const c3 = str.charAt(i2++);
       if (escaping || c3 === "\\") {
         escaping = !escaping;
         acc2 += c3;
         continue;
       }
       if (inBrace) {
-        if (i3 === braceStart + 1) {
+        if (i2 === braceStart + 1) {
           if (c3 === "^" || c3 === "!") {
             braceNeg = true;
           }
-        } else if (c3 === "]" && !(i3 === braceStart + 2 && braceNeg)) {
+        } else if (c3 === "]" && !(i2 === braceStart + 2 && braceNeg)) {
           inBrace = false;
         }
         acc2 += c3;
         continue;
       } else if (c3 === "[") {
         inBrace = true;
-        braceStart = i3;
+        braceStart = i2;
         braceNeg = false;
         acc2 += c3;
         continue;
       }
-      const doRecurse = !opt.noext && isExtglobType(c3) && str.charAt(i3) === "(" && extDepth <= maxDepth;
+      const doRecurse = !opt.noext && isExtglobType(c3) && str.charAt(i2) === "(" && extDepth <= maxDepth;
       if (doRecurse) {
         ast.push(acc2);
         acc2 = "";
         const ext2 = new _a11(c3, ast);
-        i3 = __privateMethod(_a13 = _a11, _AST_static, parseAST_fn).call(_a13, str, ext2, i3, opt, extDepth + 1);
+        i2 = __privateMethod(_a12 = _a11, _AST_static, parseAST_fn).call(_a12, str, ext2, i2, opt, extDepth + 1);
         ast.push(ext2);
         continue;
       }
       acc2 += c3;
     }
     ast.push(acc2);
-    return i3;
+    return i2;
   }
-  let i2 = pos + 1;
+  let i = pos + 1;
   let part = new _a11(null, ast);
   const parts = [];
   let acc = "";
-  while (i2 < str.length) {
-    const c3 = str.charAt(i2++);
+  while (i < str.length) {
+    const c3 = str.charAt(i++);
     if (escaping || c3 === "\\") {
       escaping = !escaping;
       acc += c3;
       continue;
     }
     if (inBrace) {
-      if (i2 === braceStart + 1) {
+      if (i === braceStart + 1) {
         if (c3 === "^" || c3 === "!") {
           braceNeg = true;
         }
-      } else if (c3 === "]" && !(i2 === braceStart + 2 && braceNeg)) {
+      } else if (c3 === "]" && !(i === braceStart + 2 && braceNeg)) {
         inBrace = false;
       }
       acc += c3;
       continue;
     } else if (c3 === "[") {
       inBrace = true;
-      braceStart = i2;
+      braceStart = i;
       braceNeg = false;
       acc += c3;
       continue;
     }
-    const doRecurse = !opt.noext && isExtglobType(c3) && str.charAt(i2) === "(" && /* c8 ignore start - the maxDepth is sufficient here */
+    const doRecurse = !opt.noext && isExtglobType(c3) && str.charAt(i) === "(" && /* c8 ignore start - the maxDepth is sufficient here */
     (extDepth <= maxDepth || ast && __privateMethod(_b5 = ast, _AST_instances, canAdoptType_fn).call(_b5, c3));
     if (doRecurse) {
       const depthAdd = ast && __privateMethod(_c7 = ast, _AST_instances, canAdoptType_fn).call(_c7, c3) ? 0 : 1;
@@ -5057,7 +5125,7 @@ parseAST_fn = function(str, ast, pos, opt, extDepth) {
       acc = "";
       const ext2 = new _a11(c3, part);
       part.push(ext2);
-      i2 = __privateMethod(_d4 = _a11, _AST_static, parseAST_fn).call(_d4, str, ext2, i2, opt, extDepth + depthAdd);
+      i = __privateMethod(_d4 = _a11, _AST_static, parseAST_fn).call(_d4, str, ext2, i, opt, extDepth + depthAdd);
       continue;
     }
     if (c3 === "|") {
@@ -5074,14 +5142,14 @@ parseAST_fn = function(str, ast, pos, opt, extDepth) {
       part.push(acc);
       acc = "";
       ast.push(...parts, part);
-      return i2;
+      return i;
     }
     acc += c3;
   }
   ast.type = null;
   __privateSet(ast, _hasMagic, void 0);
   __privateSet(ast, _parts, [str.substring(pos - 1)]);
-  return i2;
+  return i;
 };
 canAdoptWithSpace_fn = function(child) {
   return __privateMethod(this, _AST_instances, canAdopt_fn).call(this, child, adoptionWithSpaceMap);
@@ -5116,8 +5184,8 @@ adopt_fn = function(child, index) {
   __privateSet(this, _toString, void 0);
 };
 canUsurpType_fn = function(c3) {
-  const m = usurpMap.get(this.type);
-  return !!m?.has(c3);
+  const m2 = usurpMap.get(this.type);
+  return !!m2?.has(c3);
 };
 canUsurp_fn = function(child) {
   if (!child || typeof child !== "object" || child.type !== null || __privateGet(child, _parts).length !== 1 || this.type === null || __privateGet(this, _parts).length !== 1) {
@@ -5130,10 +5198,10 @@ canUsurp_fn = function(child) {
   return __privateMethod(this, _AST_instances, canUsurpType_fn).call(this, gc.type);
 };
 usurp_fn = function(child) {
-  const m = usurpMap.get(this.type);
+  const m2 = usurpMap.get(this.type);
   const gc = __privateGet(child, _parts)[0];
-  const nt2 = m?.get(gc.type);
-  if (!nt2)
+  const nt3 = m2?.get(gc.type);
+  if (!nt3)
     return false;
   __privateSet(this, _parts, __privateGet(gc, _parts));
   for (const p2 of __privateGet(this, _parts)) {
@@ -5141,16 +5209,16 @@ usurp_fn = function(child) {
       __privateSet(p2, _parent, this);
     }
   }
-  this.type = nt2;
+  this.type = nt3;
   __privateSet(this, _toString, void 0);
   __privateSet(this, _emptyExt, false);
 };
 flatten_fn = function() {
-  var _a13, _b5;
+  var _a12, _b5;
   if (!isExtglobAST(this)) {
     for (const p2 of __privateGet(this, _parts)) {
       if (typeof p2 === "object") {
-        __privateMethod(_a13 = p2, _AST_instances, flatten_fn).call(_a13);
+        __privateMethod(_a12 = p2, _AST_instances, flatten_fn).call(_a12);
       }
     }
   } else {
@@ -5158,16 +5226,16 @@ flatten_fn = function() {
     let done = false;
     do {
       done = true;
-      for (let i2 = 0; i2 < __privateGet(this, _parts).length; i2++) {
-        const c3 = __privateGet(this, _parts)[i2];
+      for (let i = 0; i < __privateGet(this, _parts).length; i++) {
+        const c3 = __privateGet(this, _parts)[i];
         if (typeof c3 === "object") {
           __privateMethod(_b5 = c3, _AST_instances, flatten_fn).call(_b5);
           if (__privateMethod(this, _AST_instances, canAdopt_fn).call(this, c3)) {
             done = false;
-            __privateMethod(this, _AST_instances, adopt_fn).call(this, c3, i2);
+            __privateMethod(this, _AST_instances, adopt_fn).call(this, c3, i);
           } else if (__privateMethod(this, _AST_instances, canAdoptWithSpace_fn).call(this, c3)) {
             done = false;
-            __privateMethod(this, _AST_instances, adoptWithSpace_fn).call(this, c3, i2);
+            __privateMethod(this, _AST_instances, adoptWithSpace_fn).call(this, c3, i);
           } else if (__privateMethod(this, _AST_instances, canUsurp_fn).call(this, c3)) {
             done = false;
             __privateMethod(this, _AST_instances, usurp_fn).call(this, c3);
@@ -5183,64 +5251,64 @@ partsToRegExp_fn = function(dot) {
     if (typeof p2 === "string") {
       throw new Error("string type in extglob ast??");
     }
-    const [re2, _3, _hasMagic2, uflag] = p2.toRegExpSource(dot);
+    const [re3, _4, _hasMagic2, uflag] = p2.toRegExpSource(dot);
     __privateSet(this, _uflag, __privateGet(this, _uflag) || uflag);
-    return re2;
+    return re3;
   }).filter((p2) => !(this.isStart() && this.isEnd()) || !!p2).join("|");
 };
 parseGlob_fn = function(glob, hasMagic, noEmpty = false) {
   let escaping = false;
-  let re2 = "";
+  let re3 = "";
   let uflag = false;
   let inStar = false;
-  for (let i2 = 0; i2 < glob.length; i2++) {
-    const c3 = glob.charAt(i2);
+  for (let i = 0; i < glob.length; i++) {
+    const c3 = glob.charAt(i);
     if (escaping) {
       escaping = false;
-      re2 += (reSpecials.has(c3) ? "\\" : "") + c3;
+      re3 += (reSpecials.has(c3) ? "\\" : "") + c3;
       continue;
     }
     if (c3 === "*") {
       if (inStar)
         continue;
       inStar = true;
-      re2 += noEmpty && /^[*]+$/.test(glob) ? starNoEmpty : star;
+      re3 += noEmpty && /^[*]+$/.test(glob) ? starNoEmpty : star;
       hasMagic = true;
       continue;
     } else {
       inStar = false;
     }
     if (c3 === "\\") {
-      if (i2 === glob.length - 1) {
-        re2 += "\\\\";
+      if (i === glob.length - 1) {
+        re3 += "\\\\";
       } else {
         escaping = true;
       }
       continue;
     }
     if (c3 === "[") {
-      const [src, needUflag, consumed, magic] = parseClass(glob, i2);
+      const [src, needUflag, consumed, magic] = parseClass(glob, i);
       if (consumed) {
-        re2 += src;
+        re3 += src;
         uflag = uflag || needUflag;
-        i2 += consumed - 1;
+        i += consumed - 1;
         hasMagic = hasMagic || magic;
         continue;
       }
     }
     if (c3 === "?") {
-      re2 += qmark;
+      re3 += qmark;
       hasMagic = true;
       continue;
     }
-    re2 += regExpEscape(c3);
+    re3 += regExpEscape(c3);
   }
-  return [re2, unescape(glob), !!hasMagic, uflag];
+  return [re3, unescape(glob), !!hasMagic, uflag];
 };
 __privateAdd(AST, _AST_static);
 _a11 = AST;
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/escape.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/escape.js
 init_cjs_shims();
 var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) => {
   if (magicalBraces) {
@@ -5249,7 +5317,7 @@ var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) =
   return windowsPathsNoEscape ? s.replace(/[?*()[\]]/g, "[$&]") : s.replace(/[?*()[\]\\]/g, "\\$&");
 };
 
-// node_modules/.pnpm/minimatch@10.2.5/node_modules/minimatch/dist/esm/index.js
+// node_modules/.pnpm/minimatch@10.2.6/node_modules/minimatch/dist/esm/index.js
 var minimatch = (p2, pattern, options = {}) => {
   assertValidPattern(pattern);
   if (!options.nocomment && pattern.charAt(0) === "#") {
@@ -5258,54 +5326,54 @@ var minimatch = (p2, pattern, options = {}) => {
   return new Minimatch(pattern, options).match(p2);
 };
 var starDotExtRE = /^\*+([^+@!?*[(]*)$/;
-var starDotExtTest = (ext2) => (f) => !f.startsWith(".") && f.endsWith(ext2);
-var starDotExtTestDot = (ext2) => (f) => f.endsWith(ext2);
+var starDotExtTest = (ext2) => (f3) => !f3.startsWith(".") && f3.endsWith(ext2);
+var starDotExtTestDot = (ext2) => (f3) => f3.endsWith(ext2);
 var starDotExtTestNocase = (ext2) => {
   ext2 = ext2.toLowerCase();
-  return (f) => !f.startsWith(".") && f.toLowerCase().endsWith(ext2);
+  return (f3) => !f3.startsWith(".") && f3.toLowerCase().endsWith(ext2);
 };
 var starDotExtTestNocaseDot = (ext2) => {
   ext2 = ext2.toLowerCase();
-  return (f) => f.toLowerCase().endsWith(ext2);
+  return (f3) => f3.toLowerCase().endsWith(ext2);
 };
 var starDotStarRE = /^\*+\.\*+$/;
-var starDotStarTest = (f) => !f.startsWith(".") && f.includes(".");
-var starDotStarTestDot = (f) => f !== "." && f !== ".." && f.includes(".");
+var starDotStarTest = (f3) => !f3.startsWith(".") && f3.includes(".");
+var starDotStarTestDot = (f3) => f3 !== "." && f3 !== ".." && f3.includes(".");
 var dotStarRE = /^\.\*+$/;
-var dotStarTest = (f) => f !== "." && f !== ".." && f.startsWith(".");
+var dotStarTest = (f3) => f3 !== "." && f3 !== ".." && f3.startsWith(".");
 var starRE = /^\*+$/;
-var starTest = (f) => f.length !== 0 && !f.startsWith(".");
-var starTestDot = (f) => f.length !== 0 && f !== "." && f !== "..";
+var starTest = (f3) => f3.length !== 0 && !f3.startsWith(".");
+var starTestDot = (f3) => f3.length !== 0 && f3 !== "." && f3 !== "..";
 var qmarksRE = /^\?+([^+@!?*[(]*)?$/;
 var qmarksTestNocase = ([$0, ext2 = ""]) => {
   const noext = qmarksTestNoExt([$0]);
   if (!ext2)
     return noext;
   ext2 = ext2.toLowerCase();
-  return (f) => noext(f) && f.toLowerCase().endsWith(ext2);
+  return (f3) => noext(f3) && f3.toLowerCase().endsWith(ext2);
 };
 var qmarksTestNocaseDot = ([$0, ext2 = ""]) => {
   const noext = qmarksTestNoExtDot([$0]);
   if (!ext2)
     return noext;
   ext2 = ext2.toLowerCase();
-  return (f) => noext(f) && f.toLowerCase().endsWith(ext2);
+  return (f3) => noext(f3) && f3.toLowerCase().endsWith(ext2);
 };
 var qmarksTestDot = ([$0, ext2 = ""]) => {
   const noext = qmarksTestNoExtDot([$0]);
-  return !ext2 ? noext : (f) => noext(f) && f.endsWith(ext2);
+  return !ext2 ? noext : (f3) => noext(f3) && f3.endsWith(ext2);
 };
 var qmarksTest = ([$0, ext2 = ""]) => {
   const noext = qmarksTestNoExt([$0]);
-  return !ext2 ? noext : (f) => noext(f) && f.endsWith(ext2);
+  return !ext2 ? noext : (f3) => noext(f3) && f3.endsWith(ext2);
 };
 var qmarksTestNoExt = ([$0]) => {
   const len = $0.length;
-  return (f) => f.length === len && !f.startsWith(".");
+  return (f3) => f3.length === len && !f3.startsWith(".");
 };
 var qmarksTestNoExtDot = ([$0]) => {
   const len = $0.length;
-  return (f) => f.length === len && f !== "." && f !== "..";
+  return (f3) => f3.length === len && f3 !== "." && f3 !== "..";
 };
 var defaultPlatform = typeof process === "object" && process ? typeof process.env === "object" && process.env && process.env.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix";
 var path2 = {
@@ -5322,14 +5390,14 @@ var twoStarDot = "(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?";
 var twoStarNoDot = "(?:(?!(?:\\/|^)\\.).)*?";
 var filter = (pattern, options = {}) => (p2) => minimatch(p2, pattern, options);
 minimatch.filter = filter;
-var ext = (a, b2 = {}) => Object.assign({}, a, b2);
+var ext = (a, b3 = {}) => Object.assign({}, a, b3);
 var defaults = (def) => {
   if (!def || typeof def !== "object" || !Object.keys(def).length) {
     return minimatch;
   }
   const orig = minimatch;
-  const m = (p2, pattern, options = {}) => orig(p2, pattern, ext(def, options));
-  return Object.assign(m, {
+  const m2 = (p2, pattern, options = {}) => orig(p2, pattern, ext(def, options));
+  return Object.assign(m2, {
     Minimatch: class Minimatch extends orig.Minimatch {
       constructor(pattern, options = {}) {
         super(pattern, ext(def, options));
@@ -5372,7 +5440,7 @@ var makeRe = (pattern, options = {}) => new Minimatch(pattern, options).makeRe()
 minimatch.makeRe = makeRe;
 var match = (list, pattern, options = {}) => {
   const mm = new Minimatch(pattern, options);
-  list = list.filter((f) => mm.match(f));
+  list = list.filter((f3) => mm.match(f3));
   if (mm.options.nonull && !list.length) {
     list.push(pattern);
   }
@@ -5441,7 +5509,7 @@ var Minimatch = class {
     }
     return false;
   }
-  debug(..._3) {
+  debug(..._4) {
   }
   make() {
     const pattern = this.pattern;
@@ -5463,27 +5531,27 @@ var Minimatch = class {
     const rawGlobParts = this.globSet.map((s) => this.slashSplit(s));
     this.globParts = this.preprocess(rawGlobParts);
     this.debug(this.pattern, this.globParts);
-    let set = this.globParts.map((s, _3, __3) => {
+    let set = this.globParts.map((s, _4, __3) => {
       if (this.isWindows && this.windowsNoMagicRoot) {
         const isUNC = s[0] === "" && s[1] === "" && (s[2] === "?" || !globMagic.test(s[2])) && !globMagic.test(s[3]);
         const isDrive = /^[a-z]:/i.test(s[0]);
         if (isUNC) {
           return [
             ...s.slice(0, 4),
-            ...s.slice(4).map((ss2) => this.parse(ss2))
+            ...s.slice(4).map((ss3) => this.parse(ss3))
           ];
         } else if (isDrive) {
-          return [s[0], ...s.slice(1).map((ss2) => this.parse(ss2))];
+          return [s[0], ...s.slice(1).map((ss3) => this.parse(ss3))];
         }
       }
-      return s.map((ss2) => this.parse(ss2));
+      return s.map((ss3) => this.parse(ss3));
     });
     this.debug(this.pattern, set);
     this.set = set.filter((s) => s.indexOf(false) === -1);
     if (this.isWindows) {
-      for (let i2 = 0; i2 < this.set.length; i2++) {
-        const p2 = this.set[i2];
-        if (p2[0] === "" && p2[1] === "" && this.globParts[i2][2] === "?" && typeof p2[3] === "string" && /^[a-z]:$/i.test(p2[3])) {
+      for (let i = 0; i < this.set.length; i++) {
+        const p2 = this.set[i];
+        if (p2[0] === "" && p2[1] === "" && this.globParts[i][2] === "?" && typeof p2[3] === "string" && /^[a-z]:$/i.test(p2[3])) {
           p2[2] = "?";
         }
       }
@@ -5498,9 +5566,9 @@ var Minimatch = class {
   preprocess(globParts) {
     if (this.options.noglobstar) {
       for (const partset of globParts) {
-        for (let j3 = 0; j3 < partset.length; j3++) {
-          if (partset[j3] === "**") {
-            partset[j3] = "*";
+        for (let j4 = 0; j4 < partset.length; j4++) {
+          if (partset[j4] === "**") {
+            partset[j4] = "*";
           }
         }
       }
@@ -5519,14 +5587,14 @@ var Minimatch = class {
   // just get rid of adjascent ** portions
   adjascentGlobstarOptimize(globParts) {
     return globParts.map((parts) => {
-      let gs2 = -1;
-      while (-1 !== (gs2 = parts.indexOf("**", gs2 + 1))) {
-        let i2 = gs2;
-        while (parts[i2 + 1] === "**") {
-          i2++;
+      let gs3 = -1;
+      while (-1 !== (gs3 = parts.indexOf("**", gs3 + 1))) {
+        let i = gs3;
+        while (parts[i + 1] === "**") {
+          i++;
         }
-        if (i2 !== gs2) {
-          parts.splice(gs2, i2 - gs2);
+        if (i !== gs3) {
+          parts.splice(gs3, i - gs3);
         }
       }
       return parts;
@@ -5560,14 +5628,14 @@ var Minimatch = class {
     do {
       didSomething = false;
       if (!this.preserveMultipleSlashes) {
-        for (let i2 = 1; i2 < parts.length - 1; i2++) {
-          const p2 = parts[i2];
-          if (i2 === 1 && p2 === "" && parts[0] === "")
+        for (let i = 1; i < parts.length - 1; i++) {
+          const p2 = parts[i];
+          if (i === 1 && p2 === "" && parts[0] === "")
             continue;
           if (p2 === "." || p2 === "") {
             didSomething = true;
-            parts.splice(i2, 1);
-            i2--;
+            parts.splice(i, 1);
+            i--;
           }
         }
         if (parts[0] === "." && parts.length === 2 && (parts[1] === "." || parts[1] === "")) {
@@ -5610,39 +5678,39 @@ var Minimatch = class {
     do {
       didSomething = false;
       for (let parts of globParts) {
-        let gs2 = -1;
-        while (-1 !== (gs2 = parts.indexOf("**", gs2 + 1))) {
-          let gss = gs2;
+        let gs3 = -1;
+        while (-1 !== (gs3 = parts.indexOf("**", gs3 + 1))) {
+          let gss = gs3;
           while (parts[gss + 1] === "**") {
             gss++;
           }
-          if (gss > gs2) {
-            parts.splice(gs2 + 1, gss - gs2);
+          if (gss > gs3) {
+            parts.splice(gs3 + 1, gss - gs3);
           }
-          let next = parts[gs2 + 1];
-          const p2 = parts[gs2 + 2];
-          const p22 = parts[gs2 + 3];
+          let next = parts[gs3 + 1];
+          const p2 = parts[gs3 + 2];
+          const p22 = parts[gs3 + 3];
           if (next !== "..")
             continue;
           if (!p2 || p2 === "." || p2 === ".." || !p22 || p22 === "." || p22 === "..") {
             continue;
           }
           didSomething = true;
-          parts.splice(gs2, 1);
+          parts.splice(gs3, 1);
           const other = parts.slice(0);
-          other[gs2] = "**";
+          other[gs3] = "**";
           globParts.push(other);
-          gs2--;
+          gs3--;
         }
         if (!this.preserveMultipleSlashes) {
-          for (let i2 = 1; i2 < parts.length - 1; i2++) {
-            const p2 = parts[i2];
-            if (i2 === 1 && p2 === "" && parts[0] === "")
+          for (let i = 1; i < parts.length - 1; i++) {
+            const p2 = parts[i];
+            if (i === 1 && p2 === "" && parts[0] === "")
               continue;
             if (p2 === "." || p2 === "") {
               didSomething = true;
-              parts.splice(i2, 1);
-              i2--;
+              parts.splice(i, 1);
+              i--;
             }
           }
           if (parts[0] === "." && parts.length === 2 && (parts[1] === "." || parts[1] === "")) {
@@ -5675,53 +5743,53 @@ var Minimatch = class {
   // {<pre>/**/<rest>,<pre>/**/<p>/<rest>} -> <pre>/**/<rest>
   // ^-- not valid because ** doens't follow symlinks
   secondPhasePreProcess(globParts) {
-    for (let i2 = 0; i2 < globParts.length - 1; i2++) {
-      for (let j3 = i2 + 1; j3 < globParts.length; j3++) {
-        const matched = this.partsMatch(globParts[i2], globParts[j3], !this.preserveMultipleSlashes);
+    for (let i = 0; i < globParts.length - 1; i++) {
+      for (let j4 = i + 1; j4 < globParts.length; j4++) {
+        const matched = this.partsMatch(globParts[i], globParts[j4], !this.preserveMultipleSlashes);
         if (matched) {
-          globParts[i2] = [];
-          globParts[j3] = matched;
+          globParts[i] = [];
+          globParts[j4] = matched;
           break;
         }
       }
     }
-    return globParts.filter((gs2) => gs2.length);
+    return globParts.filter((gs3) => gs3.length);
   }
-  partsMatch(a, b2, emptyGSMatch = false) {
+  partsMatch(a, b3, emptyGSMatch = false) {
     let ai2 = 0;
     let bi2 = 0;
     let result = [];
     let which = "";
-    while (ai2 < a.length && bi2 < b2.length) {
-      if (a[ai2] === b2[bi2]) {
-        result.push(which === "b" ? b2[bi2] : a[ai2]);
+    while (ai2 < a.length && bi2 < b3.length) {
+      if (a[ai2] === b3[bi2]) {
+        result.push(which === "b" ? b3[bi2] : a[ai2]);
         ai2++;
         bi2++;
-      } else if (emptyGSMatch && a[ai2] === "**" && b2[bi2] === a[ai2 + 1]) {
+      } else if (emptyGSMatch && a[ai2] === "**" && b3[bi2] === a[ai2 + 1]) {
         result.push(a[ai2]);
         ai2++;
-      } else if (emptyGSMatch && b2[bi2] === "**" && a[ai2] === b2[bi2 + 1]) {
-        result.push(b2[bi2]);
+      } else if (emptyGSMatch && b3[bi2] === "**" && a[ai2] === b3[bi2 + 1]) {
+        result.push(b3[bi2]);
         bi2++;
-      } else if (a[ai2] === "*" && b2[bi2] && (this.options.dot || !b2[bi2].startsWith(".")) && b2[bi2] !== "**") {
+      } else if (a[ai2] === "*" && b3[bi2] && (this.options.dot || !b3[bi2].startsWith(".")) && b3[bi2] !== "**") {
         if (which === "b")
           return false;
         which = "a";
         result.push(a[ai2]);
         ai2++;
         bi2++;
-      } else if (b2[bi2] === "*" && a[ai2] && (this.options.dot || !a[ai2].startsWith(".")) && a[ai2] !== "**") {
+      } else if (b3[bi2] === "*" && a[ai2] && (this.options.dot || !a[ai2].startsWith(".")) && a[ai2] !== "**") {
         if (which === "a")
           return false;
         which = "b";
-        result.push(b2[bi2]);
+        result.push(b3[bi2]);
         ai2++;
         bi2++;
       } else {
         return false;
       }
     }
-    return a.length === b2.length && result;
+    return a.length === b3.length && result;
   }
   parseNegate() {
     if (this.nonegate)
@@ -5729,7 +5797,7 @@ var Minimatch = class {
     const pattern = this.pattern;
     let negate = false;
     let negateOffset = 0;
-    for (let i2 = 0; i2 < pattern.length && pattern.charAt(i2) === "!"; i2++) {
+    for (let i = 0; i < pattern.length && pattern.charAt(i) === "!"; i++) {
       negate = !negate;
       negateOffset++;
     }
@@ -5783,24 +5851,24 @@ var Minimatch = class {
       return GLOBSTAR;
     if (pattern === "")
       return "";
-    let m;
+    let m2;
     let fastTest = null;
-    if (m = pattern.match(starRE)) {
+    if (m2 = pattern.match(starRE)) {
       fastTest = options.dot ? starTestDot : starTest;
-    } else if (m = pattern.match(starDotExtRE)) {
-      fastTest = (options.nocase ? options.dot ? starDotExtTestNocaseDot : starDotExtTestNocase : options.dot ? starDotExtTestDot : starDotExtTest)(m[1]);
-    } else if (m = pattern.match(qmarksRE)) {
-      fastTest = (options.nocase ? options.dot ? qmarksTestNocaseDot : qmarksTestNocase : options.dot ? qmarksTestDot : qmarksTest)(m);
-    } else if (m = pattern.match(starDotStarRE)) {
+    } else if (m2 = pattern.match(starDotExtRE)) {
+      fastTest = (options.nocase ? options.dot ? starDotExtTestNocaseDot : starDotExtTestNocase : options.dot ? starDotExtTestDot : starDotExtTest)(m2[1]);
+    } else if (m2 = pattern.match(qmarksRE)) {
+      fastTest = (options.nocase ? options.dot ? qmarksTestNocaseDot : qmarksTestNocase : options.dot ? qmarksTestDot : qmarksTest)(m2);
+    } else if (m2 = pattern.match(starDotStarRE)) {
       fastTest = options.dot ? starDotStarTestDot : starDotStarTest;
-    } else if (m = pattern.match(dotStarRE)) {
+    } else if (m2 = pattern.match(dotStarRE)) {
       fastTest = dotStarTest;
     }
-    const re2 = AST.fromGlob(pattern, this.options).toMMPattern();
-    if (fastTest && typeof re2 === "object") {
-      Reflect.defineProperty(re2, "test", { value: fastTest });
+    const re3 = AST.fromGlob(pattern, this.options).toMMPattern();
+    if (fastTest && typeof re3 === "object") {
+      Reflect.defineProperty(re3, "test", { value: fastTest });
     }
-    return re2;
+    return re3;
   }
   makeRe() {
     if (this.regexp || this.regexp === false)
@@ -5813,52 +5881,52 @@ var Minimatch = class {
     const options = this.options;
     const twoStar = options.noglobstar ? star2 : options.dot ? twoStarDot : twoStarNoDot;
     const flags = new Set(options.nocase ? ["i"] : []);
-    let re2 = set.map((pattern) => {
+    let re3 = set.map((pattern) => {
       const pp = pattern.map((p2) => {
         if (p2 instanceof RegExp) {
-          for (const f of p2.flags.split(""))
-            flags.add(f);
+          for (const f3 of p2.flags.split(""))
+            flags.add(f3);
         }
         return typeof p2 === "string" ? regExpEscape2(p2) : p2 === GLOBSTAR ? GLOBSTAR : p2._src;
       });
-      pp.forEach((p2, i2) => {
-        const next = pp[i2 + 1];
-        const prev = pp[i2 - 1];
+      pp.forEach((p2, i) => {
+        const next = pp[i + 1];
+        const prev = pp[i - 1];
         if (p2 !== GLOBSTAR || prev === GLOBSTAR) {
           return;
         }
         if (prev === void 0) {
           if (next !== void 0 && next !== GLOBSTAR) {
-            pp[i2 + 1] = "(?:\\/|" + twoStar + "\\/)?" + next;
+            pp[i + 1] = "(?:\\/|" + twoStar + "\\/)?" + next;
           } else {
-            pp[i2] = twoStar;
+            pp[i] = twoStar;
           }
         } else if (next === void 0) {
-          pp[i2 - 1] = prev + "(?:\\/|\\/" + twoStar + ")?";
+          pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + ")?";
         } else if (next !== GLOBSTAR) {
-          pp[i2 - 1] = prev + "(?:\\/|\\/" + twoStar + "\\/)" + next;
-          pp[i2 + 1] = GLOBSTAR;
+          pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + "\\/)" + next;
+          pp[i + 1] = GLOBSTAR;
         }
       });
       const filtered = pp.filter((p2) => p2 !== GLOBSTAR);
       if (this.partial && filtered.length >= 1) {
         const prefixes = [];
-        for (let i2 = 1; i2 <= filtered.length; i2++) {
-          prefixes.push(filtered.slice(0, i2).join("/"));
+        for (let i = 1; i <= filtered.length; i++) {
+          prefixes.push(filtered.slice(0, i).join("/"));
         }
         return "(?:" + prefixes.join("|") + ")";
       }
       return filtered.join("/");
     }).join("|");
     const [open, close] = set.length > 1 ? ["(?:", ")"] : ["", ""];
-    re2 = "^" + open + re2 + close + "$";
+    re3 = "^" + open + re3 + close + "$";
     if (this.partial) {
-      re2 = "^(?:\\/|" + open + re2.slice(1, -1) + close + ")$";
+      re3 = "^(?:\\/|" + open + re3.slice(1, -1) + close + ")$";
     }
     if (this.negate)
-      re2 = "^(?!" + re2 + ").+$";
+      re3 = "^(?!" + re3 + ").+$";
     try {
-      this.regexp = new RegExp(re2, [...flags].join(""));
+      this.regexp = new RegExp(re3, [...flags].join(""));
     } catch {
       this.regexp = false;
     }
@@ -5873,29 +5941,29 @@ var Minimatch = class {
       return p2.split(/\/+/);
     }
   }
-  match(f, partial = this.partial) {
-    this.debug("match", f, this.pattern);
+  match(f3, partial = this.partial) {
+    this.debug("match", f3, this.pattern);
     if (this.comment) {
       return false;
     }
     if (this.empty) {
-      return f === "";
+      return f3 === "";
     }
-    if (f === "/" && partial) {
+    if (f3 === "/" && partial) {
       return true;
     }
     const options = this.options;
     if (this.isWindows) {
-      f = f.split("\\").join("/");
+      f3 = f3.split("\\").join("/");
     }
-    const ff = this.slashSplit(f);
+    const ff = this.slashSplit(f3);
     this.debug(this.pattern, "split", ff);
     const set = this.set;
     this.debug(this.pattern, "set", set);
     let filename = ff[ff.length - 1];
     if (!filename) {
-      for (let i2 = ff.length - 2; !filename && i2 >= 0; i2--) {
-        filename = ff[i2];
+      for (let i = ff.length - 2; !filename && i >= 0; i--) {
+        filename = ff[i];
       }
     }
     for (const pattern of set) {
@@ -5961,10 +6029,10 @@ matchGlobstar_fn = function(file, pattern, partial, fileIndex, patternIndex) {
   }
   if (!body.length) {
     let sawSome = !!fileTailMatch;
-    for (let i3 = fileIndex; i3 < file.length - fileTailMatch; i3++) {
-      const f = String(file[i3]);
+    for (let i2 = fileIndex; i2 < file.length - fileTailMatch; i2++) {
+      const f3 = String(file[i2]);
       sawSome = true;
-      if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
+      if (f3 === "." || f3 === ".." || !this.options.dot && f3.startsWith(".")) {
         return false;
       }
     }
@@ -5974,48 +6042,48 @@ matchGlobstar_fn = function(file, pattern, partial, fileIndex, patternIndex) {
   let currentBody = bodySegments[0];
   let nonGsParts = 0;
   const nonGsPartsSums = [0];
-  for (const b2 of body) {
-    if (b2 === GLOBSTAR) {
+  for (const b3 of body) {
+    if (b3 === GLOBSTAR) {
       nonGsPartsSums.push(nonGsParts);
       currentBody = [[], 0];
       bodySegments.push(currentBody);
     } else {
-      currentBody[0].push(b2);
+      currentBody[0].push(b3);
       nonGsParts++;
     }
   }
-  let i2 = bodySegments.length - 1;
+  let i = bodySegments.length - 1;
   const fileLength = file.length - fileTailMatch;
-  for (const b2 of bodySegments) {
-    b2[1] = fileLength - (nonGsPartsSums[i2--] + b2[0].length);
+  for (const b3 of bodySegments) {
+    b3[1] = fileLength - (nonGsPartsSums[i--] + b3[0].length);
   }
   return !!__privateMethod(this, _Minimatch_instances, matchGlobStarBodySections_fn).call(this, file, bodySegments, fileIndex, 0, partial, 0, !!fileTailMatch);
 };
 // return false for "nope, not matching"
 // return null for "not matching, cannot keep trying"
 matchGlobStarBodySections_fn = function(file, bodySegments, fileIndex, bodyIndex, partial, globStarDepth, sawTail) {
-  const bs2 = bodySegments[bodyIndex];
-  if (!bs2) {
-    for (let i2 = fileIndex; i2 < file.length; i2++) {
+  const bs3 = bodySegments[bodyIndex];
+  if (!bs3) {
+    for (let i = fileIndex; i < file.length; i++) {
       sawTail = true;
-      const f = file[i2];
-      if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
+      const f3 = file[i];
+      if (f3 === "." || f3 === ".." || !this.options.dot && f3.startsWith(".")) {
         return false;
       }
     }
     return sawTail;
   }
-  const [body, after] = bs2;
+  const [body, after] = bs3;
   while (fileIndex <= after) {
-    const m = __privateMethod(this, _Minimatch_instances, matchOne_fn).call(this, file.slice(0, fileIndex + body.length), body, partial, fileIndex, 0);
-    if (m && globStarDepth < this.maxGlobstarRecursion) {
+    const m2 = __privateMethod(this, _Minimatch_instances, matchOne_fn).call(this, file.slice(0, fileIndex + body.length), body, partial, fileIndex, 0);
+    if (m2 && globStarDepth < this.maxGlobstarRecursion) {
       const sub = __privateMethod(this, _Minimatch_instances, matchGlobStarBodySections_fn).call(this, file, bodySegments, fileIndex + body.length, bodyIndex + 1, partial, globStarDepth + 1, sawTail);
       if (sub !== false) {
         return sub;
       }
     }
-    const f = file[fileIndex];
-    if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
+    const f3 = file[fileIndex];
+    if (f3 === "." || f3 === ".." || !this.options.dot && f3.startsWith(".")) {
       return false;
     }
     fileIndex++;
@@ -6030,18 +6098,18 @@ matchOne_fn = function(file, pattern, partial, fileIndex, patternIndex) {
   for (fi2 = fileIndex, pi2 = patternIndex, fl = file.length, pl = pattern.length; fi2 < fl && pi2 < pl; fi2++, pi2++) {
     this.debug("matchOne loop");
     let p2 = pattern[pi2];
-    let f = file[fi2];
-    this.debug(pattern, p2, f);
+    let f3 = file[fi2];
+    this.debug(pattern, p2, f3);
     if (p2 === false || p2 === GLOBSTAR) {
       return false;
     }
     let hit;
     if (typeof p2 === "string") {
-      hit = f === p2;
-      this.debug("string match", p2, f, hit);
+      hit = f3 === p2;
+      this.debug("string match", p2, f3, hit);
     } else {
-      hit = p2.test(f);
-      this.debug("pattern match", p2, f, hit);
+      hit = p2.test(f3);
+      this.debug("pattern match", p2, f3, hit);
     }
     if (!hit)
       return false;
@@ -6076,13 +6144,13 @@ function lineNumberAt(content, position) {
 }
 function findMatchingBrace(content, openPos) {
   let depth = 0;
-  for (let i2 = openPos; i2 < content.length; i2++) {
-    if (content[i2] === "{") {
+  for (let i = openPos; i < content.length; i++) {
+    if (content[i] === "{") {
       depth++;
-    } else if (content[i2] === "}") {
+    } else if (content[i] === "}") {
       depth--;
       if (depth === 0) {
-        return i2;
+        return i;
       }
     }
   }
@@ -6158,9 +6226,9 @@ function countParameterSets(dataContent) {
   let stringChar = "";
   let braceDepth = 0;
   let bracketDepth = 0;
-  for (let i2 = 0; i2 < dataContent.length; i2++) {
-    const char = dataContent[i2];
-    const prevChar = i2 > 0 ? dataContent[i2 - 1] : "";
+  for (let i = 0; i < dataContent.length; i++) {
+    const char = dataContent[i];
+    const prevChar = i > 0 ? dataContent[i - 1] : "";
     if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
       if (!inString) {
         inString = true;
@@ -6201,9 +6269,9 @@ function detectParameterizedLoop(content, testIndex) {
 }
 function isLoopStillOpen(context, loopStart) {
   let netBraces = 0;
-  for (let i2 = loopStart; i2 < context.length; i2++) {
-    if (context[i2] === "{") netBraces++;
-    else if (context[i2] === "}") netBraces--;
+  for (let i = loopStart; i < context.length; i++) {
+    if (context[i] === "{") netBraces++;
+    else if (context[i] === "}") netBraces--;
     if (netBraces < 0) return false;
   }
   return true;
@@ -6324,9 +6392,9 @@ function parseCypressSpec(filePath, content, projectRoot) {
     const paramData = extractParameterizedDataFromForEach(content, matchIndex);
     if (paramData?.hasParameters) {
       if (paramData.count > 0) {
-        for (let i2 = 0; i2 < paramData.count; i2++) {
-          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i2}`);
-          const expandedName = generateParameterizedTestName(testName, i2, paramData.count);
+        for (let i = 0; i < paramData.count; i++) {
+          const id2 = hashId(`${relativePath}::${parentDescribe ?? ""}::${testName}::${i}`);
+          const expandedName = generateParameterizedTestName(testName, i, paramData.count);
           tests.push({
             id: id2,
             name: expandedName,
@@ -6502,14 +6570,14 @@ function extractTestNames4(content) {
 }
 function findJestDescribeBlocks(content) {
   return [...findDescribeBlocks(content, DESCRIBE_RE4), ...findDescribeEachBlocks(content)].sort(
-    (a, b2) => a.start - b2.start
+    (a, b3) => a.start - b3.start
   );
 }
 function findJestTests(content) {
   const matches = [];
   collectMatches(content, TEST_RE4, false, matches);
   collectMatches(content, TEST_EACH_RE, true, matches);
-  return matches.sort((a, b2) => a.index - b2.index);
+  return matches.sort((a, b3) => a.index - b3.index);
 }
 function collectMatches(content, regex, parameterized, matches) {
   let match2;
@@ -6571,10 +6639,10 @@ function parsePytestSpec(filePath, content, projectRoot) {
   const tests = [];
   const lines = content.split("\n");
   const classStack = [];
-  for (let i2 = 0; i2 < lines.length; i2++) {
-    const line = lines[i2];
-    const trimmed2 = line.trim();
-    if (!trimmed2 || trimmed2.startsWith("#")) continue;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
     const indent = leadingWhitespace(line);
     while (classStack.length > 0 && indent <= classStack[classStack.length - 1].indent) {
       classStack.pop();
@@ -6588,7 +6656,7 @@ function parsePytestSpec(filePath, content, projectRoot) {
     if (!testMatch) continue;
     const testName = testMatch[1];
     const parentClass = classStack[classStack.length - 1]?.name;
-    const decoratorBlock = getDecoratorBlock(lines, i2);
+    const decoratorBlock = getDecoratorBlock(lines, i);
     const tags = extractPytestTags(decoratorBlock);
     if (/@pytest\.mark\.parametrize\b/.test(decoratorBlock) && !tags.some((t2) => t2.name === "@parameterized")) {
       tags.push({ name: "@parameterized" });
@@ -6600,7 +6668,7 @@ function parsePytestSpec(filePath, content, projectRoot) {
       fullName: parentClass ? `${parentClass} > ${testName}` : testName,
       describe: parentClass,
       tags,
-      line: i2 + 1
+      line: i + 1
     });
   }
   return {
@@ -6622,10 +6690,10 @@ function leadingWhitespace(line) {
 }
 function getDecoratorBlock(lines, functionLine) {
   const contiguous = [];
-  for (let i2 = functionLine - 1; i2 >= 0; i2--) {
-    const trimmed2 = lines[i2].trim();
-    if (!trimmed2) break;
-    contiguous.unshift(lines[i2]);
+  for (let i = functionLine - 1; i >= 0; i--) {
+    const trimmed = lines[i].trim();
+    if (!trimmed) break;
+    contiguous.unshift(lines[i]);
   }
   const firstDecorator = contiguous.findIndex((line) => line.trim().startsWith("@"));
   return firstDecorator === -1 ? "" : contiguous.slice(firstDecorator).join("\n");
@@ -6733,9 +6801,9 @@ function extractTestNGTags(annotationText) {
   const tags = [];
   const groupMatch = GROUPS_RE.exec(annotationText);
   if (groupMatch) {
-    const groups = (groupMatch[1] ?? groupMatch[2]).split(",").map((g) => g.trim().replace(/^"|"$/g, "")).filter((g) => g.length > 0);
-    groups.forEach((g) => {
-      tags.push({ name: g });
+    const groups = (groupMatch[1] ?? groupMatch[2]).split(",").map((g2) => g2.trim().replace(/^"|"$/g, "")).filter((g2) => g2.length > 0);
+    groups.forEach((g2) => {
+      tags.push({ name: g2 });
     });
   }
   return tags;
@@ -6891,8 +6959,8 @@ function parseCucumberSpec(filePath, content, projectRoot) {
         line: currentOutlineLine
       });
     } else {
-      for (let i2 = 0; i2 < rowCount; i2++) {
-        const name = generateParameterizedTestName(currentOutlineName, i2, rowCount);
+      for (let i = 0; i < rowCount; i++) {
+        const name = generateParameterizedTestName(currentOutlineName, i, rowCount);
         const id = hashId(`${relativePath}::${featureName ?? ""}::${name}`);
         const fullName = featureName ? `${featureName} > ${name}` : name;
         tests.push({
@@ -6901,7 +6969,7 @@ function parseCucumberSpec(filePath, content, projectRoot) {
           fullName,
           describe: featureName,
           tags: currentOutlineTags.map((t2) => ({ name: t2 })),
-          line: outlineRows[i2]
+          line: outlineRows[i]
         });
       }
     }
@@ -6912,16 +6980,16 @@ function parseCucumberSpec(filePath, content, projectRoot) {
     currentOutlineName = void 0;
     currentOutlineTags = [];
   };
-  for (let i2 = 0; i2 < lines.length; i2++) {
-    const rawLine = lines[i2];
-    const trimmed2 = rawLine.trim();
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const trimmed = rawLine.trim();
     const tagMatch = TAG_LINE_RE.exec(rawLine);
     if (tagMatch) {
       const tokens = tagMatch[1].trim().split(/\s+/).filter((t2) => t2.startsWith("@"));
       pendingTags.push(...tokens);
       continue;
     }
-    const featureMatch = FEATURE_RE.exec(trimmed2);
+    const featureMatch = FEATURE_RE.exec(trimmed);
     if (featureMatch) {
       flushOutline();
       featureName = featureMatch[1].trim();
@@ -6929,12 +6997,12 @@ function parseCucumberSpec(filePath, content, projectRoot) {
       pendingTags = [];
       continue;
     }
-    const outlineMatch = OUTLINE_RE.exec(trimmed2);
+    const outlineMatch = OUTLINE_RE.exec(trimmed);
     if (outlineMatch) {
       flushOutline();
       currentOutlineName = outlineMatch[1].trim();
       currentOutlineTags = [...featureTags, ...pendingTags];
-      currentOutlineLine = i2 + 1;
+      currentOutlineLine = i + 1;
       inOutline = true;
       inExamplesBlock = false;
       examplesHeaderSeen = false;
@@ -6942,7 +7010,7 @@ function parseCucumberSpec(filePath, content, projectRoot) {
       pendingTags = [];
       continue;
     }
-    if (inOutline && EXAMPLES_RE.test(trimmed2)) {
+    if (inOutline && EXAMPLES_RE.test(trimmed)) {
       currentOutlineTags = [...currentOutlineTags, ...pendingTags];
       pendingTags = [];
       inExamplesBlock = true;
@@ -6953,18 +7021,18 @@ function parseCucumberSpec(filePath, content, projectRoot) {
       if (!examplesHeaderSeen) {
         examplesHeaderSeen = true;
       } else {
-        outlineRows.push(i2 + 1);
+        outlineRows.push(i + 1);
       }
       continue;
     }
-    const scenarioMatch = SCENARIO_RE.exec(trimmed2);
+    const scenarioMatch = SCENARIO_RE.exec(trimmed);
     if (scenarioMatch) {
       flushOutline();
       const name = scenarioMatch[1].trim();
       const mergedTags = [...featureTags, ...pendingTags];
       const id = hashId(`${relativePath}::${featureName ?? ""}::${name}`);
       const fullName = featureName ? `${featureName} > ${name}` : name;
-      const line = i2 + 1;
+      const line = i + 1;
       tests.push({
         id,
         name,
@@ -6976,7 +7044,7 @@ function parseCucumberSpec(filePath, content, projectRoot) {
       pendingTags = [];
       continue;
     }
-    if (trimmed2.length > 0 && !trimmed2.startsWith("#")) {
+    if (trimmed.length > 0 && !trimmed.startsWith("#")) {
       pendingTags = [];
     }
   }
@@ -7006,8 +7074,8 @@ function extractTestNames8(content) {
     if (rowCount === 0) {
       names.push(featureName ? `${featureName} > ${outlineName}` : outlineName);
     } else {
-      for (let i2 = 0; i2 < rowCount; i2++) {
-        const name = generateParameterizedTestName(outlineName, i2, rowCount);
+      for (let i = 0; i < rowCount; i++) {
+        const name = generateParameterizedTestName(outlineName, i, rowCount);
         names.push(featureName ? `${featureName} > ${name}` : name);
       }
     }
@@ -7018,21 +7086,21 @@ function extractTestNames8(content) {
     outlineName = void 0;
   };
   for (const rawLine of lines) {
-    const trimmed2 = rawLine.trim();
+    const trimmed = rawLine.trim();
     if (TAG_LINE_RE.test(rawLine)) {
       pendingTags.push(
         ...rawLine.trim().split(/\s+/).filter((t2) => t2.startsWith("@"))
       );
       continue;
     }
-    const featureMatch = FEATURE_RE.exec(trimmed2);
+    const featureMatch = FEATURE_RE.exec(trimmed);
     if (featureMatch) {
       flushOutline();
       featureName = featureMatch[1].trim();
       pendingTags = [];
       continue;
     }
-    const outlineMatch = OUTLINE_RE.exec(trimmed2);
+    const outlineMatch = OUTLINE_RE.exec(trimmed);
     if (outlineMatch) {
       flushOutline();
       outlineName = outlineMatch[1].trim();
@@ -7043,7 +7111,7 @@ function extractTestNames8(content) {
       pendingTags = [];
       continue;
     }
-    if (inOutline && EXAMPLES_RE.test(trimmed2)) {
+    if (inOutline && EXAMPLES_RE.test(trimmed)) {
       pendingTags = [];
       inExamplesBlock = true;
       examplesHeaderSeen = false;
@@ -7057,7 +7125,7 @@ function extractTestNames8(content) {
       }
       continue;
     }
-    const scenarioMatch = SCENARIO_RE.exec(trimmed2);
+    const scenarioMatch = SCENARIO_RE.exec(trimmed);
     if (scenarioMatch) {
       flushOutline();
       const name = scenarioMatch[1].trim();
@@ -7065,7 +7133,7 @@ function extractTestNames8(content) {
       pendingTags = [];
       continue;
     }
-    if (trimmed2.length > 0 && !trimmed2.startsWith("#")) {
+    if (trimmed.length > 0 && !trimmed.startsWith("#")) {
       pendingTags = [];
     }
   }
@@ -7142,9 +7210,9 @@ function getParser(framework) {
   return PARSERS[framework];
 }
 function parseSpecFile(filePath, content, projectRoot, framework) {
-  const parser4 = getParser(framework);
-  if (!parser4) throw new Error(`Cannot parse spec for unresolved framework 'unknown'`);
-  const spec = parser4.parseFile(filePath, content, projectRoot);
+  const parser = getParser(framework);
+  if (!parser) throw new Error(`Cannot parse spec for unresolved framework 'unknown'`);
+  const spec = parser.parseFile(filePath, content, projectRoot);
   try {
     spec.lastModified = (0, import_fs3.statSync)(filePath).mtime.toISOString();
   } catch {
@@ -7157,17 +7225,17 @@ function extractTestNamesFromContent(content, framework) {
 function extractTestsWithLinesFromContent(content, framework) {
   const dummyPath = "/__git_history__/test.spec.ts";
   const dummyRoot = "/__git_history__";
-  const parser4 = getParser(framework);
-  if (!parser4) return [];
-  const spec = parser4.parseFile(dummyPath, content, dummyRoot);
+  const parser = getParser(framework);
+  if (!parser) return [];
+  const spec = parser.parseFile(dummyPath, content, dummyRoot);
   return spec.tests.map((t2) => ({ name: t2.fullName, line: t2.line }));
 }
 function findSpecFiles(projectRoot, testDir, framework) {
-  const parser4 = getParser(framework);
-  if (!parser4) return [];
+  const parser = getParser(framework);
+  if (!parser) return [];
   const normalisedTestDir = normaliseRepoPath(testDir);
   if (hasPathPatternMagic(normalisedTestDir)) {
-    const filePatterns = parser4.filePatterns.map((pattern) => `${normalisedTestDir}/${pattern}`);
+    const filePatterns = parser.filePatterns.map((pattern) => `${normalisedTestDir}/${pattern}`);
     return ts(filePatterns, {
       cwd: projectRoot,
       absolute: true,
@@ -7176,7 +7244,7 @@ function findSpecFiles(projectRoot, testDir, framework) {
     });
   }
   const baseDir = import_path11.default.resolve(projectRoot, normalisedTestDir);
-  return ts(parser4.filePatterns, {
+  return ts(parser.filePatterns, {
     cwd: baseDir,
     absolute: true,
     nodir: true,
@@ -7184,20 +7252,20 @@ function findSpecFiles(projectRoot, testDir, framework) {
   });
 }
 function isFrameworkSpecFile(filePath, framework) {
-  const parser4 = getParser(framework);
-  if (!parser4) return false;
+  const parser = getParser(framework);
+  if (!parser) return false;
   const normalised = filePath.replace(/\\/g, "/");
-  return parser4.filePatterns.some(
+  return parser.filePatterns.some(
     (pattern) => minimatch(normalised, pattern) || minimatch(import_path11.default.basename(normalised), pattern)
   );
 }
 function parseAllSpecs(projectRoot, frameworkConfigs) {
   const seen = /* @__PURE__ */ new Set();
   const allSpecs = [];
-  const sorted2 = [...frameworkConfigs].sort(
-    (a, b2) => pathPatternSpecificity(b2.testDir) - pathPatternSpecificity(a.testDir)
+  const sorted = [...frameworkConfigs].sort(
+    (a, b3) => pathPatternSpecificity(b3.testDir) - pathPatternSpecificity(a.testDir)
   );
-  for (const { framework, testDir } of sorted2) {
+  for (const { framework, testDir } of sorted) {
     if (framework === "unknown") continue;
     const files = findSpecFiles(projectRoot, testDir, framework);
     for (const filePath of files) {
@@ -7219,50 +7287,50 @@ function parseAllSpecs(projectRoot, frameworkConfigs) {
 // src/core/frameworks/testDiff.ts
 init_cjs_shims();
 var RENAME_SIMILARITY_THRESHOLD = 0.85;
-function levenshteinDistance(a, b2) {
-  const matrix = Array(b2.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
-  for (let i2 = 0; i2 <= a.length; i2++) matrix[0][i2] = i2;
-  for (let j3 = 0; j3 <= b2.length; j3++) matrix[j3][0] = j3;
-  for (let j3 = 1; j3 <= b2.length; j3++) {
-    for (let i2 = 1; i2 <= a.length; i2++) {
-      const cost = a[i2 - 1] === b2[j3 - 1] ? 0 : 1;
-      matrix[j3][i2] = Math.min(
-        matrix[j3][i2 - 1] + 1,
+function levenshteinDistance(a, b3) {
+  const matrix = Array(b3.length + 1).fill(null).map(() => Array(a.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+  for (let j4 = 0; j4 <= b3.length; j4++) matrix[j4][0] = j4;
+  for (let j4 = 1; j4 <= b3.length; j4++) {
+    for (let i = 1; i <= a.length; i++) {
+      const cost = a[i - 1] === b3[j4 - 1] ? 0 : 1;
+      matrix[j4][i] = Math.min(
+        matrix[j4][i - 1] + 1,
         // deletion
-        matrix[j3 - 1][i2] + 1,
+        matrix[j4 - 1][i] + 1,
         // insertion
-        matrix[j3 - 1][i2 - 1] + cost
+        matrix[j4 - 1][i - 1] + cost
         // substitution
       );
     }
   }
-  return matrix[b2.length][a.length];
+  return matrix[b3.length][a.length];
 }
 function normalizeTestName(name) {
   return name.toLowerCase().replace(/[_\-\s]+/g, " ").trim();
 }
-function calculateSimilarity(a, b2) {
+function calculateSimilarity(a, b3) {
   const normA = normalizeTestName(a);
-  const normB = normalizeTestName(b2);
+  const normB = normalizeTestName(b3);
   if (normA === normB) return 1;
   const distance = levenshteinDistance(normA, normB);
   const maxLength = Math.max(normA.length, normB.length);
   if (maxLength === 0) return 1;
   return 1 - distance / maxLength;
 }
-function isSameTest(a, b2) {
-  const similarity = calculateSimilarity(a, b2);
+function isSameTest(a, b3) {
+  const similarity = calculateSimilarity(a, b3);
   return similarity > RENAME_SIMILARITY_THRESHOLD;
 }
 function findBestMatch(removedTest, addedTests) {
   let bestMatch = null;
-  for (let i2 = 0; i2 < addedTests.length; i2++) {
-    const similarity = calculateSimilarity(removedTest, addedTests[i2]);
+  for (let i = 0; i < addedTests.length; i++) {
+    const similarity = calculateSimilarity(removedTest, addedTests[i]);
     if (similarity > RENAME_SIMILARITY_THRESHOLD && (!bestMatch || similarity > bestMatch.similarity)) {
       bestMatch = {
-        index: i2,
+        index: i,
         similarity,
-        name: addedTests[i2]
+        name: addedTests[i]
       };
     }
   }
@@ -7287,11 +7355,10 @@ init_cjs_shims();
 // src/git/history.ts
 init_cjs_shims();
 
-// node_modules/.pnpm/simple-git@3.36.0/node_modules/simple-git/dist/esm/index.js
+// node_modules/.pnpm/simple-git@4.0.2/node_modules/simple-git/dist/index.mjs
 init_cjs_shims();
-var import_file_exists = __toESM(require_dist(), 1);
 
-// node_modules/.pnpm/@simple-git+args-pathspec@1.0.3/node_modules/@simple-git/args-pathspec/dist/index.mjs
+// node_modules/.pnpm/@simple-git+args-pathspec@1.0.4/node_modules/@simple-git/args-pathspec/dist/index.mjs
 init_cjs_shims();
 var t = /* @__PURE__ */ new WeakMap();
 function c(...n5) {
@@ -7305,20 +7372,21 @@ function o(n5) {
   return t.get(n5) ?? [];
 }
 
-// node_modules/.pnpm/simple-git@3.36.0/node_modules/simple-git/dist/esm/index.js
+// node_modules/.pnpm/simple-git@4.0.2/node_modules/simple-git/dist/index.mjs
+var import_file_exists = __toESM(require_dist(), 1);
+var import_node_child_process = require("child_process");
 var import_debug = __toESM(require_src(), 1);
-var import_child_process = require("child_process");
 var import_promise_deferred = __toESM(require_dist2(), 1);
 var import_node_path2 = require("path");
 
-// node_modules/.pnpm/@simple-git+argv-parser@1.1.1/node_modules/@simple-git/argv-parser/dist/index.mjs
+// node_modules/.pnpm/@simple-git+argv-parser@2.0.1/node_modules/@simple-git/argv-parser/dist/index.mjs
 init_cjs_shims();
-function* U2(e, t2) {
-  const n5 = t2 === "global";
+function* x2(e, n5) {
+  const t2 = n5 === "global";
   for (const o2 of e)
-    o2.isGlobal === n5 && (yield o2);
+    o2.isGlobal === t2 && (yield o2);
 }
-var k2 = /* @__PURE__ */ new Set([
+var P2 = /* @__PURE__ */ new Set([
   "--add",
   "--edit",
   "--remove-section",
@@ -7338,46 +7406,46 @@ var S = /* @__PURE__ */ new Set([
   "--list",
   "-l"
 ]);
-var P2 = /* @__PURE__ */ new Set([
+var E = /* @__PURE__ */ new Set([
   "edit",
   "remove-section",
   "rename-section",
   "set",
   "unset"
 ]);
-var E = /* @__PURE__ */ new Set(["get", "get-color", "get-colorbool", "list"]);
-function F2(e, t2) {
-  for (const { name: o2 } of U2(e, "task")) {
-    if (k2.has(o2))
-      return p(true, t2);
+var F2 = /* @__PURE__ */ new Set(["get", "get-color", "get-colorbool", "list"]);
+function A2(e, n5) {
+  for (const { name: o2 } of x2(e, "task")) {
+    if (P2.has(o2))
+      return w(true, n5);
     if (S.has(o2))
-      return p(false, t2);
+      return w(false, n5);
   }
-  const n5 = t2.at(0)?.toLowerCase();
-  return n5 === void 0 ? null : P2.has(n5) ? p(true, t2.slice(1)) : E.has(n5) ? p(false, t2.slice(1)) : t2.length === 1 ? p(false, t2) : p(true, t2);
+  const t2 = n5.at(0)?.toLowerCase();
+  return t2 === void 0 ? null : E.has(t2) ? w(true, n5.slice(1)) : F2.has(t2) ? w(false, n5.slice(1)) : n5.length === 1 ? w(false, n5) : w(true, n5);
 }
-function p(e = false, t2 = []) {
-  const n5 = t2.at(0)?.toLowerCase();
-  return n5 === void 0 ? null : {
+function w(e = false, n5 = []) {
+  const t2 = n5.at(0)?.toLowerCase();
+  return t2 === void 0 ? null : {
     isWrite: e,
     isRead: !e,
-    key: n5,
-    value: t2.at(1)
+    key: t2,
+    value: n5.at(1)
   };
 }
-function A2(e, t2) {
-  return t2.isWrite && t2.value !== void 0 ? { key: t2.key, value: t2.value, scope: e } : { key: t2.key, scope: e };
+function O2(e, n5) {
+  return n5.isWrite && n5.value !== void 0 ? { key: n5.key, value: n5.value, scope: e } : { key: n5.key, scope: e };
+}
+function G2(e) {
+  const n5 = e?.indexOf("=") || -1;
+  return !e || n5 < 0 ? null : {
+    key: e.slice(0, n5).trim().toLowerCase(),
+    value: e.slice(n5 + 1)
+  };
 }
 function M2(e) {
-  const t2 = e?.indexOf("=") || -1;
-  return !e || t2 < 0 ? null : {
-    key: e.slice(0, t2).trim().toLowerCase(),
-    value: e.slice(t2 + 1)
-  };
-}
-function N2(e) {
-  for (const { name: t2 } of U2(e, "task"))
-    switch (t2) {
+  for (const { name: n5 } of x2(e, "task"))
+    switch (n5) {
       case "--global":
         return "global";
       case "--system":
@@ -7392,45 +7460,45 @@ function N2(e) {
     }
   return "local";
 }
-function G2({ name: e }) {
+function N2({ name: e }) {
   if (e === "-c" || e === "--config")
     return "inline";
   if (e === "--config-env")
     return "env";
 }
-function* O2(e) {
-  for (const t2 of e) {
-    const n5 = G2(t2), o2 = n5 && M2(t2.value);
+function* $(e) {
+  for (const n5 of e) {
+    const t2 = N2(n5), o2 = t2 && G2(n5.value);
     o2 && (yield {
       ...o2,
-      scope: n5
+      scope: t2
     });
   }
 }
-function L2(e, t2, n5) {
+function D2(e, n5, t2) {
   const o2 = {
     read: [],
-    write: [...O2(t2)]
+    write: [...$(n5)]
   };
-  return e === "config" && $(
+  return e === "config" && L2(
     o2,
-    N2(t2),
-    F2(t2, n5)
+    M2(n5),
+    A2(n5, t2)
   ), o2;
 }
-function $(e, t2, n5) {
-  if (n5 === null)
+function L2(e, n5, t2) {
+  if (t2 === null)
     return;
-  const o2 = A2(t2, n5);
-  n5.isWrite ? e.write.push(o2) : e.read.push(o2);
+  const o2 = O2(n5, t2);
+  t2.isWrite ? e.write.push(o2) : e.read.push(o2);
 }
-var x2 = {
+var C2 = {
   short: /* @__PURE__ */ new Map([
     ["c", true]
     //  -c <k=v>    set config key for this invocation
   ])
 };
-var D2 = {
+var I2 = {
   short: new Map([
     ["C", true],
     //  -C <path>   change working directory
@@ -7442,7 +7510,7 @@ var D2 = {
     // -p          paginate
     ["v", false],
     // -v          version
-    ...x2.short.entries()
+    ...C2.short.entries()
   ]),
   long: /* @__PURE__ */ new Set([
     "attr-source",
@@ -7518,189 +7586,233 @@ var R2 = {
   push: {
     short: /* @__PURE__ */ new Map(),
     long: /* @__PURE__ */ new Set(["exec", "receive-pack"])
+  },
+  rebase: {
+    short: /* @__PURE__ */ new Map([
+      ["X", true],
+      // -X <option>   strategy option
+      ["f", false],
+      // -f force-rebase
+      ["i", false],
+      // -i interactive
+      ["k", false],
+      // -k keep-base
+      ["m", false],
+      // -m merge
+      ["n", false],
+      // -n no-stat
+      ["q", false],
+      // -q quiet
+      ["r", false],
+      // -r rebase-merges
+      ["s", true],
+      // -s <strategy>
+      ["v", false],
+      // -v verbose
+      ["x", true]
+      // -x <cmd>      exec
+    ]),
+    long: /* @__PURE__ */ new Set(["exec", "onto", "strategy", "strategy-option"])
   }
 };
 var T2 = { short: /* @__PURE__ */ new Map(), long: /* @__PURE__ */ new Set() };
-function I2(e) {
-  const t2 = R2[e ?? ""] ?? T2;
+function B2(e) {
+  const n5 = R2[e ?? ""] ?? T2;
   return {
-    short: new Map([...x2.short.entries(), ...t2.short.entries()]),
-    long: t2.long
+    short: new Map([...C2.short.entries(), ...n5.short.entries()]),
+    long: n5.long
   };
 }
-function b(e, t2 = D2) {
+function b(e, n5 = I2) {
   if (e.startsWith("--")) {
-    const n5 = e.indexOf("=");
-    if (n5 > 2)
-      return [{ name: e.slice(0, n5), value: e.slice(n5 + 1), needsNext: false }];
+    const t2 = e.indexOf("=");
+    if (t2 > 2)
+      return [{ name: e.slice(0, t2), value: e.slice(t2 + 1), needsNext: false }];
     const o2 = e.slice(2);
-    return [{ name: e, needsNext: t2.long.has(o2) }];
+    return [{ name: e, needsNext: n5.long.has(o2) }];
   }
   if (e.length === 2) {
-    const n5 = e.charAt(1), o2 = t2.short.get(n5);
+    const t2 = e.charAt(1), o2 = n5.short.get(t2);
     return [{ name: e, needsNext: o2 === true }];
   }
-  return W2(e, t2.short);
+  return j2(e, n5.short);
 }
-function W2(e, t2) {
-  const n5 = e.slice(1).split(""), o2 = [];
-  for (let s = 0; s < n5.length; s++) {
-    const r2 = n5[s], l = t2.get(r2);
-    if (l === void 0)
+function j2(e, n5) {
+  const t2 = e.slice(1).split(""), o2 = [];
+  for (let a = 0; a < t2.length; a++) {
+    const s = t2[a], r2 = n5.get(s);
+    if (r2 === void 0)
       return [{ name: e, needsNext: false }];
-    if (l) {
-      const a = n5.slice(s + 1).join("");
-      if (a && ![...a].every((w) => t2.has(w)))
-        return o2.push({ name: `-${r2}`, value: a, needsNext: false }), o2;
+    if (r2) {
+      const i = t2.slice(a + 1).join("");
+      if (i && ![...i].every((m2) => n5.has(m2)))
+        return o2.push({ name: `-${s}`, value: i, needsNext: false }), o2;
     }
-    o2.push({ name: `-${r2}`, needsNext: l });
+    o2.push({ name: `-${s}`, needsNext: r2 });
   }
   return o2;
 }
-function j2(e, t2 = []) {
-  let n5 = 0;
-  for (; n5 < e.length; ) {
-    const o2 = String(e[n5]);
+function W2(e, n5 = []) {
+  let t2 = 0;
+  for (; t2 < e.length; ) {
+    const o2 = String(e[t2]);
     if (!o2.startsWith("-") || o2.length < 2) break;
-    const s = b(o2);
-    let r2 = n5 + 1;
-    for (const l of s) {
-      const a = {
-        name: l.name,
-        value: l.value,
+    const a = b(o2);
+    let s = t2 + 1;
+    for (const r2 of a) {
+      const i = {
+        name: r2.name,
+        value: r2.value,
         absorbedNext: false,
         isGlobal: true
       };
-      l.needsNext && a.value === void 0 && r2 < e.length && (a.value = String(e[r2]), a.absorbedNext = true, r2++), t2.push(a);
+      r2.needsNext && i.value === void 0 && s < e.length && (i.value = String(e[s]), i.absorbedNext = true, s++), n5.push(i);
     }
-    n5 = r2;
+    t2 = s;
   }
-  return { flags: t2, taskIndex: n5 };
+  return { flags: n5, taskIndex: t2 };
 }
-function B2(e, t2, n5 = []) {
-  const o2 = I2(t2), s = [], r2 = [];
-  let l = 0;
-  for (; l < e.length; ) {
-    const a = e[l];
-    if (r(a)) {
-      r2.push(...o(a)), l++;
+function V2(e, n5, t2 = []) {
+  const o2 = B2(n5), a = [], s = [];
+  let r2 = 0;
+  for (; r2 < e.length; ) {
+    const i = e[r2];
+    if (r(i)) {
+      s.push(...o(i)), r2++;
       continue;
     }
-    const f = String(a);
-    if (f === "--") {
-      for (let g = l + 1; g < e.length; g++) {
-        const u = e[g];
-        r(u) ? r2.push(...o(u)) : r2.push(String(u));
+    const p2 = String(i);
+    if (p2 === "--") {
+      for (let d2 = r2 + 1; d2 < e.length; d2++) {
+        const g2 = e[d2];
+        r(g2) ? s.push(...o(g2)) : s.push(String(g2));
       }
       break;
     }
-    if (!f.startsWith("-") || f.length < 2) {
-      s.push(f), l++;
+    if (!p2.startsWith("-") || p2.length < 2) {
+      a.push(p2), r2++;
       continue;
     }
-    const w = b(f, o2);
-    let d = l + 1;
-    for (const g of w) {
-      const u = {
-        name: g.name,
-        value: g.value,
+    const m2 = b(p2, o2);
+    let u2 = r2 + 1;
+    for (const d2 of m2) {
+      const g2 = {
+        name: d2.name,
+        value: d2.value,
         absorbedNext: false,
         isGlobal: false
       };
-      g.needsNext && u.value === void 0 && d < e.length && !r(e[d]) && (u.value = String(e[d]), u.absorbedNext = true, d++), n5.push(u);
+      d2.needsNext && g2.value === void 0 && u2 < e.length && !r(e[u2]) && (g2.value = String(e[u2]), g2.absorbedNext = true, u2++), t2.push(g2);
     }
-    l = d;
+    r2 = u2;
   }
-  return { flags: n5, positionals: s, pathspecs: r2 };
+  return { flags: t2, positionals: a, pathspecs: s };
 }
-function* V2({
+function* q2({
   write: e
 }) {
-  for (const t2 of e)
-    for (const n5 of q2) {
-      const o2 = n5(t2.key);
+  for (const n5 of e)
+    for (const t2 of K2) {
+      const o2 = t2(n5.key);
       o2 && (yield o2);
     }
 }
-function c2(e, t2, n5 = String(e)) {
+function f(e, n5, t2 = String(e)) {
   const o2 = typeof e == "string" ? new RegExp(`\\s*${e.toLowerCase()}`) : e;
-  return function(r2) {
-    if (o2.test(r2))
-      return {
-        category: t2,
-        message: `Configuring ${n5} is not permitted without enabling ${t2}`
-      };
-  };
-}
-function i(e, t2) {
-  const n5 = new RegExp(`\\s*${e.toLowerCase().replace(/\./g, "(..+)?.")}`);
-  return c2(n5, t2, e);
-}
-var q2 = [
-  c2("alias", "allowUnsafeAlias"),
-  c2("core.askPass", "allowUnsafeAskPass"),
-  c2("core.editor", "allowUnsafeEditor"),
-  c2("core.fsmonitor", "allowUnsafeFsMonitor"),
-  c2("core.gitProxy", "allowUnsafeGitProxy"),
-  c2("core.hooksPath", "allowUnsafeHooksPath"),
-  c2("core.pager", "allowUnsafePager"),
-  c2("core.sshCommand", "allowUnsafeSshCommand"),
-  i("credential.helper", "allowUnsafeCredentialHelper"),
-  i("diff.command", "allowUnsafeDiffExternal"),
-  c2("diff.external", "allowUnsafeDiffExternal"),
-  i("diff.textconv", "allowUnsafeDiffTextConv"),
-  i("filter.clean", "allowUnsafeFilter"),
-  i("filter.smudge", "allowUnsafeFilter"),
-  i("gpg.program", "allowUnsafeGpgProgram"),
-  c2("init.templateDir", "allowUnsafeTemplateDir"),
-  i("merge.driver", "allowUnsafeMergeDriver"),
-  i("mergetool.path", "allowUnsafeMergeDriver"),
-  i("mergetool.cmd", "allowUnsafeMergeDriver"),
-  i("protocol.allow", "allowUnsafeProtocolOverride"),
-  i("remote.receivepack", "allowUnsafePack"),
-  i("remote.uploadpack", "allowUnsafePack"),
-  c2("sequence.editor", "allowUnsafeEditor")
-];
-function* K2(e, t2) {
-  for (const n5 of t2)
-    for (const o2 of H2) {
-      const s = o2(e, n5.name);
-      s && (yield s);
-    }
-}
-function h(e, t2, n5, o2 = String(t2)) {
-  const s = typeof t2 == "string" ? new RegExp(`\\s*${t2.toLowerCase()}`) : t2, r2 = `Use of ${e ? `${e} with option ` : ""}${o2} is not permitted without enabling ${n5}`;
-  return function(a, f) {
-    if ((!e || a === e) && s.test(f))
+  return function(s) {
+    if (o2.test(s))
       return {
         category: n5,
-        message: r2
+        message: `Configuring ${t2} is not permitted without enabling ${n5}`
       };
   };
 }
-var H2 = [
-  h(
-    null,
-    /--(upload|receive)-pack/,
-    "allowUnsafePack",
-    "--upload-pack or --receive-pack"
-  ),
-  h("clone", /^-\w*u/, "allowUnsafePack"),
-  h("clone", "--u", "allowUnsafePack"),
-  h("push", "--exec", "allowUnsafePack"),
-  h(null, "--template", "allowUnsafeTemplateDir")
+function l(e, n5) {
+  const t2 = new RegExp(`\\s*${e.toLowerCase().replace(/\./g, "(..+)?.")}`);
+  return f(t2, n5, e);
+}
+var K2 = [
+  f("alias", "allowUnsafeAlias"),
+  f("core.askPass", "allowUnsafeAskPass"),
+  f("core.editor", "allowUnsafeEditor"),
+  f("core.fsmonitor", "allowUnsafeFsMonitor"),
+  f("core.gitProxy", "allowUnsafeGitProxy"),
+  f("core.hooksPath", "allowUnsafeHooksPath"),
+  f("core.pager", "allowUnsafePager"),
+  f("core.sshCommand", "allowUnsafeSshCommand"),
+  l("credential.helper", "allowUnsafeCredentialHelper"),
+  l("diff.command", "allowUnsafeDiffExternal"),
+  f("diff.external", "allowUnsafeDiffExternal"),
+  l("difftool.cmd", "allowUnsafeDiffExternal"),
+  l("diff.textconv", "allowUnsafeDiffTextConv"),
+  l("filter.clean", "allowUnsafeFilter"),
+  l("filter.process", "allowUnsafeFilter"),
+  l("filter.smudge", "allowUnsafeFilter"),
+  l("gpg.program", "allowUnsafeGpgProgram"),
+  f("include.path", "allowUnsafeInclude"),
+  l("includeIf", "allowUnsafeInclude"),
+  f("init.templateDir", "allowUnsafeTemplateDir"),
+  l("pager.", "allowUnsafePager"),
+  l("merge.driver", "allowUnsafeMergeDriver"),
+  l("mergetool.path", "allowUnsafeMergeDriver"),
+  l("mergetool.cmd", "allowUnsafeMergeDriver"),
+  l("protocol.allow", "allowUnsafeProtocolOverride"),
+  l("remote.receivepack", "allowUnsafePack"),
+  l("remote.uploadpack", "allowUnsafePack"),
+  f("uploadpack.packObjectsHook", "allowUnsafePack"),
+  f("sequence.editor", "allowUnsafeEditor"),
+  l("submodule.update", "allowUnsafeSubmodule"),
+  l("tar.command", "allowUnsafeCommandBinaries"),
+  l("trailer.cmd", "allowUnsafeCommandBinaries"),
+  l("trailer.command", "allowUnsafeCommandBinaries"),
+  l("url.insteadOf", "allowUnsafeUrlRewrite")
 ];
-function C2(e, t2, n5) {
-  return [...K2(e, t2), ...V2(n5)];
+function* H2(e, n5) {
+  for (const t2 of n5)
+    for (const o2 of X2) {
+      const a = o2(e, t2);
+      a && (yield a);
+    }
+}
+function c2(e, n5, t2, { name: o2 = String(n5), globalOnly: a = false, withValue: s = false } = {}) {
+  const r2 = typeof n5 == "string" ? new RegExp(`\\s*${n5.toLowerCase()}`) : n5, i = `Use of ${e ? `${e} with option ` : ""}${o2} is not permitted without enabling ${t2}`;
+  return function(m2, u2) {
+    if (!(e && m2 !== e) && !(a && !u2.isGlobal) && !(s && u2.value === void 0) && r2.test(u2.name))
+      return {
+        category: t2,
+        message: i
+      };
+  };
+}
+var h = { globalOnly: true, withValue: true };
+var X2 = [
+  c2(null, /--(upload|receive)-pack/, "allowUnsafePack", {
+    name: "--upload-pack or --receive-pack"
+  }),
+  c2("clone", /^-\w*u/, "allowUnsafePack"),
+  c2("clone", "--u", "allowUnsafePack"),
+  c2("push", /^--exec$/, "allowUnsafePack", { name: "--exec" }),
+  // `git` accepts unambiguous abbreviations of long options, so `--ex` and `--exe` are `--exec`
+  c2("rebase", /^(-x|--ex(ec?)?)$/, "allowUnsafeExec", { name: "-x or --exec" }),
+  c2(null, "--template", "allowUnsafeTemplateDir"),
+  c2(null, "--exec-path", "allowUnsafeExec", h),
+  // `git` reads the configuration of whichever repository these name, so the
+  // directory alone is enough to deliver config the argv guards never see
+  c2(null, "--git-dir", "allowUnsafeConfigPaths", h),
+  c2(null, "--work-tree", "allowUnsafeConfigPaths", h),
+  c2(null, /^-C$/, "allowUnsafeConfigPaths", { ...h, name: "-C" })
+];
+function k2(e, n5, t2) {
+  return [...H2(e, n5), ...q2(t2)];
 }
 function Y2(...e) {
-  const { flags: t2, taskIndex: n5 } = j2(e), o2 = n5 < e.length ? String(e[n5]).toLowerCase() : null, s = o2 !== null ? e.slice(n5 + 1) : [], { positionals: r2, pathspecs: l } = B2(s, o2, t2), a = L2(o2, t2, r2);
+  const { flags: n5, taskIndex: t2 } = W2(e), o2 = t2 < e.length ? String(e[t2]).toLowerCase() : null, a = o2 !== null ? e.slice(t2 + 1) : [], { positionals: s, pathspecs: r2 } = V2(a, o2, n5), i = D2(o2, n5, s);
   return {
     task: o2,
-    flags: t2.map(J),
-    paths: l,
-    config: a,
-    vulnerabilities: z(C2(o2, t2, a))
+    flags: n5.map(J),
+    paths: r2,
+    config: i,
+    vulnerabilities: z(k2(o2, n5, i))
   };
 }
 function z(e) {
@@ -7708,8 +7820,8 @@ function z(e) {
     value: e
   });
 }
-function J({ value: e, name: t2 }) {
-  return e !== void 0 ? { name: t2, value: e } : { name: t2 };
+function J({ value: e, name: n5 }) {
+  return e !== void 0 ? { name: n5, value: e } : { name: n5 };
 }
 var y = {
   editor: "allowUnsafeEditor",
@@ -7717,9 +7829,10 @@ var y = {
   git_config_global: "allowUnsafeConfigPaths",
   git_config_system: "allowUnsafeConfigPaths",
   git_config_count: "allowUnsafeConfigEnvCount",
+  git_config_parameters: "allowUnsafeConfigEnvCount",
   git_config: "allowUnsafeConfigPaths",
   git_editor: "allowUnsafeEditor",
-  git_exec_path: "allowUnsafeConfigPaths",
+  git_exec_path: "allowUnsafeExec",
   git_external_diff: "allowUnsafeDiffExternal",
   git_pager: "allowUnsafePager",
   git_proxy_command: "allowUnsafeGitProxy",
@@ -7729,1587 +7842,1032 @@ var y = {
   git_ssh_command: "allowUnsafeSshCommand",
   pager: "allowUnsafePager",
   prefix: "allowUnsafeConfigPaths",
-  ssh_askpass: "allowUnsafeAskPass"
+  ssh_askpass: "allowUnsafeAskPass",
+  visual: "allowUnsafeEditor"
 };
 function* Q2(e) {
-  const t2 = parseInt(e.git_config_count ?? "0", 10);
-  for (let n5 = 0; n5 < t2; n5++) {
-    const o2 = e[`git_config_key_${n5}`], s = e[`git_config_value_${n5}`];
-    o2 !== void 0 && (yield { key: o2.toLowerCase().trim(), value: s, scope: "env" });
+  const n5 = parseInt(e.git_config_count ?? "0", 10);
+  for (let t2 = 0; t2 < n5; t2++) {
+    const o2 = e[`git_config_key_${t2}`], a = e[`git_config_value_${t2}`];
+    o2 !== void 0 && (yield { key: o2.toLowerCase().trim(), value: a, scope: "env" });
   }
 }
-function* X2(e) {
-  for (const t2 of Object.keys(e))
-    if (_2(t2)) {
-      const n5 = y[t2];
+function* Z(e) {
+  for (const n5 of Object.keys(e))
+    if (_2(n5)) {
+      const t2 = y[n5];
       yield {
-        category: n5,
-        message: `Use of "${t2.toUpperCase()}" is not permitted without enabling ${n5}`
+        category: t2,
+        message: `Use of "${n5.toUpperCase()}" is not permitted without enabling ${t2}`
       };
     }
 }
 function _2(e) {
   return Object.hasOwn(y, e);
 }
-function Z(e) {
-  const t2 = {};
-  for (const [n5, o2] of Object.entries(e)) {
-    const s = n5.toLowerCase().trim();
-    (_2(s) || s.startsWith("git")) && (t2[s] = String(o2));
-  }
-  return t2;
-}
 function ee2(e) {
-  const t2 = Z(e), n5 = {
+  const n5 = {};
+  for (const [t2, o2] of Object.entries(e)) {
+    const a = t2.toLowerCase().trim();
+    (_2(a) || a.startsWith("git")) && (n5[a] = String(o2));
+  }
+  return n5;
+}
+function ne2(e) {
+  const n5 = ee2(e), t2 = {
     read: [],
-    write: [...Q2(t2)]
+    write: [...Q2(n5)]
   }, o2 = [
-    ...X2(t2),
-    ...C2(null, [], n5)
+    ...Z(n5),
+    ...k2(null, [], t2)
   ];
   return {
-    config: n5,
+    config: t2,
     vulnerabilities: o2
   };
 }
-function ne2(e, t2) {
-  return [...Y2(...e).vulnerabilities, ...ee2(t2).vulnerabilities];
+function oe2(e, n5) {
+  return [...Y2(...e).vulnerabilities, ...ne2(n5).vulnerabilities];
 }
 
-// node_modules/.pnpm/simple-git@3.36.0/node_modules/simple-git/dist/esm/index.js
-var import_promise_deferred2 = __toESM(require_dist2(), 1);
+// node_modules/.pnpm/simple-git@4.0.2/node_modules/simple-git/dist/index.mjs
 var import_node_events2 = require("events");
-var __defProp2 = Object.defineProperty;
-var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames2 = Object.getOwnPropertyNames;
-var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-var __esm2 = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames2(fn)[0]])(fn = 0)), res;
+var O3 = class extends Error {
+  constructor(e, n5) {
+    super(n5), this.task = e, Object.setPrototypeOf(this, new.target.prototype);
+  }
 };
-var __commonJS2 = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames2(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+var Ae2 = class extends O3 {
+  constructor(e, n5) {
+    super(void 0, n5), this.config = e;
+  }
 };
-var __export2 = (target, all) => {
-  for (var name in all)
-    __defProp2(target, name, { get: all[name], enumerable: true });
+var A3 = class extends O3 {
+  constructor(e, n5, r2) {
+    super(e, r2), this.task = e, this.plugin = n5, Object.setPrototypeOf(this, new.target.prototype);
+  }
 };
-var __copyProps2 = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames2(from))
-      if (!__hasOwnProp2.call(to, key) && key !== except)
-        __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+var at2 = class extends O3 {
+  constructor(e, n5) {
+    super(void 0, n5 || String(e)), this.git = e;
   }
-  return to;
 };
-var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-var GitError;
-var init_git_error = __esm2({
-  "src/lib/errors/git-error.ts"() {
-    "use strict";
-    GitError = class extends Error {
-      constructor(task, message) {
-        super(message);
-        this.task = task;
-        Object.setPrototypeOf(this, new.target.prototype);
-      }
-    };
+var xe2 = class extends O3 {
+  constructor(e) {
+    super(void 0, e);
   }
-});
-var GitResponseError;
-var init_git_response_error = __esm2({
-  "src/lib/errors/git-response-error.ts"() {
-    "use strict";
-    init_git_error();
-    GitResponseError = class extends GitError {
-      constructor(git, message) {
-        super(void 0, message || String(git));
-        this.git = git;
-      }
-    };
-  }
-});
-var TaskConfigurationError;
-var init_task_configuration_error = __esm2({
-  "src/lib/errors/task-configuration-error.ts"() {
-    "use strict";
-    init_git_error();
-    TaskConfigurationError = class extends GitError {
-      constructor(message) {
-        super(void 0, message);
-      }
-    };
-  }
-});
-function asFunction(source) {
-  if (typeof source !== "function") {
-    return NOOP;
-  }
-  return source;
+};
+var I3 = "\0";
+var W3 = () => {
+};
+function Ne2(t2) {
+  return typeof t2 != "function" ? W3 : t2;
 }
-function isUserFunction(source) {
-  return typeof source === "function" && source !== NOOP;
+function $e2(t2) {
+  return typeof t2 == "function" && t2 !== W3;
 }
-function splitOn(input, char) {
-  const index = input.indexOf(char);
-  if (index <= 0) {
-    return [input, ""];
-  }
-  return [input.substr(0, index), input.substr(index + 1)];
+function Pe2(t2, e) {
+  const n5 = t2.indexOf(e);
+  return n5 <= 0 ? [t2, ""] : [t2.substr(0, n5), t2.substr(n5 + 1)];
 }
-function first(input, offset = 0) {
-  return isArrayLike(input) && input.length > offset ? input[offset] : void 0;
+function Me(t2, e = 0) {
+  return Dt2(t2) && t2.length > e ? t2[e] : void 0;
 }
-function last(input, offset = 0) {
-  if (isArrayLike(input) && input.length > offset) {
-    return input[input.length - 1 - offset];
-  }
+function N3(t2, e = 0) {
+  if (Dt2(t2) && t2.length > e)
+    return t2[t2.length - 1 - e];
 }
-function isArrayLike(input) {
-  return filterHasLength(input);
+function Dt2(t2) {
+  return Bt2(t2);
 }
-function toLinesWithContent(input = "", trimmed2 = true, separator = "\n") {
-  return input.split(separator).reduce((output, line) => {
-    const lineContent = trimmed2 ? line.trim() : line;
-    if (lineContent) {
-      output.push(lineContent);
-    }
-    return output;
+function H3(t2 = "", e = true, n5 = `
+`) {
+  return t2.split(n5).reduce((r2, s) => {
+    const o2 = e ? s.trim() : s;
+    return o2 && r2.push(o2), r2;
   }, []);
 }
-function forEachLineWithContent(input, callback) {
-  return toLinesWithContent(input, true).map((line) => callback(line));
+function ut2(t2, e) {
+  return H3(t2, true).map((n5) => e(n5));
 }
-function folderExists(path16) {
-  return (0, import_file_exists.exists)(path16, import_file_exists.FOLDER);
+function Lt2(t2) {
+  return (0, import_file_exists.exists)(t2, import_file_exists.FOLDER);
 }
-function append(target, item) {
-  if (Array.isArray(target)) {
-    if (!target.includes(item)) {
-      target.push(item);
-    }
-  } else {
-    target.add(item);
+function S2(t2, e) {
+  return Array.isArray(t2) ? t2.includes(e) || t2.push(e) : t2.add(e), e;
+}
+function De2(t2, e) {
+  return Array.isArray(t2) && !t2.includes(e) && t2.push(e), t2;
+}
+function ct(t2, e) {
+  if (Array.isArray(t2)) {
+    const n5 = t2.indexOf(e);
+    n5 >= 0 && t2.splice(n5, 1);
+  } else
+    t2.delete(e);
+  return e;
+}
+var ft2 = Object.prototype.toString.call.bind(Object.prototype.toString);
+function v2(t2) {
+  return Array.isArray(t2) ? t2 : [t2];
+}
+function jt2(t2) {
+  return t2.replace(/[\s-]+(.)/g, (e, n5) => n5.toUpperCase());
+}
+function L3(t2) {
+  return v2(t2).map((e) => e instanceof String ? e : String(e));
+}
+function p(t2, e = 0) {
+  if (t2 == null)
+    return e;
+  const n5 = parseInt(t2, 10);
+  return Number.isNaN(n5) ? e : n5;
+}
+function U2(t2, e) {
+  const n5 = [];
+  for (let r2 = 0, s = t2.length; r2 < s; r2++)
+    n5.push(e, t2[r2]);
+  return n5;
+}
+function F3(t2) {
+  return (Array.isArray(t2) ? Buffer.concat(t2) : t2).toString("utf-8");
+}
+function Le2(t2) {
+  return t2 ? Buffer.isBuffer(t2) ? t2.length : Buffer.byteLength(t2) : 0;
+}
+function je2(t2, e) {
+  const n5 = {};
+  return e.forEach((r2) => {
+    t2[r2] !== void 0 && (n5[r2] = t2[r2]);
+  }), n5;
+}
+function wt2(t2 = 0) {
+  return new Promise((e) => setTimeout(e, t2));
+}
+function bt2(t2) {
+  if (t2 !== false)
+    return t2;
+}
+function d(t2, e, n5) {
+  return e(t2) ? t2 : arguments.length > 2 ? n5 : void 0;
+}
+var K3 = (t2) => Array.isArray(t2);
+function st2(t2, e) {
+  const n5 = r(t2) ? "string" : typeof t2;
+  return /number|string|boolean/.test(n5) && (!e || !e.includes(n5));
+}
+var m = (t2) => typeof t2 == "string" || r(t2);
+var Be2 = (t2) => m(t2) || Buffer.isBuffer(t2);
+var G3 = (t2) => m(t2) || Array.isArray(t2) && t2.every(m);
+function lt2(t2) {
+  return !!t2 && ft2(t2) === "[object Object]";
+}
+function Ie2(t2) {
+  return typeof t2 == "function";
+}
+var Bt2 = (t2) => t2 == null || "number|boolean|function".includes(typeof t2) ? false : typeof t2.length == "number";
+var V3 = /* @__PURE__ */ ((t2) => (t2[t2.SUCCESS = 0] = "SUCCESS", t2[t2.ERROR = 1] = "ERROR", t2[t2.NOT_FOUND = -2] = "NOT_FOUND", t2[t2.UNCLEAN = 128] = "UNCLEAN", t2))(V3 || {});
+var z2 = class _z {
+  constructor(e, n5) {
+    this.stdOut = e, this.stdErr = n5;
   }
-  return item;
-}
-function including(target, item) {
-  if (Array.isArray(target) && !target.includes(item)) {
-    target.push(item);
+  asStrings() {
+    return new _z(this.stdOut.toString("utf8"), this.stdErr.toString("utf8"));
   }
-  return target;
+};
+function Ue2() {
+  throw new Error("LineParser:useMatches not implemented");
 }
-function remove(target, item) {
-  if (Array.isArray(target)) {
-    const index = target.indexOf(item);
-    if (index >= 0) {
-      target.splice(index, 1);
-    }
-  } else {
-    target.delete(item);
+var l2 = class {
+  constructor(e, n5) {
+    this.matches = [], this.useMatches = Ue2, this.parse = (r2, s) => (this.resetMatches(), this._regExp.every((o2, i) => this.addMatch(o2, i, r2(i))) ? this.useMatches(s, this.prepareMatches()) !== false : false), this._regExp = Array.isArray(e) ? e : [e], n5 && (this.useMatches = n5);
   }
-  return item;
-}
-function asArray(source) {
-  return Array.isArray(source) ? source : [source];
-}
-function asCamelCase(str) {
-  return str.replace(/[\s-]+(.)/g, (_all, chr) => {
-    return chr.toUpperCase();
-  });
-}
-function asStringArray(source) {
-  return asArray(source).map((item) => {
-    return item instanceof String ? item : String(item);
-  });
-}
-function asNumber(source, onNaN = 0) {
-  if (source == null) {
-    return onNaN;
+  resetMatches() {
+    this.matches.length = 0;
   }
-  const num = parseInt(source, 10);
-  return Number.isNaN(num) ? onNaN : num;
-}
-function prefixedArray(input, prefix) {
-  const output = [];
-  for (let i2 = 0, max = input.length; i2 < max; i2++) {
-    output.push(prefix, input[i2]);
+  prepareMatches() {
+    return this.matches;
   }
-  return output;
-}
-function bufferToString(input) {
-  return (Array.isArray(input) ? Buffer.concat(input) : input).toString("utf-8");
-}
-function pick(source, properties) {
-  const out = {};
-  properties.forEach((key) => {
-    if (source[key] !== void 0) {
-      out[key] = source[key];
-    }
-  });
-  return out;
-}
-function delay(duration = 0) {
-  return new Promise((done) => setTimeout(done, duration));
-}
-function orVoid(input) {
-  if (input === false) {
-    return void 0;
+  addMatch(e, n5, r2) {
+    const s = r2 && e.exec(r2);
+    return s && this.pushMatch(n5, s), !!s;
   }
-  return input;
-}
-var NULL;
-var NOOP;
-var objectToString;
-var init_util = __esm2({
-  "src/lib/utils/util.ts"() {
-    "use strict";
-    init_argument_filters();
-    NULL = "\0";
-    NOOP = () => {
-    };
-    objectToString = Object.prototype.toString.call.bind(Object.prototype.toString);
+  pushMatch(e, n5) {
+    this.matches.push(...n5.slice(1));
   }
-});
-function filterType(input, filter2, def) {
-  if (filter2(input)) {
-    return input;
+};
+var x3 = class extends l2 {
+  addMatch(e, n5, r2) {
+    return /^remote:\s/.test(String(r2)) && super.addMatch(e, n5, r2);
   }
-  return arguments.length > 2 ? def : void 0;
-}
-function filterPrimitives(input, omit) {
-  const type = r(input) ? "string" : typeof input;
-  return /number|string|boolean/.test(type) && (!omit || !omit.includes(type));
-}
-function filterPlainObject(input) {
-  return !!input && objectToString(input) === "[object Object]";
-}
-function filterFunction(input) {
-  return typeof input === "function";
-}
-var filterArray;
-var filterNumber;
-var filterString;
-var filterStringOrStringArray;
-var filterHasLength;
-var init_argument_filters = __esm2({
-  "src/lib/utils/argument-filters.ts"() {
-    "use strict";
-    init_util();
-    filterArray = (input) => {
-      return Array.isArray(input);
-    };
-    filterNumber = (input) => {
-      return typeof input === "number";
-    };
-    filterString = (input) => {
-      return typeof input === "string" || r(input);
-    };
-    filterStringOrStringArray = (input) => {
-      return filterString(input) || Array.isArray(input) && input.every(filterString);
-    };
-    filterHasLength = (input) => {
-      if (input == null || "number|boolean|function".includes(typeof input)) {
-        return false;
-      }
-      return typeof input.length === "number";
-    };
+  pushMatch(e, n5) {
+    (e > 0 || n5.length > 1) && super.pushMatch(e, n5);
   }
-});
-var ExitCodes;
-var init_exit_codes = __esm2({
-  "src/lib/utils/exit-codes.ts"() {
-    "use strict";
-    ExitCodes = /* @__PURE__ */ ((ExitCodes2) => {
-      ExitCodes2[ExitCodes2["SUCCESS"] = 0] = "SUCCESS";
-      ExitCodes2[ExitCodes2["ERROR"] = 1] = "ERROR";
-      ExitCodes2[ExitCodes2["NOT_FOUND"] = -2] = "NOT_FOUND";
-      ExitCodes2[ExitCodes2["UNCLEAN"] = 128] = "UNCLEAN";
-      return ExitCodes2;
-    })(ExitCodes || {});
-  }
-});
-var GitOutputStreams;
-var init_git_output_streams = __esm2({
-  "src/lib/utils/git-output-streams.ts"() {
-    "use strict";
-    GitOutputStreams = class _GitOutputStreams {
-      constructor(stdOut, stdErr) {
-        this.stdOut = stdOut;
-        this.stdErr = stdErr;
-      }
-      asStrings() {
-        return new _GitOutputStreams(this.stdOut.toString("utf8"), this.stdErr.toString("utf8"));
-      }
-    };
-  }
-});
-function useMatchesDefault() {
-  throw new Error(`LineParser:useMatches not implemented`);
-}
-var LineParser;
-var RemoteLineParser;
-var init_line_parser = __esm2({
-  "src/lib/utils/line-parser.ts"() {
-    "use strict";
-    LineParser = class {
-      constructor(regExp, useMatches) {
-        this.matches = [];
-        this.useMatches = useMatchesDefault;
-        this.parse = (line, target) => {
-          this.resetMatches();
-          if (!this._regExp.every((reg, index) => this.addMatch(reg, index, line(index)))) {
-            return false;
-          }
-          return this.useMatches(target, this.prepareMatches()) !== false;
-        };
-        this._regExp = Array.isArray(regExp) ? regExp : [regExp];
-        if (useMatches) {
-          this.useMatches = useMatches;
-        }
-      }
-      resetMatches() {
-        this.matches.length = 0;
-      }
-      prepareMatches() {
-        return this.matches;
-      }
-      addMatch(reg, index, line) {
-        const matched = line && reg.exec(line);
-        if (matched) {
-          this.pushMatch(index, matched);
-        }
-        return !!matched;
-      }
-      pushMatch(_index, matched) {
-        this.matches.push(...matched.slice(1));
-      }
-    };
-    RemoteLineParser = class extends LineParser {
-      addMatch(reg, index, line) {
-        return /^remote:\s/.test(String(line)) && super.addMatch(reg, index, line);
-      }
-      pushMatch(index, matched) {
-        if (index > 0 || matched.length > 1) {
-          super.pushMatch(index, matched);
-        }
-      }
-    };
-  }
-});
-function createInstanceConfig(...options) {
-  const baseDir = process.cwd();
-  const config = Object.assign(
-    { baseDir, ...defaultOptions },
-    ...options.filter((o2) => typeof o2 === "object" && o2)
+};
+var Fe2 = {
+  binary: "git",
+  maxConcurrentProcesses: 5,
+  config: [],
+  trimmed: false
+};
+function Ge2(...t2) {
+  const e = process.cwd(), n5 = Object.assign(
+    { baseDir: e, ...Fe2 },
+    ...t2.filter((r2) => typeof r2 == "object" && r2)
   );
-  config.baseDir = config.baseDir || baseDir;
-  config.trimmed = config.trimmed === true;
-  return config;
+  return n5.baseDir = n5.baseDir || e, n5.trimmed = n5.trimmed === true, n5;
 }
-var defaultOptions;
-var init_simple_git_options = __esm2({
-  "src/lib/utils/simple-git-options.ts"() {
-    "use strict";
-    defaultOptions = {
-      binary: "git",
-      maxConcurrentProcesses: 5,
-      config: [],
-      trimmed: false
-    };
-  }
-});
-function appendTaskOptions(options, commands = []) {
-  if (!filterPlainObject(options)) {
-    return commands;
-  }
-  return Object.keys(options).reduce((commands2, key) => {
-    const value = options[key];
-    if (r(value)) {
-      commands2.push(value);
-    } else if (filterPrimitives(value, ["boolean"])) {
-      commands2.push(key + "=" + value);
-    } else if (Array.isArray(value)) {
-      for (const v2 of value) {
-        if (!filterPrimitives(v2, ["string", "number"])) {
-          commands2.push(key + "=" + v2);
-        }
-      }
-    } else {
-      commands2.push(key);
-    }
-    return commands2;
-  }, commands);
+function It2(t2, e = []) {
+  return lt2(t2) ? Object.keys(t2).reduce((n5, r2) => {
+    const s = t2[r2];
+    if (r(s))
+      n5.push(s);
+    else if (st2(s, ["boolean"]))
+      n5.push(r2 + "=" + s);
+    else if (Array.isArray(s))
+      for (const o2 of s)
+        st2(o2, ["string", "number"]) || n5.push(r2 + "=" + o2);
+    else
+      n5.push(r2);
+    return n5;
+  }, e) : e;
 }
-function getTrailingOptions(args, initialPrimitive = 0, objectOnly = false) {
-  const command = [];
-  for (let i2 = 0, max = initialPrimitive < 0 ? args.length : initialPrimitive; i2 < max; i2++) {
-    if ("string|number".includes(typeof args[i2])) {
-      command.push(String(args[i2]));
-    }
-  }
-  appendTaskOptions(trailingOptionsArgument(args), command);
-  if (!objectOnly) {
-    command.push(...trailingArrayArgument(args));
-  }
-  return command;
+function h2(t2, e = 0, n5 = false) {
+  const r2 = [];
+  for (let s = 0, o2 = e < 0 ? t2.length : e; s < o2; s++)
+    "string|number".includes(typeof t2[s]) && r2.push(String(t2[s]));
+  return It2(ht2(t2), r2), n5 || r2.push(...ze2(t2)), r2;
 }
-function trailingArrayArgument(args) {
-  const hasTrailingCallback = typeof last(args) === "function";
-  return asStringArray(filterType(last(args, hasTrailingCallback ? 1 : 0), filterArray, []));
+function ze2(t2) {
+  const e = typeof N3(t2) == "function";
+  return L3(d(N3(t2, e ? 1 : 0), K3, []));
 }
-function trailingOptionsArgument(args) {
-  const hasTrailingCallback = filterFunction(last(args));
-  return filterType(last(args, hasTrailingCallback ? 1 : 0), filterPlainObject);
+function ht2(t2) {
+  const e = Ie2(N3(t2));
+  return d(N3(t2, e ? 1 : 0), lt2);
 }
-function trailingFunctionArgument(args, includeNoop = true) {
-  const callback = asFunction(last(args));
-  return includeNoop || isUserFunction(callback) ? callback : void 0;
+function u(t2, e = true) {
+  const n5 = Ne2(N3(t2));
+  return e || $e2(n5) ? n5 : void 0;
 }
-var init_task_options = __esm2({
-  "src/lib/utils/task-options.ts"() {
-    "use strict";
-    init_argument_filters();
-    init_util();
-  }
-});
-function callTaskParser(parser4, streams) {
-  return parser4(streams.stdOut, streams.stdErr);
+function Tt2(t2, e) {
+  return t2(e.stdOut, e.stdErr);
 }
-function parseStringResponse(result, parsers12, texts, trim = true) {
-  asArray(texts).forEach((text) => {
-    for (let lines = toLinesWithContent(text, trim), i2 = 0, max = lines.length; i2 < max; i2++) {
-      const line = (offset = 0) => {
-        if (i2 + offset >= max) {
-          return;
-        }
-        return lines[i2 + offset];
+function E2(t2, e, n5, r2 = true) {
+  return v2(n5).forEach((s) => {
+    for (let o2 = H3(s, r2), i = 0, a = o2.length; i < a; i++) {
+      const c3 = (y2 = 0) => {
+        if (!(i + y2 >= a))
+          return o2[i + y2];
       };
-      parsers12.some(({ parse }) => parse(line, result));
+      e.some(({ parse: y2 }) => y2(c3, t2));
     }
-  });
-  return result;
+  }), t2;
 }
-var init_task_parser = __esm2({
-  "src/lib/utils/task-parser.ts"() {
-    "use strict";
-    init_util();
-  }
-});
-var utils_exports = {};
-__export2(utils_exports, {
-  ExitCodes: () => ExitCodes,
-  GitOutputStreams: () => GitOutputStreams,
-  LineParser: () => LineParser,
-  NOOP: () => NOOP,
-  NULL: () => NULL,
-  RemoteLineParser: () => RemoteLineParser,
-  append: () => append,
-  appendTaskOptions: () => appendTaskOptions,
-  asArray: () => asArray,
-  asCamelCase: () => asCamelCase,
-  asFunction: () => asFunction,
-  asNumber: () => asNumber,
-  asStringArray: () => asStringArray,
-  bufferToString: () => bufferToString,
-  callTaskParser: () => callTaskParser,
-  createInstanceConfig: () => createInstanceConfig,
-  delay: () => delay,
-  filterArray: () => filterArray,
-  filterFunction: () => filterFunction,
-  filterHasLength: () => filterHasLength,
-  filterNumber: () => filterNumber,
-  filterPlainObject: () => filterPlainObject,
-  filterPrimitives: () => filterPrimitives,
-  filterString: () => filterString,
-  filterStringOrStringArray: () => filterStringOrStringArray,
-  filterType: () => filterType,
-  first: () => first,
-  folderExists: () => folderExists,
-  forEachLineWithContent: () => forEachLineWithContent,
-  getTrailingOptions: () => getTrailingOptions,
-  including: () => including,
-  isUserFunction: () => isUserFunction,
-  last: () => last,
-  objectToString: () => objectToString,
-  orVoid: () => orVoid,
-  parseStringResponse: () => parseStringResponse,
-  pick: () => pick,
-  prefixedArray: () => prefixedArray,
-  remove: () => remove,
-  splitOn: () => splitOn,
-  toLinesWithContent: () => toLinesWithContent,
-  trailingFunctionArgument: () => trailingFunctionArgument,
-  trailingOptionsArgument: () => trailingOptionsArgument
-});
-var init_utils = __esm2({
-  "src/lib/utils/index.ts"() {
-    "use strict";
-    init_argument_filters();
-    init_exit_codes();
-    init_git_output_streams();
-    init_line_parser();
-    init_simple_git_options();
-    init_task_options();
-    init_task_parser();
-    init_util();
-  }
-});
-var check_is_repo_exports = {};
-__export2(check_is_repo_exports, {
-  CheckRepoActions: () => CheckRepoActions,
-  checkIsBareRepoTask: () => checkIsBareRepoTask,
-  checkIsRepoRootTask: () => checkIsRepoRootTask,
-  checkIsRepoTask: () => checkIsRepoTask
-});
-function checkIsRepoTask(action) {
-  switch (action) {
+var mt2 = ({ exitCode: t2 }, e, n5, r2) => {
+  if (t2 === V3.UNCLEAN && Ve2(e))
+    return n5(Buffer.from("false"));
+  r2(e);
+};
+var Ut2 = (t2) => t2.trim() === "true";
+function We2(t2) {
+  switch (t2) {
     case "bare":
-      return checkIsBareRepoTask();
+      return Ke2();
     case "root":
-      return checkIsRepoRootTask();
+      return He2();
   }
-  const commands = ["rev-parse", "--is-inside-work-tree"];
   return {
-    commands,
+    commands: ["rev-parse", "--is-inside-work-tree"],
     format: "utf-8",
-    onError,
-    parser
+    onError: mt2,
+    parser: Ut2
   };
 }
-function checkIsRepoRootTask() {
-  const commands = ["rev-parse", "--git-dir"];
+function He2() {
   return {
-    commands,
+    commands: ["rev-parse", "--git-dir"],
     format: "utf-8",
-    onError,
-    parser(path16) {
-      return /^\.(git)?$/.test(path16.trim());
+    onError: mt2,
+    parser(e) {
+      return /^\.(git)?$/.test(e.trim());
     }
   };
 }
-function checkIsBareRepoTask() {
-  const commands = ["rev-parse", "--is-bare-repository"];
+function Ke2() {
   return {
-    commands,
+    commands: ["rev-parse", "--is-bare-repository"],
     format: "utf-8",
-    onError,
-    parser
+    onError: mt2,
+    parser: Ut2
   };
 }
-function isNotRepoMessage(error) {
-  return /(Not a git repository|Kein Git-Repository)/i.test(String(error));
+function Ve2(t2) {
+  return /(Not a git repository|Kein Git-Repository)/i.test(String(t2));
 }
-var CheckRepoActions;
-var onError;
-var parser;
-var init_check_is_repo = __esm2({
-  "src/lib/tasks/check-is-repo.ts"() {
-    "use strict";
-    init_utils();
-    CheckRepoActions = /* @__PURE__ */ ((CheckRepoActions2) => {
-      CheckRepoActions2["BARE"] = "bare";
-      CheckRepoActions2["IN_TREE"] = "tree";
-      CheckRepoActions2["IS_REPO_ROOT"] = "root";
-      return CheckRepoActions2;
-    })(CheckRepoActions || {});
-    onError = ({ exitCode }, error, done, fail) => {
-      if (exitCode === 128 && isNotRepoMessage(error)) {
-        return done(Buffer.from("false"));
-      }
-      fail(error);
-    };
-    parser = (text) => {
-      return text.trim() === "true";
-    };
+var Xe2 = class {
+  constructor(e) {
+    this.paths = [], this.files = [], this.folders = [], this.dryRun = e;
   }
-});
-function cleanSummaryParser(dryRun, text) {
-  const summary = new CleanResponse(dryRun);
-  const regexp = dryRun ? dryRunRemovalRegexp : removalRegexp;
-  toLinesWithContent(text).forEach((line) => {
-    const removed = line.replace(regexp, "");
-    summary.paths.push(removed);
-    (isFolderRegexp.test(removed) ? summary.folders : summary.files).push(removed);
-  });
-  return summary;
+};
+var Ye2 = /^[a-z]+\s*/i;
+var Qe2 = /^[a-z]+\s+[a-z]+\s*/i;
+var Je2 = /\/$/;
+function Ze2(t2, e) {
+  const n5 = new Xe2(t2), r2 = t2 ? Qe2 : Ye2;
+  return H3(e).forEach((s) => {
+    const o2 = s.replace(r2, "");
+    n5.paths.push(o2), (Je2.test(o2) ? n5.folders : n5.files).push(o2);
+  }), n5;
 }
-var CleanResponse;
-var removalRegexp;
-var dryRunRemovalRegexp;
-var isFolderRegexp;
-var init_CleanSummary = __esm2({
-  "src/lib/responses/CleanSummary.ts"() {
-    "use strict";
-    init_utils();
-    CleanResponse = class {
-      constructor(dryRun) {
-        this.dryRun = dryRun;
-        this.paths = [];
-        this.files = [];
-        this.folders = [];
-      }
-    };
-    removalRegexp = /^[a-z]+\s*/i;
-    dryRunRemovalRegexp = /^[a-z]+\s+[a-z]+\s*/i;
-    isFolderRegexp = /\/$/;
-  }
-});
-var task_exports = {};
-__export2(task_exports, {
-  EMPTY_COMMANDS: () => EMPTY_COMMANDS,
-  adhocExecTask: () => adhocExecTask,
-  configurationErrorTask: () => configurationErrorTask,
-  isBufferTask: () => isBufferTask,
-  isEmptyTask: () => isEmptyTask,
-  straightThroughBufferTask: () => straightThroughBufferTask,
-  straightThroughStringTask: () => straightThroughStringTask
-});
-function adhocExecTask(parser4) {
+var Ft2 = [];
+function tn(t2) {
   return {
-    commands: EMPTY_COMMANDS,
+    commands: Ft2,
     format: "empty",
-    parser: parser4
+    parser: t2
   };
 }
-function configurationErrorTask(error) {
+function b2(t2) {
   return {
-    commands: EMPTY_COMMANDS,
+    commands: Ft2,
     format: "empty",
     parser() {
-      throw typeof error === "string" ? new TaskConfigurationError(error) : error;
+      throw typeof t2 == "string" ? new xe2(t2) : t2;
     }
   };
 }
-function straightThroughStringTask(commands, trimmed2 = false) {
+function g(t2, e = false) {
   return {
-    commands,
+    commands: t2,
     format: "utf-8",
-    parser(text) {
-      return trimmed2 ? String(text).trim() : text;
+    parser(n5) {
+      return e ? String(n5).trim() : n5;
     }
   };
 }
-function straightThroughBufferTask(commands) {
+function Gt2(t2) {
   return {
-    commands,
+    commands: t2,
     format: "buffer",
-    parser(buffer) {
-      return buffer;
+    parser(e) {
+      return e;
     }
   };
 }
-function isBufferTask(task) {
-  return task.format === "buffer";
+function en(t2) {
+  return t2.format === "buffer";
 }
-function isEmptyTask(task) {
-  return task.format === "empty" || !task.commands.length;
+function kt2(t2) {
+  return t2.format === "empty" || !t2.commands.length;
 }
-var EMPTY_COMMANDS;
-var init_task = __esm2({
-  "src/lib/tasks/task.ts"() {
-    "use strict";
-    init_task_configuration_error();
-    EMPTY_COMMANDS = [];
-  }
-});
-var clean_exports = {};
-__export2(clean_exports, {
-  CONFIG_ERROR_INTERACTIVE_MODE: () => CONFIG_ERROR_INTERACTIVE_MODE,
-  CONFIG_ERROR_MODE_REQUIRED: () => CONFIG_ERROR_MODE_REQUIRED,
-  CONFIG_ERROR_UNKNOWN_OPTION: () => CONFIG_ERROR_UNKNOWN_OPTION,
-  CleanOptions: () => CleanOptions,
-  cleanTask: () => cleanTask,
-  cleanWithOptionsTask: () => cleanWithOptionsTask,
-  isCleanOptionsArray: () => isCleanOptionsArray
-});
-function cleanWithOptionsTask(mode, customArgs) {
-  const { cleanMode, options, valid } = getCleanOptions(mode);
-  if (!cleanMode) {
-    return configurationErrorTask(CONFIG_ERROR_MODE_REQUIRED);
-  }
-  if (!valid.options) {
-    return configurationErrorTask(CONFIG_ERROR_UNKNOWN_OPTION + JSON.stringify(mode));
-  }
-  options.push(...customArgs);
-  if (options.some(isInteractiveMode)) {
-    return configurationErrorTask(CONFIG_ERROR_INTERACTIVE_MODE);
-  }
-  return cleanTask(cleanMode, options);
+var nn = "Git clean interactive mode is not supported";
+var rn = 'Git clean mode parameter ("n" or "f") is required';
+var sn = "Git clean unknown option found in: ";
+var zt2 = /* @__PURE__ */ ((t2) => (t2.DRY_RUN = "n", t2.FORCE = "f", t2.IGNORED_INCLUDED = "x", t2.IGNORED_ONLY = "X", t2.EXCLUDING = "e", t2.QUIET = "q", t2.RECURSIVE = "d", t2))(zt2 || {});
+var qt2 = /* @__PURE__ */ new Set([
+  "i",
+  ...L3(Object.values(zt2))
+]);
+function on(t2, e) {
+  const { cleanMode: n5, options: r2, valid: s } = cn(t2);
+  return n5 ? s.options ? (r2.push(...e), r2.some(hn) ? b2(nn) : an(n5, r2)) : b2(sn + JSON.stringify(t2)) : b2(rn);
 }
-function cleanTask(mode, customArgs) {
-  const commands = ["clean", `-${mode}`, ...customArgs];
+function an(t2, e) {
   return {
-    commands,
+    commands: ["clean", `-${t2}`, ...e],
     format: "utf-8",
-    parser(text) {
-      return cleanSummaryParser(mode === "n", text);
+    parser(r2) {
+      return Ze2(t2 === "n", r2);
     }
   };
 }
-function isCleanOptionsArray(input) {
-  return Array.isArray(input) && input.every((test) => CleanOptionValues.has(test));
+function un(t2) {
+  return Array.isArray(t2) && t2.every((e) => qt2.has(e));
 }
-function getCleanOptions(input) {
-  let cleanMode;
-  let options = [];
-  let valid = { cleanMode: false, options: true };
-  input.replace(/[^a-z]i/g, "").split("").forEach((char) => {
-    if (isCleanMode(char)) {
-      cleanMode = char;
-      valid.cleanMode = true;
-    } else {
-      valid.options = valid.options && isKnownOption(options[options.length] = `-${char}`);
-    }
-  });
-  return {
-    cleanMode,
-    options,
-    valid
+function cn(t2) {
+  let e, n5 = [], r2 = { cleanMode: false, options: true };
+  return t2.replace(/[^a-z]i/g, "").split("").forEach((s) => {
+    fn(s) ? (e = s, r2.cleanMode = true) : r2.options = r2.options && ln(n5[n5.length] = `-${s}`);
+  }), {
+    cleanMode: e,
+    options: n5,
+    valid: r2
   };
 }
-function isCleanMode(cleanMode) {
-  return cleanMode === "f" || cleanMode === "n";
+function fn(t2) {
+  return t2 === "f" || t2 === "n";
 }
-function isKnownOption(option) {
-  return /^-[a-z]$/i.test(option) && CleanOptionValues.has(option.charAt(1));
+function ln(t2) {
+  return /^-[a-z]$/i.test(t2) && qt2.has(t2.charAt(1));
 }
-function isInteractiveMode(option) {
-  if (/^-[^\-]/.test(option)) {
-    return option.indexOf("i") > 0;
+function hn(t2) {
+  return /^-[^\-]/.test(t2) ? t2.indexOf("i") > 0 : t2 === "--interactive";
+}
+var mn = class {
+  constructor() {
+    this.files = [], this.values = /* @__PURE__ */ Object.create(null);
   }
-  return option === "--interactive";
-}
-var CONFIG_ERROR_INTERACTIVE_MODE;
-var CONFIG_ERROR_MODE_REQUIRED;
-var CONFIG_ERROR_UNKNOWN_OPTION;
-var CleanOptions;
-var CleanOptionValues;
-var init_clean = __esm2({
-  "src/lib/tasks/clean.ts"() {
-    "use strict";
-    init_CleanSummary();
-    init_utils();
-    init_task();
-    CONFIG_ERROR_INTERACTIVE_MODE = "Git clean interactive mode is not supported";
-    CONFIG_ERROR_MODE_REQUIRED = 'Git clean mode parameter ("n" or "f") is required';
-    CONFIG_ERROR_UNKNOWN_OPTION = "Git clean unknown option found in: ";
-    CleanOptions = /* @__PURE__ */ ((CleanOptions2) => {
-      CleanOptions2["DRY_RUN"] = "n";
-      CleanOptions2["FORCE"] = "f";
-      CleanOptions2["IGNORED_INCLUDED"] = "x";
-      CleanOptions2["IGNORED_ONLY"] = "X";
-      CleanOptions2["EXCLUDING"] = "e";
-      CleanOptions2["QUIET"] = "q";
-      CleanOptions2["RECURSIVE"] = "d";
-      return CleanOptions2;
-    })(CleanOptions || {});
-    CleanOptionValues = /* @__PURE__ */ new Set([
-      "i",
-      ...asStringArray(Object.values(CleanOptions))
-    ]);
+  get all() {
+    return this._all || (this._all = this.files.reduce((e, n5) => Object.assign(e, this.values[n5]), {})), this._all;
   }
-});
-function configListParser(text) {
-  const config = new ConfigList();
-  for (const item of configParser(text)) {
-    config.addValue(item.file, String(item.key), item.value);
-  }
-  return config;
-}
-function configGetParser(text, key) {
-  let value = null;
-  const values = [];
-  const scopes = /* @__PURE__ */ new Map();
-  for (const item of configParser(text, key)) {
-    if (item.key !== key) {
-      continue;
+  addFile(e) {
+    if (!(e in this.values)) {
+      const n5 = N3(this.files);
+      this.values[e] = n5 ? Object.create(this.values[n5]) : {}, this.files.push(e);
     }
-    values.push(value = item.value);
-    if (!scopes.has(item.file)) {
-      scopes.set(item.file, []);
-    }
-    scopes.get(item.file).push(value);
+    return this.values[e];
   }
+  addValue(e, n5, r2) {
+    const s = this.addFile(e);
+    Object.hasOwn(s, n5) ? Array.isArray(s[n5]) ? s[n5].push(r2) : s[n5] = [s[n5], r2] : s[n5] = r2, this._all = void 0;
+  }
+};
+function pn(t2) {
+  const e = new mn();
+  for (const n5 of Wt2(t2))
+    e.addValue(n5.file, String(n5.key), n5.value);
+  return e;
+}
+function dn(t2, e) {
+  let n5 = null;
+  const r2 = [], s = /* @__PURE__ */ new Map();
+  for (const o2 of Wt2(t2, e))
+    o2.key === e && (r2.push(n5 = o2.value), s.has(o2.file) || s.set(o2.file, []), s.get(o2.file).push(n5));
   return {
-    key,
-    paths: Array.from(scopes.keys()),
-    scopes,
-    value,
-    values
+    key: e,
+    paths: Array.from(s.keys()),
+    scopes: s,
+    value: n5,
+    values: r2
   };
 }
-function configFilePath(filePath) {
-  return filePath.replace(/^(file):/, "");
+function gn(t2) {
+  return t2.replace(/^(file):/, "");
 }
-function* configParser(text, requestedKey = null) {
-  const lines = text.split("\0");
-  for (let i2 = 0, max = lines.length - 1; i2 < max; ) {
-    const file = configFilePath(lines[i2++]);
-    let value = lines[i2++];
-    let key = requestedKey;
-    if (value.includes("\n")) {
-      const line = splitOn(value, "\n");
-      key = line[0];
-      value = line[1];
+function* Wt2(t2, e = null) {
+  const n5 = t2.split("\0");
+  for (let r2 = 0, s = n5.length - 1; r2 < s; ) {
+    const o2 = gn(n5[r2++]);
+    let i = n5[r2++], a = e;
+    if (i.includes(`
+`)) {
+      const c3 = Pe2(i, `
+`);
+      a = c3[0], i = c3[1];
     }
-    yield { file, key, value };
+    yield { file: o2, key: a, value: i };
   }
 }
-var ConfigList;
-var init_ConfigList = __esm2({
-  "src/lib/responses/ConfigList.ts"() {
-    "use strict";
-    init_utils();
-    ConfigList = class {
-      constructor() {
-        this.files = [];
-        this.values = /* @__PURE__ */ Object.create(null);
-      }
-      get all() {
-        if (!this._all) {
-          this._all = this.files.reduce((all, file) => {
-            return Object.assign(all, this.values[file]);
-          }, {});
-        }
-        return this._all;
-      }
-      addFile(file) {
-        if (!(file in this.values)) {
-          const latest = last(this.files);
-          this.values[file] = latest ? Object.create(this.values[latest]) : {};
-          this.files.push(file);
-        }
-        return this.values[file];
-      }
-      addValue(file, key, value) {
-        const values = this.addFile(file);
-        if (!Object.hasOwn(values, key)) {
-          values[key] = value;
-        } else if (Array.isArray(values[key])) {
-          values[key].push(value);
-        } else {
-          values[key] = [values[key], value];
-        }
-        this._all = void 0;
-      }
-    };
-  }
-});
-function asConfigScope(scope, fallback) {
-  if (typeof scope === "string" && Object.hasOwn(GitConfigScope, scope)) {
-    return scope;
-  }
-  return fallback;
+var Ht2 = /* @__PURE__ */ ((t2) => (t2.system = "system", t2.global = "global", t2.local = "local", t2.worktree = "worktree", t2))(Ht2 || {});
+function Y3(t2, e) {
+  return typeof t2 == "string" && Object.hasOwn(Ht2, t2) ? t2 : e;
 }
-function addConfigTask(key, value, append2, scope) {
-  const commands = ["config", `--${scope}`];
-  if (append2) {
-    commands.push("--add");
-  }
-  commands.push(key, value);
-  return {
-    commands,
+function yn(t2, e, n5, r2) {
+  const s = ["config", `--${r2}`];
+  return n5 && s.push("--add"), s.push(t2, e), {
+    commands: s,
     format: "utf-8",
-    parser(text) {
-      return text;
+    parser(o2) {
+      return o2;
     }
   };
 }
-function getConfigTask(key, scope) {
-  const commands = ["config", "--null", "--show-origin", "--get-all", key];
-  if (scope) {
-    commands.splice(1, 0, `--${scope}`);
-  }
-  return {
-    commands,
+function wn(t2, e) {
+  const n5 = ["config", "--null", "--show-origin", "--get-all", t2];
+  return e && n5.splice(1, 0, `--${e}`), {
+    commands: n5,
     format: "utf-8",
-    parser(text) {
-      return configGetParser(text, key);
+    parser(r2) {
+      return dn(r2, t2);
     }
   };
 }
-function listConfigTask(scope) {
-  const commands = ["config", "--list", "--show-origin", "--null"];
-  if (scope) {
-    commands.push(`--${scope}`);
-  }
-  return {
-    commands,
+function bn(t2) {
+  const e = ["config", "--list", "--show-origin", "--null"];
+  return t2 && e.push(`--${t2}`), {
+    commands: e,
     format: "utf-8",
-    parser(text) {
-      return configListParser(text);
+    parser(n5) {
+      return pn(n5);
     }
   };
 }
-function config_default() {
+function Tn() {
   return {
-    addConfig(key, value, ...rest) {
+    addConfig(t2, e, ...n5) {
       return this._runTask(
-        addConfigTask(
-          key,
-          value,
-          rest[0] === true,
-          asConfigScope(
-            rest[1],
+        yn(
+          t2,
+          e,
+          n5[0] === true,
+          Y3(
+            n5[1],
             "local"
             /* local */
           )
         ),
-        trailingFunctionArgument(arguments)
+        u(arguments)
       );
     },
-    getConfig(key, scope) {
+    getConfig(t2, e) {
       return this._runTask(
-        getConfigTask(key, asConfigScope(scope, void 0)),
-        trailingFunctionArgument(arguments)
+        wn(t2, Y3(e, void 0)),
+        u(arguments)
       );
     },
-    listConfig(...rest) {
+    listConfig(...t2) {
       return this._runTask(
-        listConfigTask(asConfigScope(rest[0], void 0)),
-        trailingFunctionArgument(arguments)
+        bn(Y3(t2[0], void 0)),
+        u(arguments)
       );
     }
   };
 }
-var GitConfigScope;
-var init_config = __esm2({
-  "src/lib/tasks/config.ts"() {
-    "use strict";
-    init_ConfigList();
-    init_utils();
-    GitConfigScope = /* @__PURE__ */ ((GitConfigScope2) => {
-      GitConfigScope2["system"] = "system";
-      GitConfigScope2["global"] = "global";
-      GitConfigScope2["local"] = "local";
-      GitConfigScope2["worktree"] = "worktree";
-      return GitConfigScope2;
-    })(GitConfigScope || {});
-  }
-});
-function isDiffNameStatus(input) {
-  return diffNameStatus.has(input);
+var Kt2 = /* @__PURE__ */ ((t2) => (t2.ADDED = "A", t2.COPIED = "C", t2.DELETED = "D", t2.MODIFIED = "M", t2.RENAMED = "R", t2.CHANGED = "T", t2.UNMERGED = "U", t2.UNKNOWN = "X", t2.BROKEN = "B", t2))(Kt2 || {});
+var kn = new Set(Object.values(Kt2));
+function _n8(t2) {
+  return kn.has(t2);
 }
-var DiffNameStatus;
-var diffNameStatus;
-var init_diff_name_status = __esm2({
-  "src/lib/tasks/diff-name-status.ts"() {
-    "use strict";
-    DiffNameStatus = /* @__PURE__ */ ((DiffNameStatus2) => {
-      DiffNameStatus2["ADDED"] = "A";
-      DiffNameStatus2["COPIED"] = "C";
-      DiffNameStatus2["DELETED"] = "D";
-      DiffNameStatus2["MODIFIED"] = "M";
-      DiffNameStatus2["RENAMED"] = "R";
-      DiffNameStatus2["CHANGED"] = "T";
-      DiffNameStatus2["UNMERGED"] = "U";
-      DiffNameStatus2["UNKNOWN"] = "X";
-      DiffNameStatus2["BROKEN"] = "B";
-      return DiffNameStatus2;
-    })(DiffNameStatus || {});
-    diffNameStatus = new Set(Object.values(DiffNameStatus));
+var _t9;
+var vn = ["-h"];
+var j3 = /* @__PURE__ */ Symbol("grepQuery");
+var En = class {
+  constructor() {
+    this[_t9] = [];
   }
-});
-function grepQueryBuilder(...params) {
-  return new GrepQuery().param(...params);
+  *[(_t9 = j3, Symbol.iterator)]() {
+    for (const e of this[j3])
+      yield e;
+  }
+  and(...e) {
+    return e.length && this[j3].push("--and", "(", ...U2(e, "-e"), ")"), this;
+  }
+  param(...e) {
+    return this[j3].push(...U2(e, "-e")), this;
+  }
+};
+function Sn(...t2) {
+  return new En().param(...t2);
 }
-function parseGrep(grep) {
-  const paths = /* @__PURE__ */ new Set();
-  const results = {};
-  forEachLineWithContent(grep, (input) => {
-    const [path16, line, preview] = input.split(NULL);
-    paths.add(path16);
-    (results[path16] = results[path16] || []).push({
-      line: asNumber(line),
-      path: path16,
-      preview
+function Rn(t2) {
+  const e = /* @__PURE__ */ new Set(), n5 = {};
+  return ut2(t2, (r2) => {
+    const [s, o2, i] = r2.split(I3);
+    e.add(s), (n5[s] = n5[s] || []).push({
+      line: p(o2),
+      path: s,
+      preview: i
     });
-  });
-  return {
-    paths,
-    results
+  }), {
+    paths: e,
+    results: n5
   };
 }
-function grep_default() {
+function On() {
   return {
-    grep(searchTerm) {
-      const then = trailingFunctionArgument(arguments);
-      const options = getTrailingOptions(arguments);
-      for (const option of disallowedOptions) {
-        if (options.includes(option)) {
+    grep(t2) {
+      const e = u(arguments), n5 = h2(arguments);
+      for (const s of vn)
+        if (n5.includes(s))
           return this._runTask(
-            configurationErrorTask(`git.grep: use of "${option}" is not supported.`),
-            then
+            b2(`git.grep: use of "${s}" is not supported.`),
+            e
           );
-        }
-      }
-      if (typeof searchTerm === "string") {
-        searchTerm = grepQueryBuilder().param(searchTerm);
-      }
-      const commands = ["grep", "--null", "-n", "--full-name", ...options, ...searchTerm];
+      typeof t2 == "string" && (t2 = Sn().param(t2));
+      const r2 = ["grep", "--null", "-n", "--full-name", ...n5, ...t2];
       return this._runTask(
         {
-          commands,
+          commands: r2,
           format: "utf-8",
-          parser(stdOut) {
-            return parseGrep(stdOut);
+          parser(s) {
+            return Rn(s);
           }
         },
-        then
+        e
       );
     }
   };
 }
-var disallowedOptions;
-var Query;
-var _a12;
-var GrepQuery;
-var init_grep = __esm2({
-  "src/lib/tasks/grep.ts"() {
-    "use strict";
-    init_utils();
-    init_task();
-    disallowedOptions = ["-h"];
-    Query = /* @__PURE__ */ Symbol("grepQuery");
-    GrepQuery = class {
-      constructor() {
-        this[_a12] = [];
-      }
-      *[(_a12 = Query, Symbol.iterator)]() {
-        for (const query of this[Query]) {
-          yield query;
-        }
-      }
-      and(...and) {
-        and.length && this[Query].push("--and", "(", ...prefixedArray(and, "-e"), ")");
-        return this;
-      }
-      param(...param) {
-        this[Query].push(...prefixedArray(param, "-e"));
-        return this;
-      }
-    };
-  }
-});
-var reset_exports = {};
-__export2(reset_exports, {
-  ResetMode: () => ResetMode,
-  getResetMode: () => getResetMode,
-  resetTask: () => resetTask
-});
-function resetTask(mode, customArgs) {
-  const commands = ["reset"];
-  if (isValidResetMode(mode)) {
-    commands.push(`--${mode}`);
-  }
-  commands.push(...customArgs);
-  return straightThroughStringTask(commands);
+var Vt2 = /* @__PURE__ */ ((t2) => (t2.MIXED = "mixed", t2.SOFT = "soft", t2.HARD = "hard", t2.MERGE = "merge", t2.KEEP = "keep", t2))(Vt2 || {});
+var Cn = L3(Object.values(Vt2));
+function An(t2, e) {
+  const n5 = ["reset"];
+  return Xt2(t2) && n5.push(`--${t2}`), n5.push(...e), g(n5);
 }
-function getResetMode(mode) {
-  if (isValidResetMode(mode)) {
-    return mode;
-  }
-  switch (typeof mode) {
+function xn(t2) {
+  if (Xt2(t2))
+    return t2;
+  switch (typeof t2) {
     case "string":
     case "undefined":
       return "soft";
   }
-  return;
 }
-function isValidResetMode(mode) {
-  return typeof mode === "string" && validResetModes.includes(mode);
+function Xt2(t2) {
+  return typeof t2 == "string" && Cn.includes(t2);
 }
-var ResetMode;
-var validResetModes;
-var init_reset = __esm2({
-  "src/lib/tasks/reset.ts"() {
-    "use strict";
-    init_utils();
-    init_task();
-    ResetMode = /* @__PURE__ */ ((ResetMode2) => {
-      ResetMode2["MIXED"] = "mixed";
-      ResetMode2["SOFT"] = "soft";
-      ResetMode2["HARD"] = "hard";
-      ResetMode2["MERGE"] = "merge";
-      ResetMode2["KEEP"] = "keep";
-      return ResetMode2;
-    })(ResetMode || {});
-    validResetModes = asStringArray(Object.values(ResetMode));
-  }
-});
-function createLog() {
+import_debug.default.formatters.L = (t2) => String(Bt2(t2) ? t2.length : "-");
+import_debug.default.formatters.B = (t2) => Buffer.isBuffer(t2) ? t2.toString("utf8") : ft2(t2);
+function Nn() {
   return (0, import_debug.default)("simple-git");
 }
-function prefixedLogger(to, prefix, forward) {
-  if (!prefix || !String(prefix).replace(/\s*/, "")) {
-    return !forward ? to : (message, ...args) => {
-      to(message, ...args);
-      forward(message, ...args);
-    };
-  }
-  return (message, ...args) => {
-    to(`%s ${message}`, prefix, ...args);
-    if (forward) {
-      forward(message, ...args);
-    }
+function vt2(t2, e, n5) {
+  return !e || !String(e).replace(/\s*/, "") ? n5 ? (r2, ...s) => {
+    t2(r2, ...s), n5(r2, ...s);
+  } : t2 : (r2, ...s) => {
+    t2(`%s ${r2}`, e, ...s), n5 && n5(r2, ...s);
   };
 }
-function childLoggerName(name, childDebugger, { namespace: parentNamespace }) {
-  if (typeof name === "string") {
-    return name;
-  }
-  const childNamespace = childDebugger && childDebugger.namespace || "";
-  if (childNamespace.startsWith(parentNamespace)) {
-    return childNamespace.substr(parentNamespace.length + 1);
-  }
-  return childNamespace || parentNamespace;
+function $n(t2, e, { namespace: n5 }) {
+  if (typeof t2 == "string")
+    return t2;
+  const r2 = e && e.namespace || "";
+  return r2.startsWith(n5) ? r2.substr(n5.length + 1) : r2 || n5;
 }
-function createLogger(label, verbose, initialStep, infoDebugger = createLog()) {
-  const labelPrefix = label && `[${label}]` || "";
-  const spawned = [];
-  const debugDebugger = typeof verbose === "string" ? infoDebugger.extend(verbose) : verbose;
-  const key = childLoggerName(filterType(verbose, filterString), debugDebugger, infoDebugger);
-  return step(initialStep);
-  function sibling(name, initial) {
-    return append(
-      spawned,
-      createLogger(label, key.replace(/^[^:]+/, name), initial, infoDebugger)
+function $2(t2, e, n5, r2 = Nn()) {
+  const s = t2 && `[${t2}]` || "", o2 = [], i = typeof e == "string" ? r2.extend(e) : e, a = $n(d(e, m), i, r2);
+  return y2(n5);
+  function c3(w2, T3) {
+    return S2(
+      o2,
+      $2(t2, a.replace(/^[^:]+/, w2), T3, r2)
     );
   }
-  function step(phase) {
-    const stepPrefix = phase && `[${phase}]` || "";
-    const debug2 = debugDebugger && prefixedLogger(debugDebugger, stepPrefix) || NOOP;
-    const info = prefixedLogger(infoDebugger, `${labelPrefix} ${stepPrefix}`, debug2);
-    return Object.assign(debugDebugger ? debug2 : info, {
-      label,
-      sibling,
-      info,
-      step
+  function y2(w2) {
+    const T3 = w2 && `[${w2}]` || "", k3 = i && vt2(i, T3) || W3, C3 = vt2(r2, `${s} ${T3}`, k3);
+    return Object.assign(i ? k3 : C3, {
+      label: t2,
+      sibling: c3,
+      info: C3,
+      step: y2
     });
   }
 }
-var init_git_logger = __esm2({
-  "src/lib/git-logger.ts"() {
-    "use strict";
-    init_utils();
-    import_debug.default.formatters.L = (value) => String(filterHasLength(value) ? value.length : "-");
-    import_debug.default.formatters.B = (value) => {
-      if (Buffer.isBuffer(value)) {
-        return value.toString("utf8");
-      }
-      return objectToString(value);
+var M3 = class M4 {
+  constructor(e = "GitExecutor") {
+    this.logLabel = e, this._queue = /* @__PURE__ */ new Map();
+  }
+  withProgress(e) {
+    return this._queue.get(e);
+  }
+  createProgress(e) {
+    const n5 = M4.getName(e.commands[0]), r2 = $2(this.logLabel, n5);
+    return {
+      task: e,
+      logger: r2,
+      name: n5
     };
   }
-});
-var TasksPendingQueue;
-var init_tasks_pending_queue = __esm2({
-  "src/lib/runners/tasks-pending-queue.ts"() {
-    "use strict";
-    var _a13;
-    init_git_error();
-    init_git_logger();
-    TasksPendingQueue = (_a13 = class {
-      constructor(logLabel = "GitExecutor") {
-        this.logLabel = logLabel;
-        this._queue = /* @__PURE__ */ new Map();
-      }
-      withProgress(task) {
-        return this._queue.get(task);
-      }
-      createProgress(task) {
-        const name = _a13.getName(task.commands[0]);
-        const logger = createLogger(this.logLabel, name);
-        return {
-          task,
-          logger,
-          name
-        };
-      }
-      push(task) {
-        const progress = this.createProgress(task);
-        progress.logger("Adding task to the queue, commands = %o", task.commands);
-        this._queue.set(task, progress);
-        return progress;
-      }
-      fatal(err) {
-        for (const [task, { logger }] of Array.from(this._queue.entries())) {
-          if (task === err.task) {
-            logger.info(`Failed %o`, err);
-            logger(
-              `Fatal exception, any as-yet un-started tasks run through this executor will not be attempted`
-            );
-          } else {
-            logger.info(
-              `A fatal exception occurred in a previous task, the queue has been purged: %o`,
-              err.message
-            );
-          }
-          this.complete(task);
-        }
-        if (this._queue.size !== 0) {
-          throw new Error(`Queue size should be zero after fatal: ${this._queue.size}`);
-        }
-      }
-      complete(task) {
-        const progress = this.withProgress(task);
-        if (progress) {
-          this._queue.delete(task);
-        }
-      }
-      attempt(task) {
-        const progress = this.withProgress(task);
-        if (!progress) {
-          throw new GitError(void 0, "TasksPendingQueue: attempt called for an unknown task");
-        }
-        progress.logger("Starting task");
-        return progress;
-      }
-      static getName(name = "empty") {
-        return `task:${name}:${++_a13.counter}`;
-      }
-    }, _a13.counter = 0, _a13);
+  push(e) {
+    const n5 = this.createProgress(e);
+    return n5.logger("Adding task to the queue, commands = %o", e.commands), this._queue.set(e, n5), n5;
   }
-});
-function pluginContext(task, commands) {
-  return {
-    method: first(task.commands) || "",
-    commands
-  };
-}
-function onErrorReceived(target, logger) {
-  return (err) => {
-    logger(`[ERROR] child process exception %o`, err);
-    target.push(Buffer.from(String(err.stack), "ascii"));
-  };
-}
-function onDataReceived(target, name, logger, output) {
-  return (buffer) => {
-    logger(`%s received %L bytes`, name, buffer);
-    output(`%B`, buffer);
-    target.push(buffer);
-  };
-}
-var GitExecutorChain;
-var init_git_executor_chain = __esm2({
-  "src/lib/runners/git-executor-chain.ts"() {
-    "use strict";
-    init_git_error();
-    init_task();
-    init_utils();
-    init_tasks_pending_queue();
-    GitExecutorChain = class {
-      constructor(_executor, _scheduler, _plugins) {
-        this._executor = _executor;
-        this._scheduler = _scheduler;
-        this._plugins = _plugins;
-        this._chain = Promise.resolve();
-        this._queue = new TasksPendingQueue();
-      }
-      get cwd() {
-        return this._cwd || this._executor.cwd;
-      }
-      set cwd(cwd) {
-        this._cwd = cwd;
-      }
-      get env() {
-        return this._executor.env;
-      }
-      get outputHandler() {
-        return this._executor.outputHandler;
-      }
-      chain() {
-        return this;
-      }
-      push(task) {
-        this._queue.push(task);
-        return this._chain = this._chain.then(() => this.attemptTask(task));
-      }
-      async attemptTask(task) {
-        const onScheduleComplete = await this._scheduler.next();
-        const onQueueComplete = () => this._queue.complete(task);
-        try {
-          const { logger } = this._queue.attempt(task);
-          return await (isEmptyTask(task) ? this.attemptEmptyTask(task, logger) : this.attemptRemoteTask(task, logger));
-        } catch (e) {
-          throw this.onFatalException(task, e);
-        } finally {
-          onQueueComplete();
-          onScheduleComplete();
-        }
-      }
-      onFatalException(task, e) {
-        const gitError = e instanceof GitError ? Object.assign(e, { task }) : new GitError(task, e && String(e));
-        this._chain = Promise.resolve();
-        this._queue.fatal(gitError);
-        return gitError;
-      }
-      async attemptRemoteTask(task, logger) {
-        const binary = this._plugins.exec("spawn.binary", "", pluginContext(task, task.commands));
-        const args = this._plugins.exec("spawn.args", [...task.commands], {
-          ...pluginContext(task, task.commands),
-          env: { ...this.env }
-        });
-        const raw = await this.gitResponse(
-          task,
-          binary,
-          args,
-          this.outputHandler,
-          logger.step("SPAWN")
-        );
-        const outputStreams = await this.handleTaskData(task, args, raw, logger.step("HANDLE"));
-        logger(`passing response to task's parser as a %s`, task.format);
-        if (isBufferTask(task)) {
-          return callTaskParser(task.parser, outputStreams);
-        }
-        return callTaskParser(task.parser, outputStreams.asStrings());
-      }
-      async attemptEmptyTask(task, logger) {
-        logger(`empty task bypassing child process to call to task's parser`);
-        return task.parser(this);
-      }
-      handleTaskData(task, args, result, logger) {
-        const { exitCode, rejection, stdOut, stdErr } = result;
-        return new Promise((done, fail) => {
-          logger(`Preparing to handle process response exitCode=%d stdOut=`, exitCode);
-          const { error } = this._plugins.exec(
-            "task.error",
-            { error: rejection },
-            {
-              ...pluginContext(task, args),
-              ...result
-            }
-          );
-          if (error && task.onError) {
-            logger.info(`exitCode=%s handling with custom error handler`);
-            return task.onError(
-              result,
-              error,
-              (newStdOut) => {
-                logger.info(`custom error handler treated as success`);
-                logger(`custom error returned a %s`, objectToString(newStdOut));
-                done(
-                  new GitOutputStreams(
-                    Array.isArray(newStdOut) ? Buffer.concat(newStdOut) : newStdOut,
-                    Buffer.concat(stdErr)
-                  )
-                );
-              },
-              fail
-            );
-          }
-          if (error) {
-            logger.info(
-              `handling as error: exitCode=%s stdErr=%s rejection=%o`,
-              exitCode,
-              stdErr.length,
-              rejection
-            );
-            return fail(error);
-          }
-          logger.info(`retrieving task output complete`);
-          done(new GitOutputStreams(Buffer.concat(stdOut), Buffer.concat(stdErr)));
-        });
-      }
-      async gitResponse(task, command, args, outputHandler, logger) {
-        const outputLogger = logger.sibling("output");
-        const spawnOptions = this._plugins.exec(
-          "spawn.options",
-          {
-            cwd: this.cwd,
-            env: this.env,
-            windowsHide: true
-          },
-          pluginContext(task, task.commands)
-        );
-        return new Promise((done) => {
-          const stdOut = [];
-          const stdErr = [];
-          logger.info(`%s %o`, command, args);
-          logger("%O", spawnOptions);
-          let rejection = this._beforeSpawn(task, args);
-          if (rejection) {
-            return done({
-              stdOut,
-              stdErr,
-              exitCode: 9901,
-              rejection
-            });
-          }
-          this._plugins.exec("spawn.before", void 0, {
-            ...pluginContext(task, args),
-            kill(reason) {
-              rejection = reason || rejection;
-            }
-          });
-          const spawned = (0, import_child_process.spawn)(command, args, spawnOptions);
-          spawned.stdout.on(
-            "data",
-            onDataReceived(stdOut, "stdOut", logger, outputLogger.step("stdOut"))
-          );
-          spawned.stderr.on(
-            "data",
-            onDataReceived(stdErr, "stdErr", logger, outputLogger.step("stdErr"))
-          );
-          spawned.on("error", onErrorReceived(stdErr, logger));
-          if (outputHandler) {
-            logger(`Passing child process stdOut/stdErr to custom outputHandler`);
-            outputHandler(command, spawned.stdout, spawned.stderr, [...args]);
-          }
-          this._plugins.exec("spawn.after", void 0, {
-            ...pluginContext(task, args),
-            spawned,
-            close(exitCode, reason) {
-              done({
-                stdOut,
-                stdErr,
-                exitCode,
-                rejection: rejection || reason
-              });
-            },
-            kill(reason) {
-              if (spawned.killed) {
-                return;
-              }
-              rejection = reason;
-              spawned.kill("SIGINT");
-            }
-          });
-        });
-      }
-      _beforeSpawn(task, args) {
-        let rejection;
-        this._plugins.exec("spawn.before", void 0, {
-          ...pluginContext(task, args),
-          kill(reason) {
-            rejection = reason || rejection;
-          }
-        });
-        return rejection;
-      }
-    };
+  fatal(e) {
+    for (const [n5, { logger: r2 }] of Array.from(this._queue.entries()))
+      n5 === e.task ? (r2.info("Failed %o", e), r2(
+        "Fatal exception, any as-yet un-started tasks run through this executor will not be attempted"
+      )) : r2.info(
+        "A fatal exception occurred in a previous task, the queue has been purged: %o",
+        e.message
+      ), this.complete(n5);
+    if (this._queue.size !== 0)
+      throw new Error(`Queue size should be zero after fatal: ${this._queue.size}`);
   }
-});
-var git_executor_exports = {};
-__export2(git_executor_exports, {
-  GitExecutor: () => GitExecutor
-});
-var GitExecutor;
-var init_git_executor = __esm2({
-  "src/lib/runners/git-executor.ts"() {
-    "use strict";
-    init_git_executor_chain();
-    GitExecutor = class {
-      constructor(cwd, _scheduler, _plugins) {
-        this.cwd = cwd;
-        this._scheduler = _scheduler;
-        this._plugins = _plugins;
-        this._chain = new GitExecutorChain(this, this._scheduler, this._plugins);
-      }
-      chain() {
-        return new GitExecutorChain(this, this._scheduler, this._plugins);
-      }
-      push(task) {
-        return this._chain.push(task);
-      }
-    };
+  complete(e) {
+    this.withProgress(e) && this._queue.delete(e);
   }
-});
-function taskCallback(task, response, callback = NOOP) {
-  const onSuccess = (data) => {
-    callback(null, data);
-  };
-  const onError2 = (err) => {
-    if (err?.task === task) {
-      callback(
-        err instanceof GitResponseError ? addDeprecationNoticeToError(err) : err,
-        void 0
+  attempt(e) {
+    const n5 = this.withProgress(e);
+    if (!n5)
+      throw new O3(void 0, "TasksPendingQueue: attempt called for an unknown task");
+    return n5.logger("Starting task"), n5;
+  }
+  static getName(e = "empty") {
+    return `task:${e}:${++M4.counter}`;
+  }
+};
+M3.counter = 0;
+var ot2 = M3;
+var Pn = class {
+  constructor(e, n5, r2) {
+    this._executor = e, this._scheduler = n5, this._plugins = r2, this._chain = Promise.resolve(), this._queue = new ot2();
+  }
+  get cwd() {
+    return this._cwd || this._executor.cwd;
+  }
+  set cwd(e) {
+    this._cwd = e;
+  }
+  get env() {
+    return this._executor.env;
+  }
+  get outputHandler() {
+    return this._executor.outputHandler;
+  }
+  chain() {
+    return this;
+  }
+  push(e) {
+    return this._queue.push(e), this._chain = this._chain.then(() => this.attemptTask(e));
+  }
+  async attemptTask(e) {
+    const n5 = await this._scheduler.next(), r2 = () => this._queue.complete(e);
+    try {
+      const { logger: s } = this._queue.attempt(e);
+      return await (kt2(e) ? this.attemptEmptyTask(e, s) : this.attemptRemoteTask(e, s));
+    } catch (s) {
+      throw this.onFatalException(e, s);
+    } finally {
+      r2(), n5();
+    }
+  }
+  onFatalException(e, n5) {
+    const r2 = n5 instanceof O3 ? Object.assign(n5, { task: e }) : new O3(e, n5 && String(n5));
+    return this._chain = Promise.resolve(), this._queue.fatal(r2), r2;
+  }
+  async attemptRemoteTask(e, n5) {
+    const r2 = this._plugins.exec("spawn.binary", "", this.taskContext(e, e.commands)), s = this._plugins.exec(
+      "spawn.args",
+      [...e.commands],
+      this.taskContext(e, e.commands)
+    ), o2 = await this.gitResponse(
+      e,
+      r2,
+      s,
+      this.outputHandler,
+      n5.step("SPAWN")
+    ), i = await this.handleTaskData(e, s, o2, n5.step("HANDLE"));
+    return n5("passing response to task's parser as a %s", e.format), en(e) ? Tt2(e.parser, i) : Tt2(e.parser, i.asStrings());
+  }
+  async attemptEmptyTask(e, n5) {
+    return n5("empty task bypassing child process to call to task's parser"), e.parser(this);
+  }
+  handleTaskData(e, n5, r2, s) {
+    const { exitCode: o2, rejection: i, stdOut: a, stdErr: c3 } = r2;
+    return new Promise((y2, w2) => {
+      s("Preparing to handle process response exitCode=%d stdOut=", o2);
+      const { error: T3 } = this._plugins.exec(
+        "task.error",
+        { error: i },
+        {
+          ...this.taskContext(e, n5),
+          ...r2
+        }
       );
-    }
-  };
-  response.then(onSuccess, onError2);
-}
-function addDeprecationNoticeToError(err) {
-  let log = (name) => {
-    console.warn(
-      `simple-git deprecation notice: accessing GitResponseError.${name} should be GitResponseError.git.${name}, this will no longer be available in version 3`
+      if (T3 && e.onError)
+        return s.info("exitCode=%s handling with custom error handler"), e.onError(
+          r2,
+          T3,
+          (k3) => {
+            s.info("custom error handler treated as success"), s("custom error returned a %s", ft2(k3)), y2(
+              new z2(
+                Array.isArray(k3) ? Buffer.concat(k3) : k3,
+                Buffer.concat(c3)
+              )
+            );
+          },
+          w2
+        );
+      if (T3)
+        return s.info(
+          "handling as error: exitCode=%s stdErr=%s rejection=%o",
+          o2,
+          c3.length,
+          i
+        ), w2(T3);
+      s.info("retrieving task output complete"), y2(new z2(Buffer.concat(a), Buffer.concat(c3)));
+    });
+  }
+  async gitResponse(e, n5, r2, s, o2) {
+    const i = o2.sibling("output"), a = this._plugins.exec(
+      "spawn.options",
+      {
+        cwd: this.cwd,
+        env: this.env,
+        windowsHide: true
+      },
+      this.taskContext(e, e.commands)
     );
-    log = NOOP;
-  };
-  return Object.create(err, Object.getOwnPropertyNames(err.git).reduce(descriptorReducer, {}));
-  function descriptorReducer(all, name) {
-    if (name in err) {
-      return all;
-    }
-    all[name] = {
-      enumerable: false,
-      configurable: false,
-      get() {
-        log(name);
-        return err.git[name];
+    return new Promise((c3) => {
+      const y2 = [], w2 = [];
+      o2.info("%s %o", n5, r2), o2("%O", a);
+      let T3 = this._beforeSpawn(e, r2);
+      if (T3)
+        return c3({
+          stdOut: y2,
+          stdErr: w2,
+          exitCode: 9901,
+          rejection: T3
+        });
+      this._plugins.exec("spawn.before", void 0, {
+        ...this.taskContext(e, r2),
+        kill(C3) {
+          T3 = C3 || T3;
+        }
+      });
+      const k3 = (0, import_node_child_process.spawn)(n5, r2, a);
+      k3.stdout.on(
+        "data",
+        Et2(y2, "stdOut", o2, i.step("stdOut"))
+      ), k3.stderr.on(
+        "data",
+        Et2(w2, "stdErr", o2, i.step("stdErr"))
+      ), k3.on("error", Mn(w2, o2)), s && (o2("Passing child process stdOut/stdErr to custom outputHandler"), s(n5, k3.stdout, k3.stderr, [...r2])), this._plugins.exec("spawn.after", void 0, {
+        ...this.taskContext(e, r2),
+        spawned: k3,
+        close(C3, Te2) {
+          c3({
+            stdOut: y2,
+            stdErr: w2,
+            exitCode: C3,
+            rejection: T3 || Te2
+          });
+        },
+        kill(C3) {
+          k3.killed || (T3 = C3, k3.kill("SIGINT"));
+        }
+      });
+    });
+  }
+  _beforeSpawn(e, n5) {
+    let r2;
+    return this._plugins.exec("spawn.before", void 0, {
+      ...this.taskContext(e, n5),
+      kill(s) {
+        r2 = s || r2;
       }
+    }), r2;
+  }
+  taskContext(e, n5) {
+    return {
+      method: String(Me(e.commands) || ""),
+      commands: n5,
+      env: { ...this.env },
+      input: kt2(e) ? void 0 : e.input
     };
-    return all;
   }
+};
+function Mn(t2, e) {
+  return (n5) => {
+    e("[ERROR] child process exception %o", n5), t2.push(Buffer.from(String(n5.stack), "ascii"));
+  };
 }
-var init_task_callback = __esm2({
-  "src/lib/task-callback.ts"() {
-    "use strict";
-    init_git_response_error();
-    init_utils();
+function Et2(t2, e, n5, r2) {
+  return (s) => {
+    n5("%s received %L bytes", e, s), r2("%B", s), t2.push(s);
+  };
+}
+var Dn = class {
+  constructor(e, n5, r2) {
+    this.cwd = e, this._scheduler = n5, this._plugins = r2, this._chain = this.chain();
   }
-});
-function changeWorkingDirectoryTask(directory, root) {
-  return adhocExecTask((instance) => {
-    if (!folderExists(directory)) {
-      throw new Error(`Git.cwd: cannot change to non-directory "${directory}"`);
-    }
-    return (root || instance).cwd = directory;
+  chain() {
+    return new Pn(this, this._scheduler, this._plugins);
+  }
+  push(e) {
+    return this._chain.push(e);
+  }
+};
+function Ln(t2, e, n5 = W3) {
+  const r2 = (o2) => {
+    n5(null, o2);
+  }, s = (o2) => {
+    o2?.task === t2 && n5(o2, void 0);
+  };
+  e.then(r2, s);
+}
+function St2(t2, e) {
+  return tn((n5) => {
+    if (!Lt2(t2))
+      throw new Error(`Git.cwd: cannot change to non-directory "${t2}"`);
+    return (e || n5).cwd = t2;
   });
 }
-var init_change_working_directory = __esm2({
-  "src/lib/tasks/change-working-directory.ts"() {
-    "use strict";
-    init_utils();
-    init_task();
-  }
-});
-function checkoutTask(args) {
-  const commands = ["checkout", ...args];
-  if (commands[1] === "-b" && commands.includes("-B")) {
-    commands[1] = remove(commands, "-B");
-  }
-  return straightThroughStringTask(commands);
+function Q3(t2) {
+  const e = ["checkout", ...t2];
+  return e[1] === "-b" && e.includes("-B") && (e[1] = ct(e, "-B")), g(e);
 }
-function checkout_default() {
+function jn() {
   return {
     checkout() {
       return this._runTask(
-        checkoutTask(getTrailingOptions(arguments, 1)),
-        trailingFunctionArgument(arguments)
+        Q3(h2(arguments, 1)),
+        u(arguments)
       );
     },
-    checkoutBranch(branchName, startPoint) {
+    checkoutBranch(t2, e) {
       return this._runTask(
-        checkoutTask(["-b", branchName, startPoint, ...getTrailingOptions(arguments)]),
-        trailingFunctionArgument(arguments)
+        Q3(["-b", t2, e, ...h2(arguments)]),
+        u(arguments)
       );
     },
-    checkoutLocalBranch(branchName) {
+    checkoutLocalBranch(t2) {
       return this._runTask(
-        checkoutTask(["-b", branchName, ...getTrailingOptions(arguments)]),
-        trailingFunctionArgument(arguments)
+        Q3(["-b", t2, ...h2(arguments)]),
+        u(arguments)
       );
     }
   };
 }
-var init_checkout = __esm2({
-  "src/lib/tasks/checkout.ts"() {
-    "use strict";
-    init_utils();
-    init_task();
+var Yt2 = (t2, e, n5) => {
+  const r2 = ["clone", ...n5];
+  return m(t2) && r2.push(c(t2)), m(e) && r2.push(c(e)), g(r2);
+};
+var Bn = (t2, e, n5) => (S2(n5, "--mirror"), Yt2(t2, e, n5));
+function Rt2(t2, e, n5, ...r2) {
+  return m(n5) ? e(n5, d(r2[0], m), h2(arguments)) : b2(`git.${t2}() requires a string 'repoPath'`);
+}
+function In() {
+  return {
+    clone(t2, ...e) {
+      return this._runTask(
+        Rt2("clone", Yt2, d(t2, m), ...e),
+        u(arguments)
+      );
+    },
+    mirror(t2, ...e) {
+      return this._runTask(
+        Rt2("mirror", Bn, d(t2, m), ...e),
+        u(arguments)
+      );
+    }
+  };
+}
+var Un = [
+  new l2(/^\[([^\s]+)( \([^)]+\))? ([^\]]+)/, (t2, [e, n5, r2]) => {
+    t2.branch = e, t2.commit = r2, t2.root = !!n5;
+  }),
+  new l2(/\s*Author:\s(.+)/i, (t2, [e]) => {
+    const n5 = e.split("<"), r2 = n5.pop();
+    !r2 || !r2.includes("@") || (t2.author = {
+      email: r2.substr(0, r2.length - 1),
+      name: n5.join("<").trim()
+    });
+  }),
+  new l2(
+    /(\d+)[^,]*(?:,\s*(\d+)[^,]*)(?:,\s*(\d+))/g,
+    (t2, [e, n5, r2]) => {
+      t2.summary.changes = parseInt(e, 10) || 0, t2.summary.insertions = parseInt(n5, 10) || 0, t2.summary.deletions = parseInt(r2, 10) || 0;
+    }
+  ),
+  new l2(
+    /^(\d+)[^,]*(?:,\s*(\d+)[^(]+\(([+-]))?/,
+    (t2, [e, n5, r2]) => {
+      t2.summary.changes = parseInt(e, 10) || 0;
+      const s = parseInt(n5, 10) || 0;
+      r2 === "-" ? t2.summary.deletions = s : r2 === "+" && (t2.summary.insertions = s);
+    }
+  )
+];
+function Fn(t2) {
+  return E2({
+    author: null,
+    branch: "",
+    commit: "",
+    root: false,
+    summary: {
+      changes: 0,
+      insertions: 0,
+      deletions: 0
+    }
+  }, Un, t2);
+}
+function Gn(t2, e, n5) {
+  return {
+    commands: [
+      "-c",
+      "core.abbrev=40",
+      "commit",
+      ...U2(t2, "-m"),
+      ...e,
+      ...n5
+    ],
+    format: "utf-8",
+    parser: Fn
+  };
+}
+function zn() {
+  return {
+    commit(e, ...n5) {
+      const r2 = u(arguments), s = t2(e) || Gn(
+        v2(e),
+        v2(d(n5[0], G3, [])),
+        [
+          ...L3(d(n5[1], K3, [])),
+          ...h2(arguments, 0, true)
+        ]
+      );
+      return this._runTask(s, r2);
+    }
+  };
+  function t2(e) {
+    return !G3(e) && b2(
+      "git.commit: requires the commit message to be supplied as a string/string[]"
+    );
   }
-});
-function countObjectsResponse() {
+}
+function qn() {
   return {
     count: 0,
     garbage: 0,
@@ -9321,670 +8879,382 @@ function countObjectsResponse() {
     sizePack: 0
   };
 }
-function count_objects_default() {
+var Wn = new l2(
+  /([a-z-]+): (\d+)$/,
+  (t2, [e, n5]) => {
+    const r2 = jt2(e);
+    Object.hasOwn(t2, r2) && (t2[r2] = p(n5));
+  }
+);
+function Hn() {
   return {
     countObjects() {
       return this._runTask({
         commands: ["count-objects", "--verbose"],
         format: "utf-8",
-        parser(stdOut) {
-          return parseStringResponse(countObjectsResponse(), [parser2], stdOut);
+        parser(t2) {
+          return E2(qn(), [Wn], t2);
         }
       });
     }
   };
 }
-var parser2;
-var init_count_objects = __esm2({
-  "src/lib/tasks/count-objects.ts"() {
-    "use strict";
-    init_utils();
-    parser2 = new LineParser(
-      /([a-z-]+): (\d+)$/,
-      (result, [key, value]) => {
-        const property = asCamelCase(key);
-        if (Object.hasOwn(result, property)) {
-          result[property] = asNumber(value);
-        }
-      }
-    );
-  }
-});
-function parseCommitResult(stdOut) {
-  const result = {
-    author: null,
-    branch: "",
-    commit: "",
-    root: false,
-    summary: {
-      changes: 0,
-      insertions: 0,
-      deletions: 0
-    }
-  };
-  return parseStringResponse(result, parsers, stdOut);
-}
-var parsers;
-var init_parse_commit = __esm2({
-  "src/lib/parsers/parse-commit.ts"() {
-    "use strict";
-    init_utils();
-    parsers = [
-      new LineParser(/^\[([^\s]+)( \([^)]+\))? ([^\]]+)/, (result, [branch, root, commit]) => {
-        result.branch = branch;
-        result.commit = commit;
-        result.root = !!root;
-      }),
-      new LineParser(/\s*Author:\s(.+)/i, (result, [author]) => {
-        const parts = author.split("<");
-        const email = parts.pop();
-        if (!email || !email.includes("@")) {
-          return;
-        }
-        result.author = {
-          email: email.substr(0, email.length - 1),
-          name: parts.join("<").trim()
-        };
-      }),
-      new LineParser(
-        /(\d+)[^,]*(?:,\s*(\d+)[^,]*)(?:,\s*(\d+))/g,
-        (result, [changes, insertions, deletions]) => {
-          result.summary.changes = parseInt(changes, 10) || 0;
-          result.summary.insertions = parseInt(insertions, 10) || 0;
-          result.summary.deletions = parseInt(deletions, 10) || 0;
-        }
-      ),
-      new LineParser(
-        /^(\d+)[^,]*(?:,\s*(\d+)[^(]+\(([+-]))?/,
-        (result, [changes, lines, direction]) => {
-          result.summary.changes = parseInt(changes, 10) || 0;
-          const count = parseInt(lines, 10) || 0;
-          if (direction === "-") {
-            result.summary.deletions = count;
-          } else if (direction === "+") {
-            result.summary.insertions = count;
-          }
-        }
-      )
-    ];
-  }
-});
-function commitTask(message, files, customArgs) {
-  const commands = [
-    "-c",
-    "core.abbrev=40",
-    "commit",
-    ...prefixedArray(message, "-m"),
-    ...files,
-    ...customArgs
-  ];
-  return {
-    commands,
-    format: "utf-8",
-    parser: parseCommitResult
-  };
-}
-function commit_default() {
-  return {
-    commit(message, ...rest) {
-      const next = trailingFunctionArgument(arguments);
-      const task = rejectDeprecatedSignatures(message) || commitTask(
-        asArray(message),
-        asArray(filterType(rest[0], filterStringOrStringArray, [])),
-        [
-          ...asStringArray(filterType(rest[1], filterArray, [])),
-          ...getTrailingOptions(arguments, 0, true)
-        ]
-      );
-      return this._runTask(task, next);
-    }
-  };
-  function rejectDeprecatedSignatures(message) {
-    return !filterStringOrStringArray(message) && configurationErrorTask(
-      `git.commit: requires the commit message to be supplied as a string/string[]`
-    );
-  }
-}
-var init_commit = __esm2({
-  "src/lib/tasks/commit.ts"() {
-    "use strict";
-    init_parse_commit();
-    init_utils();
-    init_task();
-  }
-});
-function first_commit_default() {
+function Kn() {
   return {
     firstCommit() {
       return this._runTask(
-        straightThroughStringTask(["rev-list", "--max-parents=0", "HEAD"], true),
-        trailingFunctionArgument(arguments)
+        g(["rev-list", "--max-parents=0", "HEAD"], true),
+        u(arguments)
       );
     }
   };
 }
-var init_first_commit = __esm2({
-  "src/lib/tasks/first-commit.ts"() {
-    "use strict";
-    init_utils();
-    init_task();
-  }
-});
-function hashObjectTask(filePath, write) {
-  const commands = ["hash-object", filePath];
-  if (write) {
-    commands.push("-w");
-  }
-  return straightThroughStringTask(commands, true);
+function Vn(t2, e) {
+  const n5 = ["hash-object", t2];
+  return e && n5.push("-w"), g(n5, true);
 }
-var init_hash_object = __esm2({
-  "src/lib/tasks/hash-object.ts"() {
-    "use strict";
-    init_task();
+var J2 = class {
+  constructor(e, n5, r2, s) {
+    this.bare = e, this.path = n5, this.existing = r2, this.gitDir = s;
   }
-});
-function parseInit(bare, path16, text) {
-  const response = String(text).trim();
-  let result;
-  if (result = initResponseRegex.exec(response)) {
-    return new InitSummary(bare, path16, false, result[1]);
-  }
-  if (result = reInitResponseRegex.exec(response)) {
-    return new InitSummary(bare, path16, true, result[1]);
-  }
-  let gitDir = "";
-  const tokens = response.split(" ");
-  while (tokens.length) {
-    const token = tokens.shift();
-    if (token === "in") {
-      gitDir = tokens.join(" ");
+};
+var Xn = /^Init.+ repository in (.+)$/;
+var Yn = /^Rein.+ in (.+)$/;
+function Qn(t2, e, n5) {
+  const r2 = String(n5).trim();
+  let s;
+  if (s = Xn.exec(r2))
+    return new J2(t2, e, false, s[1]);
+  if (s = Yn.exec(r2))
+    return new J2(t2, e, true, s[1]);
+  let o2 = "";
+  const i = r2.split(" ");
+  for (; i.length; )
+    if (i.shift() === "in") {
+      o2 = i.join(" ");
       break;
     }
-  }
-  return new InitSummary(bare, path16, /^re/i.test(response), gitDir);
+  return new J2(t2, e, /^re/i.test(r2), o2);
 }
-var InitSummary;
-var initResponseRegex;
-var reInitResponseRegex;
-var init_InitSummary = __esm2({
-  "src/lib/responses/InitSummary.ts"() {
-    "use strict";
-    InitSummary = class {
-      constructor(bare, path16, existing, gitDir) {
-        this.bare = bare;
-        this.path = path16;
-        this.existing = existing;
-        this.gitDir = gitDir;
-      }
-    };
-    initResponseRegex = /^Init.+ repository in (.+)$/;
-    reInitResponseRegex = /^Rein.+ in (.+)$/;
-  }
-});
-function hasBareCommand(command) {
-  return command.includes(bareCommand);
+var Qt2 = "--bare";
+function Jn(t2) {
+  return t2.includes(Qt2);
 }
-function initTask(bare = false, path16, customArgs) {
-  const commands = ["init", ...customArgs];
-  if (bare && !hasBareCommand(commands)) {
-    commands.splice(1, 0, bareCommand);
-  }
-  return {
-    commands,
+function Zn(t2 = false, e, n5) {
+  const r2 = ["init", ...n5];
+  return t2 && !Jn(r2) && r2.splice(1, 0, Qt2), {
+    commands: r2,
     format: "utf-8",
-    parser(text) {
-      return parseInit(commands.includes("--bare"), path16, text);
+    parser(s) {
+      return Qn(r2.includes("--bare"), e, s);
     }
   };
 }
-var bareCommand;
-var init_init = __esm2({
-  "src/lib/tasks/init.ts"() {
-    "use strict";
-    init_InitSummary();
-    bareCommand = "--bare";
-  }
-});
-function logFormatFromCommand(customArgs) {
-  for (let i2 = 0; i2 < customArgs.length; i2++) {
-    const format = logFormatRegex.exec(customArgs[i2]);
-    if (format) {
-      return `--${format[1]}`;
+function tr(t2) {
+  return t2 === void 0 ? b2("interpretTrailers called without input content") : {
+    format: "utf-8",
+    parser(e) {
+      return Object.fromEntries(
+        ut2(e, (n5) => {
+          const r2 = n5.indexOf(":");
+          return [
+            jt2(n5.substring(0, r2).toLowerCase()),
+            n5.substring(r2 + 2).trim()
+          ];
+        })
+      );
+    },
+    commands: ["interpret-trailers", "--parse"],
+    input: t2
+  };
+}
+function er() {
+  return {
+    interpretTrailers(t2) {
+      return this._runTask(
+        tr(d(t2, Be2)),
+        u(arguments)
+      );
     }
+  };
+}
+var R3 = /* @__PURE__ */ ((t2) => (t2.NONE = "", t2.STAT = "--stat", t2.NUM_STAT = "--numstat", t2.NAME_ONLY = "--name-only", t2.NAME_STATUS = "--name-status", t2))(R3 || {});
+var Jt2 = /^--(stat|numstat|name-only|name-status)(=|$)/;
+function pt2(t2) {
+  for (let e = 0; e < t2.length; e++) {
+    const n5 = Jt2.exec(t2[e]);
+    if (n5)
+      return `--${n5[1]}`;
   }
   return "";
 }
-function isLogFormat(customArg) {
-  return logFormatRegex.test(customArg);
+function nr(t2) {
+  return Jt2.test(t2);
 }
-var logFormatRegex;
-var init_log_format = __esm2({
-  "src/lib/args/log-format.ts"() {
-    "use strict";
-    logFormatRegex = /^--(stat|numstat|name-only|name-status)(=|$)/;
+var rr = class {
+  constructor() {
+    this.changed = 0, this.deletions = 0, this.insertions = 0, this.files = [];
   }
-});
-var DiffSummary;
-var init_DiffSummary = __esm2({
-  "src/lib/responses/DiffSummary.ts"() {
-    "use strict";
-    DiffSummary = class {
-      constructor() {
-        this.changed = 0;
-        this.deletions = 0;
-        this.insertions = 0;
-        this.files = [];
-      }
-    };
-  }
-});
-function getDiffParser(format = "") {
-  const parser4 = diffSummaryParsers[format];
-  return (stdOut) => parseStringResponse(new DiffSummary(), parser4, stdOut, false);
+};
+var Ot2 = [
+  new l2(
+    /^(.+)\s+\|\s+(\d+)(\s+[+\-]+)?$/,
+    (t2, [e, n5, r2 = ""]) => {
+      t2.files.push({
+        file: e.trim(),
+        changes: p(n5),
+        insertions: r2.replace(/[^+]/g, "").length,
+        deletions: r2.replace(/[^-]/g, "").length,
+        binary: false
+      });
+    }
+  ),
+  new l2(
+    /^(.+) \|\s+Bin ([0-9.]+) -> ([0-9.]+) ([a-z]+)/,
+    (t2, [e, n5, r2]) => {
+      t2.files.push({
+        file: e.trim(),
+        before: p(n5),
+        after: p(r2),
+        binary: true
+      });
+    }
+  ),
+  new l2(/^(.+)\s+\|\s+Bin\s*$/, (t2, [e]) => {
+    t2.files.push({
+      file: e.trim(),
+      before: 0,
+      after: 0,
+      binary: true
+    });
+  }),
+  new l2(
+    /(\d+) files? changed\s*((?:, \d+ [^,]+){0,2})/,
+    (t2, [e, n5]) => {
+      const r2 = /(\d+) i/.exec(n5), s = /(\d+) d/.exec(n5);
+      t2.changed = p(e), t2.insertions = p(r2?.[1]), t2.deletions = p(s?.[1]);
+    }
+  )
+];
+var sr = [
+  new l2(
+    /(\d+)\t(\d+)\t(.+)$/,
+    (t2, [e, n5, r2]) => {
+      const s = p(e), o2 = p(n5);
+      t2.changed++, t2.insertions += s, t2.deletions += o2, t2.files.push({
+        file: r2,
+        changes: s + o2,
+        insertions: s,
+        deletions: o2,
+        binary: false
+      });
+    }
+  ),
+  new l2(/-\t-\t(.+)$/, (t2, [e]) => {
+    t2.changed++, t2.files.push({
+      file: e,
+      after: 0,
+      before: 0,
+      binary: true
+    });
+  })
+];
+var or = [
+  new l2(/(.+)$/, (t2, [e]) => {
+    t2.changed++, t2.files.push({
+      file: e,
+      changes: 0,
+      insertions: 0,
+      deletions: 0,
+      binary: false
+    });
+  })
+];
+var ir = [
+  new l2(
+    /([ACDMRTUXB])([0-9]{0,3})\t(.[^\t]*)(\t(.[^\t]*))?$/,
+    (t2, [e, n5, r2, s, o2]) => {
+      t2.changed++, t2.files.push({
+        file: o2 ?? r2,
+        changes: 0,
+        insertions: 0,
+        deletions: 0,
+        binary: false,
+        status: bt2(_n8(e) && e),
+        from: bt2(!!o2 && r2 !== o2 && r2),
+        similarity: p(n5)
+      });
+    }
+  )
+];
+var ar = {
+  [R3.NONE]: Ot2,
+  [R3.STAT]: Ot2,
+  [R3.NUM_STAT]: sr,
+  [R3.NAME_STATUS]: ir,
+  [R3.NAME_ONLY]: or
+};
+function Zt2(t2 = R3.NONE) {
+  const e = ar[t2];
+  return (n5) => E2(new rr(), e, n5, false);
 }
-var statParser;
-var numStatParser;
-var nameOnlyParser;
-var nameStatusParser;
-var diffSummaryParsers;
-var init_parse_diff_summary = __esm2({
-  "src/lib/parsers/parse-diff-summary.ts"() {
-    "use strict";
-    init_log_format();
-    init_DiffSummary();
-    init_diff_name_status();
-    init_utils();
-    statParser = [
-      new LineParser(
-        /^(.+)\s+\|\s+(\d+)(\s+[+\-]+)?$/,
-        (result, [file, changes, alterations = ""]) => {
-          result.files.push({
-            file: file.trim(),
-            changes: asNumber(changes),
-            insertions: alterations.replace(/[^+]/g, "").length,
-            deletions: alterations.replace(/[^-]/g, "").length,
-            binary: false
-          });
-        }
-      ),
-      new LineParser(
-        /^(.+) \|\s+Bin ([0-9.]+) -> ([0-9.]+) ([a-z]+)/,
-        (result, [file, before, after]) => {
-          result.files.push({
-            file: file.trim(),
-            before: asNumber(before),
-            after: asNumber(after),
-            binary: true
-          });
-        }
-      ),
-      new LineParser(
-        /(\d+) files? changed\s*((?:, \d+ [^,]+){0,2})/,
-        (result, [changed, summary]) => {
-          const inserted = /(\d+) i/.exec(summary);
-          const deleted = /(\d+) d/.exec(summary);
-          result.changed = asNumber(changed);
-          result.insertions = asNumber(inserted?.[1]);
-          result.deletions = asNumber(deleted?.[1]);
-        }
-      )
-    ];
-    numStatParser = [
-      new LineParser(
-        /(\d+)\t(\d+)\t(.+)$/,
-        (result, [changesInsert, changesDelete, file]) => {
-          const insertions = asNumber(changesInsert);
-          const deletions = asNumber(changesDelete);
-          result.changed++;
-          result.insertions += insertions;
-          result.deletions += deletions;
-          result.files.push({
-            file,
-            changes: insertions + deletions,
-            insertions,
-            deletions,
-            binary: false
-          });
-        }
-      ),
-      new LineParser(/-\t-\t(.+)$/, (result, [file]) => {
-        result.changed++;
-        result.files.push({
-          file,
-          after: 0,
-          before: 0,
-          binary: true
-        });
-      })
-    ];
-    nameOnlyParser = [
-      new LineParser(/(.+)$/, (result, [file]) => {
-        result.changed++;
-        result.files.push({
-          file,
-          changes: 0,
-          insertions: 0,
-          deletions: 0,
-          binary: false
-        });
-      })
-    ];
-    nameStatusParser = [
-      new LineParser(
-        /([ACDMRTUXB])([0-9]{0,3})\t(.[^\t]*)(\t(.[^\t]*))?$/,
-        (result, [status, similarity, from, _to, to]) => {
-          result.changed++;
-          result.files.push({
-            file: to ?? from,
-            changes: 0,
-            insertions: 0,
-            deletions: 0,
-            binary: false,
-            status: orVoid(isDiffNameStatus(status) && status),
-            from: orVoid(!!to && from !== to && from),
-            similarity: asNumber(similarity)
-          });
-        }
-      )
-    ];
-    diffSummaryParsers = {
-      [
-        ""
-        /* NONE */
-      ]: statParser,
-      [
-        "--stat"
-        /* STAT */
-      ]: statParser,
-      [
-        "--numstat"
-        /* NUM_STAT */
-      ]: numStatParser,
-      [
-        "--name-status"
-        /* NAME_STATUS */
-      ]: nameStatusParser,
-      [
-        "--name-only"
-        /* NAME_ONLY */
-      ]: nameOnlyParser
-    };
-  }
-});
-function lineBuilder(tokens, fields) {
-  return fields.reduce(
-    (line, field, index) => {
-      line[field] = tokens[index] || "";
-      return line;
-    },
+var te2 = "\xF2\xF2\xF2\xF2\xF2\xF2 ";
+var ee3 = " \xF2\xF2";
+var ne3 = " \xF2 ";
+var ur = ["hash", "date", "message", "refs", "author_name", "author_email"];
+function cr(t2, e) {
+  return e.reduce(
+    (n5, r2, s) => (n5[r2] = t2[s] || "", n5),
     /* @__PURE__ */ Object.create({ diff: null })
   );
 }
-function createListLogSummaryParser(splitter = SPLITTER, fields = defaultFieldNames, logFormat = "") {
-  const parseDiffResult = getDiffParser(logFormat);
-  return function(stdOut) {
-    const all = toLinesWithContent(
-      stdOut.trim(),
+function re2(t2 = ne3, e = ur, n5 = R3.NONE) {
+  const r2 = Zt2(n5);
+  return function(s) {
+    const o2 = H3(
+      s.trim(),
       false,
-      START_BOUNDARY
-    ).map(function(item) {
-      const lineDetail = item.split(COMMIT_BOUNDARY);
-      const listLogLine = lineBuilder(lineDetail[0].split(splitter), fields);
-      if (lineDetail.length > 1 && !!lineDetail[1].trim()) {
-        listLogLine.diff = parseDiffResult(lineDetail[1]);
-      }
-      return listLogLine;
+      te2
+    ).map(function(i) {
+      const a = i.split(ee3), c3 = cr(a[0].split(t2), e);
+      return a.length > 1 && a[1].trim() && (c3.diff = r2(a[1])), c3;
     });
     return {
-      all,
-      latest: all.length && all[0] || null,
-      total: all.length
+      all: o2,
+      latest: o2.length && o2[0] || null,
+      total: o2.length
     };
   };
 }
-var START_BOUNDARY;
-var COMMIT_BOUNDARY;
-var SPLITTER;
-var defaultFieldNames;
-var init_parse_list_log_summary = __esm2({
-  "src/lib/parsers/parse-list-log-summary.ts"() {
-    "use strict";
-    init_utils();
-    init_parse_diff_summary();
-    init_log_format();
-    START_BOUNDARY = "\xF2\xF2\xF2\xF2\xF2\xF2 ";
-    COMMIT_BOUNDARY = " \xF2\xF2";
-    SPLITTER = " \xF2 ";
-    defaultFieldNames = ["hash", "date", "message", "refs", "author_name", "author_email"];
-  }
-});
-var diff_exports = {};
-__export2(diff_exports, {
-  diffSummaryTask: () => diffSummaryTask,
-  validateLogFormatConfig: () => validateLogFormatConfig
-});
-function diffSummaryTask(customArgs) {
-  let logFormat = logFormatFromCommand(customArgs);
-  const commands = ["diff"];
-  if (logFormat === "") {
-    logFormat = "--stat";
-    commands.push("--stat=4096");
-  }
-  commands.push(...customArgs);
-  return validateLogFormatConfig(commands) || {
-    commands,
+function fr(t2) {
+  let e = pt2(t2);
+  const n5 = ["diff"];
+  return e === R3.NONE && (e = R3.STAT, n5.push("--stat=4096")), n5.push(...t2), dt2(n5) || {
+    commands: n5,
     format: "utf-8",
-    parser: getDiffParser(logFormat)
+    parser: Zt2(e)
   };
 }
-function validateLogFormatConfig(customArgs) {
-  const flags = customArgs.filter(isLogFormat);
-  if (flags.length > 1) {
-    return configurationErrorTask(
-      `Summary flags are mutually exclusive - pick one of ${flags.join(",")}`
+function dt2(t2) {
+  const e = t2.filter(nr);
+  if (e.length > 1)
+    return b2(
+      `Summary flags are mutually exclusive - pick one of ${e.join(",")}`
     );
-  }
-  if (flags.length && customArgs.includes("-z")) {
-    return configurationErrorTask(
-      `Summary flag ${flags} parsing is not compatible with null termination option '-z'`
+  if (e.length && t2.includes("-z"))
+    return b2(
+      `Summary flag ${e} parsing is not compatible with null termination option '-z'`
     );
-  }
 }
-var init_diff = __esm2({
-  "src/lib/tasks/diff.ts"() {
-    "use strict";
-    init_log_format();
-    init_parse_diff_summary();
-    init_task();
-  }
-});
-function prettyFormat(format, splitter) {
-  const fields = [];
-  const formatStr = [];
-  Object.keys(format).forEach((field) => {
-    fields.push(field);
-    formatStr.push(String(format[field]));
-  });
-  return [fields, formatStr.join(splitter)];
+var se2 = /* @__PURE__ */ ((t2) => (t2[t2["--pretty"] = 0] = "--pretty", t2[t2["max-count"] = 1] = "max-count", t2[t2.maxCount = 2] = "maxCount", t2[t2.n = 3] = "n", t2[t2.file = 4] = "file", t2[t2.format = 5] = "format", t2[t2.from = 6] = "from", t2[t2.to = 7] = "to", t2[t2.splitter = 8] = "splitter", t2[t2.symmetric = 9] = "symmetric", t2[t2.mailMap = 10] = "mailMap", t2[t2.multiLine = 11] = "multiLine", t2[t2.strictDate = 12] = "strictDate", t2))(se2 || {});
+function lr(t2, e) {
+  const n5 = [], r2 = [];
+  return Object.keys(t2).forEach((s) => {
+    n5.push(s), r2.push(String(t2[s]));
+  }), [n5, r2.join(e)];
 }
-function userOptions(input) {
-  return Object.keys(input).reduce((out, key) => {
-    if (!(key in excludeOptions)) {
-      out[key] = input[key];
-    }
-    return out;
-  }, {});
+function hr(t2) {
+  return Object.keys(t2).reduce((e, n5) => (n5 in se2 || (e[n5] = t2[n5]), e), {});
 }
-function parseLogOptions(opt = {}, customArgs = []) {
-  const splitter = filterType(opt.splitter, filterString, SPLITTER);
-  const format = filterPlainObject(opt.format) ? opt.format : {
+function oe3(t2 = {}, e = []) {
+  const n5 = d(t2.splitter, m, ne3), r2 = lt2(t2.format) ? t2.format : {
     hash: "%H",
-    date: opt.strictDate === false ? "%ai" : "%aI",
+    date: t2.strictDate === false ? "%ai" : "%aI",
     message: "%s",
     refs: "%D",
-    body: opt.multiLine ? "%B" : "%b",
-    author_name: opt.mailMap !== false ? "%aN" : "%an",
-    author_email: opt.mailMap !== false ? "%aE" : "%ae"
-  };
-  const [fields, formatStr] = prettyFormat(format, splitter);
-  const suffix = [];
-  const command = [
-    `--pretty=format:${START_BOUNDARY}${formatStr}${COMMIT_BOUNDARY}`,
-    ...customArgs
-  ];
-  const maxCount = opt.n || opt["max-count"] || opt.maxCount;
-  if (maxCount) {
-    command.push(`--max-count=${maxCount}`);
+    body: t2.multiLine ? "%B" : "%b",
+    author_name: t2.mailMap !== false ? "%aN" : "%an",
+    author_email: t2.mailMap !== false ? "%aE" : "%ae"
+  }, [s, o2] = lr(r2, n5), i = [], a = [
+    `--pretty=format:${te2}${o2}${ee3}`,
+    ...e
+  ], c3 = t2.n || t2["max-count"] || t2.maxCount;
+  if (c3 && a.push(`--max-count=${c3}`), t2.from || t2.to) {
+    const y2 = t2.symmetric !== false ? "..." : "..";
+    i.push(`${t2.from || ""}${y2}${t2.to || ""}`);
   }
-  if (opt.from || opt.to) {
-    const rangeOperator = opt.symmetric !== false ? "..." : "..";
-    suffix.push(`${opt.from || ""}${rangeOperator}${opt.to || ""}`);
-  }
-  if (filterString(opt.file)) {
-    command.push("--follow", c(opt.file));
-  }
-  appendTaskOptions(userOptions(opt), command);
-  return {
-    fields,
-    splitter,
-    commands: [...command, ...suffix]
+  return m(t2.file) && a.push("--follow", c(t2.file)), It2(hr(t2), a), {
+    fields: s,
+    splitter: n5,
+    commands: [...a, ...i]
   };
 }
-function logTask(splitter, fields, customArgs) {
-  const parser4 = createListLogSummaryParser(splitter, fields, logFormatFromCommand(customArgs));
+function mr(t2, e, n5) {
+  const r2 = re2(t2, e, pt2(n5));
   return {
-    commands: ["log", ...customArgs],
+    commands: ["log", ...n5],
     format: "utf-8",
-    parser: parser4
+    parser: r2
   };
 }
-function log_default() {
+function pr() {
   return {
-    log(...rest) {
-      const next = trailingFunctionArgument(arguments);
-      const options = parseLogOptions(
-        trailingOptionsArgument(arguments),
-        asStringArray(filterType(arguments[0], filterArray, []))
-      );
-      const task = rejectDeprecatedSignatures(...rest) || validateLogFormatConfig(options.commands) || createLogTask(options);
-      return this._runTask(task, next);
+    log(...n5) {
+      const r2 = u(arguments), s = oe3(
+        ht2(arguments),
+        L3(d(arguments[0], K3, []))
+      ), o2 = e(...n5) || dt2(s.commands) || t2(s);
+      return this._runTask(o2, r2);
     }
   };
-  function createLogTask(options) {
-    return logTask(options.splitter, options.fields, options.commands);
+  function t2(n5) {
+    return mr(n5.splitter, n5.fields, n5.commands);
   }
-  function rejectDeprecatedSignatures(from, to) {
-    return filterString(from) && filterString(to) && configurationErrorTask(
-      `git.log(string, string) should be replaced with git.log({ from: string, to: string })`
+  function e(n5, r2) {
+    return m(n5) && m(r2) && b2(
+      "git.log(string, string) should be replaced with git.log({ from: string, to: string })"
     );
   }
 }
-var excludeOptions;
-var init_log = __esm2({
-  "src/lib/tasks/log.ts"() {
-    "use strict";
-    init_log_format();
-    init_parse_list_log_summary();
-    init_utils();
-    init_task();
-    init_diff();
-    excludeOptions = /* @__PURE__ */ ((excludeOptions2) => {
-      excludeOptions2[excludeOptions2["--pretty"] = 0] = "--pretty";
-      excludeOptions2[excludeOptions2["max-count"] = 1] = "max-count";
-      excludeOptions2[excludeOptions2["maxCount"] = 2] = "maxCount";
-      excludeOptions2[excludeOptions2["n"] = 3] = "n";
-      excludeOptions2[excludeOptions2["file"] = 4] = "file";
-      excludeOptions2[excludeOptions2["format"] = 5] = "format";
-      excludeOptions2[excludeOptions2["from"] = 6] = "from";
-      excludeOptions2[excludeOptions2["to"] = 7] = "to";
-      excludeOptions2[excludeOptions2["splitter"] = 8] = "splitter";
-      excludeOptions2[excludeOptions2["symmetric"] = 9] = "symmetric";
-      excludeOptions2[excludeOptions2["mailMap"] = 10] = "mailMap";
-      excludeOptions2[excludeOptions2["multiLine"] = 11] = "multiLine";
-      excludeOptions2[excludeOptions2["strictDate"] = 12] = "strictDate";
-      return excludeOptions2;
-    })(excludeOptions || {});
+var Z2 = class {
+  constructor(e, n5 = null, r2) {
+    this.reason = e, this.file = n5, this.meta = r2;
   }
-});
-var MergeSummaryConflict;
-var MergeSummaryDetail;
-var init_MergeSummary = __esm2({
-  "src/lib/responses/MergeSummary.ts"() {
-    "use strict";
-    MergeSummaryConflict = class {
-      constructor(reason, file = null, meta) {
-        this.reason = reason;
-        this.file = file;
-        this.meta = meta;
-      }
-      toString() {
-        return `${this.file}:${this.reason}`;
-      }
-    };
-    MergeSummaryDetail = class {
-      constructor() {
-        this.conflicts = [];
-        this.merges = [];
-        this.result = "success";
-      }
-      get failed() {
-        return this.conflicts.length > 0;
-      }
-      get reason() {
-        return this.result;
-      }
-      toString() {
-        if (this.conflicts.length) {
-          return `CONFLICTS: ${this.conflicts.join(", ")}`;
-        }
-        return "OK";
-      }
+  toString() {
+    return `${this.file}:${this.reason}`;
+  }
+};
+var dr = class {
+  constructor() {
+    this.conflicts = [], this.merges = [], this.result = "success";
+  }
+  get failed() {
+    return this.conflicts.length > 0;
+  }
+  get reason() {
+    return this.result;
+  }
+  toString() {
+    return this.conflicts.length ? `CONFLICTS: ${this.conflicts.join(", ")}` : "OK";
+  }
+};
+var ie2 = class {
+  constructor() {
+    this.remoteMessages = {
+      all: []
+    }, this.created = [], this.deleted = [], this.files = [], this.deletions = {}, this.insertions = {}, this.summary = {
+      changes: 0,
+      deletions: 0,
+      insertions: 0
     };
   }
-});
-var PullSummary;
-var PullFailedSummary;
-var init_PullSummary = __esm2({
-  "src/lib/responses/PullSummary.ts"() {
-    "use strict";
-    PullSummary = class {
-      constructor() {
-        this.remoteMessages = {
-          all: []
-        };
-        this.created = [];
-        this.deleted = [];
-        this.files = [];
-        this.deletions = {};
-        this.insertions = {};
-        this.summary = {
-          changes: 0,
-          deletions: 0,
-          insertions: 0
-        };
-      }
-    };
-    PullFailedSummary = class {
-      constructor() {
-        this.remote = "";
-        this.hash = {
-          local: "",
-          remote: ""
-        };
-        this.branch = {
-          local: "",
-          remote: ""
-        };
-        this.message = "";
-      }
-      toString() {
-        return this.message;
-      }
-    };
+};
+var gr = class {
+  constructor() {
+    this.remote = "", this.hash = {
+      local: "",
+      remote: ""
+    }, this.branch = {
+      local: "",
+      remote: ""
+    }, this.message = "";
   }
-});
-function objectEnumerationResult(remoteMessages) {
-  return remoteMessages.objects = remoteMessages.objects || {
+  toString() {
+    return this.message;
+  }
+};
+function tt2(t2) {
+  return t2.objects = t2.objects || {
     compressing: 0,
     counting: 0,
     enumerating: 0,
@@ -9993,583 +9263,373 @@ function objectEnumerationResult(remoteMessages) {
     total: { count: 0, delta: 0 }
   };
 }
-function asObjectCount(source) {
-  const count = /^\s*(\d+)/.exec(source);
-  const delta = /delta (\d+)/i.exec(source);
+function Ct2(t2) {
+  const e = /^\s*(\d+)/.exec(t2), n5 = /delta (\d+)/i.exec(t2);
   return {
-    count: asNumber(count && count[1] || "0"),
-    delta: asNumber(delta && delta[1] || "0")
+    count: p(e && e[1] || "0"),
+    delta: p(n5 && n5[1] || "0")
   };
 }
-var remoteMessagesObjectParsers;
-var init_parse_remote_objects = __esm2({
-  "src/lib/parsers/parse-remote-objects.ts"() {
-    "use strict";
-    init_utils();
-    remoteMessagesObjectParsers = [
-      new RemoteLineParser(
-        /^remote:\s*(enumerating|counting|compressing) objects: (\d+),/i,
-        (result, [action, count]) => {
-          const key = action.toLowerCase();
-          const enumeration = objectEnumerationResult(result.remoteMessages);
-          Object.assign(enumeration, { [key]: asNumber(count) });
-        }
-      ),
-      new RemoteLineParser(
-        /^remote:\s*(enumerating|counting|compressing) objects: \d+% \(\d+\/(\d+)\),/i,
-        (result, [action, count]) => {
-          const key = action.toLowerCase();
-          const enumeration = objectEnumerationResult(result.remoteMessages);
-          Object.assign(enumeration, { [key]: asNumber(count) });
-        }
-      ),
-      new RemoteLineParser(
-        /total ([^,]+), reused ([^,]+), pack-reused (\d+)/i,
-        (result, [total, reused, packReused]) => {
-          const objects = objectEnumerationResult(result.remoteMessages);
-          objects.total = asObjectCount(total);
-          objects.reused = asObjectCount(reused);
-          objects.packReused = asNumber(packReused);
-        }
-      )
-    ];
-  }
-});
-function parseRemoteMessages(_stdOut, stdErr) {
-  return parseStringResponse({ remoteMessages: new RemoteMessageSummary() }, parsers2, stdErr);
-}
-var parsers2;
-var RemoteMessageSummary;
-var init_parse_remote_messages = __esm2({
-  "src/lib/parsers/parse-remote-messages.ts"() {
-    "use strict";
-    init_utils();
-    init_parse_remote_objects();
-    parsers2 = [
-      new RemoteLineParser(/^remote:\s*(.+)$/, (result, [text]) => {
-        result.remoteMessages.all.push(text.trim());
-        return false;
-      }),
-      ...remoteMessagesObjectParsers,
-      new RemoteLineParser(
-        [/create a (?:pull|merge) request/i, /\s(https?:\/\/\S+)$/],
-        (result, [pullRequestUrl]) => {
-          result.remoteMessages.pullRequestUrl = pullRequestUrl;
-        }
-      ),
-      new RemoteLineParser(
-        [/found (\d+) vulnerabilities.+\(([^)]+)\)/i, /\s(https?:\/\/\S+)$/],
-        (result, [count, summary, url]) => {
-          result.remoteMessages.vulnerabilities = {
-            count: asNumber(count),
-            summary,
-            url
-          };
-        }
-      )
-    ];
-    RemoteMessageSummary = class {
-      constructor() {
-        this.all = [];
-      }
-    };
-  }
-});
-function parsePullErrorResult(stdOut, stdErr) {
-  const pullError = parseStringResponse(new PullFailedSummary(), errorParsers, [stdOut, stdErr]);
-  return pullError.message && pullError;
-}
-var FILE_UPDATE_REGEX;
-var SUMMARY_REGEX;
-var ACTION_REGEX;
-var parsers3;
-var errorParsers;
-var parsePullDetail;
-var parsePullResult;
-var init_parse_pull = __esm2({
-  "src/lib/parsers/parse-pull.ts"() {
-    "use strict";
-    init_PullSummary();
-    init_utils();
-    init_parse_remote_messages();
-    FILE_UPDATE_REGEX = /^\s*(.+?)\s+\|\s+\d+\s*(\+*)(-*)/;
-    SUMMARY_REGEX = /(\d+)\D+((\d+)\D+\(\+\))?(\D+(\d+)\D+\(-\))?/;
-    ACTION_REGEX = /^(create|delete) mode \d+ (.+)/;
-    parsers3 = [
-      new LineParser(FILE_UPDATE_REGEX, (result, [file, insertions, deletions]) => {
-        result.files.push(file);
-        if (insertions) {
-          result.insertions[file] = insertions.length;
-        }
-        if (deletions) {
-          result.deletions[file] = deletions.length;
-        }
-      }),
-      new LineParser(SUMMARY_REGEX, (result, [changes, , insertions, , deletions]) => {
-        if (insertions !== void 0 || deletions !== void 0) {
-          result.summary.changes = +changes || 0;
-          result.summary.insertions = +insertions || 0;
-          result.summary.deletions = +deletions || 0;
-          return true;
-        }
-        return false;
-      }),
-      new LineParser(ACTION_REGEX, (result, [action, file]) => {
-        append(result.files, file);
-        append(action === "create" ? result.created : result.deleted, file);
-      })
-    ];
-    errorParsers = [
-      new LineParser(/^from\s(.+)$/i, (result, [remote]) => void (result.remote = remote)),
-      new LineParser(/^fatal:\s(.+)$/, (result, [message]) => void (result.message = message)),
-      new LineParser(
-        /([a-z0-9]+)\.\.([a-z0-9]+)\s+(\S+)\s+->\s+(\S+)$/,
-        (result, [hashLocal, hashRemote, branchLocal, branchRemote]) => {
-          result.branch.local = branchLocal;
-          result.hash.local = hashLocal;
-          result.branch.remote = branchRemote;
-          result.hash.remote = hashRemote;
-        }
-      )
-    ];
-    parsePullDetail = (stdOut, stdErr) => {
-      return parseStringResponse(new PullSummary(), parsers3, [stdOut, stdErr]);
-    };
-    parsePullResult = (stdOut, stdErr) => {
-      return Object.assign(
-        new PullSummary(),
-        parsePullDetail(stdOut, stdErr),
-        parseRemoteMessages(stdOut, stdErr)
-      );
-    };
-  }
-});
-var parsers4;
-var parseMergeResult;
-var parseMergeDetail;
-var init_parse_merge = __esm2({
-  "src/lib/parsers/parse-merge.ts"() {
-    "use strict";
-    init_MergeSummary();
-    init_utils();
-    init_parse_pull();
-    parsers4 = [
-      new LineParser(/^Auto-merging\s+(.+)$/, (summary, [autoMerge]) => {
-        summary.merges.push(autoMerge);
-      }),
-      new LineParser(/^CONFLICT\s+\((.+)\): Merge conflict in (.+)$/, (summary, [reason, file]) => {
-        summary.conflicts.push(new MergeSummaryConflict(reason, file));
-      }),
-      new LineParser(
-        /^CONFLICT\s+\((.+\/delete)\): (.+) deleted in (.+) and/,
-        (summary, [reason, file, deleteRef]) => {
-          summary.conflicts.push(new MergeSummaryConflict(reason, file, { deleteRef }));
-        }
-      ),
-      new LineParser(/^CONFLICT\s+\((.+)\):/, (summary, [reason]) => {
-        summary.conflicts.push(new MergeSummaryConflict(reason, null));
-      }),
-      new LineParser(/^Automatic merge failed;\s+(.+)$/, (summary, [result]) => {
-        summary.result = result;
-      })
-    ];
-    parseMergeResult = (stdOut, stdErr) => {
-      return Object.assign(parseMergeDetail(stdOut, stdErr), parsePullResult(stdOut, stdErr));
-    };
-    parseMergeDetail = (stdOut) => {
-      return parseStringResponse(new MergeSummaryDetail(), parsers4, stdOut);
-    };
-  }
-});
-function mergeTask(customArgs) {
-  if (!customArgs.length) {
-    return configurationErrorTask("Git.merge requires at least one option");
-  }
-  return {
-    commands: ["merge", ...customArgs],
-    format: "utf-8",
-    parser(stdOut, stdErr) {
-      const merge = parseMergeResult(stdOut, stdErr);
-      if (merge.failed) {
-        throw new GitResponseError(merge);
-      }
-      return merge;
+var yr = [
+  new x3(
+    /^remote:\s*(enumerating|counting|compressing) objects: (\d+),/i,
+    (t2, [e, n5]) => {
+      const r2 = e.toLowerCase(), s = tt2(t2.remoteMessages);
+      Object.assign(s, { [r2]: p(n5) });
     }
-  };
-}
-var init_merge = __esm2({
-  "src/lib/tasks/merge.ts"() {
-    "use strict";
-    init_git_response_error();
-    init_parse_merge();
-    init_task();
-  }
-});
-function pushResultPushedItem(local, remote, status) {
-  const deleted = status.includes("deleted");
-  const tag = status.includes("tag") || /^refs\/tags/.test(local);
-  const alreadyUpdated = !status.includes("new");
-  return {
-    deleted,
-    tag,
-    branch: !tag,
-    new: !alreadyUpdated,
-    alreadyUpdated,
-    local,
-    remote
-  };
-}
-var parsers5;
-var parsePushResult;
-var parsePushDetail;
-var init_parse_push = __esm2({
-  "src/lib/parsers/parse-push.ts"() {
-    "use strict";
-    init_utils();
-    init_parse_remote_messages();
-    parsers5 = [
-      new LineParser(/^Pushing to (.+)$/, (result, [repo]) => {
-        result.repo = repo;
-      }),
-      new LineParser(/^updating local tracking ref '(.+)'/, (result, [local]) => {
-        result.ref = {
-          ...result.ref || {},
-          local
-        };
-      }),
-      new LineParser(/^[=*-]\s+([^:]+):(\S+)\s+\[(.+)]$/, (result, [local, remote, type]) => {
-        result.pushed.push(pushResultPushedItem(local, remote, type));
-      }),
-      new LineParser(
-        /^Branch '([^']+)' set up to track remote branch '([^']+)' from '([^']+)'/,
-        (result, [local, remote, remoteName]) => {
-          result.branch = {
-            ...result.branch || {},
-            local,
-            remote,
-            remoteName
-          };
-        }
-      ),
-      new LineParser(
-        /^([^:]+):(\S+)\s+([a-z0-9]+)\.\.([a-z0-9]+)$/,
-        (result, [local, remote, from, to]) => {
-          result.update = {
-            head: {
-              local,
-              remote
-            },
-            hash: {
-              from,
-              to
-            }
-          };
-        }
-      )
-    ];
-    parsePushResult = (stdOut, stdErr) => {
-      const pushDetail = parsePushDetail(stdOut, stdErr);
-      const responseDetail = parseRemoteMessages(stdOut, stdErr);
-      return {
-        ...pushDetail,
-        ...responseDetail
+  ),
+  new x3(
+    /^remote:\s*(enumerating|counting|compressing) objects: \d+% \(\d+\/(\d+)\),/i,
+    (t2, [e, n5]) => {
+      const r2 = e.toLowerCase(), s = tt2(t2.remoteMessages);
+      Object.assign(s, { [r2]: p(n5) });
+    }
+  ),
+  new x3(
+    /total ([^,]+), reused ([^,]+), pack-reused (\d+)/i,
+    (t2, [e, n5, r2]) => {
+      const s = tt2(t2.remoteMessages);
+      s.total = Ct2(e), s.reused = Ct2(n5), s.packReused = p(r2);
+    }
+  )
+];
+var wr = [
+  new x3(/^remote:\s*(.+)$/, (t2, [e]) => (t2.remoteMessages.all.push(e.trim()), false)),
+  ...yr,
+  new x3(
+    [/create a (?:pull|merge) request/i, /\s(https?:\/\/\S+)$/],
+    (t2, [e]) => {
+      t2.remoteMessages.pullRequestUrl = e;
+    }
+  ),
+  new x3(
+    [/found (\d+) vulnerabilities.+\(([^)]+)\)/i, /\s(https?:\/\/\S+)$/],
+    (t2, [e, n5, r2]) => {
+      t2.remoteMessages.vulnerabilities = {
+        count: p(e),
+        summary: n5,
+        url: r2
       };
-    };
-    parsePushDetail = (stdOut, stdErr) => {
-      return parseStringResponse({ pushed: [] }, parsers5, [stdOut, stdErr]);
-    };
-  }
-});
-var push_exports = {};
-__export2(push_exports, {
-  pushTagsTask: () => pushTagsTask,
-  pushTask: () => pushTask
-});
-function pushTagsTask(ref = {}, customArgs) {
-  append(customArgs, "--tags");
-  return pushTask(ref, customArgs);
+    }
+  )
+];
+function ae2(t2, e) {
+  return E2({ remoteMessages: new br() }, wr, e);
 }
-function pushTask(ref = {}, customArgs) {
-  const commands = ["push", ...customArgs];
-  if (ref.branch) {
-    commands.splice(1, 0, ref.branch);
+var br = class {
+  constructor() {
+    this.all = [];
   }
-  if (ref.remote) {
-    commands.splice(1, 0, ref.remote);
-  }
-  remove(commands, "-v");
-  append(commands, "--verbose");
-  append(commands, "--porcelain");
-  return {
-    commands,
+};
+var Tr = /^\s*(.+?)\s+\|\s+\d+\s*(\+*)(-*)/;
+var kr = /(\d+)\D+((\d+)\D+\(\+\))?(\D+(\d+)\D+\(-\))?/;
+var _r7 = /^(create|delete) mode \d+ (.+)/;
+var vr = [
+  new l2(Tr, (t2, [e, n5, r2]) => {
+    t2.files.push(e), n5 && (t2.insertions[e] = n5.length), r2 && (t2.deletions[e] = r2.length);
+  }),
+  new l2(kr, (t2, [e, , n5, , r2]) => n5 !== void 0 || r2 !== void 0 ? (t2.summary.changes = +e || 0, t2.summary.insertions = +n5 || 0, t2.summary.deletions = +r2 || 0, true) : false),
+  new l2(_r7, (t2, [e, n5]) => {
+    S2(t2.files, n5), S2(e === "create" ? t2.created : t2.deleted, n5);
+  })
+];
+var Er = [
+  new l2(/^from\s(.+)$/i, (t2, [e]) => {
+    t2.remote = e;
+  }),
+  new l2(/^fatal:\s(.+)$/, (t2, [e]) => {
+    t2.message = e;
+  }),
+  new l2(
+    /([a-z0-9]+)\.\.([a-z0-9]+)\s+(\S+)\s+->\s+(\S+)$/,
+    (t2, [e, n5, r2, s]) => {
+      t2.branch.local = r2, t2.hash.local = e, t2.branch.remote = s, t2.hash.remote = n5;
+    }
+  )
+];
+var Sr = (t2, e) => E2(new ie2(), vr, [t2, e]);
+var ue2 = (t2, e) => Object.assign(
+  new ie2(),
+  Sr(t2, e),
+  ae2(t2, e)
+);
+function Rr(t2, e) {
+  const n5 = E2(new gr(), Er, [t2, e]);
+  return n5.message && n5;
+}
+var Or = [
+  new l2(/^Auto-merging\s+(.+)$/, (t2, [e]) => {
+    t2.merges.push(e);
+  }),
+  new l2(/^CONFLICT\s+\((.+)\): Merge conflict in (.+)$/, (t2, [e, n5]) => {
+    t2.conflicts.push(new Z2(e, n5));
+  }),
+  new l2(
+    /^CONFLICT\s+\((.+\/delete)\): (.+) deleted in (.+) and/,
+    (t2, [e, n5, r2]) => {
+      t2.conflicts.push(new Z2(e, n5, { deleteRef: r2 }));
+    }
+  ),
+  new l2(/^CONFLICT\s+\((.+)\):/, (t2, [e]) => {
+    t2.conflicts.push(new Z2(e, null));
+  }),
+  new l2(/^Automatic merge failed;\s+(.+)$/, (t2, [e]) => {
+    t2.result = e;
+  })
+];
+var Cr2 = (t2, e) => Object.assign(Ar(t2), ue2(t2, e));
+var Ar = (t2) => E2(new dr(), Or, t2);
+function At2(t2) {
+  return t2.length ? {
+    commands: ["merge", ...t2],
     format: "utf-8",
-    parser: parsePushResult
+    parser(e, n5) {
+      const r2 = Cr2(e, n5);
+      if (r2.failed)
+        throw new at2(r2);
+      return r2;
+    }
+  } : b2("Git.merge requires at least one option");
+}
+function xr(t2, e, n5) {
+  const r2 = n5.includes("deleted"), s = n5.includes("tag") || /^refs\/tags/.test(t2), o2 = !n5.includes("new");
+  return {
+    deleted: r2,
+    tag: s,
+    branch: !s,
+    new: !o2,
+    alreadyUpdated: o2,
+    local: t2,
+    remote: e
   };
 }
-var init_push = __esm2({
-  "src/lib/tasks/push.ts"() {
-    "use strict";
-    init_parse_push();
-    init_utils();
-  }
-});
-function show_default() {
+var Nr = [
+  new l2(/^Pushing to (.+)$/, (t2, [e]) => {
+    t2.repo = e;
+  }),
+  new l2(/^updating local tracking ref '(.+)'/, (t2, [e]) => {
+    t2.ref = {
+      ...t2.ref || {},
+      local: e
+    };
+  }),
+  new l2(/^[=*-]\s+([^:]+):(\S+)\s+\[(.+)]$/, (t2, [e, n5, r2]) => {
+    t2.pushed.push(xr(e, n5, r2));
+  }),
+  new l2(
+    /^Branch '([^']+)' set up to track remote branch '([^']+)' from '([^']+)'/,
+    (t2, [e, n5, r2]) => {
+      t2.branch = {
+        ...t2.branch || {},
+        local: e,
+        remote: n5,
+        remoteName: r2
+      };
+    }
+  ),
+  new l2(
+    /^([^:]+):(\S+)\s+([a-z0-9]+)\.\.([a-z0-9]+)$/,
+    (t2, [e, n5, r2, s]) => {
+      t2.update = {
+        head: {
+          local: e,
+          remote: n5
+        },
+        hash: {
+          from: r2,
+          to: s
+        }
+      };
+    }
+  )
+];
+var $r = (t2, e) => {
+  const n5 = Pr(t2, e), r2 = ae2(t2, e);
+  return {
+    ...n5,
+    ...r2
+  };
+};
+var Pr = (t2, e) => E2({ pushed: [] }, Nr, [t2, e]);
+function Mr(t2 = {}, e) {
+  return S2(e, "--tags"), ce2(t2, e);
+}
+function ce2(t2 = {}, e) {
+  const n5 = ["push", ...e];
+  return t2.branch && n5.splice(1, 0, t2.branch), t2.remote && n5.splice(1, 0, t2.remote), ct(n5, "-v"), S2(n5, "--verbose"), S2(n5, "--porcelain"), {
+    commands: n5,
+    format: "utf-8",
+    parser: $r
+  };
+}
+function Dr() {
   return {
     showBuffer() {
-      const commands = ["show", ...getTrailingOptions(arguments, 1)];
-      if (!commands.includes("--binary")) {
-        commands.splice(1, 0, "--binary");
-      }
-      return this._runTask(
-        straightThroughBufferTask(commands),
-        trailingFunctionArgument(arguments)
+      const t2 = ["show", ...h2(arguments, 1)];
+      return t2.includes("--binary") || t2.splice(1, 0, "--binary"), this._runTask(
+        Gt2(t2),
+        u(arguments)
       );
     },
     show() {
-      const commands = ["show", ...getTrailingOptions(arguments, 1)];
+      const t2 = ["show", ...h2(arguments, 1)];
       return this._runTask(
-        straightThroughStringTask(commands),
-        trailingFunctionArgument(arguments)
+        g(t2),
+        u(arguments)
       );
     }
   };
 }
-var init_show = __esm2({
-  "src/lib/tasks/show.ts"() {
-    "use strict";
-    init_utils();
-    init_task();
+var Lr = /^(.+)\0(.+)$/;
+var jr = class {
+  constructor(e, n5, r2) {
+    if (this.path = e, this.index = n5, this.working_dir = r2, n5 === "R" || r2 === "R") {
+      const s = Lr.exec(e) || [null, e, e];
+      this.from = s[2] || "", this.path = s[1] || "";
+    }
   }
-});
-var fromPathRegex;
-var FileStatusSummary;
-var init_FileStatusSummary = __esm2({
-  "src/lib/responses/FileStatusSummary.ts"() {
-    "use strict";
-    fromPathRegex = /^(.+)\0(.+)$/;
-    FileStatusSummary = class {
-      constructor(path16, index, working_dir) {
-        this.path = path16;
-        this.index = index;
-        this.working_dir = working_dir;
-        if (index === "R" || working_dir === "R") {
-          const detail = fromPathRegex.exec(path16) || [null, path16, path16];
-          this.from = detail[2] || "";
-          this.path = detail[1] || "";
-        }
-      }
-    };
+};
+var Br = class {
+  constructor() {
+    this.not_added = [], this.conflicted = [], this.created = [], this.deleted = [], this.ignored = void 0, this.modified = [], this.renamed = [], this.files = [], this.staged = [], this.ahead = 0, this.behind = 0, this.current = null, this.tracking = null, this.detached = false, this.isClean = () => !this.files.length;
   }
-});
-function renamedFile(line) {
-  const [to, from] = line.split(NULL);
+};
+function xt2(t2) {
+  const [e, n5] = t2.split(I3);
   return {
-    from: from || to,
-    to
+    from: n5 || e,
+    to: e
   };
 }
-function parser3(indexX, indexY, handler) {
-  return [`${indexX}${indexY}`, handler];
+function _3(t2, e, n5) {
+  return [`${t2}${e}`, n5];
 }
-function conflicts(indexX, ...indexY) {
-  return indexY.map((y2) => parser3(indexX, y2, (result, file) => result.conflicted.push(file)));
+function et2(t2, ...e) {
+  return e.map((n5) => _3(t2, n5, (r2, s) => r2.conflicted.push(s)));
 }
-function splitLine(result, lineStr) {
-  const trimmed2 = lineStr.trim();
+var Ir = new Map([
+  _3(
+    " ",
+    "A",
+    (t2, e) => t2.created.push(e)
+  ),
+  _3(
+    " ",
+    "D",
+    (t2, e) => t2.deleted.push(e)
+  ),
+  _3(
+    " ",
+    "M",
+    (t2, e) => t2.modified.push(e)
+  ),
+  _3("A", " ", (t2, e) => {
+    t2.created.push(e), t2.staged.push(e);
+  }),
+  _3("A", "M", (t2, e) => {
+    t2.created.push(e), t2.staged.push(e), t2.modified.push(e);
+  }),
+  _3("D", " ", (t2, e) => {
+    t2.deleted.push(e), t2.staged.push(e);
+  }),
+  _3("M", " ", (t2, e) => {
+    t2.modified.push(e), t2.staged.push(e);
+  }),
+  _3("M", "M", (t2, e) => {
+    t2.modified.push(e), t2.staged.push(e);
+  }),
+  _3("R", " ", (t2, e) => {
+    t2.renamed.push(xt2(e));
+  }),
+  _3("R", "M", (t2, e) => {
+    const n5 = xt2(e);
+    t2.renamed.push(n5), t2.modified.push(n5.to);
+  }),
+  _3("!", "!", (t2, e) => {
+    (t2.ignored = t2.ignored || []).push(e);
+  }),
+  _3(
+    "?",
+    "?",
+    (t2, e) => t2.not_added.push(e)
+  ),
+  ...et2(
+    "A",
+    "A",
+    "U"
+    /* UNMERGED */
+  ),
+  ...et2(
+    "D",
+    "D",
+    "U"
+    /* UNMERGED */
+  ),
+  ...et2(
+    "U",
+    "A",
+    "D",
+    "U"
+    /* UNMERGED */
+  ),
+  [
+    "##",
+    (t2, e) => {
+      const n5 = /ahead (\d+)/, r2 = /behind (\d+)/, s = /^(.+?(?=(?:\.{3}|\s|$)))/, o2 = /\.{3}(\S*)/, i = /\son\s(\S+?)(?=\.{3}|$)/;
+      let a = n5.exec(e);
+      t2.ahead = a && +a[1] || 0, a = r2.exec(e), t2.behind = a && +a[1] || 0, a = s.exec(e), t2.current = d(a?.[1], m, null), a = o2.exec(e), t2.tracking = d(a?.[1], m, null), a = i.exec(e), a && (t2.current = d(a?.[1], m, t2.current)), t2.detached = /\(no branch\)/.test(e);
+    }
+  ]
+]);
+var Ur = function(t2) {
+  const e = t2.split(I3), n5 = new Br();
+  for (let r2 = 0, s = e.length; r2 < s; ) {
+    let o2 = e[r2++].trim();
+    o2 && (o2.charAt(0) === "R" && (o2 += I3 + (e[r2++] || "")), Fr(n5, o2));
+  }
+  return n5;
+};
+function Fr(t2, e) {
+  const n5 = e.trim();
   switch (" ") {
-    case trimmed2.charAt(2):
-      return data(trimmed2.charAt(0), trimmed2.charAt(1), trimmed2.slice(3));
-    case trimmed2.charAt(1):
-      return data(" ", trimmed2.charAt(0), trimmed2.slice(2));
+    case n5.charAt(2):
+      return r2(n5.charAt(0), n5.charAt(1), n5.slice(3));
+    case n5.charAt(1):
+      return r2(" ", n5.charAt(0), n5.slice(2));
     default:
       return;
   }
-  function data(index, workingDir, path16) {
-    const raw = `${index}${workingDir}`;
-    const handler = parsers6.get(raw);
-    if (handler) {
-      handler(result, path16);
-    }
-    if (raw !== "##" && raw !== "!!") {
-      result.files.push(new FileStatusSummary(path16, index, workingDir));
-    }
+  function r2(s, o2, i) {
+    const a = `${s}${o2}`, c3 = Ir.get(a);
+    c3 && c3(t2, i), a !== "##" && a !== "!!" && t2.files.push(new jr(i, s, o2));
   }
 }
-var StatusSummary;
-var parsers6;
-var parseStatusSummary;
-var init_StatusSummary = __esm2({
-  "src/lib/responses/StatusSummary.ts"() {
-    "use strict";
-    init_utils();
-    init_FileStatusSummary();
-    StatusSummary = class {
-      constructor() {
-        this.not_added = [];
-        this.conflicted = [];
-        this.created = [];
-        this.deleted = [];
-        this.ignored = void 0;
-        this.modified = [];
-        this.renamed = [];
-        this.files = [];
-        this.staged = [];
-        this.ahead = 0;
-        this.behind = 0;
-        this.current = null;
-        this.tracking = null;
-        this.detached = false;
-        this.isClean = () => {
-          return !this.files.length;
-        };
-      }
-    };
-    parsers6 = new Map([
-      parser3(
-        " ",
-        "A",
-        (result, file) => result.created.push(file)
-      ),
-      parser3(
-        " ",
-        "D",
-        (result, file) => result.deleted.push(file)
-      ),
-      parser3(
-        " ",
-        "M",
-        (result, file) => result.modified.push(file)
-      ),
-      parser3("A", " ", (result, file) => {
-        result.created.push(file);
-        result.staged.push(file);
-      }),
-      parser3("A", "M", (result, file) => {
-        result.created.push(file);
-        result.staged.push(file);
-        result.modified.push(file);
-      }),
-      parser3("D", " ", (result, file) => {
-        result.deleted.push(file);
-        result.staged.push(file);
-      }),
-      parser3("M", " ", (result, file) => {
-        result.modified.push(file);
-        result.staged.push(file);
-      }),
-      parser3("M", "M", (result, file) => {
-        result.modified.push(file);
-        result.staged.push(file);
-      }),
-      parser3("R", " ", (result, file) => {
-        result.renamed.push(renamedFile(file));
-      }),
-      parser3("R", "M", (result, file) => {
-        const renamed = renamedFile(file);
-        result.renamed.push(renamed);
-        result.modified.push(renamed.to);
-      }),
-      parser3("!", "!", (_result, _file) => {
-        (_result.ignored = _result.ignored || []).push(_file);
-      }),
-      parser3(
-        "?",
-        "?",
-        (result, file) => result.not_added.push(file)
-      ),
-      ...conflicts(
-        "A",
-        "A",
-        "U"
-        /* UNMERGED */
-      ),
-      ...conflicts(
-        "D",
-        "D",
-        "U"
-        /* UNMERGED */
-      ),
-      ...conflicts(
-        "U",
-        "A",
-        "D",
-        "U"
-        /* UNMERGED */
-      ),
-      [
-        "##",
-        (result, line) => {
-          const aheadReg = /ahead (\d+)/;
-          const behindReg = /behind (\d+)/;
-          const currentReg = /^(.+?(?=(?:\.{3}|\s|$)))/;
-          const trackingReg = /\.{3}(\S*)/;
-          const onEmptyBranchReg = /\son\s(\S+?)(?=\.{3}|$)/;
-          let regexResult = aheadReg.exec(line);
-          result.ahead = regexResult && +regexResult[1] || 0;
-          regexResult = behindReg.exec(line);
-          result.behind = regexResult && +regexResult[1] || 0;
-          regexResult = currentReg.exec(line);
-          result.current = filterType(regexResult?.[1], filterString, null);
-          regexResult = trackingReg.exec(line);
-          result.tracking = filterType(regexResult?.[1], filterString, null);
-          regexResult = onEmptyBranchReg.exec(line);
-          if (regexResult) {
-            result.current = filterType(regexResult?.[1], filterString, result.current);
-          }
-          result.detached = /\(no branch\)/.test(line);
-        }
-      ]
-    ]);
-    parseStatusSummary = function(text) {
-      const lines = text.split(NULL);
-      const status = new StatusSummary();
-      for (let i2 = 0, l = lines.length; i2 < l; ) {
-        let line = lines[i2++].trim();
-        if (!line) {
-          continue;
-        }
-        if (line.charAt(0) === "R") {
-          line += NULL + (lines[i2++] || "");
-        }
-        splitLine(status, line);
-      }
-      return status;
-    };
-  }
-});
-function statusTask(customArgs) {
-  const commands = [
-    "status",
-    "--porcelain",
-    "-b",
-    "-u",
-    "--null",
-    ...customArgs.filter((arg) => !ignoredOptions.includes(arg))
-  ];
+var Gr = ["--null", "-z"];
+function zr(t2) {
   return {
     format: "utf-8",
-    commands,
-    parser(text) {
-      return parseStatusSummary(text);
+    commands: [
+      "status",
+      "--porcelain",
+      "-b",
+      "-u",
+      "--null",
+      ...t2.filter((n5) => !Gr.includes(n5))
+    ],
+    parser(n5) {
+      return Ur(n5);
     }
   };
 }
-var ignoredOptions;
-var init_status = __esm2({
-  "src/lib/tasks/status.ts"() {
-    "use strict";
-    init_StatusSummary();
-    ignoredOptions = ["--null", "-z"];
-  }
-});
-function versionResponse(major = 0, minor = 0, patch = 0, agent = "", installed = true) {
+var fe2 = "installed=false";
+function q3(t2 = 0, e = 0, n5 = 0, r2 = "", s = true) {
   return Object.defineProperty(
     {
-      major,
-      minor,
-      patch,
-      agent,
-      installed
+      major: t2,
+      minor: e,
+      patch: n5,
+      agent: r2,
+      installed: s
     },
     "toString",
     {
@@ -10581,1677 +9641,1166 @@ function versionResponse(major = 0, minor = 0, patch = 0, agent = "", installed 
     }
   );
 }
-function notInstalledResponse() {
-  return versionResponse(0, 0, 0, "", false);
+function qr() {
+  return q3(0, 0, 0, "", false);
 }
-function version_default() {
+function Wr() {
   return {
     version() {
       return this._runTask({
         commands: ["--version"],
         format: "utf-8",
-        parser: versionParser,
-        onError(result, error, done, fail) {
-          if (result.exitCode === -2) {
-            return done(Buffer.from(NOT_INSTALLED));
-          }
-          fail(error);
+        parser: Kr,
+        onError(t2, e, n5, r2) {
+          if (t2.exitCode === V3.NOT_FOUND)
+            return n5(Buffer.from(fe2));
+          r2(e);
         }
       });
     }
   };
 }
-function versionParser(stdOut) {
-  if (stdOut === NOT_INSTALLED) {
-    return notInstalledResponse();
-  }
-  return parseStringResponse(versionResponse(0, 0, 0, stdOut), parsers7, stdOut);
-}
-var NOT_INSTALLED;
-var parsers7;
-var init_version = __esm2({
-  "src/lib/tasks/version.ts"() {
-    "use strict";
-    init_utils();
-    NOT_INSTALLED = "installed=false";
-    parsers7 = [
-      new LineParser(
-        /version (\d+)\.(\d+)\.(\d+)(?:\s*\((.+)\))?/,
-        (result, [major, minor, patch, agent = ""]) => {
-          Object.assign(
-            result,
-            versionResponse(asNumber(major), asNumber(minor), asNumber(patch), agent)
-          );
-        }
-      ),
-      new LineParser(
-        /version (\d+)\.(\d+)\.(\D+)(.+)?$/,
-        (result, [major, minor, patch, agent = ""]) => {
-          Object.assign(result, versionResponse(asNumber(major), asNumber(minor), patch, agent));
-        }
-      )
-    ];
-  }
-});
-function createCloneTask(api, task, repoPath, ...args) {
-  if (!filterString(repoPath)) {
-    return configurationErrorTask(`git.${api}() requires a string 'repoPath'`);
-  }
-  return task(repoPath, filterType(args[0], filterString), getTrailingOptions(arguments));
-}
-function clone_default() {
-  return {
-    clone(repo, ...rest) {
-      return this._runTask(
-        createCloneTask("clone", cloneTask, filterType(repo, filterString), ...rest),
-        trailingFunctionArgument(arguments)
-      );
-    },
-    mirror(repo, ...rest) {
-      return this._runTask(
-        createCloneTask("mirror", cloneMirrorTask, filterType(repo, filterString), ...rest),
-        trailingFunctionArgument(arguments)
+var Hr = [
+  new l2(
+    /version (\d+)\.(\d+)\.(\d+)(?:\s*\((.+)\))?/,
+    (t2, [e, n5, r2, s = ""]) => {
+      Object.assign(
+        t2,
+        q3(p(e), p(n5), p(r2), s)
       );
     }
-  };
+  ),
+  new l2(
+    /version (\d+)\.(\d+)\.(\D+)(.+)?$/,
+    (t2, [e, n5, r2, s = ""]) => {
+      Object.assign(t2, q3(p(e), p(n5), r2, s));
+    }
+  )
+];
+function Kr(t2) {
+  return t2 === fe2 ? qr() : E2(q3(0, 0, 0, t2), Hr, t2);
 }
-var cloneTask;
-var cloneMirrorTask;
-var init_clone = __esm2({
-  "src/lib/tasks/clone.ts"() {
-    "use strict";
-    init_task();
-    init_utils();
-    cloneTask = (repo, directory, customArgs) => {
-      const commands = ["clone", ...customArgs];
-      filterString(repo) && commands.push(c(repo));
-      filterString(directory) && commands.push(c(directory));
-      return straightThroughStringTask(commands);
-    };
-    cloneMirrorTask = (repo, directory, customArgs) => {
-      append(customArgs, "--mirror");
-      return cloneTask(repo, directory, customArgs);
-    };
+var le2 = class {
+  constructor(e) {
+    this._executor = e;
   }
-});
-var simple_git_api_exports = {};
-__export2(simple_git_api_exports, {
-  SimpleGitApi: () => SimpleGitApi
-});
-var SimpleGitApi;
-var init_simple_git_api = __esm2({
-  "src/lib/simple-git-api.ts"() {
-    "use strict";
-    init_task_callback();
-    init_change_working_directory();
-    init_checkout();
-    init_count_objects();
-    init_commit();
-    init_config();
-    init_first_commit();
-    init_grep();
-    init_hash_object();
-    init_init();
-    init_log();
-    init_merge();
-    init_push();
-    init_show();
-    init_status();
-    init_task();
-    init_version();
-    init_utils();
-    init_clone();
-    SimpleGitApi = class {
-      constructor(_executor) {
-        this._executor = _executor;
-      }
-      _runTask(task, then) {
-        const chain = this._executor.chain();
-        const promise = chain.push(task);
-        if (then) {
-          taskCallback(task, promise, then);
-        }
-        return Object.create(this, {
-          then: { value: promise.then.bind(promise) },
-          catch: { value: promise.catch.bind(promise) },
-          _executor: { value: chain }
-        });
-      }
-      add(files) {
-        return this._runTask(
-          straightThroughStringTask(["add", ...asArray(files)]),
-          trailingFunctionArgument(arguments)
-        );
-      }
-      cwd(directory) {
-        const next = trailingFunctionArgument(arguments);
-        if (typeof directory === "string") {
-          return this._runTask(changeWorkingDirectoryTask(directory, this._executor), next);
-        }
-        if (typeof directory?.path === "string") {
-          return this._runTask(
-            changeWorkingDirectoryTask(
-              directory.path,
-              directory.root && this._executor || void 0
-            ),
-            next
-          );
-        }
-        return this._runTask(
-          configurationErrorTask("Git.cwd: workingDirectory must be supplied as a string"),
-          next
-        );
-      }
-      hashObject(path16, write) {
-        return this._runTask(
-          hashObjectTask(path16, write === true),
-          trailingFunctionArgument(arguments)
-        );
-      }
-      init(bare) {
-        return this._runTask(
-          initTask(bare === true, this._executor.cwd, getTrailingOptions(arguments)),
-          trailingFunctionArgument(arguments)
-        );
-      }
-      merge() {
-        return this._runTask(
-          mergeTask(getTrailingOptions(arguments)),
-          trailingFunctionArgument(arguments)
-        );
-      }
-      mergeFromTo(remote, branch) {
-        if (!(filterString(remote) && filterString(branch))) {
-          return this._runTask(
-            configurationErrorTask(
-              `Git.mergeFromTo requires that the 'remote' and 'branch' arguments are supplied as strings`
-            )
-          );
-        }
-        return this._runTask(
-          mergeTask([remote, branch, ...getTrailingOptions(arguments)]),
-          trailingFunctionArgument(arguments, false)
-        );
-      }
-      outputHandler(handler) {
-        this._executor.outputHandler = handler;
-        return this;
-      }
-      push() {
-        const task = pushTask(
-          {
-            remote: filterType(arguments[0], filterString),
-            branch: filterType(arguments[1], filterString)
-          },
-          getTrailingOptions(arguments)
-        );
-        return this._runTask(task, trailingFunctionArgument(arguments));
-      }
-      stash() {
-        return this._runTask(
-          straightThroughStringTask(["stash", ...getTrailingOptions(arguments)]),
-          trailingFunctionArgument(arguments)
-        );
-      }
-      status() {
-        return this._runTask(
-          statusTask(getTrailingOptions(arguments)),
-          trailingFunctionArgument(arguments)
-        );
-      }
-    };
-    Object.assign(
-      SimpleGitApi.prototype,
-      checkout_default(),
-      clone_default(),
-      commit_default(),
-      config_default(),
-      count_objects_default(),
-      first_commit_default(),
-      grep_default(),
-      log_default(),
-      show_default(),
-      version_default()
+  _runTask(e, n5) {
+    const r2 = this._executor.chain(), s = r2.push(e);
+    return n5 && Ln(e, s, n5), Object.create(this, {
+      then: { value: s.then.bind(s) },
+      catch: { value: s.catch.bind(s) },
+      _executor: { value: r2 }
+    });
+  }
+  add(e) {
+    return this._runTask(
+      g(["add", ...v2(e)]),
+      u(arguments)
     );
   }
-});
-var scheduler_exports = {};
-__export2(scheduler_exports, {
-  Scheduler: () => Scheduler
-});
-var createScheduledTask;
-var Scheduler;
-var init_scheduler = __esm2({
-  "src/lib/runners/scheduler.ts"() {
-    "use strict";
-    init_utils();
-    init_git_logger();
-    createScheduledTask = /* @__PURE__ */ (() => {
-      let id = 0;
-      return () => {
-        id++;
-        const { promise, done } = (0, import_promise_deferred.createDeferred)();
-        return {
-          promise,
-          done,
-          id
-        };
-      };
-    })();
-    Scheduler = class {
-      constructor(concurrency = 2) {
-        this.concurrency = concurrency;
-        this.logger = createLogger("", "scheduler");
-        this.pending = [];
-        this.running = [];
-        this.logger(`Constructed, concurrency=%s`, concurrency);
-      }
-      schedule() {
-        if (!this.pending.length || this.running.length >= this.concurrency) {
-          this.logger(
-            `Schedule attempt ignored, pending=%s running=%s concurrency=%s`,
-            this.pending.length,
-            this.running.length,
-            this.concurrency
-          );
-          return;
-        }
-        const task = append(this.running, this.pending.shift());
-        this.logger(`Attempting id=%s`, task.id);
-        task.done(() => {
-          this.logger(`Completing id=`, task.id);
-          remove(this.running, task);
-          this.schedule();
-        });
-      }
-      next() {
-        const { promise, id } = append(this.pending, createScheduledTask());
-        this.logger(`Scheduling id=%s`, id);
-        this.schedule();
-        return promise;
-      }
+  cwd(e) {
+    const n5 = u(arguments);
+    return typeof e == "string" ? this._runTask(St2(e, this._executor), n5) : typeof e?.path == "string" ? this._runTask(
+      St2(
+        e.path,
+        e.root && this._executor || void 0
+      ),
+      n5
+    ) : this._runTask(
+      b2("Git.cwd: workingDirectory must be supplied as a string"),
+      n5
+    );
+  }
+  hashObject(e, n5) {
+    return this._runTask(
+      Vn(e, n5 === true),
+      u(arguments)
+    );
+  }
+  init(e) {
+    return this._runTask(
+      Zn(e === true, this._executor.cwd, h2(arguments)),
+      u(arguments)
+    );
+  }
+  merge() {
+    return this._runTask(
+      At2(h2(arguments)),
+      u(arguments)
+    );
+  }
+  mergeFromTo(e, n5) {
+    return m(e) && m(n5) ? this._runTask(
+      At2([e, n5, ...h2(arguments)]),
+      u(arguments, false)
+    ) : this._runTask(
+      b2(
+        "Git.mergeFromTo requires that the 'remote' and 'branch' arguments are supplied as strings"
+      )
+    );
+  }
+  outputHandler(e) {
+    return this._executor.outputHandler = e, this;
+  }
+  push() {
+    const e = ce2(
+      {
+        remote: d(arguments[0], m),
+        branch: d(arguments[1], m)
+      },
+      h2(arguments)
+    );
+    return this._runTask(e, u(arguments));
+  }
+  stash() {
+    return this._runTask(
+      g(["stash", ...h2(arguments)]),
+      u(arguments)
+    );
+  }
+  status() {
+    return this._runTask(
+      zr(h2(arguments)),
+      u(arguments)
+    );
+  }
+};
+Object.assign(
+  le2.prototype,
+  jn(),
+  In(),
+  zn(),
+  Tn(),
+  Hn(),
+  Kn(),
+  On(),
+  er(),
+  pr(),
+  Dr(),
+  Wr()
+);
+var Vr = /* @__PURE__ */ (() => {
+  let t2 = 0;
+  return () => {
+    t2++;
+    const { promise: e, done: n5 } = (0, import_promise_deferred.createDeferred)();
+    return {
+      promise: e,
+      done: n5,
+      id: t2
+    };
+  };
+})();
+var Xr = class {
+  constructor(e = 2) {
+    this.concurrency = e, this.logger = $2("", "scheduler"), this.pending = [], this.running = [], this.logger("Constructed, concurrency=%s", e);
+  }
+  schedule() {
+    if (!this.pending.length || this.running.length >= this.concurrency) {
+      this.logger(
+        "Schedule attempt ignored, pending=%s running=%s concurrency=%s",
+        this.pending.length,
+        this.running.length,
+        this.concurrency
+      );
+      return;
+    }
+    const e = S2(this.running, this.pending.shift());
+    this.logger("Attempting id=%s", e.id), e.done(() => {
+      this.logger("Completing id=", e.id), ct(this.running, e), this.schedule();
+    });
+  }
+  next() {
+    const { promise: e, id: n5 } = S2(this.pending, Vr());
+    return this.logger("Scheduling id=%s", n5), this.schedule(), e;
+  }
+};
+function Yr(t2, e) {
+  return g(["apply", ...e, ...t2]);
+}
+var he2 = /* @__PURE__ */ ((t2) => (t2.CURRENT = "*", t2.LINKED = "+", t2))(he2 || {});
+var Qr = class {
+  constructor() {
+    this.all = [], this.branches = {}, this.current = "", this.detached = false;
+  }
+  push(e, n5, r2, s, o2) {
+    e === "*" && (this.detached = n5, this.current = r2), this.all.push(r2), this.branches[r2] = {
+      current: e === "*",
+      linkedWorkTree: e === "+",
+      name: r2,
+      commit: s,
+      label: o2
     };
   }
+};
+var Jr = [
+  new l2(
+    /^([*+]\s)?\((?:HEAD )?detached (?:from|at) (\S+)\)\s+([a-z0-9]+)\s(.*)$/,
+    (t2, [e, n5, r2, s]) => {
+      t2.push(Nt2(e), true, n5, r2, s);
+    }
+  ),
+  new l2(
+    /^([*+]\s)?(\S+)\s+([a-z0-9]+)\s?(.*)$/s,
+    (t2, [e, n5, r2, s]) => {
+      t2.push(Nt2(e), false, n5, r2, s);
+    }
+  )
+];
+var Zr = new l2(/^(\S+)$/s, (t2, [e]) => {
+  t2.push(he2.CURRENT, false, e, "", "");
 });
-var apply_patch_exports = {};
-__export2(apply_patch_exports, {
-  applyPatchTask: () => applyPatchTask
-});
-function applyPatchTask(patches, customArgs) {
-  return straightThroughStringTask(["apply", ...customArgs, ...patches]);
+function Nt2(t2) {
+  return t2 ? t2.charAt(0) : "";
 }
-var init_apply_patch = __esm2({
-  "src/lib/tasks/apply-patch.ts"() {
-    "use strict";
-    init_task();
+function me2(t2, e = false) {
+  return E2(
+    new Qr(),
+    e ? [Zr] : Jr,
+    t2
+  );
+}
+var ts2 = class {
+  constructor() {
+    this.all = [], this.branches = {}, this.errors = [];
   }
-});
-function branchDeletionSuccess(branch, hash) {
+  get success() {
+    return !this.errors.length;
+  }
+};
+function es2(t2, e) {
   return {
-    branch,
-    hash,
+    branch: t2,
+    hash: e,
     success: true
   };
 }
-function branchDeletionFailure(branch) {
+function ns2(t2) {
   return {
-    branch,
+    branch: t2,
     hash: null,
     success: false
   };
 }
-var BranchDeletionBatch;
-var init_BranchDeleteSummary = __esm2({
-  "src/lib/responses/BranchDeleteSummary.ts"() {
-    "use strict";
-    BranchDeletionBatch = class {
-      constructor() {
-        this.all = [];
-        this.branches = {};
-        this.errors = [];
-      }
-      get success() {
-        return !this.errors.length;
-      }
-    };
-  }
-});
-function hasBranchDeletionError(data, processExitCode) {
-  return processExitCode === 1 && deleteErrorRegex.test(data);
+var rs2 = /(\S+)\s+\(\S+\s([^)]+)\)/;
+var pe2 = /^error[^']+'([^']+)'/m;
+var ss2 = [
+  new l2(rs2, (t2, [e, n5]) => {
+    const r2 = es2(e, n5);
+    t2.all.push(r2), t2.branches[e] = r2;
+  }),
+  new l2(pe2, (t2, [e]) => {
+    const n5 = ns2(e);
+    t2.errors.push(n5), t2.all.push(n5), t2.branches[e] = n5;
+  })
+];
+var gt2 = (t2, e) => E2(new ts2(), ss2, [t2, e]);
+function de2(t2, e) {
+  return e === V3.ERROR && pe2.test(t2);
 }
-var deleteSuccessRegex;
-var deleteErrorRegex;
-var parsers8;
-var parseBranchDeletions;
-var init_parse_branch_delete = __esm2({
-  "src/lib/parsers/parse-branch-delete.ts"() {
-    "use strict";
-    init_BranchDeleteSummary();
-    init_utils();
-    deleteSuccessRegex = /(\S+)\s+\(\S+\s([^)]+)\)/;
-    deleteErrorRegex = /^error[^']+'([^']+)'/m;
-    parsers8 = [
-      new LineParser(deleteSuccessRegex, (result, [branch, hash]) => {
-        const deletion = branchDeletionSuccess(branch, hash);
-        result.all.push(deletion);
-        result.branches[branch] = deletion;
-      }),
-      new LineParser(deleteErrorRegex, (result, [branch]) => {
-        const deletion = branchDeletionFailure(branch);
-        result.errors.push(deletion);
-        result.all.push(deletion);
-        result.branches[branch] = deletion;
-      })
-    ];
-    parseBranchDeletions = (stdOut, stdErr) => {
-      return parseStringResponse(new BranchDeletionBatch(), parsers8, [stdOut, stdErr]);
-    };
-  }
-});
-var BranchSummaryResult;
-var init_BranchSummary = __esm2({
-  "src/lib/responses/BranchSummary.ts"() {
-    "use strict";
-    BranchSummaryResult = class {
-      constructor() {
-        this.all = [];
-        this.branches = {};
-        this.current = "";
-        this.detached = false;
-      }
-      push(status, detached, name, commit, label) {
-        if (status === "*") {
-          this.detached = detached;
-          this.current = name;
-        }
-        this.all.push(name);
-        this.branches[name] = {
-          current: status === "*",
-          linkedWorkTree: status === "+",
-          name,
-          commit,
-          label
-        };
-      }
-    };
-  }
-});
-function branchStatus(input) {
-  return input ? input.charAt(0) : "";
+function os2(t2) {
+  const e = ["-d", "-D", "--delete"];
+  return t2.some((n5) => e.includes(n5));
 }
-function parseBranchSummary(stdOut, currentOnly = false) {
-  return parseStringResponse(
-    new BranchSummaryResult(),
-    currentOnly ? [currentBranchParser] : parsers9,
-    stdOut
-  );
-}
-var parsers9;
-var currentBranchParser;
-var init_parse_branch = __esm2({
-  "src/lib/parsers/parse-branch.ts"() {
-    "use strict";
-    init_BranchSummary();
-    init_utils();
-    parsers9 = [
-      new LineParser(
-        /^([*+]\s)?\((?:HEAD )?detached (?:from|at) (\S+)\)\s+([a-z0-9]+)\s(.*)$/,
-        (result, [current, name, commit, label]) => {
-          result.push(branchStatus(current), true, name, commit, label);
-        }
-      ),
-      new LineParser(
-        /^([*+]\s)?(\S+)\s+([a-z0-9]+)\s?(.*)$/s,
-        (result, [current, name, commit, label]) => {
-          result.push(branchStatus(current), false, name, commit, label);
-        }
-      )
-    ];
-    currentBranchParser = new LineParser(/^(\S+)$/s, (result, [name]) => {
-      result.push("*", false, name, "", "");
-    });
-  }
-});
-var branch_exports = {};
-__export2(branch_exports, {
-  branchLocalTask: () => branchLocalTask,
-  branchTask: () => branchTask,
-  containsDeleteBranchCommand: () => containsDeleteBranchCommand,
-  deleteBranchTask: () => deleteBranchTask,
-  deleteBranchesTask: () => deleteBranchesTask
-});
-function containsDeleteBranchCommand(commands) {
-  const deleteCommands = ["-d", "-D", "--delete"];
-  return commands.some((command) => deleteCommands.includes(command));
-}
-function branchTask(customArgs) {
-  const isDelete = containsDeleteBranchCommand(customArgs);
-  const isCurrentOnly = customArgs.includes("--show-current");
-  const commands = ["branch", ...customArgs];
-  if (commands.length === 1) {
-    commands.push("-a");
-  }
-  if (!commands.includes("-v")) {
-    commands.splice(1, 0, "-v");
-  }
-  return {
+function is2(t2) {
+  const e = os2(t2), n5 = t2.includes("--show-current"), r2 = ["branch", ...t2];
+  return r2.length === 1 && r2.push("-a"), r2.includes("-v") || r2.splice(1, 0, "-v"), {
     format: "utf-8",
-    commands,
-    parser(stdOut, stdErr) {
-      if (isDelete) {
-        return parseBranchDeletions(stdOut, stdErr).all[0];
-      }
-      return parseBranchSummary(stdOut, isCurrentOnly);
+    commands: r2,
+    parser(s, o2) {
+      return e ? gt2(s, o2).all[0] : me2(s, n5);
     }
   };
 }
-function branchLocalTask() {
+function as2() {
   return {
     format: "utf-8",
     commands: ["branch", "-v"],
-    parser(stdOut) {
-      return parseBranchSummary(stdOut);
+    parser(t2) {
+      return me2(t2);
     }
   };
 }
-function deleteBranchesTask(branches, forceDelete = false) {
+function us2(t2, e = false) {
   return {
     format: "utf-8",
-    commands: ["branch", "-v", forceDelete ? "-D" : "-d", ...branches],
-    parser(stdOut, stdErr) {
-      return parseBranchDeletions(stdOut, stdErr);
+    commands: ["branch", "-v", e ? "-D" : "-d", ...t2],
+    parser(n5, r2) {
+      return gt2(n5, r2);
     },
-    onError({ exitCode, stdOut }, error, done, fail) {
-      if (!hasBranchDeletionError(String(error), exitCode)) {
-        return fail(error);
-      }
-      done(stdOut);
+    onError({ exitCode: n5, stdOut: r2 }, s, o2, i) {
+      if (!de2(String(s), n5))
+        return i(s);
+      o2(r2);
     }
   };
 }
-function deleteBranchTask(branch, forceDelete = false) {
-  const task = {
+function cs2(t2, e = false) {
+  const n5 = {
     format: "utf-8",
-    commands: ["branch", "-v", forceDelete ? "-D" : "-d", branch],
-    parser(stdOut, stdErr) {
-      return parseBranchDeletions(stdOut, stdErr).branches[branch];
+    commands: ["branch", "-v", e ? "-D" : "-d", t2],
+    parser(r2, s) {
+      return gt2(r2, s).branches[t2];
     },
-    onError({ exitCode, stdErr, stdOut }, error, _3, fail) {
-      if (!hasBranchDeletionError(String(error), exitCode)) {
-        return fail(error);
-      }
-      throw new GitResponseError(
-        task.parser(bufferToString(stdOut), bufferToString(stdErr)),
-        String(error)
+    onError({ exitCode: r2, stdErr: s, stdOut: o2 }, i, a, c3) {
+      if (!de2(String(i), r2))
+        return c3(i);
+      throw new at2(
+        n5.parser(F3(o2), F3(s)),
+        String(i)
       );
     }
   };
-  return task;
+  return n5;
 }
-var init_branch = __esm2({
-  "src/lib/tasks/branch.ts"() {
-    "use strict";
-    init_git_response_error();
-    init_parse_branch_delete();
-    init_parse_branch();
-    init_utils();
-  }
-});
-function toPath(input) {
-  const path16 = input.trim().replace(/^["']|["']$/g, "");
-  return path16 && (0, import_node_path2.normalize)(path16);
-}
-var parseCheckIgnore;
-var init_CheckIgnore = __esm2({
-  "src/lib/responses/CheckIgnore.ts"() {
-    "use strict";
-    parseCheckIgnore = (text) => {
-      return text.split(/\n/g).map(toPath).filter(Boolean);
-    };
-  }
-});
-var check_ignore_exports = {};
-__export2(check_ignore_exports, {
-  checkIgnoreTask: () => checkIgnoreTask
-});
-function checkIgnoreTask(paths) {
+function fs2(t2) {
   return {
-    commands: ["check-ignore", ...paths],
+    commands: ["check-ignore", ...t2],
     format: "utf-8",
-    parser: parseCheckIgnore
+    parser: ls2
   };
 }
-var init_check_ignore = __esm2({
-  "src/lib/tasks/check-ignore.ts"() {
-    "use strict";
-    init_CheckIgnore();
-  }
-});
-function parseFetchResult(stdOut, stdErr) {
-  const result = {
-    raw: stdOut,
+function ls2(t2) {
+  return t2.split(/\n/g).map(hs2).filter(Boolean);
+}
+function hs2(t2) {
+  const e = t2.trim().replace(/^["']|["']$/g, "");
+  return e && (0, import_node_path2.normalize)(e);
+}
+var ms2 = [
+  new l2(/From (.+)$/, (t2, [e]) => {
+    t2.remote = e;
+  }),
+  new l2(/\* \[new branch]\s+(\S+)\s*-> (.+)$/, (t2, [e, n5]) => {
+    t2.branches.push({
+      name: e,
+      tracking: n5
+    });
+  }),
+  new l2(/\* \[new tag]\s+(\S+)\s*-> (.+)$/, (t2, [e, n5]) => {
+    t2.tags.push({
+      name: e,
+      tracking: n5
+    });
+  }),
+  new l2(/- \[deleted]\s+\S+\s*-> (.+)$/, (t2, [e]) => {
+    t2.deleted.push({
+      tracking: e
+    });
+  }),
+  new l2(
+    /\s*([^.]+)\.\.(\S+)\s+(\S+)\s*-> (.+)$/,
+    (t2, [e, n5, r2, s]) => {
+      t2.updated.push({
+        name: r2,
+        tracking: s,
+        to: n5,
+        from: e
+      });
+    }
+  )
+];
+function ps2(t2, e) {
+  return E2({
+    raw: t2,
     remote: null,
     branches: [],
     tags: [],
     updated: [],
     deleted: []
-  };
-  return parseStringResponse(result, parsers10, [stdOut, stdErr]);
+  }, ms2, [t2, e]);
 }
-var parsers10;
-var init_parse_fetch = __esm2({
-  "src/lib/parsers/parse-fetch.ts"() {
-    "use strict";
-    init_utils();
-    parsers10 = [
-      new LineParser(/From (.+)$/, (result, [remote]) => {
-        result.remote = remote;
-      }),
-      new LineParser(/\* \[new branch]\s+(\S+)\s*-> (.+)$/, (result, [name, tracking]) => {
-        result.branches.push({
-          name,
-          tracking
-        });
-      }),
-      new LineParser(/\* \[new tag]\s+(\S+)\s*-> (.+)$/, (result, [name, tracking]) => {
-        result.tags.push({
-          name,
-          tracking
-        });
-      }),
-      new LineParser(/- \[deleted]\s+\S+\s*-> (.+)$/, (result, [tracking]) => {
-        result.deleted.push({
-          tracking
-        });
-      }),
-      new LineParser(
-        /\s*([^.]+)\.\.(\S+)\s+(\S+)\s*-> (.+)$/,
-        (result, [from, to, name, tracking]) => {
-          result.updated.push({
-            name,
-            tracking,
-            to,
-            from
-          });
-        }
-      )
-    ];
-  }
-});
-var fetch_exports = {};
-__export2(fetch_exports, {
-  fetchTask: () => fetchTask
-});
-function disallowedCommand(command) {
-  return /^--upload-pack(=|$)/.test(command);
+function ds2(t2) {
+  return /^--upload-pack(=|$)/.test(t2);
 }
-function fetchTask(remote, branch, customArgs) {
-  const commands = ["fetch", ...customArgs];
-  if (remote && branch) {
-    commands.push(remote, branch);
-  }
-  const banned = commands.find(disallowedCommand);
-  if (banned) {
-    return configurationErrorTask(`git.fetch: potential exploit argument blocked.`);
-  }
-  return {
-    commands,
+function gs2(t2, e, n5) {
+  const r2 = ["fetch", ...n5];
+  return t2 && e && r2.push(t2, e), r2.find(ds2) ? b2("git.fetch: potential exploit argument blocked.") : {
+    commands: r2,
     format: "utf-8",
-    parser: parseFetchResult
+    parser: ps2
   };
 }
-var init_fetch = __esm2({
-  "src/lib/tasks/fetch.ts"() {
-    "use strict";
-    init_parse_fetch();
-    init_task();
-  }
-});
-function parseMoveResult(stdOut) {
-  return parseStringResponse({ moves: [] }, parsers11, stdOut);
+var ys2 = [
+  new l2(/^Renaming (.+) to (.+)$/, (t2, [e, n5]) => {
+    t2.moves.push({ from: e, to: n5 });
+  })
+];
+function ws2(t2) {
+  return E2({ moves: [] }, ys2, t2);
 }
-var parsers11;
-var init_parse_move = __esm2({
-  "src/lib/parsers/parse-move.ts"() {
-    "use strict";
-    init_utils();
-    parsers11 = [
-      new LineParser(/^Renaming (.+) to (.+)$/, (result, [from, to]) => {
-        result.moves.push({ from, to });
-      })
-    ];
-  }
-});
-var move_exports = {};
-__export2(move_exports, {
-  moveTask: () => moveTask
-});
-function moveTask(from, to) {
+function bs2(t2, e) {
   return {
-    commands: ["mv", "-v", ...asArray(from), to],
+    commands: ["mv", "-v", ...v2(t2), e],
     format: "utf-8",
-    parser: parseMoveResult
+    parser: ws2
   };
 }
-var init_move = __esm2({
-  "src/lib/tasks/move.ts"() {
-    "use strict";
-    init_parse_move();
-    init_utils();
-  }
-});
-var pull_exports = {};
-__export2(pull_exports, {
-  pullTask: () => pullTask
-});
-function pullTask(remote, branch, customArgs) {
-  const commands = ["pull", ...customArgs];
-  if (remote && branch) {
-    commands.splice(1, 0, remote, branch);
-  }
-  return {
-    commands,
+function Ts2(t2, e, n5) {
+  const r2 = ["pull", ...n5];
+  return t2 && e && r2.splice(1, 0, t2, e), {
+    commands: r2,
     format: "utf-8",
-    parser(stdOut, stdErr) {
-      return parsePullResult(stdOut, stdErr);
+    parser(s, o2) {
+      return ue2(s, o2);
     },
-    onError(result, _error, _done, fail) {
-      const pullError = parsePullErrorResult(
-        bufferToString(result.stdOut),
-        bufferToString(result.stdErr)
+    onError(s, o2, i, a) {
+      const c3 = Rr(
+        F3(s.stdOut),
+        F3(s.stdErr)
       );
-      if (pullError) {
-        return fail(new GitResponseError(pullError));
-      }
-      fail(_error);
+      if (c3)
+        return a(new at2(c3));
+      a(o2);
     }
   };
 }
-var init_pull = __esm2({
-  "src/lib/tasks/pull.ts"() {
-    "use strict";
-    init_git_response_error();
-    init_parse_pull();
-    init_utils();
-  }
-});
-function parseGetRemotes(text) {
-  const remotes = {};
-  forEach(text, ([name]) => remotes[name] = { name });
-  return Object.values(remotes);
+function ks2(t2) {
+  const e = {};
+  return ge2(t2, ([n5]) => e[n5] = { name: n5 }), Object.values(e);
 }
-function parseGetRemotesVerbose(text) {
-  const remotes = {};
-  forEach(text, ([name, url, purpose]) => {
-    if (!Object.hasOwn(remotes, name)) {
-      remotes[name] = {
-        name,
-        refs: { fetch: "", push: "" }
-      };
-    }
-    if (purpose && url) {
-      remotes[name].refs[purpose.replace(/[^a-z]/g, "")] = url;
-    }
-  });
-  return Object.values(remotes);
+function _s9(t2) {
+  const e = {};
+  return ge2(t2, ([n5, r2, s]) => {
+    Object.hasOwn(e, n5) || (e[n5] = {
+      name: n5,
+      refs: { fetch: "", push: "" }
+    }), s && r2 && (e[n5].refs[s.replace(/[^a-z]/g, "")] = r2);
+  }), Object.values(e);
 }
-function forEach(text, handler) {
-  forEachLineWithContent(text, (line) => handler(line.split(/\s+/)));
+function ge2(t2, e) {
+  ut2(t2, (n5) => e(n5.split(/\s+/)));
 }
-var init_GetRemoteSummary = __esm2({
-  "src/lib/responses/GetRemoteSummary.ts"() {
-    "use strict";
-    init_utils();
-  }
-});
-var remote_exports = {};
-__export2(remote_exports, {
-  addRemoteTask: () => addRemoteTask,
-  getRemotesTask: () => getRemotesTask,
-  listRemotesTask: () => listRemotesTask,
-  remoteTask: () => remoteTask,
-  removeRemoteTask: () => removeRemoteTask
-});
-function addRemoteTask(remoteName, remoteRepo, customArgs) {
-  return straightThroughStringTask(["remote", "add", ...customArgs, remoteName, remoteRepo]);
+function vs2(t2, e, n5) {
+  return g(["remote", "add", ...n5, t2, e]);
 }
-function getRemotesTask(verbose) {
-  const commands = ["remote"];
-  if (verbose) {
-    commands.push("-v");
-  }
-  return {
-    commands,
+function Es2(t2) {
+  const e = ["remote"];
+  return t2 && e.push("-v"), {
+    commands: e,
     format: "utf-8",
-    parser: verbose ? parseGetRemotesVerbose : parseGetRemotes
+    parser: t2 ? _s9 : ks2
   };
 }
-function listRemotesTask(customArgs) {
-  const commands = [...customArgs];
-  if (commands[0] !== "ls-remote") {
-    commands.unshift("ls-remote");
-  }
-  return straightThroughStringTask(commands);
+function Ss2(t2) {
+  const e = [...t2];
+  return e[0] !== "ls-remote" && e.unshift("ls-remote"), g(e);
 }
-function remoteTask(customArgs) {
-  const commands = [...customArgs];
-  if (commands[0] !== "remote") {
-    commands.unshift("remote");
-  }
-  return straightThroughStringTask(commands);
+function Rs2(t2) {
+  const e = [...t2];
+  return e[0] !== "remote" && e.unshift("remote"), g(e);
 }
-function removeRemoteTask(remoteName) {
-  return straightThroughStringTask(["remote", "remove", remoteName]);
+function Os2(t2) {
+  return g(["remote", "remove", t2]);
 }
-var init_remote = __esm2({
-  "src/lib/tasks/remote.ts"() {
-    "use strict";
-    init_GetRemoteSummary();
-    init_task();
-  }
-});
-var stash_list_exports = {};
-__export2(stash_list_exports, {
-  stashListTask: () => stashListTask
-});
-function stashListTask(opt = {}, customArgs) {
-  const options = parseLogOptions(opt);
-  const commands = ["stash", "list", ...options.commands, ...customArgs];
-  const parser4 = createListLogSummaryParser(
-    options.splitter,
-    options.fields,
-    logFormatFromCommand(commands)
+function Cs2(t2 = {}, e) {
+  const n5 = oe3(t2), r2 = ["stash", "list", ...n5.commands, ...e], s = re2(
+    n5.splitter,
+    n5.fields,
+    pt2(r2)
   );
-  return validateLogFormatConfig(commands) || {
-    commands,
+  return dt2(r2) || {
+    commands: r2,
     format: "utf-8",
-    parser: parser4
+    parser: s
   };
 }
-var init_stash_list = __esm2({
-  "src/lib/tasks/stash-list.ts"() {
-    "use strict";
-    init_log_format();
-    init_parse_list_log_summary();
-    init_diff();
-    init_log();
-  }
-});
-var sub_module_exports = {};
-__export2(sub_module_exports, {
-  addSubModuleTask: () => addSubModuleTask,
-  initSubModuleTask: () => initSubModuleTask,
-  subModuleTask: () => subModuleTask,
-  updateSubModuleTask: () => updateSubModuleTask
-});
-function addSubModuleTask(repo, path16) {
-  return subModuleTask(["add", repo, path16]);
+function As2(t2, e) {
+  return X3(["add", t2, e]);
 }
-function initSubModuleTask(customArgs) {
-  return subModuleTask(["init", ...customArgs]);
+function xs2(t2) {
+  return X3(["init", ...t2]);
 }
-function subModuleTask(customArgs) {
-  const commands = [...customArgs];
-  if (commands[0] !== "submodule") {
-    commands.unshift("submodule");
-  }
-  return straightThroughStringTask(commands);
+function X3(t2) {
+  const e = [...t2];
+  return e[0] !== "submodule" && e.unshift("submodule"), g(e);
 }
-function updateSubModuleTask(customArgs) {
-  return subModuleTask(["update", ...customArgs]);
+function Ns2(t2) {
+  return X3(["update", ...t2]);
 }
-var init_sub_module = __esm2({
-  "src/lib/tasks/sub-module.ts"() {
-    "use strict";
-    init_task();
-  }
-});
-function singleSorted(a, b2) {
-  const aIsNum = Number.isNaN(a);
-  const bIsNum = Number.isNaN(b2);
-  if (aIsNum !== bIsNum) {
-    return aIsNum ? 1 : -1;
-  }
-  return aIsNum ? sorted(a, b2) : 0;
-}
-function sorted(a, b2) {
-  return a === b2 ? 0 : a > b2 ? 1 : -1;
-}
-function trimmed(input) {
-  return input.trim();
-}
-function toNumber(input) {
-  if (typeof input === "string") {
-    return parseInt(input.replace(/^\D+/g, ""), 10) || 0;
-  }
-  return 0;
-}
-var TagList;
-var parseTagList;
-var init_TagList = __esm2({
-  "src/lib/responses/TagList.ts"() {
-    "use strict";
-    TagList = class {
-      constructor(all, latest) {
-        this.all = all;
-        this.latest = latest;
-      }
-    };
-    parseTagList = function(data, customSort = false) {
-      const tags = data.split("\n").map(trimmed).filter(Boolean);
-      if (!customSort) {
-        tags.sort(function(tagA, tagB) {
-          const partsA = tagA.split(".");
-          const partsB = tagB.split(".");
-          if (partsA.length === 1 || partsB.length === 1) {
-            return singleSorted(toNumber(partsA[0]), toNumber(partsB[0]));
-          }
-          for (let i2 = 0, l = Math.max(partsA.length, partsB.length); i2 < l; i2++) {
-            const diff = sorted(toNumber(partsA[i2]), toNumber(partsB[i2]));
-            if (diff) {
-              return diff;
-            }
-          }
-          return 0;
-        });
-      }
-      const latest = customSort ? tags[0] : [...tags].reverse().find((tag) => tag.indexOf(".") >= 0);
-      return new TagList(tags, latest);
-    };
-  }
-});
-var tag_exports = {};
-__export2(tag_exports, {
-  addAnnotatedTagTask: () => addAnnotatedTagTask,
-  addTagTask: () => addTagTask,
-  tagListTask: () => tagListTask
-});
-function tagListTask(customArgs = []) {
-  const hasCustomSort = customArgs.some((option) => /^--sort=/.test(option));
-  return {
-    format: "utf-8",
-    commands: ["tag", "-l", ...customArgs],
-    parser(text) {
-      return parseTagList(text, hasCustomSort);
-    }
-  };
-}
-function addTagTask(name) {
-  return {
-    format: "utf-8",
-    commands: ["tag", name],
-    parser() {
-      return { name };
-    }
-  };
-}
-function addAnnotatedTagTask(name, tagMessage) {
-  return {
-    format: "utf-8",
-    commands: ["tag", "-a", "-m", tagMessage, name],
-    parser() {
-      return { name };
-    }
-  };
-}
-var init_tag = __esm2({
-  "src/lib/tasks/tag.ts"() {
-    "use strict";
-    init_TagList();
-  }
-});
-var require_git = __commonJS2({
-  "src/git.js"(exports2, module2) {
-    "use strict";
-    var { GitExecutor: GitExecutor2 } = (init_git_executor(), __toCommonJS2(git_executor_exports));
-    var { SimpleGitApi: SimpleGitApi2 } = (init_simple_git_api(), __toCommonJS2(simple_git_api_exports));
-    var { Scheduler: Scheduler2 } = (init_scheduler(), __toCommonJS2(scheduler_exports));
-    var { adhocExecTask: adhocExecTask2, configurationErrorTask: configurationErrorTask2 } = (init_task(), __toCommonJS2(task_exports));
-    var {
-      asArray: asArray2,
-      filterArray: filterArray2,
-      filterPrimitives: filterPrimitives2,
-      filterString: filterString2,
-      filterStringOrStringArray: filterStringOrStringArray2,
-      filterType: filterType2,
-      getTrailingOptions: getTrailingOptions2,
-      trailingFunctionArgument: trailingFunctionArgument2,
-      trailingOptionsArgument: trailingOptionsArgument2
-    } = (init_utils(), __toCommonJS2(utils_exports));
-    var { applyPatchTask: applyPatchTask2 } = (init_apply_patch(), __toCommonJS2(apply_patch_exports));
-    var {
-      branchTask: branchTask2,
-      branchLocalTask: branchLocalTask2,
-      deleteBranchesTask: deleteBranchesTask2,
-      deleteBranchTask: deleteBranchTask2
-    } = (init_branch(), __toCommonJS2(branch_exports));
-    var { checkIgnoreTask: checkIgnoreTask2 } = (init_check_ignore(), __toCommonJS2(check_ignore_exports));
-    var { checkIsRepoTask: checkIsRepoTask2 } = (init_check_is_repo(), __toCommonJS2(check_is_repo_exports));
-    var { cleanWithOptionsTask: cleanWithOptionsTask2, isCleanOptionsArray: isCleanOptionsArray2 } = (init_clean(), __toCommonJS2(clean_exports));
-    var { diffSummaryTask: diffSummaryTask2 } = (init_diff(), __toCommonJS2(diff_exports));
-    var { fetchTask: fetchTask2 } = (init_fetch(), __toCommonJS2(fetch_exports));
-    var { moveTask: moveTask2 } = (init_move(), __toCommonJS2(move_exports));
-    var { pullTask: pullTask2 } = (init_pull(), __toCommonJS2(pull_exports));
-    var { pushTagsTask: pushTagsTask2 } = (init_push(), __toCommonJS2(push_exports));
-    var {
-      addRemoteTask: addRemoteTask2,
-      getRemotesTask: getRemotesTask2,
-      listRemotesTask: listRemotesTask2,
-      remoteTask: remoteTask2,
-      removeRemoteTask: removeRemoteTask2
-    } = (init_remote(), __toCommonJS2(remote_exports));
-    var { getResetMode: getResetMode2, resetTask: resetTask2 } = (init_reset(), __toCommonJS2(reset_exports));
-    var { stashListTask: stashListTask2 } = (init_stash_list(), __toCommonJS2(stash_list_exports));
-    var {
-      addSubModuleTask: addSubModuleTask2,
-      initSubModuleTask: initSubModuleTask2,
-      subModuleTask: subModuleTask2,
-      updateSubModuleTask: updateSubModuleTask2
-    } = (init_sub_module(), __toCommonJS2(sub_module_exports));
-    var { addAnnotatedTagTask: addAnnotatedTagTask2, addTagTask: addTagTask2, tagListTask: tagListTask2 } = (init_tag(), __toCommonJS2(tag_exports));
-    var { straightThroughBufferTask: straightThroughBufferTask2, straightThroughStringTask: straightThroughStringTask2 } = (init_task(), __toCommonJS2(task_exports));
-    function Git2(options, plugins) {
-      this._plugins = plugins;
-      this._executor = new GitExecutor2(
-        options.baseDir,
-        new Scheduler2(options.maxConcurrentProcesses),
-        plugins
-      );
-      this._trimmed = options.trimmed;
-    }
-    (Git2.prototype = Object.create(SimpleGitApi2.prototype)).constructor = Git2;
-    Git2.prototype.customBinary = function(command) {
-      this._plugins.reconfigure("binary", command);
-      return this;
-    };
-    Git2.prototype.env = function(name, value) {
-      if (arguments.length === 1 && typeof name === "object") {
-        this._executor.env = name;
-      } else {
-        (this._executor.env = this._executor.env || {})[name] = value;
-      }
-      return this;
-    };
-    Git2.prototype.stashList = function(options) {
-      return this._runTask(
-        stashListTask2(
-          trailingOptionsArgument2(arguments) || {},
-          filterArray2(options) && options || []
-        ),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.mv = function(from, to) {
-      return this._runTask(moveTask2(from, to), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.checkoutLatestTag = function(then) {
-      var git = this;
-      return this.pull(function() {
-        git.tags(function(err, tags) {
-          git.checkout(tags.latest, then);
-        });
-      });
-    };
-    Git2.prototype.pull = function(remote, branch, options, then) {
-      return this._runTask(
-        pullTask2(
-          filterType2(remote, filterString2),
-          filterType2(branch, filterString2),
-          getTrailingOptions2(arguments)
-        ),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.fetch = function(remote, branch) {
-      return this._runTask(
-        fetchTask2(
-          filterType2(remote, filterString2),
-          filterType2(branch, filterString2),
-          getTrailingOptions2(arguments)
-        ),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.silent = function(silence) {
-      return this._runTask(
-        adhocExecTask2(
-          () => console.warn(
-            "simple-git deprecation notice: git.silent: logging should be configured using the `debug` library / `DEBUG` environment variable, this method will be removed."
-          )
-        )
-      );
-    };
-    Git2.prototype.tags = function(options, then) {
-      return this._runTask(
-        tagListTask2(getTrailingOptions2(arguments)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.rebase = function() {
-      return this._runTask(
-        straightThroughStringTask2(["rebase", ...getTrailingOptions2(arguments)]),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.reset = function(mode) {
-      return this._runTask(
-        resetTask2(getResetMode2(mode), getTrailingOptions2(arguments)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.revert = function(commit) {
-      const next = trailingFunctionArgument2(arguments);
-      if (typeof commit !== "string") {
-        return this._runTask(configurationErrorTask2("Commit must be a string"), next);
-      }
-      return this._runTask(
-        straightThroughStringTask2(["revert", ...getTrailingOptions2(arguments, 0, true), commit]),
-        next
-      );
-    };
-    Git2.prototype.addTag = function(name) {
-      const task = typeof name === "string" ? addTagTask2(name) : configurationErrorTask2("Git.addTag requires a tag name");
-      return this._runTask(task, trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.addAnnotatedTag = function(tagName, tagMessage) {
-      return this._runTask(
-        addAnnotatedTagTask2(tagName, tagMessage),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.deleteLocalBranch = function(branchName, forceDelete, then) {
-      return this._runTask(
-        deleteBranchTask2(branchName, typeof forceDelete === "boolean" ? forceDelete : false),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.deleteLocalBranches = function(branchNames, forceDelete, then) {
-      return this._runTask(
-        deleteBranchesTask2(branchNames, typeof forceDelete === "boolean" ? forceDelete : false),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.branch = function(options, then) {
-      return this._runTask(
-        branchTask2(getTrailingOptions2(arguments)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.branchLocal = function(then) {
-      return this._runTask(branchLocalTask2(), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.raw = function(commands) {
-      const createRestCommands = !Array.isArray(commands);
-      const command = [].slice.call(createRestCommands ? arguments : commands, 0);
-      for (let i2 = 0; i2 < command.length && createRestCommands; i2++) {
-        if (!filterPrimitives2(command[i2])) {
-          command.splice(i2, command.length - i2);
-          break;
-        }
-      }
-      command.push(...getTrailingOptions2(arguments, 0, true));
-      var next = trailingFunctionArgument2(arguments);
-      if (!command.length) {
-        return this._runTask(
-          configurationErrorTask2("Raw: must supply one or more command to execute"),
-          next
-        );
-      }
-      return this._runTask(straightThroughStringTask2(command, this._trimmed), next);
-    };
-    Git2.prototype.submoduleAdd = function(repo, path16, then) {
-      return this._runTask(addSubModuleTask2(repo, path16), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.submoduleUpdate = function(args, then) {
-      return this._runTask(
-        updateSubModuleTask2(getTrailingOptions2(arguments, true)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.submoduleInit = function(args, then) {
-      return this._runTask(
-        initSubModuleTask2(getTrailingOptions2(arguments, true)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.subModule = function(options, then) {
-      return this._runTask(
-        subModuleTask2(getTrailingOptions2(arguments)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.listRemote = function() {
-      return this._runTask(
-        listRemotesTask2(getTrailingOptions2(arguments)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.addRemote = function(remoteName, remoteRepo, then) {
-      return this._runTask(
-        addRemoteTask2(remoteName, remoteRepo, getTrailingOptions2(arguments)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.removeRemote = function(remoteName, then) {
-      return this._runTask(removeRemoteTask2(remoteName), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.getRemotes = function(verbose, then) {
-      return this._runTask(getRemotesTask2(verbose === true), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.remote = function(options, then) {
-      return this._runTask(
-        remoteTask2(getTrailingOptions2(arguments)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.tag = function(options, then) {
-      const command = getTrailingOptions2(arguments);
-      if (command[0] !== "tag") {
-        command.unshift("tag");
-      }
-      return this._runTask(straightThroughStringTask2(command), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.updateServerInfo = function(then) {
-      return this._runTask(
-        straightThroughStringTask2(["update-server-info"]),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.pushTags = function(remote, then) {
-      const task = pushTagsTask2(
-        { remote: filterType2(remote, filterString2) },
-        getTrailingOptions2(arguments)
-      );
-      return this._runTask(task, trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.rm = function(files) {
-      return this._runTask(
-        straightThroughStringTask2(["rm", "-f", ...asArray2(files)]),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.rmKeepLocal = function(files) {
-      return this._runTask(
-        straightThroughStringTask2(["rm", "--cached", ...asArray2(files)]),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.catFile = function(options, then) {
-      return this._catFile("utf-8", arguments);
-    };
-    Git2.prototype.binaryCatFile = function() {
-      return this._catFile("buffer", arguments);
-    };
-    Git2.prototype._catFile = function(format, args) {
-      var handler = trailingFunctionArgument2(args);
-      var command = ["cat-file"];
-      var options = args[0];
-      if (typeof options === "string") {
-        return this._runTask(
-          configurationErrorTask2("Git.catFile: options must be supplied as an array of strings"),
-          handler
-        );
-      }
-      if (Array.isArray(options)) {
-        command.push.apply(command, options);
-      }
-      const task = format === "buffer" ? straightThroughBufferTask2(command) : straightThroughStringTask2(command);
-      return this._runTask(task, handler);
-    };
-    Git2.prototype.diff = function(options, then) {
-      const task = filterString2(options) ? configurationErrorTask2(
-        "git.diff: supplying options as a single string is no longer supported, switch to an array of strings"
-      ) : straightThroughStringTask2(["diff", ...getTrailingOptions2(arguments)]);
-      return this._runTask(task, trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.diffSummary = function() {
-      return this._runTask(
-        diffSummaryTask2(getTrailingOptions2(arguments, 1)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.applyPatch = function(patches) {
-      const task = !filterStringOrStringArray2(patches) ? configurationErrorTask2(
-        `git.applyPatch requires one or more string patches as the first argument`
-      ) : applyPatchTask2(asArray2(patches), getTrailingOptions2([].slice.call(arguments, 1)));
-      return this._runTask(task, trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.revparse = function() {
-      const commands = ["rev-parse", ...getTrailingOptions2(arguments, true)];
-      return this._runTask(
-        straightThroughStringTask2(commands, true),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.clean = function(mode, options, then) {
-      const usingCleanOptionsArray = isCleanOptionsArray2(mode);
-      const cleanMode = usingCleanOptionsArray && mode.join("") || filterType2(mode, filterString2) || "";
-      const customArgs = getTrailingOptions2([].slice.call(arguments, usingCleanOptionsArray ? 1 : 0));
-      return this._runTask(
-        cleanWithOptionsTask2(cleanMode, customArgs),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.exec = function(then) {
-      const task = {
-        commands: [],
-        format: "utf-8",
-        parser() {
-          if (typeof then === "function") {
-            then();
-          }
-        }
-      };
-      return this._runTask(task);
-    };
-    Git2.prototype.clearQueue = function() {
-      return this._runTask(
-        adhocExecTask2(
-          () => console.warn(
-            "simple-git deprecation notice: clearQueue() is deprecated and will be removed, switch to using the abortPlugin instead."
-          )
-        )
-      );
-    };
-    Git2.prototype.checkIgnore = function(pathnames, then) {
-      return this._runTask(
-        checkIgnoreTask2(asArray2(filterType2(pathnames, filterStringOrStringArray2, []))),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    Git2.prototype.checkIsRepo = function(checkType, then) {
-      return this._runTask(
-        checkIsRepoTask2(filterType2(checkType, filterString2)),
-        trailingFunctionArgument2(arguments)
-      );
-    };
-    module2.exports = Git2;
-  }
-});
-init_git_error();
-var GitConstructError = class extends GitError {
-  constructor(config, message) {
-    super(void 0, message);
-    this.config = config;
+var $s2 = class {
+  constructor(e, n5) {
+    this.all = e, this.latest = n5;
   }
 };
-init_git_error();
-init_git_error();
-var GitPluginError = class extends GitError {
-  constructor(task, plugin, message) {
-    super(task, message);
-    this.task = task;
-    this.plugin = plugin;
-    Object.setPrototypeOf(this, new.target.prototype);
-  }
+var Ps2 = function(t2, e = false) {
+  const n5 = t2.split(`
+`).map(Ds2).filter(Boolean);
+  e || n5.sort(function(s, o2) {
+    const i = s.split("."), a = o2.split(".");
+    if (i.length === 1 || a.length === 1)
+      return Ms2(B3(i[0]), B3(a[0]));
+    for (let c3 = 0, y2 = Math.max(i.length, a.length); c3 < y2; c3++) {
+      const w2 = ye2(B3(i[c3]), B3(a[c3]));
+      if (w2)
+        return w2;
+    }
+    return 0;
+  });
+  const r2 = e ? n5[0] : [...n5].reverse().find((s) => s.indexOf(".") >= 0);
+  return new $s2(n5, r2);
 };
-init_git_response_error();
-init_task_configuration_error();
-init_check_is_repo();
-init_clean();
-init_config();
-init_diff_name_status();
-init_grep();
-init_reset();
-function abortPlugin(signal) {
-  if (!signal) {
-    return;
-  }
-  const onSpawnAfter = {
-    type: "spawn.after",
-    action(_data, context) {
-      function kill() {
-        context.kill(new GitPluginError(void 0, "abort", "Abort signal received"));
-      }
-      signal.addEventListener("abort", kill);
-      context.spawned.on("close", () => signal.removeEventListener("abort", kill));
+function Ms2(t2, e) {
+  const n5 = Number.isNaN(t2), r2 = Number.isNaN(e);
+  return n5 !== r2 ? n5 ? 1 : -1 : n5 ? ye2(t2, e) : 0;
+}
+function ye2(t2, e) {
+  return t2 === e ? 0 : t2 > e ? 1 : -1;
+}
+function Ds2(t2) {
+  return t2.trim();
+}
+function B3(t2) {
+  return typeof t2 == "string" && parseInt(t2.replace(/^\D+/g, ""), 10) || 0;
+}
+function Ls2(t2 = []) {
+  const e = t2.some((n5) => /^--sort=/.test(n5));
+  return {
+    format: "utf-8",
+    commands: ["tag", "-l", ...t2],
+    parser(n5) {
+      return Ps2(n5, e);
     }
   };
-  const onSpawnBefore = {
+}
+function js2(t2) {
+  return {
+    format: "utf-8",
+    commands: ["tag", t2],
+    parser() {
+      return { name: t2 };
+    }
+  };
+}
+function Bs2(t2, e) {
+  return {
+    format: "utf-8",
+    commands: ["tag", "-a", "-m", e, t2],
+    parser() {
+      return { name: t2 };
+    }
+  };
+}
+function f2(t2, e) {
+  this._plugins = e, this._executor = new Dn(
+    t2.baseDir,
+    new Xr(t2.maxConcurrentProcesses),
+    e
+  ), this._trimmed = t2.trimmed;
+}
+(f2.prototype = Object.create(le2.prototype)).constructor = f2;
+f2.prototype.customBinary = function(t2) {
+  return this._plugins.reconfigure("binary", t2), this;
+};
+f2.prototype.env = function(t2, e) {
+  return arguments.length === 1 && typeof t2 == "object" ? this._executor.env = t2 : (this._executor.env = this._executor.env || {})[t2] = e, this;
+};
+f2.prototype.stashList = function(t2) {
+  return this._runTask(
+    Cs2(
+      ht2(arguments) || {},
+      K3(t2) && t2 || []
+    ),
+    u(arguments)
+  );
+};
+f2.prototype.mv = function(t2, e) {
+  return this._runTask(bs2(t2, e), u(arguments));
+};
+f2.prototype.checkoutLatestTag = function(t2) {
+  var e = this;
+  return this.pull(function() {
+    e.tags(function(n5, r2) {
+      e.checkout(r2.latest, t2);
+    });
+  });
+};
+f2.prototype.pull = function(t2, e, n5, r2) {
+  return this._runTask(
+    Ts2(
+      d(t2, m),
+      d(e, m),
+      h2(arguments)
+    ),
+    u(arguments)
+  );
+};
+f2.prototype.fetch = function(t2, e) {
+  return this._runTask(
+    gs2(
+      d(t2, m),
+      d(e, m),
+      h2(arguments)
+    ),
+    u(arguments)
+  );
+};
+f2.prototype.tags = function(t2, e) {
+  return this._runTask(
+    Ls2(h2(arguments)),
+    u(arguments)
+  );
+};
+f2.prototype.rebase = function() {
+  return this._runTask(
+    g(["rebase", ...h2(arguments)]),
+    u(arguments)
+  );
+};
+f2.prototype.reset = function(t2) {
+  return this._runTask(
+    An(xn(t2), h2(arguments)),
+    u(arguments)
+  );
+};
+f2.prototype.revert = function(t2) {
+  const e = u(arguments);
+  return typeof t2 != "string" ? this._runTask(b2("Commit must be a string"), e) : this._runTask(
+    g(["revert", ...h2(arguments, 0, true), t2]),
+    e
+  );
+};
+f2.prototype.addTag = function(t2) {
+  const e = typeof t2 == "string" ? js2(t2) : b2("Git.addTag requires a tag name");
+  return this._runTask(e, u(arguments));
+};
+f2.prototype.addAnnotatedTag = function(t2, e) {
+  return this._runTask(
+    Bs2(t2, e),
+    u(arguments)
+  );
+};
+f2.prototype.deleteLocalBranch = function(t2, e, n5) {
+  return this._runTask(
+    cs2(t2, typeof e == "boolean" ? e : false),
+    u(arguments)
+  );
+};
+f2.prototype.deleteLocalBranches = function(t2, e, n5) {
+  return this._runTask(
+    us2(t2, typeof e == "boolean" ? e : false),
+    u(arguments)
+  );
+};
+f2.prototype.branch = function(t2, e) {
+  return this._runTask(
+    is2(h2(arguments)),
+    u(arguments)
+  );
+};
+f2.prototype.branchLocal = function(t2) {
+  return this._runTask(as2(), u(arguments));
+};
+f2.prototype.raw = function(t2) {
+  const e = !Array.isArray(t2), n5 = [].slice.call(e ? arguments : t2, 0);
+  for (let s = 0; s < n5.length && e; s++)
+    if (!st2(n5[s])) {
+      n5.splice(s, n5.length - s);
+      break;
+    }
+  n5.push(...h2(arguments, 0, true));
+  var r2 = u(arguments);
+  return n5.length ? this._runTask(g(n5, this._trimmed), r2) : this._runTask(
+    b2("Raw: must supply one or more command to execute"),
+    r2
+  );
+};
+f2.prototype.submoduleAdd = function(t2, e, n5) {
+  return this._runTask(As2(t2, e), u(arguments));
+};
+f2.prototype.submoduleUpdate = function(t2, e) {
+  return this._runTask(
+    Ns2(h2(arguments, true)),
+    u(arguments)
+  );
+};
+f2.prototype.submoduleInit = function(t2, e) {
+  return this._runTask(
+    xs2(h2(arguments, true)),
+    u(arguments)
+  );
+};
+f2.prototype.subModule = function(t2, e) {
+  return this._runTask(
+    X3(h2(arguments)),
+    u(arguments)
+  );
+};
+f2.prototype.listRemote = function() {
+  return this._runTask(
+    Ss2(h2(arguments)),
+    u(arguments)
+  );
+};
+f2.prototype.addRemote = function(t2, e, n5) {
+  return this._runTask(
+    vs2(t2, e, h2(arguments)),
+    u(arguments)
+  );
+};
+f2.prototype.removeRemote = function(t2, e) {
+  return this._runTask(Os2(t2), u(arguments));
+};
+f2.prototype.getRemotes = function(t2, e) {
+  return this._runTask(Es2(t2 === true), u(arguments));
+};
+f2.prototype.remote = function(t2, e) {
+  return this._runTask(
+    Rs2(h2(arguments)),
+    u(arguments)
+  );
+};
+f2.prototype.tag = function(t2, e) {
+  const n5 = h2(arguments);
+  return n5[0] !== "tag" && n5.unshift("tag"), this._runTask(g(n5), u(arguments));
+};
+f2.prototype.updateServerInfo = function(t2) {
+  return this._runTask(
+    g(["update-server-info"]),
+    u(arguments)
+  );
+};
+f2.prototype.pushTags = function(t2, e) {
+  const n5 = Mr(
+    { remote: d(t2, m) },
+    h2(arguments)
+  );
+  return this._runTask(n5, u(arguments));
+};
+f2.prototype.rm = function(t2) {
+  return this._runTask(
+    g(["rm", "-f", ...v2(t2)]),
+    u(arguments)
+  );
+};
+f2.prototype.rmKeepLocal = function(t2) {
+  return this._runTask(
+    g(["rm", "--cached", ...v2(t2)]),
+    u(arguments)
+  );
+};
+f2.prototype.catFile = function(t2, e) {
+  return this._catFile("utf-8", arguments);
+};
+f2.prototype.binaryCatFile = function() {
+  return this._catFile("buffer", arguments);
+};
+f2.prototype._catFile = function(t2, e) {
+  var n5 = u(e), r2 = ["cat-file"], s = e[0];
+  if (typeof s == "string")
+    return this._runTask(
+      b2("Git.catFile: options must be supplied as an array of strings"),
+      n5
+    );
+  Array.isArray(s) && r2.push.apply(r2, s);
+  const o2 = t2 === "buffer" ? Gt2(r2) : g(r2);
+  return this._runTask(o2, n5);
+};
+f2.prototype.diff = function(t2, e) {
+  const n5 = m(t2) ? b2(
+    "git.diff: supplying options as a single string is no longer supported, switch to an array of strings"
+  ) : g(["diff", ...h2(arguments)]);
+  return this._runTask(n5, u(arguments));
+};
+f2.prototype.diffSummary = function() {
+  return this._runTask(
+    fr(h2(arguments, 1)),
+    u(arguments)
+  );
+};
+f2.prototype.applyPatch = function(t2) {
+  const e = G3(t2) ? Yr(v2(t2), h2([].slice.call(arguments, 1))) : b2(
+    "git.applyPatch requires one or more string patches as the first argument"
+  );
+  return this._runTask(e, u(arguments));
+};
+f2.prototype.revparse = function() {
+  const t2 = ["rev-parse", ...h2(arguments, true)];
+  return this._runTask(
+    g(t2, true),
+    u(arguments)
+  );
+};
+f2.prototype.clean = function(t2, e, n5) {
+  const r2 = un(t2), s = r2 && t2.join("") || d(t2, m) || "", o2 = h2([].slice.call(arguments, r2 ? 1 : 0));
+  return this._runTask(
+    on(s, o2),
+    u(arguments)
+  );
+};
+f2.prototype.exec = function(t2) {
+  const e = {
+    commands: [],
+    format: "utf-8",
+    parser() {
+      typeof t2 == "function" && t2();
+    }
+  };
+  return this._runTask(e);
+};
+f2.prototype.checkIgnore = function(t2, e) {
+  return this._runTask(
+    fs2(v2(d(t2, G3, []))),
+    u(arguments)
+  );
+};
+f2.prototype.checkIsRepo = function(t2, e) {
+  return this._runTask(
+    We2(d(t2, m)),
+    u(arguments)
+  );
+};
+function Is2(t2) {
+  return t2 ? [{
     type: "spawn.before",
-    action(_data, context) {
-      if (signal.aborted) {
-        context.kill(new GitPluginError(void 0, "abort", "Abort already signaled"));
-      }
+    action(r2, s) {
+      t2.aborted && s.kill(new A3(void 0, "abort", "Abort already signaled"));
     }
-  };
-  return [onSpawnBefore, onSpawnAfter];
-}
-function blockUnsafeOperationsPlugin(options = {}) {
-  return {
-    type: "spawn.args",
-    action(args, { env }) {
-      for (const vulnerability of ne2(args, env)) {
-        if (options[vulnerability.category] !== true) {
-          throw new GitPluginError(void 0, "unsafe", vulnerability.message);
-        }
-      }
-      return args;
-    }
-  };
-}
-init_utils();
-function commandConfigPrefixingPlugin(configuration) {
-  const prefix = prefixedArray(configuration, "-c");
-  return {
-    type: "spawn.args",
-    action(data) {
-      return [...prefix, ...data];
-    }
-  };
-}
-init_utils();
-var never = (0, import_promise_deferred2.deferred)().promise;
-function completionDetectionPlugin({
-  onClose = true,
-  onExit = 50
-} = {}) {
-  function createEvents() {
-    let exitCode = -1;
-    const events = {
-      close: (0, import_promise_deferred2.deferred)(),
-      closeTimeout: (0, import_promise_deferred2.deferred)(),
-      exit: (0, import_promise_deferred2.deferred)(),
-      exitTimeout: (0, import_promise_deferred2.deferred)()
-    };
-    const result = Promise.race([
-      onClose === false ? never : events.closeTimeout.promise,
-      onExit === false ? never : events.exitTimeout.promise
-    ]);
-    configureTimeout(onClose, events.close, events.closeTimeout);
-    configureTimeout(onExit, events.exit, events.exitTimeout);
-    return {
-      close(code) {
-        exitCode = code;
-        events.close.done();
-      },
-      exit(code) {
-        exitCode = code;
-        events.exit.done();
-      },
-      get exitCode() {
-        return exitCode;
-      },
-      result
-    };
-  }
-  function configureTimeout(flag, event, timeout) {
-    if (flag === false) {
-      return;
-    }
-    (flag === true ? event.promise : event.promise.then(() => delay(flag))).then(timeout.done);
-  }
-  return {
+  }, {
     type: "spawn.after",
-    async action(_data, { spawned, close }) {
-      const events = createEvents();
-      let deferClose = true;
-      let quickClose = () => void (deferClose = false);
-      spawned.stdout?.on("data", quickClose);
-      spawned.stderr?.on("data", quickClose);
-      spawned.on("error", quickClose);
-      spawned.on("close", (code) => events.close(code));
-      spawned.on("exit", (code) => events.exit(code));
-      try {
-        await events.result;
-        if (deferClose) {
-          await delay(50);
-        }
-        close(events.exitCode);
-      } catch (err) {
-        close(events.exitCode, err);
+    action(r2, s) {
+      function o2() {
+        s.kill(new A3(void 0, "abort", "Abort signal received"));
       }
+      t2.addEventListener("abort", o2), s.spawned.on("close", () => t2.removeEventListener("abort", o2));
     }
-  };
+  }] : void 0;
 }
-init_utils();
-var WRONG_NUMBER_ERR = `Invalid value supplied for custom binary, requires a single string or an array containing either one or two strings`;
-var WRONG_CHARS_ERR = `Invalid value supplied for custom binary, restricted characters must be removed or supply the unsafe.allowUnsafeCustomBinary option`;
-function isBadArgument(arg) {
-  return !arg || !/^([a-z]:)?([a-z0-9/.\\_~-]+)$/i.test(arg);
-}
-function toBinaryConfig(input, allowUnsafe) {
-  if (input.length < 1 || input.length > 2) {
-    throw new GitPluginError(void 0, "binary", WRONG_NUMBER_ERR);
-  }
-  const isBad = input.some(isBadArgument);
-  if (isBad) {
-    if (allowUnsafe) {
-      console.warn(WRONG_CHARS_ERR);
-    } else {
-      throw new GitPluginError(void 0, "binary", WRONG_CHARS_ERR);
-    }
-  }
-  const [binary, prefix] = input;
-  return {
-    binary,
-    prefix
-  };
-}
-function customBinaryPlugin(plugins, input = ["git"], allowUnsafe = false) {
-  let config = toBinaryConfig(asArray(input), allowUnsafe);
-  plugins.on("binary", (input2) => {
-    config = toBinaryConfig(asArray(input2), allowUnsafe);
-  });
-  plugins.append("spawn.binary", () => {
-    return config.binary;
-  });
-  plugins.append("spawn.args", (data) => {
-    return config.prefix ? [config.prefix, ...data] : data;
-  });
-}
-init_git_error();
-function isTaskError(result) {
-  return !!(result.exitCode && result.stdErr.length);
-}
-function getErrorMessage(result) {
-  return Buffer.concat([...result.stdOut, ...result.stdErr]);
-}
-function errorDetectionHandler(overwrite = false, isError = isTaskError, errorMessage = getErrorMessage) {
-  return (error, result) => {
-    if (!overwrite && error || !isError(result)) {
-      return error;
-    }
-    return errorMessage(result);
-  };
-}
-function errorDetectionPlugin(config) {
-  return {
-    type: "task.error",
-    action(data, context) {
-      const error = config(data.error, {
-        stdErr: context.stdErr,
-        stdOut: context.stdOut,
-        exitCode: context.exitCode
-      });
-      if (Buffer.isBuffer(error)) {
-        return { error: new GitError(void 0, error.toString("utf-8")) };
-      }
-      return {
-        error
-      };
-    }
-  };
-}
-init_utils();
-var PluginStore = class {
-  constructor() {
-    this.plugins = /* @__PURE__ */ new Set();
-    this.events = new import_node_events2.EventEmitter();
-  }
-  on(type, listener) {
-    this.events.on(type, listener);
-  }
-  reconfigure(type, data) {
-    this.events.emit(type, data);
-  }
-  append(type, action) {
-    const plugin = append(this.plugins, { type, action });
-    return () => this.plugins.delete(plugin);
-  }
-  add(plugin) {
-    const plugins = [];
-    asArray(plugin).forEach((plugin2) => plugin2 && this.plugins.add(append(plugins, plugin2)));
-    return () => {
-      plugins.forEach((plugin2) => this.plugins.delete(plugin2));
-    };
-  }
-  exec(type, data, context) {
-    let output = data;
-    const contextual = Object.freeze(Object.create(context));
-    for (const plugin of this.plugins) {
-      if (plugin.type === type) {
-        output = plugin.action(output, contextual);
-      }
-    }
-    return output;
-  }
-};
-init_utils();
-function progressMonitorPlugin(progress) {
-  const progressCommand = "--progress";
-  const progressMethods = ["checkout", "clone", "fetch", "pull", "push"];
-  const onProgress = {
-    type: "spawn.after",
-    action(_data, context) {
-      if (!context.commands.includes(progressCommand)) {
-        return;
-      }
-      context.spawned.stderr?.on("data", (chunk) => {
-        const message = /^([\s\S]+?):\s*(\d+)% \((\d+)\/(\d+)\)/.exec(chunk.toString("utf8"));
-        if (!message) {
-          return;
-        }
-        progress({
-          method: context.method,
-          stage: progressEventStage(message[1]),
-          progress: asNumber(message[2]),
-          processed: asNumber(message[3]),
-          total: asNumber(message[4])
-        });
-      });
-    }
-  };
-  const onArgs = {
-    type: "spawn.args",
-    action(args, context) {
-      if (!progressMethods.includes(context.method)) {
-        return args;
-      }
-      return including(args, progressCommand);
-    }
-  };
-  return [onArgs, onProgress];
-}
-function progressEventStage(input) {
-  return String(input.toLowerCase().split(" ", 1)) || "unknown";
-}
-init_utils();
-function spawnOptionsPlugin(spawnOptions) {
-  const options = pick(spawnOptions, ["uid", "gid"]);
+var Us2 = $2("", "plugin:allowEnvironment");
+function Fs2(t2, e = false) {
+  const n5 = new Set(t2.map((r2) => r2.toLowerCase().trim()));
   return {
     type: "spawn.options",
-    action(data) {
-      return { ...options, ...data };
+    action(r2, s) {
+      const o2 = { ...r2.env ?? process.env }, i = new Set(
+        Object.keys(s.env).map((a) => a.toLowerCase().trim())
+      );
+      for (const a of Object.keys(o2)) {
+        const c3 = a.toLowerCase().trim();
+        if (!(!Gs2(c3) || n5.has(c3))) {
+          if (i.has(c3))
+            throw new A3(
+              void 0,
+              "allowEnvironment",
+              `Use of "${a}" is blocked by the environment guard - add it to the allowEnvironment option to permit it`
+            );
+          Us2("removing ambient guarded environment variable %s", a), delete o2[a];
+        }
+      }
+      return {
+        ...r2,
+        env: {
+          ...o2,
+          GIT_TEST_DISALLOW_ABBREVIATED_OPTIONS: String(!e)
+        }
+      };
     }
   };
 }
-function timeoutPlugin({
-  block,
-  stdErr = true,
-  stdOut = true
-}) {
-  if (block > 0) {
-    return {
-      type: "spawn.after",
-      action(_data, context) {
-        let timeout;
-        function wait() {
-          timeout && clearTimeout(timeout);
-          timeout = setTimeout(kill, block);
-        }
-        function stop() {
-          context.spawned.stdout?.off("data", wait);
-          context.spawned.stderr?.off("data", wait);
-          context.spawned.off("exit", stop);
-          context.spawned.off("close", stop);
-          timeout && clearTimeout(timeout);
-        }
-        function kill() {
-          stop();
-          context.kill(new GitPluginError(void 0, "timeout", `block timeout reached`));
-        }
-        stdOut && context.spawned.stdout?.on("data", wait);
-        stdErr && context.spawned.stderr?.on("data", wait);
-        context.spawned.on("exit", stop);
-        context.spawned.on("close", stop);
-        wait();
-      }
-    };
-  }
+function Gs2(t2) {
+  const e = t2.toLowerCase().trim();
+  return e.startsWith("git_") || _2(e);
 }
-function suffixPathsPlugin() {
+function zs2(t2 = {}) {
   return {
     type: "spawn.args",
-    action(data) {
-      const prefix = [];
-      let suffix;
-      function append2(args) {
-        (suffix = suffix || []).push(...args);
+    action(e, { env: n5 }) {
+      for (const r2 of oe2(e, n5))
+        if (t2[r2.category] !== true)
+          throw new A3(void 0, "unsafe", r2.message);
+      return e;
+    }
+  };
+}
+function qs2(t2) {
+  const e = U2(t2, "-c");
+  return {
+    type: "spawn.args",
+    action(n5) {
+      return [...e, ...n5];
+    }
+  };
+}
+var $t = (0, import_promise_deferred.deferred)().promise;
+function Ws2({
+  onClose: t2 = true,
+  onExit: e = 50
+} = {}) {
+  function n5() {
+    let s = -1;
+    const o2 = {
+      close: (0, import_promise_deferred.deferred)(),
+      closeTimeout: (0, import_promise_deferred.deferred)(),
+      exit: (0, import_promise_deferred.deferred)(),
+      exitTimeout: (0, import_promise_deferred.deferred)()
+    }, i = Promise.race([
+      t2 === false ? $t : o2.closeTimeout.promise,
+      e === false ? $t : o2.exitTimeout.promise
+    ]);
+    return r2(t2, o2.close, o2.closeTimeout), r2(e, o2.exit, o2.exitTimeout), {
+      close(a) {
+        s = a, o2.close.done();
+      },
+      exit(a) {
+        s = a, o2.exit.done();
+      },
+      get exitCode() {
+        return s;
+      },
+      result: i
+    };
+  }
+  function r2(s, o2, i) {
+    s !== false && (s === true ? o2.promise : o2.promise.then(() => wt2(s))).then(i.done);
+  }
+  return {
+    type: "spawn.after",
+    async action(s, { spawned: o2, close: i }) {
+      const a = n5();
+      let c3 = true, y2 = () => {
+        c3 = false;
+      };
+      o2.stdout?.on("data", y2), o2.stderr?.on("data", y2), o2.on("error", y2), o2.on("close", (w2) => a.close(w2)), o2.on("exit", (w2) => a.exit(w2));
+      try {
+        await a.result, c3 && await wt2(50), i(a.exitCode);
+      } catch (w2) {
+        i(a.exitCode, w2);
       }
-      for (let i2 = 0; i2 < data.length; i2++) {
-        const param = data[i2];
-        if (r(param)) {
-          append2(o(param));
+    }
+  };
+}
+var we2 = $2("", "plugin:binary");
+var Hs2 = "Invalid value supplied for custom binary, requires a single string or an array containing either one or two strings";
+var Ks2 = "Invalid value supplied for custom binary, restricted characters must be removed or supply the unsafe.allowUnsafeCustomBinary option";
+function Vs2(t2) {
+  return !t2 || !/^([a-z]:)?([a-z0-9/.\\_~-]+)$/i.test(t2);
+}
+function Pt2(t2, e) {
+  if (t2.length < 1 || t2.length > 2)
+    throw new A3(void 0, "binary", Hs2);
+  if (t2.some(Vs2))
+    if (e)
+      we2("permitted unsafe binary %o", t2);
+    else
+      throw new A3(void 0, "binary", Ks2);
+  const [r2, s] = t2;
+  return {
+    binary: r2,
+    prefix: s
+  };
+}
+function Xs2(t2, e = ["git"], n5 = false) {
+  let r2 = Pt2(v2(e), n5);
+  t2.on("binary", (s) => {
+    r2 = Pt2(v2(s), n5), we2.info("reconfiguring %o", r2);
+  }), t2.append("spawn.binary", () => r2.binary), t2.append("spawn.args", (s) => r2.prefix ? [r2.prefix, ...s] : s);
+}
+var be2 = {
+  DISALLOWED_ABBREVIATED: {
+    text: "disallowed abbreviated or ambiguous option",
+    solution: "Unambiguous abbreviated options blocked with unsafe.allowAbbreviatedOptions setting: {message}"
+  },
+  UNKNOWN: {
+    text: "~ unknown ~",
+    solution: void 0
+  }
+};
+function Ys2(t2) {
+  if (!t2)
+    return "UNKNOWN";
+  for (const [e, { text: n5 }] of Object.entries(be2))
+    if (t2.startsWith(`fatal: ${n5}`))
+      return e;
+  return "UNKNOWN";
+}
+var Qs2 = class extends O3 {
+  constructor(e = "") {
+    const n5 = Ys2(e);
+    super(void 0, be2[n5].solution?.replace("{message}", e) ?? e), this.reason = n5;
+  }
+};
+function Js2(t2) {
+  return !!(t2.exitCode && t2.stdErr.length);
+}
+function Zs2(t2) {
+  return Buffer.concat([...t2.stdOut, ...t2.stdErr]);
+}
+function to(t2 = false, e = Js2, n5 = Zs2) {
+  return (r2, s) => !t2 && r2 || !e(s) ? r2 : n5(s);
+}
+function eo(t2, e) {
+  return t2 === 128 && e.startsWith("fatal:") ? new Qs2(e) : new O3(void 0, e);
+}
+function Mt2(t2) {
+  return {
+    type: "task.error",
+    action(e, n5) {
+      const r2 = t2(e.error, {
+        stdErr: n5.stdErr,
+        stdOut: n5.stdOut,
+        exitCode: n5.exitCode
+      });
+      return Buffer.isBuffer(r2) ? {
+        error: eo(n5.exitCode, r2.toString("utf-8"))
+      } : {
+        error: r2
+      };
+    }
+  };
+}
+var nt2 = $2("", "plugin:input");
+function no(t2) {
+  return {
+    type: "spawn.after",
+    action(e, { commands: n5, input: r2, spawned: { stdin: s } }) {
+      if (!s)
+        return;
+      const o2 = t2?.([...n5]) ?? r2;
+      if (!o2)
+        return nt2("generated zero length content, not writing to stdin");
+      nt2("writing %s bytes to stdin", Le2(o2)), s.on("error", (i) => {
+        i.code !== "EPIPE" && nt2("[ERROR] stdin error %o", i);
+      }), s.end(o2);
+    }
+  };
+}
+var ro = class {
+  constructor() {
+    this.plugins = /* @__PURE__ */ new Set(), this.events = new import_node_events2.EventEmitter();
+  }
+  on(e, n5) {
+    this.events.on(e, n5);
+  }
+  reconfigure(e, n5) {
+    this.events.emit(e, n5);
+  }
+  append(e, n5) {
+    const r2 = S2(this.plugins, { type: e, action: n5 });
+    return () => this.plugins.delete(r2);
+  }
+  add(e) {
+    const n5 = [];
+    return v2(e).forEach(
+      (r2) => {
+        r2 && this.plugins.add(S2(n5, r2));
+      }
+    ), () => {
+      n5.forEach((r2) => {
+        this.plugins.delete(r2);
+      });
+    };
+  }
+  exec(e, n5, r2) {
+    let s = n5;
+    const o2 = Object.freeze(Object.create(r2));
+    for (const i of this.plugins)
+      i.type === e && (s = i.action(s, o2));
+    return s;
+  }
+};
+function so(t2) {
+  const e = "--progress", n5 = ["checkout", "clone", "fetch", "pull", "push"];
+  return [{
+    type: "spawn.args",
+    action(o2, i) {
+      return n5.includes(i.method) ? De2(o2, e) : o2;
+    }
+  }, {
+    type: "spawn.after",
+    action(o2, i) {
+      i.commands.includes(e) && i.spawned.stderr?.on("data", (a) => {
+        const c3 = /^([\s\S]+?):\s*(\d+)% \((\d+)\/(\d+)\)/.exec(a.toString("utf8"));
+        c3 && t2({
+          method: i.method,
+          stage: oo(c3[1]),
+          progress: p(c3[2]),
+          processed: p(c3[3]),
+          total: p(c3[4])
+        });
+      });
+    }
+  }];
+}
+function oo(t2) {
+  return String(t2.toLowerCase().split(" ", 1)) || "unknown";
+}
+function io(t2) {
+  const e = je2(t2, ["uid", "gid"]);
+  return {
+    type: "spawn.options",
+    action(n5) {
+      return { ...e, ...n5 };
+    }
+  };
+}
+function ao() {
+  return {
+    type: "spawn.args",
+    action(t2) {
+      const e = [];
+      let n5;
+      function r2(s) {
+        (n5 = n5 || []).push(...s);
+      }
+      for (let s = 0; s < t2.length; s++) {
+        const o2 = t2[s];
+        if (r(o2)) {
+          r2(o(o2));
           continue;
         }
-        if (param === "--") {
-          append2(
-            data.slice(i2 + 1).flatMap((item) => r(item) && o(item) || item)
+        if (o2 === "--") {
+          r2(
+            t2.slice(s + 1).flatMap((i) => r(i) && o(i) || i)
           );
           break;
         }
-        prefix.push(param);
+        e.push(o2);
       }
-      return !suffix ? prefix : [...prefix, "--", ...suffix.map(String)];
+      return n5 ? [...e, "--", ...n5.map(String)] : e;
     }
   };
 }
-init_utils();
-var Git = require_git();
-function gitInstanceFactory(baseDir, options) {
-  const plugins = new PluginStore();
-  const config = createInstanceConfig(
-    baseDir && (typeof baseDir === "string" ? { baseDir } : baseDir) || {},
-    options
-  );
-  if (!folderExists(config.baseDir)) {
-    throw new GitConstructError(
-      config,
-      `Cannot use simple-git on a directory that does not exist`
-    );
-  }
-  if (Array.isArray(config.config)) {
-    plugins.add(commandConfigPrefixingPlugin(config.config));
-  }
-  plugins.add(blockUnsafeOperationsPlugin(config.unsafe));
-  plugins.add(completionDetectionPlugin(config.completion));
-  config.abort && plugins.add(abortPlugin(config.abort));
-  config.progress && plugins.add(progressMonitorPlugin(config.progress));
-  config.timeout && plugins.add(timeoutPlugin(config.timeout));
-  config.spawnOptions && plugins.add(spawnOptionsPlugin(config.spawnOptions));
-  plugins.add(suffixPathsPlugin());
-  plugins.add(errorDetectionPlugin(errorDetectionHandler(true)));
-  config.errors && plugins.add(errorDetectionPlugin(config.errors));
-  customBinaryPlugin(plugins, config.binary, config.unsafe?.allowUnsafeCustomBinary);
-  return new Git(config, plugins);
+function uo({
+  block: t2,
+  stdErr: e = true,
+  stdOut: n5 = true
+}) {
+  if (t2 > 0)
+    return {
+      type: "spawn.after",
+      action(r2, s) {
+        let o2;
+        function i() {
+          o2 && clearTimeout(o2), o2 = setTimeout(c3, t2);
+        }
+        function a() {
+          s.spawned.stdout?.off("data", i), s.spawned.stderr?.off("data", i), s.spawned.off("exit", a), s.spawned.off("close", a), o2 && clearTimeout(o2);
+        }
+        function c3() {
+          a(), s.kill(new A3(void 0, "timeout", "block timeout reached"));
+        }
+        n5 && s.spawned.stdout?.on("data", i), e && s.spawned.stderr?.on("data", i), s.spawned.on("exit", a), s.spawned.on("close", a), i();
+      }
+    };
 }
-init_git_response_error();
-var esm_default = gitInstanceFactory;
+var wo = (t2, e) => {
+  const n5 = new ro(), r2 = Ge2(
+    t2 && (typeof t2 == "string" ? { baseDir: t2 } : t2) || {},
+    e
+  );
+  if (!Lt2(r2.baseDir))
+    throw new Ae2(
+      r2,
+      "Cannot use simple-git on a directory that does not exist"
+    );
+  return Array.isArray(r2.config) && n5.add(qs2(r2.config)), n5.add(zs2(r2.unsafe)), n5.add(Ws2(r2.completion)), r2.abort && n5.add(Is2(r2.abort)), r2.progress && n5.add(so(r2.progress)), r2.timeout && n5.add(uo(r2.timeout)), r2.spawnOptions && n5.add(io(r2.spawnOptions)), n5.add(ao()), n5.add(no(r2.input)), n5.add(Mt2(to(true))), r2.errors && n5.add(Mt2(r2.errors)), Xs2(n5, r2.binary, r2.unsafe?.allowUnsafeCustomBinary), n5.add(
+    Fs2(r2.allowEnvironment ?? [], r2.unsafe?.allowAbbreviatedOptions)
+  ), new f2(r2, n5);
+};
 
 // src/git/history.ts
 async function getLatestCommitHash(projectPath) {
-  const git = esm_default(projectPath);
+  const git = wo(projectPath);
   try {
     const log = await git.log({ maxCount: 1 });
     return log.latest?.hash ?? null;
@@ -12260,7 +10809,7 @@ async function getLatestCommitHash(projectPath) {
   }
 }
 async function getRemoteBranchTip(projectPath, branch) {
-  const git = esm_default(projectPath);
+  const git = wo(projectPath);
   try {
     const hash = await git.raw(["rev-parse", `origin/${branch}`]);
     return hash.trim() || null;
@@ -12269,17 +10818,17 @@ async function getRemoteBranchTip(projectPath, branch) {
   }
 }
 async function getCurrentBranch(projectPath) {
-  const git = esm_default(projectPath);
+  const git = wo(projectPath);
   try {
     const branch = await git.raw(["rev-parse", "--abbrev-ref", "HEAD"]);
-    const trimmed2 = branch.trim();
-    return trimmed2 && trimmed2 !== "HEAD" ? trimmed2 : null;
+    const trimmed = branch.trim();
+    return trimmed && trimmed !== "HEAD" ? trimmed : null;
   } catch {
     return null;
   }
 }
 async function isCommitReachableFromBranch(projectPath, commit, branch) {
-  const git = esm_default(projectPath);
+  const git = wo(projectPath);
   const trimmedCommit = commit.trim();
   if (!trimmedCommit) return false;
   try {
@@ -12291,14 +10840,14 @@ async function isCommitReachableFromBranch(projectPath, commit, branch) {
   }
 }
 function normaliseRemoteUrl(raw) {
-  const trimmed2 = raw.trim();
-  const sshMatch = trimmed2.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
+  const trimmed = raw.trim();
+  const sshMatch = trimmed.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
   if (sshMatch) {
     return `https://${sshMatch[1]}/${sshMatch[2]}`;
   }
-  if (trimmed2.startsWith("https://") || trimmed2.startsWith("http://")) {
+  if (trimmed.startsWith("https://") || trimmed.startsWith("http://")) {
     try {
-      const url = new URL(trimmed2);
+      const url = new URL(trimmed);
       url.username = "";
       url.password = "";
       url.search = "";
@@ -12312,7 +10861,7 @@ function normaliseRemoteUrl(raw) {
   return null;
 }
 async function getRepoUrl(projectPath) {
-  const git = esm_default(projectPath);
+  const git = wo(projectPath);
   try {
     const remotes = await git.getRemotes(true);
     const origin = remotes.find((r2) => r2.name === "origin");
@@ -12324,7 +10873,7 @@ async function getRepoUrl(projectPath) {
   }
 }
 async function getDefaultBranch(projectPath) {
-  const git = esm_default(projectPath);
+  const git = wo(projectPath);
   try {
     const ref = await git.raw(["symbolic-ref", "refs/remotes/origin/HEAD"]);
     const match2 = ref.trim().match(/^refs\/remotes\/origin\/(.+)$/);
@@ -12341,7 +10890,7 @@ async function getDefaultBranch(projectPath) {
   return "main";
 }
 async function buildHistory(projectPath, frameworkConfigs, defaultBranch, sinceCommit, fullHistory, sinceDate) {
-  const git = esm_default(projectPath);
+  const git = wo(projectPath);
   const errors = [];
   const warnings = [];
   const remoteRef = `origin/${defaultBranch}`;
@@ -12451,8 +11000,8 @@ async function fetchCommitsWithFiles(git, logArgs, testDirs) {
     const message = msgParts.join(FIELD_SEP);
     if (!hash?.trim()) continue;
     const fileChanges = [];
-    for (let i2 = 1; i2 < lines.length; i2++) {
-      const line = lines[i2];
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
       if (!line || !line.trim()) continue;
       const parts = line.split("	");
       const status = parts[0];
@@ -12624,11 +11173,11 @@ function detectMaintenanceChanges(previousContent, currentContent, framework, al
   const prevLines = previousContent.split("\n");
   const currLines = currentContent.split("\n");
   function getTestSpan(tests, name, lines) {
-    const sorted2 = [...tests].sort((a, b2) => a.line - b2.line);
-    const idx = sorted2.findIndex((t2) => t2.name === name);
+    const sorted = [...tests].sort((a, b3) => a.line - b3.line);
+    const idx = sorted.findIndex((t2) => t2.name === name);
     if (idx === -1) return "";
-    const start = sorted2[idx].line - 1;
-    const end = idx + 1 < sorted2.length ? sorted2[idx + 1].line - 1 : lines.length;
+    const start = sorted[idx].line - 1;
+    const end = idx + 1 < sorted.length ? sorted[idx + 1].line - 1 : lines.length;
     return lines.slice(start, end).join("\n");
   }
   const results = [];
@@ -12926,10 +11475,10 @@ function deduplicateCommitChanges(entry) {
     return true;
   });
   const removedByName = /* @__PURE__ */ new Map();
-  uniqueChanges.forEach((c3, i2) => {
+  uniqueChanges.forEach((c3, i) => {
     if (c3.type === "deleted") {
       const existing = removedByName.get(c3.testName) ?? [];
-      existing.push(i2);
+      existing.push(i);
       removedByName.set(c3.testName, existing);
     }
   });
@@ -12939,13 +11488,13 @@ function deduplicateCommitChanges(entry) {
       const removeIndices = removedByName.get(c3.testName);
       if (removeIndices) {
         const crossSpecIdx = removeIndices.find(
-          (i2) => !suppressedRemoves.has(i2) && uniqueChanges[i2].specPath !== c3.specPath
+          (i) => !suppressedRemoves.has(i) && uniqueChanges[i].specPath !== c3.specPath
         );
         if (crossSpecIdx !== void 0) suppressedRemoves.add(crossSpecIdx);
       }
     }
   });
-  return uniqueChanges.filter((_3, i2) => !suppressedRemoves.has(i2));
+  return uniqueChanges.filter((_4, i) => !suppressedRemoves.has(i));
 }
 async function syncProject(options) {
   const { projectId, apiKey, dashboardUrl } = options;
@@ -12973,7 +11522,7 @@ async function syncProject(options) {
   console.log(`[sync] Current branch: ${currentBranch}`);
   console.log("[sync] Detecting frameworks.");
   const detected = detectFrameworks(process.cwd());
-  const frameworkMap = new Map(detected.map((d) => [mapKey(d.framework, d.testDir), d]));
+  const frameworkMap = new Map(detected.map((d2) => [mapKey(d2.framework, d2.testDir), d2]));
   applyFrameworkOverrides(frameworkMap, projectConfig?.frameworkOverrides ?? []);
   applyTestDirExcludes(frameworkMap, projectConfig?.testDirExcludes ?? []);
   let frameworkConfigs = [...frameworkMap.values()];
@@ -13337,8 +11886,8 @@ async function pollBrowserLogin(dashboardUrl, deviceCode) {
 }
 
 // src/cli.ts
-function sleep(ms2) {
-  return new Promise((resolve) => setTimeout(resolve, ms2));
+function sleep(ms3) {
+  return new Promise((resolve) => setTimeout(resolve, ms3));
 }
 function getFlag(args, name) {
   const index = args.indexOf(name);
@@ -13371,7 +11920,7 @@ Local config:
 }
 function openBrowser(url) {
   const command = process.platform === "win32" ? { file: "cmd", args: ["/c", "start", "", url] } : process.platform === "darwin" ? { file: "open", args: [url] } : { file: "xdg-open", args: [url] };
-  const child = (0, import_child_process2.execFile)(command.file, command.args, { windowsHide: true }, () => {
+  const child = (0, import_child_process.execFile)(command.file, command.args, { windowsHide: true }, () => {
   });
   child.unref();
 }
