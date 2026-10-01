@@ -9,7 +9,7 @@ const CLASS_DECLARATION_RE = /(?:public\s+)?class\s+(\w+)/;
 
 const ENABLED_RE = /enabled\s*=\s*(false|true)/;
 
-const GROUPS_RE = /groups\s*=\s*\{\s*"?([^}\"]+)"?\s*\}/;
+const GROUPS_RE = /groups\s*=\s*(?:\{([^}]+)\}|"([^"]+)")/;
 const PARAMETERIZED_RE = /\b(dataProvider|parameters)\s*=/i;
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ function extractTestNGTags(annotationText: string): Array<{ name: string }> {
 
     const groupMatch = GROUPS_RE.exec(annotationText);
     if (groupMatch) {
-        const groups = groupMatch[1]
+        const groups = (groupMatch[1] ?? groupMatch[2])
             .split(',')
             .map((g) => g.trim().replace(/^"|"$/g, ''))
             .filter((g) => g.length > 0);

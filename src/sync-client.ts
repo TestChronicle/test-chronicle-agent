@@ -7,6 +7,12 @@ interface SyncMarkerResponse {
     commitHash?: string;
 }
 
+class SyncHttpError extends Error {
+    constructor(message: string, readonly status: number) {
+        super(message);
+    }
+}
+
 function isProjectAccessError(errorBody: string): boolean {
     return /project not found|not in the key/i.test(errorBody);
 }
@@ -35,6 +41,7 @@ export async function validateProjectAccess(dashboardUrl: string, apiToken: stri
         const response = await fetch(url, {
             method: 'GET',
             headers: makeAuthHeaders(apiToken),
+            signal: AbortSignal.timeout(30_000),
         });
         if (response.status === 401 || response.status === 403) {
             throw new Error('Invalid API key. Please check your API_KEY.');
@@ -77,6 +84,7 @@ export async function fetchProjectConfig(
         const response = await fetch(url, {
             method: 'GET',
             headers: makeAuthHeaders(apiToken),
+            signal: AbortSignal.timeout(30_000),
         });
         if (!response.ok) return null;
         return (await response.json()) as DashboardSyncConfig;
@@ -96,6 +104,7 @@ export async function getSyncMarker(dashboardUrl: string, apiToken: string, proj
         const response = await fetch(url, {
             method: 'GET',
             headers: makeAuthHeaders(apiToken),
+            signal: AbortSignal.timeout(30_000),
         });
 
         if (!response.ok) {
@@ -140,6 +149,7 @@ export async function saveSyncMarker(
         method: 'POST',
         headers: makeAuthHeaders(apiToken),
         body: JSON.stringify({ commitHash }),
+        signal: AbortSignal.timeout(30_000),
     });
 
     if (!response.ok) {
@@ -206,14 +216,18 @@ export async function syncToDashboard(
                 if (isProjectAccessError(errorBody)) {
                     throw projectAccessError(payload.projectId);
                 }
-                throw new Error(
+                throw new SyncHttpError(
                     `Sync failed with status ${response.status}: ${response.statusText}${errorBody ? ` - ${errorBody}` : ''}`,
+                    response.status,
                 );
             }
 
-            return response.json() as Promise<{ success: true; projectId: string; synced_at: string }>;
+            return await response.json() as { success: true; projectId: string; synced_at: string };
         } catch (err) {
             lastError = err instanceof Error ? err : new Error(String(err));
+            if (err instanceof SyncHttpError && err.status >= 400 && err.status < 500 && ![408, 429].includes(err.status)) {
+                throw err;
+            }
             if (lastError.message.startsWith('Invalid API key') || lastError.message.startsWith('Project not found')) {
                 throw lastError;
             }

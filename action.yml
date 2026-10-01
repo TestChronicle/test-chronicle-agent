@@ -13,6 +13,10 @@ inputs:
   PROJECT_ID:
     description: 'Project ID in Chronicle dashboard'
     required: true
+  DASHBOARD_URL:
+    description: 'Test Chronicle dashboard URL'
+    required: false
+    default: 'https://www.testchronicle.com'
 
 outputs:
   sync-status:

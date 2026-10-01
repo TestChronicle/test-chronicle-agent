@@ -183,4 +183,25 @@ describe('syncToDashboard', () => {
 
         expect(fetch).toHaveBeenCalledTimes(1);
     });
+
+    it('retries failures reading a successful response body', async () => {
+        vi.useFakeTimers();
+        try {
+            const json = vi.fn().mockRejectedValueOnce(new Error('body interrupted')).mockResolvedValueOnce({ success: true });
+            vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json }));
+            const pending = syncToDashboard(DASHBOARD_URL, API_TOKEN, payload);
+            const assertion = expect(pending).resolves.toEqual({ success: true });
+            await vi.runAllTimersAsync();
+            await assertion;
+            expect(fetch).toHaveBeenCalledTimes(2);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it.each([400, 404, 413, 422])('does not retry permanent HTTP %i failures', async (status) => {
+        mockFetch(status, 'Request rejected');
+        await expect(syncToDashboard(DASHBOARD_URL, API_TOKEN, payload)).rejects.toThrow(`Sync failed with status ${status}`);
+        expect(fetch).toHaveBeenCalledTimes(1);
+    });
 });

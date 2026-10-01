@@ -28,6 +28,15 @@ describe('normaliseRemoteUrl', () => {
     });
 
     describe('HTTPS remotes', () => {
+        it('removes credentials, query strings and fragments', () => {
+            expect(normaliseRemoteUrl('https://user:secret@github.com/owner/repo.git/?token=secret#fragment')).toBe(
+                'https://github.com/owner/repo',
+            );
+        });
+
+        it('rejects malformed HTTP URLs', () => {
+            expect(normaliseRemoteUrl('https://')).toBeNull();
+        });
         it('strips a trailing .git from an HTTPS URL', () => {
             expect(normaliseRemoteUrl('https://github.com/owner/repo.git')).toBe('https://github.com/owner/repo');
         });

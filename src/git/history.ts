@@ -95,7 +95,18 @@ export function normaliseRemoteUrl(raw: string): string | null {
 
     // HTTPS form: strip trailing .git and slash
     if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
-        return trimmed.replace(/\.git$/, '').replace(/\/$/, '');
+        try {
+            const url = new URL(trimmed);
+            // Remotes can contain access tokens; never log or upload those.
+            url.username = '';
+            url.password = '';
+            url.search = '';
+            url.hash = '';
+            url.pathname = url.pathname.replace(/\/+$/, '').replace(/\.git$/, '');
+            return url.toString().replace(/\/$/, '');
+        } catch {
+            return null;
+        }
     }
 
     return null;
@@ -314,6 +325,7 @@ async function fetchCommitsWithFiles(
         'log',
         `--format=${COMMIT_SEP}%H${FIELD_SEP}%an${FIELD_SEP}%ai${FIELD_SEP}%s`,
         '--name-status',
+        '--topo-order',
         '--diff-filter=ADRM',
         '-M',
         ...logArgs,
@@ -428,21 +440,24 @@ async function buildSpecChanges(
 
     for (const change of fileChanges) {
         // Resolve which framework owns this file based on its path
-        const framework = resolveFrameworkForFile(change.path, frameworkConfigs);
-        if (!framework || !isSpecFile(change.path, framework)) continue;
+        let framework = resolveFrameworkForFile(change.path, frameworkConfigs);
 
         // Normalize cross-testDir renames: if a spec file moves between tracked
         // directories (or into/out of a tracked directory), treat it as an add/delete.
         let effectiveChange = change;
         if (change.status === 'renamed' && change.oldPath) {
-            const oldFramework = resolveFrameworkForFile(change.oldPath, frameworkConfigs);
-            const newFramework = resolveFrameworkForFile(change.path, frameworkConfigs);
+            const resolvedOld = resolveFrameworkForFile(change.oldPath, frameworkConfigs);
+            const oldFramework = resolvedOld && isSpecFile(change.oldPath, resolvedOld) ? resolvedOld : null;
+            const newFramework = framework && isSpecFile(change.path, framework) ? framework : null;
             if (!oldFramework && newFramework) {
                 effectiveChange = { path: change.path, status: 'added' };
             } else if (oldFramework && !newFramework) {
                 effectiveChange = { path: change.oldPath, status: 'deleted' };
+                framework = oldFramework;
             }
         }
+
+        if (!framework || !isSpecFile(effectiveChange.path, framework)) continue;
 
         try {
             const entry = await buildSpecEntry(git, hash, effectiveChange, framework, projectPath);
